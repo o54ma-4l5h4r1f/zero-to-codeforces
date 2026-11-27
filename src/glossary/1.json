@@ -1,0 +1,18 @@
+{
+  "variable": { "en": "variable", "ar": "متغيّر", "note": "a named box that holds one value, like int n" },
+  "loop": { "en": "loop", "ar": "حلقة تكرار", "note": "code that repeats, like for or while" },
+  "trace": { "en": "trace", "ar": "تتبّع يدوي (تنفيذ الخطوات على الورق)", "note": "run the code by hand and write the variables after each step" },
+  "character": { "en": "character", "ar": "حرف (رمز واحد)", "note": "one letter, digit or sign, like 'a' or '7'; the type is char" },
+  "maximum": { "en": "maximum", "ar": "القيمة العظمى (الأكبر)", "note": "the biggest value" },
+  "minimum": { "en": "minimum", "ar": "القيمة الصغرى (الأصغر)", "note": "the smallest value" },
+  "unsigned": { "en": "unsigned", "ar": "بلا إشارة (لا يقبل القيم السالبة)", "note": "a number type that cannot be negative; 0 − 1 becomes a huge number" },
+  "round-down": { "en": "round down (floor)", "ar": "تقريب إلى الأسفل", "note": "throw away the part after the point: 7 / 2 rounded down is 3" },
+  "digit": { "en": "digit", "ar": "رقم (خانة واحدة من العدد)", "note": "one of 0…9; the number 4072 has four digits" },
+  "arithmetic-progression": { "en": "arithmetic progression", "ar": "متتالية حسابية", "note": "numbers with the same step between neighbours, like 3, 5, 7, 9" },
+  "absolute-value": { "en": "absolute value", "ar": "القيمة المطلقة", "note": "the number without its sign: abs(−5) = 5" },
+  "candidate": { "en": "candidate", "ar": "مرشَّح (قيمة قد تكون هي الإجابة)", "note": "a value that may be the answer; you still have to check it" },
+  "possibility": { "en": "possibility", "ar": "احتمال", "note": "one of the things that can happen or can be chosen" },
+  "choice": { "en": "choice", "ar": "اختيار", "note": "what you decide to take at one step" },
+  "counterexample": { "en": "counterexample", "ar": "مثال مضادّ", "note": "one small input that shows an idea is wrong" },
+  "swap": { "en": "swap", "ar": "مبادلة (تبديل موضعَي عنصرين)", "note": "two things change places" }
+}

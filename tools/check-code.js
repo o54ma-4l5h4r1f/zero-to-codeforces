@@ -14,14 +14,15 @@ for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.html')).sort()) {
     i++;
     const part = (/data-part="(\w+)"/.exec(m[1]) || [])[1];
     if (/<[a-z]/i.test(m[2])) { console.log(`FAIL ${slug} #${i}: raw "<" inside code, escape it as &lt;`); fail++; continue; }
+    const long = un(m[2]).split('\n').filter(l => l.length > 92).length;
+    if (long && !/class="cc/.test(html.slice(Math.max(0, m.index - 200), m.index))) console.log(`warn ${slug} #${i}: ${long} line(s) longer than 92 chars`);
     if (part === 'main' || part === 'skip') { skipped++; continue; }
     let src = un(m[2]);
     if (part === 'global') src = '#include <bits/stdc++.h>\nusing namespace std;\n' + src;
     else if (!/\bmain\s*\(/.test(src)) { console.log(`FAIL ${slug} #${i}: no main() and no data-part attribute`); fail++; continue; }
     const file = path.join(tmp, `${slug}-${i}.cpp`);
     fs.writeFileSync(file, src);
-    const args = ['-std=c++17', '-Wall', '-Wextra', '-Wno-unused', '-Wno-sign-compare'];
-    const r = spawnSync('g++', part === 'global' ? [...args, '-fsyntax-only', file] : [...args, '-o', file + '.out', file], { encoding: 'utf8' });
+    const r = spawnSync('g++', ['-std=c++17', '-Wall', '-Wextra', '-Wno-unused', '-Wno-sign-compare', part === 'global' ? '-fsyntax-only' : '-o', part === 'global' ? file : file + '.out', ...(part === 'global' ? [] : [file])], { encoding: 'utf8' });
     n++;
     if (r.status !== 0 || /warning/.test(r.stderr)) { fail += r.status !== 0; console.log(`${r.status ? 'FAIL' : 'warn'} ${slug} #${i}\n${r.stderr.split('\n').slice(0, 12).join('\n')}`); }
   }

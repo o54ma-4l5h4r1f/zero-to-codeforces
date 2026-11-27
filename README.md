@@ -3,7 +3,7 @@
 A short, ordered problem-solving guide for beginners who know basic C++: from the first submission to about Codeforces 1600.
 Simple English, Arabic meanings on hover for hard words, every idea explained three ways (story, picture, code), and a cheat sheet.
 
-The whole site is one static file: `index.html`. Open it in a browser, or host it anywhere.
+The site is one static file: `index.html`. Open it in a browser, or host it anywhere.
 
 ## Layout
 
@@ -15,6 +15,7 @@ The whole site is one static file: `index.html`. Open it in a browser, or host i
 | `src/glossary/*.json` | English → Arabic word list |
 | `src/style.css`, `src/app.js`, `src/shell.html` | Look and behaviour |
 | `src/AUTHORING.md` | Rules for writing a lesson |
+| `docs/community-references.md` | Practice advice and resources collected from Codeforces discussions, with blog ids |
 | `data/cf-problems.json` | Snapshot of the Codeforces problem list (ratings and solve counts) |
 | `build.js` | Puts everything into `index.html` |
 | `tools/` | Checks: C++ compiles, problem links are real, problem suggestions |
@@ -24,8 +25,8 @@ The whole site is one static file: `index.html`. Open it in a browser, or host i
 ```sh
 node build.js                                  # build index.html
 node tools/check-code.js                       # compile every C++ block (needs g++)
-node tools/check-problems.js                   # check every practice link against the snapshot
-node tools/suggest.js "binary search" 1000 1400   # most-solved problems for a tag
+node tools/check-problems.js data/cf-problems.json   # check every practice link
+node tools/suggest.js "binary search" 1000 1400       # most-solved problems for a tag
 curl -o data/cf-problems.json https://codeforces.com/api/problemset.problems   # refresh the snapshot
 ```
 
@@ -33,4 +34,5 @@ Practice ladders are sorted by official rating, then by how many people solved t
 
 ## Hosting
 
-`.github/workflows/pages.yml` runs the checks, builds the site and deploys it to GitHub Pages on every push to `main`.
+`.github/workflows/pages.yml` builds the site and deploys it to GitHub Pages on every push to `main`.
+In the repository settings, set **Pages → Source** to **GitHub Actions**.

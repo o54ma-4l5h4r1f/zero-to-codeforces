@@ -186,4 +186,3 @@ pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); bord
   main { margin: 0; padding: 0 } body { background: #fff; font-size: 11px }
   .col.wide { max-width: none } .cgrid { grid-template-columns: repeat(3, 1fr); gap: 6px } .cc { break-inside: avoid }
 }
-

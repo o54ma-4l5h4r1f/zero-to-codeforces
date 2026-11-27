@@ -32,7 +32,7 @@ if (fs.existsSync(cfFile)) {
   for (const p of r.problems) { const id = p.contestId + p.index; if (used.has(id)) cf[id] = [p.rating || 0, sc[id] || 0]; }
   for (const id of used) if (!cf[id]) { console.warn('UNKNOWN Codeforces problem:', id); bad++; }
 }
-const data = 'window.CFG_DATA = ' + JSON.stringify({ stages, glossary, pages, cf }).replace(/<\//g, '<\\/').replace(/<!--/g, '<\\u0021--') + ';';
+const data = 'window.CFG_DATA = ' + JSON.stringify({ stages, glossary, pages, cf }).replace(/<\//g, '<\\/').replace(/<!--/g, '<\\!--') + ';';
 const body = read('shell.html')
   .replace('/*CSS*/', () => read('style.css'))
   .replace('/*DATA*/', () => data)
@@ -41,5 +41,6 @@ fs.mkdirSync(path.join(__dirname, 'build'), { recursive: true });
 fs.writeFileSync(path.join(__dirname, 'build', 'artifact.html'), body);
 fs.writeFileSync(path.join(__dirname, 'index.html'),
   '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + body + '</body>\n</html>\n');
+fs.writeFileSync(path.join(__dirname, 'build', 'problems.txt'), problems.join('\n') + '\n');
 console.log(`built ${Object.keys(pages).length}/${slugs.length} pages, ${Object.keys(glossary).length} glossary terms, ${problems.length} problem links, ${(body.length / 1024).toFixed(0)} KB, ${bad} problems`);
 process.exit(bad ? 1 : 0);

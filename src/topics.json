@@ -122,7 +122,7 @@
     "id": 3,
     "name": "Algorithms",
     "rating": "1300 – 1600",
-    "goal": "Real algorithms: recursion, dynamic programming and graphs.",
+    "goal": "Real algorithms: recursion, graphs and dynamic programming.",
     "ready": "you can write BFS, DSU and a simple DP from memory, and you solve Div. 2 C sometimes.",
     "topics": [
       {
@@ -130,20 +130,20 @@
         "title": "Recursion and backtracking"
       },
       {
-        "slug": "dp",
-        "title": "Dynamic programming"
-      },
-      {
         "slug": "graphs-bfs-dfs",
         "title": "Graphs: BFS and DFS"
       },
       {
-        "slug": "dijkstra",
-        "title": "Shortest path (Dijkstra)"
-      },
-      {
         "slug": "trees",
         "title": "Trees"
+      },
+      {
+        "slug": "dp",
+        "title": "Dynamic programming"
+      },
+      {
+        "slug": "dijkstra",
+        "title": "Shortest path (Dijkstra)"
       },
       {
         "slug": "dsu",
