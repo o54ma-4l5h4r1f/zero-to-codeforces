@@ -176,6 +176,19 @@ pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); bord
 .cc.span2 { grid-column: span 2 }
 @media (max-width: 700px) { .cc.span2 { grid-column: auto } }
 
+/* training */
+.tgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 10px }
+.tcard { display: flex; flex-direction: column; gap: 5px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;
+  text-decoration: none; color: var(--fg); min-width: 0 }
+.tcard:hover { border-color: var(--sc, var(--accent)) }
+.tcard b { font-family: var(--f-head) }
+.tcard .meter i, .s0 .meter i, .s1 .meter i, .s2 .meter i, .s3 .meter i { background: var(--ok) }
+.tp input { accent-color: var(--ok); margin: 0; align-self: center; width: 16px; height: 16px }
+.tp.ok a { color: var(--muted); text-decoration: line-through }
+.hint { font-size: .7rem; padding: 1px 7px }
+.eyebrow a { color: inherit }
+.side .quick .btn { padding: 6px 4px; font-size: .8rem }
+
 /* glossary */
 .gloss td:nth-child(2) { font-family: var(--f-ar); direction: rtl; text-align: right; font-size: 1.05rem }
 .gloss { width: 100% }

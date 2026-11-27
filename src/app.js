@@ -13,6 +13,67 @@
     try { localStorage.setItem('cfg-done', JSON.stringify(done)); } catch (e) {}
   }
 
+  var solvedP = {};
+  try { solvedP = JSON.parse(localStorage.getItem('cfg-solved') || '{}') || {}; } catch (e) {}
+  function setSolved(id, v) {
+    if (v) solvedP[id] = 1; else delete solvedP[id];
+    try { localStorage.setItem('cfg-solved', JSON.stringify(solvedP)); } catch (e) {}
+  }
+  var T = D.training, trackOf = {};
+  if (T) T.tracks.forEach(function (t) { trackOf[t.slug] = t; });
+  function nSolved(list) { return list.filter(function (p) { return solvedP[p[0]]; }).length; }
+  function cfUrl(id) { var m = /^(\d+)(.+)$/.exec(id); return 'https://codeforces.com/problemset/problem/' + m[1] + '/' + m[2]; }
+  function kfmt(n) { return n >= 1000 ? Math.round(n / 1000) + 'k' : String(n); }
+
+  /* ----- training pages ----- */
+  function trainHome() {
+    var all = T.mixed.slice(); T.tracks.forEach(function (t) { all = all.concat(t.problems); });
+    var n = nSolved(all);
+    var h = '<div class="col"><div class="page-h"><div class="eyebrow">Training</div><h1>' + all.length + ' problems, in order</h1></div>' +
+      '<p class="idea">Reading gives you the idea. Problems give you the skill. Each track repeats one idea with small changes, from easy to hard.</p>' +
+      '<section><h2>How to use it</h2><ol><li>Read the lesson. Solve its practice ladder.</li><li>Open the track. Solve from the top. The rating goes up slowly.</li>' +
+      '<li>Before each problem, read the list of <b>twists</b>. After you solve it, say which twist it was.</li>' +
+      '<li>Solved about two of every three in a track? Go to the next lesson. Come back later for the rest.</li>' +
+      '<li>After each stage, do the <b>mixed set</b>. There nobody tells you the topic.</li></ol>' +
+      '<p class="note">Every problem is real and comes from the Codeforces list. They are sorted by the official rating, then by how many people solved them.</p></section>' +
+      '<div><div class="note">Solved: ' + n + ' / ' + all.length + '</div><div class="meter"><i style="width:' + (100 * n / all.length) + '%"></i></div></div>';
+    D.stages.forEach(function (st) {
+      var ts = st.topics.filter(function (t) { return trackOf[t.slug]; });
+      if (!ts.length) return;
+      h += '<section class="s' + st.id + '"><h2>Stage ' + st.id + ' · ' + esc(st.name) + '</h2><div class="tgrid">';
+      ts.forEach(function (t) {
+        var tr = trackOf[t.slug], k = nSolved(tr.problems), p = tr.problems;
+        h += '<a class="tcard" href="#train-' + t.slug + '"><b>' + esc(t.title) + '</b><span class="note">' + p.length + ' problems · ' + p[0][2] + '–' + p[p.length - 1][2] +
+          '</span><div class="meter"><i style="width:' + (100 * k / p.length) + '%"></i></div><span class="note">' + k + ' solved</span></a>';
+      });
+      h += '</div></section>';
+    });
+    var mk = nSolved(T.mixed);
+    return h + '<section><h2>Mixed set</h2><div class="tgrid"><a class="tcard" href="#train-mixed"><b>All topics, no labels</b><span class="note">' + T.mixed.length +
+      ' problems · 800–1600</span><div class="meter"><i style="width:' + (100 * mk / T.mixed.length) + '%"></i></div><span class="note">' + mk + ' solved</span></a></div></section></div>';
+  }
+  function trainTrack(slug) {
+    var mixed = slug === 'mixed', tr = mixed ? { problems: T.mixed, twists: [] } : trackOf[slug];
+    var t = flat.filter(function (x) { return x.slug === slug; })[0], p = tr.problems, k = nSolved(p);
+    var h = '<div class="col' + (t ? ' s' + t.stage.id : '') + '"><div class="page-h"><div class="eyebrow"><a href="#training">Training</a> · ' + p.length + ' problems</div><h1>' +
+      esc(mixed ? 'Mixed set' : t.title) + '</h1></div>' +
+      '<div><div class="note" id="tprog">Solved: ' + k + ' / ' + p.length + '</div><div class="meter"><i id="tbar" style="width:' + (100 * k / p.length) + '%"></i></div></div>';
+    if (mixed) h += '<p class="idea">Nobody tells you the topic here. First find the idea, then solve. This is how a real contest feels.</p>';
+    else {
+      h += '<section><h2>The same idea in different clothes</h2><p>Most problems in this track are one of these. Read the list before you start. After each problem, say which one it was.</p><ul>';
+      tr.twists.forEach(function (w) { h += '<li>' + esc(w) + '</li>'; });
+      h += '</ul><p class="note">New to this idea? Read the lesson first: <a href="#' + slug + '">' + esc(t.title) + '</a>.</p></section>';
+    }
+    var cur = 0;
+    p.forEach(function (q) {
+      if (q[2] !== cur) { if (cur) h += '</ol></section>'; cur = q[2]; h += '<section class="practice"><h2>Rating ' + cur + '</h2><ol>'; }
+      h += '<li class="tp' + (solvedP[q[0]] ? ' ok' : '') + '"><input type="checkbox" id="p-' + q[0] + '" data-pid="' + q[0] + '" aria-label="Solved: ' + esc(q[1]) + '"' + (solvedP[q[0]] ? ' checked' : '') +
+        '><span class="id">' + q[0] + '</span><a class="cf" href="' + cfUrl(q[0]) + '">' + esc(q[1]) + '</a>' +
+        (q[4] ? '<button type="button" class="btn hint" data-h="' + esc(q[4]) + '">hint</button>' : '') + '<span class="solved">' + kfmt(q[3]) + ' solved</span></li>';
+    });
+    return h + '</ol></section><p class="note">"hint" shows which other ideas the problem mixes in. Try without it first.</p></div>';
+  }
+
   /* ----- theme ----- */
   try { var th = localStorage.getItem('cfg-theme'); if (th) document.documentElement.setAttribute('data-theme', th); } catch (e) {}
   function toggleTheme() {
@@ -127,7 +188,7 @@
       st.topics.forEach(function (t) { h += '<li><a href="#' + t.slug + '" class="' + (done[t.slug] ? 'done' : '') + '">' + esc(t.title) + '</a></li>'; });
       h += '</ul><p class="ready"><b>Move on when:</b> ' + esc(st.ready) + '</p></div></div>';
     });
-    return h + '</div><p><a class="btn" href="#cheatsheet">Open the cheat sheet</a> <a class="btn" href="#glossary">English → Arabic word list</a></p></div>';
+    return h + '</div><p>' + (T ? '<a class="btn" href="#training">Training: 1000 problems</a> ' : '') + '<a class="btn" href="#cheatsheet">Open the cheat sheet</a> <a class="btn" href="#glossary">English → Arabic word list</a></p></div>';
   }
   function glossary() {
     var keys = Object.keys(D.glossary).sort(function (a, b) { return D.glossary[a].en.localeCompare(D.glossary[b].en); });
@@ -141,6 +202,7 @@
     var i = flat.indexOf(t), pv = flat[i - 1], nx = flat[i + 1];
     return '<article class="col s' + t.stage.id + '"><div class="page-h"><div class="eyebrow">Stage ' + t.stage.id + ' · ' + esc(t.stage.name) + ' · ' + esc(t.stage.rating) +
       '</div><h1>' + esc(t.title) + '</h1></div>' + (D.pages[t.slug] || '<p>This lesson is not written yet.</p>') +
+      (trackOf[t.slug] ? '<p class="tip-box"><b>Go deeper:</b> <a href="#train-' + t.slug + '">' + trackOf[t.slug].problems.length + ' more problems on this idea</a>, from easy to hard, with the usual twists.</p>' : '') +
       '<div class="pager">' + (pv ? '<a href="#' + pv.slug + '">← ' + esc(pv.title) + '</a>' : '<span></span>') +
       '<button type="button" class="btn done-btn' + (done[t.slug] ? ' is' : '') + '" id="done-btn" data-slug="' + t.slug + '">' + (done[t.slug] ? '✓ Done' : 'Mark as done') + '</button>' +
       (nx ? '<a href="#' + nx.slug + '">' + esc(nx.title) + ' →</a>' : '<a href="#cheatsheet">Cheat sheet →</a>') + '</div></article>';
@@ -152,8 +214,10 @@
     if (t) main.innerHTML = topic(t);
     else if (slug === 'cheatsheet') main.innerHTML = '<div class="col wide cheat"><div class="page-h"><div class="eyebrow">Everything on one page</div><h1>Cheat sheet</h1><p class="note">Point at a card (or tap it) to see what it does and open its lesson.</p></div>' + D.pages.cheatsheet + '</div>';
     else if (slug === 'glossary') main.innerHTML = glossary();
+    else if (T && slug === 'training') main.innerHTML = trainHome();
+    else if (T && /^train-/.test(slug) && (slug === 'train-mixed' || trackOf[slug.slice(6)])) main.innerHTML = trainTrack(slug.slice(6));
     else { slug = 'home'; main.innerHTML = home(); }
-    enhance(main); drawSide(slug);
+    enhance(main); drawSide(slug.replace(/^train-/, ''));
     document.querySelectorAll('.quick a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + slug); });
     window.scrollTo(0, 0);
   }
@@ -193,11 +257,18 @@
     if (e.target.closest('#menu')) document.body.classList.toggle('open');
     else if (document.body.classList.contains('open') && !e.target.closest('.side')) document.body.classList.remove('open');
     if (e.target.closest('.theme')) toggleTheme();
+    var hb = e.target.closest('.hint');
+    if (hb) { var sp = document.createElement('span'); sp.className = 'note'; sp.textContent = 'also: ' + hb.getAttribute('data-h'); hb.replaceWith(sp); }
     var d = e.target.closest('#done-btn');
     if (d) { setDone(d.dataset.slug, !done[d.dataset.slug]); d.classList.toggle('is', !!done[d.dataset.slug]); d.textContent = done[d.dataset.slug] ? '✓ Done' : 'Mark as done'; drawSide(d.dataset.slug); }
   });
   document.addEventListener('change', function (e) {
     if (e.target.matches('.side input[type=checkbox]')) { setDone(e.target.dataset.slug, e.target.checked); render(); }
+    if (e.target.matches('.tp input')) {
+      setSolved(e.target.dataset.pid, e.target.checked); e.target.closest('.tp').classList.toggle('ok', e.target.checked);
+      var boxes = document.querySelectorAll('.tp input'), k = document.querySelectorAll('.tp input:checked').length;
+      $('#tprog').textContent = 'Solved: ' + k + ' / ' + boxes.length; $('#tbar').style.width = (100 * k / boxes.length) + '%';
+    }
   });
   document.addEventListener('input', function (e) {
     if (e.target.id !== 'gq') return;

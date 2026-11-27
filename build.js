@@ -20,7 +20,7 @@ for (const slug of slugs) {
   pages[slug] = html;
   for (const m of html.matchAll(/data-t="([^"]+)"/g)) if (!glossary[m[1]]) { console.warn(`MISSING glossary key "${m[1]}" in ${slug}`); bad++; }
   for (const m of html.matchAll(/data-to="([^"]+)"/g)) if (!slugs.includes(m[1])) { console.warn(`BAD data-to "${m[1]}" in ${slug}`); bad++; }
-  for (const m of html.matchAll(/href="#([^"]+)"/g)) if (!slugs.includes(m[1]) && m[1] !== 'glossary') { console.warn(`BAD link #${m[1]} in ${slug}`); bad++; }
+  for (const m of html.matchAll(/href="#([^"]+)"/g)) if (!slugs.includes(m[1]) && m[1] !== 'glossary' && !/^train/.test(m[1])) { console.warn(`BAD link #${m[1]} in ${slug}`); bad++; }
   for (const m of html.matchAll(/data-p="([^"]+)"/g)) problems.push(slug + ' ' + m[1]);
 }
 // Real difficulty data from the Codeforces API (rating + how many people solved it), if the file is present.
@@ -32,7 +32,9 @@ if (fs.existsSync(cfFile)) {
   for (const p of r.problems) { const id = p.contestId + p.index; if (used.has(id)) cf[id] = [p.rating || 0, sc[id] || 0]; }
   for (const id of used) if (!cf[id]) { console.warn('UNKNOWN Codeforces problem:', id); bad++; }
 }
-const data = 'window.CFG_DATA = ' + JSON.stringify({ stages, glossary, pages, cf }).replace(/<\//g, '<\\/').replace(/<!--/g, '<\\!--') + ';';
+const trainFile = S('training.json');
+const training = fs.existsSync(trainFile) ? JSON.parse(fs.readFileSync(trainFile, 'utf8')) : null;
+const data = 'window.CFG_DATA = ' + JSON.stringify({ stages, glossary, pages, cf, training }).replace(/<\//g, '<\\/').replace(/<!--/g, '<\\!--') + ';';
 const body = read('shell.html')
   .replace('/*CSS*/', () => read('style.css'))
   .replace('/*DATA*/', () => data)
