@@ -84,6 +84,18 @@
     try { localStorage.setItem('cfg-theme', nx); } catch (e) {}
   }
 
+  /* ----- Arabic sentence help on/off (the "ع" button). Default: on. ----- */
+  var trOff = false;
+  try { trOff = localStorage.getItem('cfg-tr') === 'off'; } catch (e) {}
+  function drawTr() {
+    document.documentElement.setAttribute('data-tr', trOff ? 'off' : 'on');
+    var b = $('.trbtn'); if (b) { b.setAttribute('aria-pressed', String(!trOff)); b.title = trOff ? 'Arabic sentence help is off' : 'Arabic sentence help is on'; }
+  }
+  function toggleTr() {
+    trOff = !trOff; hideTip(); drawTr();
+    try { localStorage.setItem('cfg-tr', trOff ? 'off' : 'on'); } catch (e) {}
+  }
+
   /* ----- sidebar ----- */
   function drawSide(cur) {
     var h = '';
@@ -113,20 +125,32 @@
     return out + esc(src.slice(last));
   }
 
+  /* ----- math: \( inline \) and \[ display \], drawn by KaTeX. No "$": code and prices use it.
+     KaTeX loads after this script, so the first page is drawn again when it arrives.
+     If KaTeX never loads, the raw LaTeX stays on the page as text. ----- */
+  function mathify(root) {
+    if (!window.renderMathInElement || root.getAttribute('data-math')) return;
+    root.setAttribute('data-math', '1');
+    try {
+      window.renderMathInElement(root, {
+        delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }],
+        ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'option', 'svg', 'input', 'button'],
+        ignoredClasses: ['no-math'],
+        throwOnError: false, strict: false
+      });
+    } catch (e) {}
+  }
+  document.addEventListener('DOMContentLoaded', function () { mathify(main); });
+
   /* ----- make a page interactive ----- */
   function enhance(root) {
-    var seen = {};
+    root.removeAttribute('data-math'); mathify(root);
     root.querySelectorAll('.term').forEach(function (el) {
       var k = el.getAttribute('data-t'), g = D.glossary[k];
       if (!g) return;
-      el.tabIndex = 0;
-      if (!seen[k] && !el.closest('h1,h2,h3,th,.cc,svg')) {
-        seen[k] = 1;
-        var s = document.createElement('span');
-        s.className = 'ar'; s.lang = 'ar'; s.dir = 'rtl'; s.textContent = '(' + g.ar.replace(/\s*[(（].*$/, '') + ')';
-        el.after(' ', s);
-      }
+      el.tabIndex = 0;   /* Arabic is shown only in the tooltip (hover, focus, tap), never inside the text */
     });
+    root.querySelectorAll('.tr[data-ar]').forEach(function (el) { el.tabIndex = 0; });
     root.querySelectorAll('pre > code').forEach(function (c) {
       var src = c.textContent.replace(/^\n+|\s+$/g, '');
       c.innerHTML = hl(src);
@@ -231,6 +255,9 @@
     if (el.classList.contains('term')) {
       var g = D.glossary[el.getAttribute('data-t')]; if (!g) return;
       html = esc(g.ar) + (g.note ? '<span class="en">' + esc(g.note) + '</span>' : ''); rtl = true;
+    } else if (el.classList.contains('tr')) {
+      var ar = el.getAttribute('data-ar'); if (!ar) return;
+      html = esc(ar); rtl = true;
     } else {
       var to = el.getAttribute('data-to'), tt = flat.filter(function (x) { return x.slug === to; })[0];
       html = esc(el.getAttribute('data-tip') || '') + (tt ? '<br><a href="#' + to + '">Open lesson: ' + esc(tt.title) + ' →</a>' : '');
@@ -243,7 +270,12 @@
   }
   function hideTip() { tipFor = null; tip.hidden = true; }
   function later() { clearTimeout(hideT); hideT = setTimeout(hideTip, 220); }
-  function target(e) { return e.target.closest && e.target.closest('.term, .cc[data-tip]'); }
+  /* the innermost one wins: a .term inside a .tr shows the word, the rest of the sentence shows the sentence */
+  function target(e) {
+    var t = e.target.closest && e.target.closest('.term, .tr[data-ar], .cc[data-tip]');
+    if (t && trOff && t.classList.contains('tr')) t = t.parentNode.closest('.term, .cc[data-tip]');
+    return t;
+  }
   document.addEventListener('mouseover', function (e) { var t = target(e); if (t) showTip(t); else if (e.target.closest && e.target.closest('#tip')) clearTimeout(hideT); });
   document.addEventListener('mouseout', function (e) { if (target(e) || (e.target.closest && e.target.closest('#tip'))) later(); });
   document.addEventListener('focusin', function (e) { var t = target(e); if (t) showTip(t); });
@@ -257,6 +289,7 @@
     if (e.target.closest('#menu')) document.body.classList.toggle('open');
     else if (document.body.classList.contains('open') && !e.target.closest('.side')) document.body.classList.remove('open');
     if (e.target.closest('.theme')) toggleTheme();
+    if (e.target.closest('.trbtn')) toggleTr();
     var hb = e.target.closest('.hint');
     if (hb) { var sp = document.createElement('span'); sp.className = 'note'; sp.textContent = 'also: ' + hb.getAttribute('data-h'); hb.replaceWith(sp); }
     var d = e.target.closest('#done-btn');
@@ -276,5 +309,6 @@
     document.querySelectorAll('.gloss tbody tr').forEach(function (tr) { tr.hidden = tr.textContent.toLowerCase().indexOf(q) < 0; });
   });
   window.addEventListener('hashchange', render);
+  drawTr();
   render();
 })();

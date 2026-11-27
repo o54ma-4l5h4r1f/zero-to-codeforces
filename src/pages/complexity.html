@@ -1,28 +1,41 @@
-<p class="idea">The judge does about 10<sup>8</sup> simple steps in one second. Read the limits, count your steps, and you know if your idea is fast enough.</p>
+<p class="idea"><span class="tr" data-ar="الحَكَم ينفّذ حوالي 10^8 خطوة بسيطة في الثانية الواحدة. عُدَّ خطوات فكرتك قبل أن تكتب الكود.">The judge does about \( 10^8 \) simple steps in one second. Count the steps of your idea before you write code.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know the verdict "Time limit exceeded" → <a href="#how-codeforces-works">How Codeforces works</a></li>
+    <li>You can find the limits of \( n \) in a statement → <a href="#read-a-problem">How to read a problem</a></li>
+    <li>You can read a loop over an array → <a href="#cpp-template">Your C++ template</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Use it on every problem</h2>
-  <ul>
-    <li>Before you write code: look at the biggest <code>n</code> in the <span class="term" data-t="constraints">constraints</span>.</li>
-    <li>Count the steps of your idea for that <code>n</code>.</li>
-    <li>About 10<sup>8</sup> or less → fine. 10<sup>9</sup> or more → too slow. Find a better idea.</li>
-  </ul>
+  <ol>
+    <li>Find the biggest \( n \) in the <span class="term" data-t="constraints">constraints</span>.</li>
+    <li>Count the steps of your idea for that \( n \).</li>
+    <li><span class="tr" data-ar="إذا كان العدد حوالي 10^8 أو أقل فالحل سريع كفاية. إذا كان 10^9 أو أكثر فهو بطيء جدًا، وعليك أن تجد فكرة أفضل.">About \( 10^8 \) or less: fast enough. \( 10^9 \) or more: too slow, so find a better idea.</span></li>
+  </ol>
+  <p class="note">A "simple step" is one small action: add two numbers, compare two numbers, read one array cell. The number \( 10^8 \) is a safe estimate, not an exact law.</p>
 </section>
 
 <section>
-  <h2>The key table</h2>
-  <p>O(…) is a short way to write "how many steps". It is called <span class="term" data-t="complexity">complexity</span>. This table tells you which one the problem wants.</p>
+  <h2>Count with numbers first</h2>
+  <p>Take an array of \( n = 1000 \) numbers.</p>
+  <ul>
+    <li>One loop over the array does 1000 steps.</li>
+    <li>A loop inside a loop does \( 1000 \cdot 1000 = 10^6 \) steps.</li>
+  </ul>
+  <p>For any \( n \) these are \( n \) steps and \( n \cdot n = n^2 \) steps. We write them as \( O(n) \) and \( O(n^2) \).</p>
+  <p><span class="tr" data-ar="الرمز O(…) يعني: &quot;حوالي هذا العدد من الخطوات&quot;. يهمّنا الحجم التقريبي فقط، لا العدد الدقيق.">\( O(\dots) \) means "about this many steps". Only the rough size matters, not the exact count.</span> So \( n^2 / 2 \) steps and \( 3 n^2 \) steps are both written \( O(n^2) \). This rough size is called the <span class="term" data-t="complexity">complexity</span>.</p>
+  <p>Four more symbols appear in this lesson:</p>
   <table>
-    <tr><th>Biggest n</th><th>Speed that fits</th><th>Usual idea</th></tr>
-    <tr><td>n ≤ 10 – 11</td><td>O(n!)</td><td>Try every order.</td></tr>
-    <tr><td>n ≤ 20</td><td>O(2<sup>n</sup>)</td><td>Try every "take it or not".</td></tr>
-    <tr><td>n ≤ 500</td><td>O(n<sup>3</sup>)</td><td>Three loops.</td></tr>
-    <tr><td>n ≤ 5000</td><td>O(n<sup>2</sup>)</td><td>Two loops: all pairs.</td></tr>
-    <tr><td class="hi">n ≤ 2·10<sup>5</sup> (or 10<sup>6</sup>)</td><td class="hi">O(n log n) or O(n)</td><td class="hi">Sort, one loop, binary search, map.</td></tr>
-    <tr><td>n ≤ 10<sup>9</sup> – 10<sup>12</sup></td><td>O(√n)</td><td>Loop while i·i ≤ n.</td></tr>
-    <tr><td>n ≤ 10<sup>9</sup> – 10<sup>18</sup></td><td>O(log n) or O(1)</td><td>A formula, or halving.</td></tr>
+    <tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td>\( \log n \)</td><td>How many times you cut \( n \) in half to reach 1.</td><td>\( \log 8 = 3 \), because 8 → 4 → 2 → 1</td></tr>
+    <tr><td>\( \sqrt{n} \)</td><td>The number that gives \( n \) when multiplied by itself.</td><td>\( \sqrt{100} = 10 \)</td></tr>
+    <tr><td>\( 2^n \)</td><td>The number 2 multiplied \( n \) times.</td><td>\( 2^{10} = 1024 \)</td></tr>
+    <tr><td>\( n! \)</td><td>\( 1 \cdot 2 \cdot 3 \cdot \dots \cdot n \)</td><td>\( 4! = 24 \)</td></tr>
   </table>
-  <p class="tip-box">The row n ≤ 2·10<sup>5</sup> is the most common one. It means: <b>two loops over n are too slow.</b></p>
 </section>
 
 <section>
@@ -31,35 +44,35 @@
   <div class="way">
     <h3><b>1 · Story</b> — walk or fly</h3>
     <p>You must travel 1000 km and you have one day. You can walk, drive or fly. You do not start walking and hope. You look at the distance first, then you choose.</p>
-    <p>The limits are the distance. The time limit is your one day. O(n<sup>2</sup>) is walking. O(n log n) is driving. O(log n) is flying.</p>
+    <p>The limits are the distance. The time limit is your one day. \( O(n^2) \) is walking. \( O(n \log n) \) is driving. \( O(\log n) \) is flying.</p>
   </div>
 
   <div class="way">
     <h3><b>2 · Picture</b> — how many steps</h3>
     <table>
-      <tr><th>n</th><th>log n</th><th>n</th><th>n log n</th><th>n<sup>2</sup></th></tr>
-      <tr><td>10</td><td>about 3</td><td>10</td><td>about 33</td><td>100</td></tr>
-      <tr><td>1000</td><td>about 10</td><td>1000</td><td>about 10 000</td><td>10<sup>6</sup></td></tr>
-      <tr><td>10<sup>5</sup></td><td>about 17</td><td>10<sup>5</sup></td><td>about 1.7·10<sup>6</sup></td><td class="hi">10<sup>10</sup> — about 100 seconds</td></tr>
+      <tr><th>\( n \)</th><th>\( \log n \)</th><th>\( n \log n \)</th><th>\( n^2 \)</th></tr>
+      <tr><td>10</td><td>about 3</td><td>about 33</td><td>100</td></tr>
+      <tr><td>1000</td><td>about 10</td><td>about \( 10^4 \)</td><td>\( 10^6 \)</td></tr>
+      <tr><td>\( 10^5 \)</td><td>about 17</td><td>about \( 1.7 \cdot 10^6 \)</td><td class="hi">\( 10^{10} \): about 100 seconds</td></tr>
     </table>
-    <p class="note">For small n everything is fast. For n = 10<sup>5</sup> the n<sup>2</sup> idea gets Time limit exceeded.</p>
+    <p class="note">For small \( n \) every idea is fast. For \( n = 10^5 \) the \( n^2 \) idea gets "Time limit exceeded".</p>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — count the loops</h3>
-    <p><b>O(n)</b> — one loop:</p>
+    <p>\( O(n) \): one loop.</p>
 <pre data-part="main"><code class="cpp">
 long long sum = 0;
 for (int i = 0; i &lt; n; i++) sum += a[i];          // n steps
 </code></pre>
-    <p><b>O(n<sup>2</sup>)</b> — a <span class="term" data-t="nested-loop">nested loop</span>:</p>
+    <p>\( O(n^2) \): a loop inside a loop. This is a <span class="term" data-t="nested-loop">nested loop</span>.</p>
 <pre data-part="main"><code class="cpp">
 int pairs = 0;
 for (int i = 0; i &lt; n; i++)
     for (int j = i + 1; j &lt; n; j++)               // about n * n / 2 steps
         if (a[i] == a[j]) pairs++;
 </code></pre>
-    <p><b>O(log n)</b> — the number is cut in half each time:</p>
+    <p>\( O(\log n) \): the number is cut in half each time.</p>
 <pre data-part="main"><code class="cpp">
 int steps = 0;
 while (n &gt; 1) {                                   // 10^9 -&gt; 1 in about 30 steps
@@ -67,26 +80,115 @@ while (n &gt; 1) {                                   // 10^9 -&gt; 1 in about 30
     steps++;
 }
 </code></pre>
-    <p class="note"><code>sort</code> is O(n log n). One <code>map</code> or <code>set</code> operation is O(log n).</p>
   </div>
 </section>
 
-<p class="complexity">Rule: put the biggest n into your O(…). Result ≤ about 10<sup>8</sup> → OK for 1 second.</p>
+<section>
+  <h2>The key table</h2>
+  <p>Read the biggest \( n \) in the problem. The table tells you which speed you need.</p>
+  <table>
+    <tr><th>Biggest \( n \)</th><th>Speed that fits</th><th>Steps for that \( n \)</th><th>How the code looks</th></tr>
+    <tr><td>\( n \le 10 \)</td><td>\( O(n!) \)</td><td>about \( 4 \cdot 10^6 \)</td><td>Try every order.</td></tr>
+    <tr><td>\( n \le 20 \)</td><td>\( O(2^n) \)</td><td>about \( 10^6 \)</td><td>Try every "take it or not".</td></tr>
+    <tr><td>\( n \le 500 \)</td><td>\( O(n^3) \)</td><td>about \( 10^8 \)</td><td>Three loops, one inside the other.</td></tr>
+    <tr><td>\( n \le 5000 \)</td><td>\( O(n^2) \)</td><td>\( 2.5 \cdot 10^7 \)</td><td>Two loops: all pairs.</td></tr>
+    <tr><td class="hi">\( n \le 2 \cdot 10^5 \) (or \( 10^6 \))</td><td class="hi">\( O(n \log n) \) or \( O(n) \)</td><td class="hi">about \( 4 \cdot 10^6 \)</td><td class="hi">One loop. Or sort first, then one loop.</td></tr>
+    <tr><td>\( n \le 10^{12} \)</td><td>\( O(\sqrt{n}) \)</td><td>\( 10^6 \)</td><td>A loop while \( i \cdot i \le n \).</td></tr>
+    <tr><td>\( n \le 10^{18} \)</td><td>\( O(\log n) \) or \( O(1) \)</td><td>about 60</td><td>A formula, or cutting in half.</td></tr>
+  </table>
+  <p class="tip-box">The row \( n \le 2 \cdot 10^5 \) is the most common one. <b>It means: two nested loops over \( n \) are too slow.</b></p>
+  <p class="note">\( O(1) \) means the number of steps does not grow with \( n \).</p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> You get \( n \) numbers. Choose two of them and subtract one from the other. Print the biggest result you can get. Limits: \( 2 \le n \le 2 \cdot 10^5 \), and every number is from 1 to \( 10^9 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> Among all pairs of numbers, the biggest value of (one number) minus (the other number).</li>
+    <li><b>A small example by hand.</b> The numbers are 3, 9, 4, 1. Some pairs: \( 9 - 3 = 6 \), \( 4 - 1 = 3 \), \( 9 - 1 = 8 \). The best is 8. It uses the biggest number and the smallest number.</li>
+    <li><b>The idea.</b> First idea: try every pair with two nested loops. Count the steps for the biggest \( n \):
+      \[ (2 \cdot 10^5)^2 = 4 \cdot 10^{10} \text{ steps} \]
+      <p>That is about 400 seconds. Too slow. <span class="tr" data-ar="فكرة أفضل: الإجابة دائمًا هي أكبر رقم ناقص أصغر رقم. حلقة واحدة تجد الاثنين معًا.">Better idea: the answer is always the biggest number minus the smallest number. One loop finds both.</span></p>
+    </li>
+    <li><b>Why is it fast enough?</b> One loop does \( 2 \cdot 10^5 \) steps. That is far below \( 10^8 \). The speed is \( O(n) \).</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n);
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    int biggest = a[0], smallest = a[0];
+    for (int i = 1; i &lt; n; i++) {              // one loop: n steps
+        if (a[i] &gt; biggest) biggest = a[i];
+        if (a[i] &lt; smallest) smallest = a[i];
+    }
+    cout &lt;&lt; biggest - smallest &lt;&lt; "\n";
+}
+</code></pre>
+</section>
+
+<p class="complexity">Rule: put the biggest \( n \) into your \( O(\dots) \). Result \( \le 10^8 \) → OK for 1 second.</p>
 
 <section>
   <h2>With t test cases</h2>
-  <p>If the statement says "the sum of n over all test cases ≤ 2·10<sup>5</sup>", use that <b>sum</b> as your n. An O(n) solution for each test is fine.</p>
-  <p>If it does not say this, multiply: steps = t × (steps for one test).</p>
+  <p>Many problems have \( t \) test cases in one input. Look for one line in the statement.</p>
+  <ul>
+    <li><span class="tr" data-ar="إذا قالت المسألة «مجموع n على كل حالات الاختبار لا يتجاوز 2·10^5» فاستخدم هذا المجموع كأنه n.">The statement says "the sum of \( n \) over all test cases is at most \( 2 \cdot 10^5 \)": use that <b>sum</b> as your \( n \).</span> An \( O(n) \) solution for each test is fine.</li>
+    <li><span class="tr" data-ar="إذا لم تقل المسألة ذلك فاضرب: عدد الخطوات = t × (خطوات حالة اختبار واحدة).">The statement does not say it: multiply. Steps = \( t \times \) (steps for one test).</span> Example: \( t = 10^4 \) tests with \( n = 2 \cdot 10^5 \) each give \( 2 \cdot 10^9 \) steps.</li>
+  </ul>
+</section>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الكود أعطى الإجابة فورًا على الأمثلة، إذن هو سريع كفاية.">My code answers the samples at once, so it is fast enough.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الأمثلة صغيرة جدًا. الحَكَم يختبر الكود أيضًا بأكبر قيمة لـ n، فعُدَّ الخطوات لتلك القيمة.">The samples are very small. The judge also tests the biggest \( n \). Count the steps for that \( n \).</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الحل بسرعة O(n^2) سيّئ دائمًا.">An \( O(n^2) \) solution is always bad.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="عندما تكون n ≤ 5000 فهو مقبول. الحدود الصغيرة تعني أن الطريقة البسيطة تكفي.">For \( n \le 5000 \) it is fine. Small limits mean: the simple way is enough.</span> Do not write a hard, fast solution when \( n \le 100 \).</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الرمز O(n) يعني n خطوة بالضبط.">\( O(n) \) means exactly \( n \) steps.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يعني «حوالي n»: قد تكون n/2 أو 5n. لذلك نقارن مع 10^8 بشكل تقريبي فقط.">It means "about \( n \)": maybe \( n / 2 \), maybe \( 5 n \). So you compare with \( 10^8 \) only roughly.</span></p>
+    </li>
+  </ul>
 </section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>You write two loops for n = 2·10<sup>5</sup>. That is 4·10<sup>10</sup> steps.</li>
-    <li>A hidden loop: <code>a.erase(a.begin())</code>, <code>count(...)</code> or <code>s.substr(...)</code> inside a loop is O(n) each time.</li>
-    <li>You clear a big array of size 10<sup>6</sup> in <b>every</b> test case. With t = 10<sup>4</sup> this is 10<sup>10</sup> steps.</li>
-    <li>You make a fast, hard solution when n ≤ 100. Small limits mean: the simple way is enough.</li>
+    <li>You write two nested loops for \( n = 2 \cdot 10^5 \). That is \( 4 \cdot 10^{10} \) steps.</li>
+    <li>You call a function inside a loop. If the function has its own loop, you have a nested loop.</li>
+    <li>You clear an array of size \( 10^6 \) in <b>every</b> test case. With \( t = 10^4 \) that is \( 10^{10} \) steps.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>The tools behind \( O(n \log n) \)</b>: sorting, <code>map</code>, <code>set</code>, binary search. For now only remember the table. You learn them in <a href="#sorting">Sorting</a>, <a href="#stl-containers">map, set, stack, queue</a> and <a href="#binary-search">Binary search</a>.</li>
+    <li><b>Library functions with a hidden loop</b>, like <code>count</code> or <code>erase</code>. You meet them in <a href="#stl-basics">STL basics</a>.</li>
+    <li><b>The exact math definition of \( O \).</b> You do not need it to reach 1600. If you are curious, look after the guide: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="n ≤ 2·10^5 وفكرتك فيها حلقتان متداخلتان على n. هل هي سريعة كفاية؟">\( n \le 2 \cdot 10^5 \) and your idea has two nested loops over \( n \). Is it fast enough?</span>
+      <details><summary>Answer</summary><p>No. It does about \( 4 \cdot 10^{10} \) steps. You need \( O(n \log n) \) or \( O(n) \).</p></details></li>
+    <li><span class="tr" data-ar="n ≤ 1000 وفكرتك فيها ثلاث حلقات متداخلة على n. هل هي سريعة كفاية؟">\( n \le 1000 \) and your idea has three nested loops over \( n \). Is it fast enough?</span>
+      <details><summary>Answer</summary><p>No. \( 1000^3 = 10^9 \) steps. That is too slow. Two loops would be fine: \( 10^6 \) steps.</p></details></li>
+    <li><span class="tr" data-ar="عدد حالات الاختبار t ≤ 10^4، ومجموع n على كل حالات الاختبار لا يتجاوز 2·10^5. حلّك يعمل بسرعة O(n) لكل حالة اختبار. كم خطوة تقريبًا في المجموع؟">There are \( t \le 10^4 \) tests. The sum of \( n \) over all tests is at most \( 2 \cdot 10^5 \). Your solution is \( O(n) \) for each test. About how many steps in total?</span>
+      <details><summary>Answer</summary><p>About \( 2 \cdot 10^5 \) steps. You use the sum as \( n \). You do not multiply by \( t \).</p></details></li>
+  </ol>
 </section>
 
 <section class="more">

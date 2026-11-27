@@ -3,21 +3,21 @@
 <div class="cgrid">
   <div class="cc" data-to="complexity" data-tip="About 10^8 simple steps run in 1 second. Read n from the limits, then pick the speed you need.">
     <table>
-      <tr><th>n ≤</th><th>speed</th></tr>
-      <tr><td>10</td><td>O(n!)</td></tr>
-      <tr><td>20</td><td>O(2ⁿ)</td></tr>
-      <tr><td>500</td><td>O(n³)</td></tr>
-      <tr><td>5000</td><td>O(n²)</td></tr>
-      <tr><td>2·10⁵ – 10⁶</td><td>O(n log n), O(n)</td></tr>
-      <tr><td>10¹²</td><td>O(√n)</td></tr>
-      <tr><td>10¹⁸</td><td>O(log n), O(1)</td></tr>
+      <tr><th>\( n \le \)</th><th>speed</th></tr>
+      <tr><td>\( 10 \)</td><td>\( O(n!) \)</td></tr>
+      <tr><td>\( 20 \)</td><td>\( O(2^n) \)</td></tr>
+      <tr><td>\( 500 \)</td><td>\( O(n^3) \)</td></tr>
+      <tr><td>\( 5000 \)</td><td>\( O(n^2) \)</td></tr>
+      <tr><td>\( 2 \cdot 10^5 \) – \( 10^6 \)</td><td>\( O(n \log n) \), \( O(n) \)</td></tr>
+      <tr><td>\( 10^{12} \)</td><td>\( O(\sqrt{n}) \)</td></tr>
+      <tr><td>\( 10^{18} \)</td><td>\( O(\log n) \), \( O(1) \)</td></tr>
     </table>
   </div>
   <div class="cc" data-to="overflow" data-tip="How big a number each type can hold. If a sum or product can pass 2·10^9, use long long.">
-    <div class="fx">int ≈ ±2·10⁹ (2³¹−1)</div>
-    <div class="fx">long long ≈ ±9·10¹⁸ (2⁶³−1)</div>
-    <div class="fx">1 second ≈ 10⁸ steps</div>
-    <div class="fx">256 MB ≈ 6·10⁷ ints</div>
+    <div class="fx"><code>int</code> \( \approx \pm 2 \cdot 10^9 \) &nbsp;\( (2^{31} - 1) \)</div>
+    <div class="fx"><code>long long</code> \( \approx \pm 9 \cdot 10^{18} \) &nbsp;\( (2^{63} - 1) \)</div>
+    <div class="fx">1 second \( \approx 10^8 \) steps</div>
+    <div class="fx">256 MB \( \approx 6 \cdot 10^7 \) ints</div>
   </div>
   <div class="cc" data-to="overflow" data-tip="Multiply two ints safely: start with 1LL so the whole product is computed as long long.">
 <pre data-part="main"><code class="cpp">
@@ -45,7 +45,7 @@ int main() {
 </code></pre>
   </div>
   <div class="cc" data-to="debugging" data-tip="Check these first when you get Wrong Answer.">
-    <div class="fx">n = 1 · all equal · max values</div>
+    <div class="fx">\( n = 1 \) · all equal · max values</div>
     <div class="fx">overflow? · index out of range?</div>
     <div class="fx">reset between test cases?</div>
     <div class="fx">output format · YES/NO</div>
@@ -57,18 +57,18 @@ int main() {
 <h2>Math</h2>
 <div class="cgrid">
   <div class="cc" data-to="basic-math" data-tip="Sums you should know by heart. Use long long.">
-    <div class="fx">1 + 2 + … + n = n(n+1)/2</div>
-    <div class="fx">1 + 3 + … + (2n−1) = n²</div>
-    <div class="fx">1² + … + n² = n(n+1)(2n+1)/6</div>
-    <div class="fx">a + (a+d) + … (n terms) = n(first+last)/2</div>
-    <div class="fx">1 + 2 + 4 + … + 2ᵏ = 2ᵏ⁺¹ − 1</div>
+    <div class="fx">\( 1 + 2 + \dots + n = \frac{n(n+1)}{2} \)</div>
+    <div class="fx">\( 1 + 3 + \dots + (2n - 1) = n^2 \)</div>
+    <div class="fx">\( 1^2 + 2^2 + \dots + n^2 = \frac{n(n+1)(2n+1)}{6} \)</div>
+    <div class="fx">\( a + (a+d) + \dots = \frac{n \cdot (\text{first} + \text{last})}{2} \) &nbsp;(\( n \) terms)</div>
+    <div class="fx">\( 1 + 2 + 4 + \dots + 2^k = 2^{k+1} - 1 \)</div>
   </div>
   <div class="cc" data-to="basic-math" data-tip="Integer division tricks: round up, count multiples in a range, even/odd test.">
-    <div class="fx">ceil(a / b) = (a + b − 1) / b</div>
-    <div class="fx">multiples of k in [1..n] = n / k</div>
-    <div class="fx">in [l..r] = r/k − (l−1)/k</div>
-    <div class="fx">odd: x % 2 != 0 &nbsp; even: x % 2 == 0</div>
-    <div class="fx">numbers in [l..r] = r − l + 1</div>
+    <div class="fx">\( \lceil a / b \rceil \) = <code>(a + b - 1) / b</code></div>
+    <div class="fx">multiples of \( k \) in \( [1, n] \): \( \lfloor n / k \rfloor \)</div>
+    <div class="fx">in \( [l, r] \): \( \lfloor r / k \rfloor - \lfloor (l - 1) / k \rfloor \)</div>
+    <div class="fx">odd: <code>x % 2 != 0</code> &nbsp; even: <code>x % 2 == 0</code></div>
+    <div class="fx">numbers in \( [l, r] \): \( r - l + 1 \)</div>
   </div>
   <div class="cc" data-to="basic-math" data-tip="Walk over the digits of a number from the last digit to the first.">
 <pre data-part="main"><code class="cpp">
@@ -76,9 +76,9 @@ while (x &gt; 0) { int d = x % 10; x /= 10; }
 </code></pre>
   </div>
   <div class="cc" data-to="number-theory" data-tip="Greatest common divisor and least common multiple. Divide before you multiply to avoid overflow.">
-    <div class="fx">gcd(a, b) = gcd(b, a % b), gcd(a, 0) = a</div>
-    <div class="fx">lcm(a, b) = a / gcd(a, b) · b</div>
-    <div class="fx">C++: gcd(a, b), lcm(a, b), __gcd(a, b)</div>
+    <div class="fx">\( \gcd(a, b) = \gcd(b, a \bmod b) \), &nbsp;\( \gcd(a, 0) = a \)</div>
+    <div class="fx">\( \text{lcm}(a, b) = \frac{a}{\gcd(a, b)} \cdot b \)</div>
+    <div class="fx">C++: <code>gcd(a, b)</code>, <code>lcm(a, b)</code>, <code>__gcd(a, b)</code></div>
   </div>
   <div class="cc" data-to="number-theory" data-tip="Is n prime? Try divisors up to the square root. O(√n).">
 <pre data-part="global"><code class="cpp">
@@ -113,10 +113,10 @@ void sieve() {
 </code></pre>
   </div>
   <div class="cc" data-to="modular" data-tip="Rules for answers 'modulo 10^9+7'. Take % after every step. Never divide normally under mod.">
-    <div class="fx">(a + b) % m</div>
-    <div class="fx">((a − b) % m + m) % m</div>
-    <div class="fx">(1LL * a * b) % m</div>
-    <div class="fx">a / b → a · b^(m−2) % m &nbsp;(m prime)</div>
+    <div class="fx"><code>(a + b) % m</code></div>
+    <div class="fx"><code>((a - b) % m + m) % m</code></div>
+    <div class="fx"><code>(1LL * a * b) % m</code></div>
+    <div class="fx">\( a / b \to a \cdot b^{m-2} \bmod m \) &nbsp;(\( m \) prime)</div>
   </div>
   <div class="cc" data-to="modular" data-tip="Fast power: a^b mod m in O(log b) steps by squaring.">
 <pre data-part="global"><code class="cpp">
@@ -132,10 +132,10 @@ long long power(long long a, long long b, long long m) {
 </code></pre>
   </div>
   <div class="cc" data-to="combinatorics" data-tip="Counting formulas: ways to order, ways to choose, number of pairs, number of subsets.">
-    <div class="fx">n! = 1·2·…·n</div>
-    <div class="fx">C(n, r) = n! / (r! · (n−r)!)</div>
-    <div class="fx">C(n, r) = C(n−1, r−1) + C(n−1, r)</div>
-    <div class="fx">pairs = n(n−1)/2 &nbsp; subsets = 2ⁿ</div>
+    <div class="fx">\( n! = 1 \cdot 2 \cdot \dots \cdot n \)</div>
+    <div class="fx">\( C(n, r) = \frac{n!}{r! \cdot (n-r)!} \)</div>
+    <div class="fx">\( C(n, r) = C(n-1, r-1) + C(n-1, r) \)</div>
+    <div class="fx">pairs: \( \frac{n(n-1)}{2} \) &nbsp; subsets: \( 2^n \)</div>
   </div>
   <div class="cc" data-to="combinatorics" data-tip="nCr mod a prime, many times: precompute factorials and inverse factorials once, then each answer is O(1).">
 <pre data-part="global"><code class="cpp">
@@ -160,12 +160,12 @@ long long C(int n, int r) {
 </code></pre>
   </div>
   <div class="cc" data-to="bits" data-tip="Bit tricks. Use 1LL &lt;&lt; k when k can be 31 or more. Always put brackets around &amp; | ^.">
-    <div class="fx">bit k on? &nbsp;(x &gt;&gt; k) &amp; 1</div>
-    <div class="fx">set: x | (1 &lt;&lt; k) &nbsp; clear: x &amp; ~(1 &lt;&lt; k)</div>
-    <div class="fx">flip: x ^ (1 &lt;&lt; k)</div>
-    <div class="fx">power of 2? &nbsp;x &gt; 0 &amp;&amp; (x &amp; (x−1)) == 0</div>
-    <div class="fx">count ones: __builtin_popcountll(x)</div>
-    <div class="fx">a ^ a = 0 &nbsp; a ^ 0 = a</div>
+    <div class="fx">bit k on? &nbsp;<code>(x &gt;&gt; k) &amp; 1</code></div>
+    <div class="fx">set: <code>x | (1 &lt;&lt; k)</code> &nbsp; clear: <code>x &amp; ~(1 &lt;&lt; k)</code></div>
+    <div class="fx">flip: <code>x ^ (1 &lt;&lt; k)</code></div>
+    <div class="fx">power of 2? &nbsp;<code>x &gt; 0 &amp;&amp; (x &amp; (x - 1)) == 0</code></div>
+    <div class="fx">count ones: <code>__builtin_popcountll(x)</code></div>
+    <div class="fx"><code>a ^ a</code> is 0 &nbsp; <code>a ^ 0</code> is <code>a</code></div>
   </div>
   <div class="cc" data-to="bits" data-tip="Try every subset of n items (n ≤ 20). Bit i of mask says if item i is taken.">
 <pre data-part="main"><code class="cpp">
@@ -232,16 +232,16 @@ for (auto x : a) f[x]++;
 </code></pre>
   </div>
   <div class="cc" data-to="prefix-sums" data-tip="Sum of any part of an array in O(1) after one O(n) pass.">
-    <div class="fx">pre[0] = 0, pre[i+1] = pre[i] + a[i]</div>
-    <div class="fx">sum a[l..r] = pre[r+1] − pre[l]</div>
+    <div class="fx"><code>pre[0] = 0, pre[i+1] = pre[i] + a[i]</code></div>
+    <div class="fx">sum of <code>a[l..r]</code> = <code>pre[r+1] - pre[l]</code></div>
   </div>
   <div class="cc" data-to="prefix-sums" data-tip="Difference array: add v to a whole range [l..r] in O(1), many times. One prefix sum at the end gives the real values.">
-    <div class="fx">d[l] += v, d[r+1] −= v</div>
-    <div class="fx">then a[i] = d[0] + … + d[i]</div>
+    <div class="fx"><code>d[l] += v, d[r+1] -= v</code></div>
+    <div class="fx">then <code>a[i] = d[0] + ... + d[i]</code></div>
   </div>
   <div class="cc" data-to="prefix-sums" data-tip="2D prefix sums: sum of any rectangle in O(1). Rows and columns are 1-indexed.">
-    <div class="fx">P[i][j] = a[i][j] + P[i−1][j] + P[i][j−1] − P[i−1][j−1]</div>
-    <div class="fx">sum = P[r2][c2] − P[r1−1][c2] − P[r2][c1−1] + P[r1−1][c1−1]</div>
+    <div class="fx"><code>P[i][j] = a[i][j] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]</code></div>
+    <div class="fx"><code>sum = P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1]</code></div>
   </div>
   <div class="cc" data-to="two-pointers" data-tip="Sliding window: longest part with sum ≤ S (positive numbers). Each pointer only moves forward, so it is O(n).">
 <pre data-part="main"><code class="cpp">
@@ -295,18 +295,18 @@ do { /* use a */ } while (next_permutation(a.begin(), a.end()));
 </code></pre>
   </div>
   <div class="cc" data-to="dp" data-tip="The four questions for every DP problem.">
-    <div class="fx">1. dp[i] means … (in words)</div>
-    <div class="fx">2. dp[i] = formula from smaller ones</div>
+    <div class="fx">1. <code>dp[i]</code> means … (in words)</div>
+    <div class="fx">2. <code>dp[i]</code> = formula from smaller ones</div>
     <div class="fx">3. base cases</div>
     <div class="fx">4. order of filling, where is the answer</div>
   </div>
   <div class="cc span2" data-to="dp" data-tip="Classic DP formulas: stairs, min coins, grid paths, knapsack, longest increasing subsequence, longest common subsequence.">
-    <div class="fx">stairs: dp[i] = dp[i−1] + dp[i−2]</div>
-    <div class="fx">coins: dp[x] = min(dp[x − c] + 1) for each coin c</div>
-    <div class="fx">grid: dp[i][j] = dp[i−1][j] + dp[i][j−1]</div>
-    <div class="fx">knapsack: for w = W..wt: dp[w] = max(dp[w], dp[w − wt] + val)</div>
-    <div class="fx">LIS: dp[i] = 1 + max(dp[j]) for j &lt; i, a[j] &lt; a[i]</div>
-    <div class="fx">LCS: a[i]==b[j] ? dp[i−1][j−1] + 1 : max(dp[i−1][j], dp[i][j−1])</div>
+    <div class="fx">stairs: <code>dp[i] = dp[i-1] + dp[i-2]</code></div>
+    <div class="fx">coins: <code>dp[x] = min(dp[x - c] + 1)</code> for each coin <code>c</code></div>
+    <div class="fx">grid: <code>dp[i][j] = dp[i-1][j] + dp[i][j-1]</code></div>
+    <div class="fx">knapsack: for <code>w = W..wt</code>: <code>dp[w] = max(dp[w], dp[w - wt] + val)</code></div>
+    <div class="fx">LIS: <code>dp[i] = 1 + max(dp[j])</code> for <code>j &lt; i</code>, <code>a[j] &lt; a[i]</code></div>
+    <div class="fx">LCS: <code>a[i] == b[j] ? dp[i-1][j-1] + 1 : max(dp[i-1][j], dp[i][j-1])</code></div>
   </div>
   <div class="cc" data-to="graphs-bfs-dfs" data-tip="Read a graph with n vertices and m edges into an adjacency list (1-indexed, two-way edges).">
 <pre data-part="main"><code class="cpp">
@@ -377,9 +377,9 @@ vector&lt;long long&gt; dijkstra(int s,
   <div class="cc" data-to="dijkstra" data-tip="Which shortest-path tool to use.">
     <table>
       <tr><td>no weights</td><td>BFS</td></tr>
-      <tr><td>weights ≥ 0</td><td>Dijkstra</td></tr>
+      <tr><td>weights \( \ge 0 \)</td><td>Dijkstra</td></tr>
       <tr><td>negative weights</td><td>Bellman-Ford</td></tr>
-      <tr><td>all pairs, n ≤ 500</td><td>Floyd-Warshall</td></tr>
+      <tr><td>all pairs, \( n \le 500 \)</td><td>Floyd-Warshall</td></tr>
     </table>
   </div>
   <div class="cc" data-to="trees" data-tip="One DFS on a tree: depth goes down from the parent, subtree size comes up from the children.">
@@ -396,7 +396,7 @@ void dfs(int v, int p) {
 </code></pre>
   </div>
   <div class="cc" data-to="trees" data-tip="Facts about every tree.">
-    <div class="fx">n vertices, n − 1 edges</div>
+    <div class="fx">\( n \) vertices, \( n - 1 \) edges</div>
     <div class="fx">connected, no cycle</div>
     <div class="fx">one path between any two vertices</div>
   </div>

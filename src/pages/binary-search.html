@@ -1,12 +1,21 @@
-<p class="idea">Cut the search area in half again and again. You find the answer in about 30 steps, even inside a billion numbers.</p>
+<p class="idea"><span class="tr" data-ar="اقسم منطقة البحث إلى نصفين مرة بعد مرة. حوالي 30 خطوة تكفي للبحث بين مليار رقم.">Cut the search area in half again and again. About 30 steps are enough for a billion numbers.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know what a sorted array is → <a href="#sorting">Sorting</a></li>
+    <li>You can count steps and read \( O(\log n) \) → <a href="#complexity">Limits → speed</a></li>
+    <li>You know when to use <code>long long</code> → <a href="#overflow">int or long long?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>The array is <span class="term" data-t="sorted">sorted</span> and you must find a value or a position.</li>
+    <li>The array is <span class="term" data-t="sorted">sorted</span>. You must find a value or a position in it.</li>
     <li>The statement asks for the <b>minimum</b> or <b>maximum</b> value that still works.</li>
-    <li>If a value <code>x</code> works, then every bigger value also works (or every smaller one). This is called <span class="term" data-t="monotonic">monotonic</span>.</li>
-    <li>The answer can be up to 10<sup>9</sup> or 10<sup>18</sup>, so you cannot try every value.</li>
+    <li><span class="tr" data-ar="إذا نجحت القيمة x، فكل قيمة أكبر منها تنجح أيضًا (أو كل قيمة أصغر منها).">If a value <code>x</code> works, then every bigger value also works (or every smaller one).</span> This is called <span class="term" data-t="monotonic">monotonic</span>.</li>
+    <li>The answer can be as big as \( 10^9 \) or \( 10^{18} \). You cannot try every value.</li>
   </ul>
 </section>
 
@@ -16,30 +25,33 @@
   <div class="way">
     <h3><b>1 · Story</b> — the guessing game</h3>
     <p>I think of a number from 1 to 100. After each guess I say "too small" or "too big".</p>
-    <p>A bad player says 1, 2, 3, 4… A good player says <b>50</b>. "Too big." Now only 1–49 is left. Then <b>25</b>. Each guess throws away half of the numbers. 100 → 50 → 25 → 12 → 6 → 3 → 1. Only 7 guesses.</p>
+    <p>A bad player says 1, 2, 3, 4… A good player says <b>50</b>. I say "too big". Now only 1 to 49 is left.</p>
+    <p>Each guess throws away half of the numbers. 100 → 50 → 25 → 12 → 6 → 3 → 1. Only 7 guesses.</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — find the first number ≥ 7</h3>
-    <p>Ask one yes/no question for every position: "is <code>a[i] ≥ 7</code>?" In a sorted array the answers look like <b>no no no yes yes yes</b>. We look for the <b>first yes</b>.</p>
+    <h3><b>2 · Picture</b> — find the first number that is 7 or more</h3>
+    <p>Ask one yes/no question for every position: "is <code>a[i] &gt;= 7</code>?"</p>
     <table>
       <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
       <tr><th>a[i]</th><td>1</td><td>3</td><td>4</td><td>7</td><td>8</td><td>9</td><td>12</td></tr>
-      <tr><th>a[i] ≥ 7 ?</th><td>no</td><td>no</td><td>no</td><td class="hi">yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+      <tr><th>a[i] &gt;= 7 ?</th><td>no</td><td>no</td><td>no</td><td class="hi">yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
     </table>
+    <p><span class="tr" data-ar="في المصفوفة المرتّبة تأتي كل إجابات «لا» أولًا، ثم كل إجابات «نعم». نحن نبحث عن أول «نعم».">In a sorted array all the "no" answers come first, then all the "yes" answers. We look for the <b>first yes</b>.</span></p>
+    <p>Keep two positions. <code>lo</code> always stands on a "no". <code>hi</code> always stands on a "yes". Look at the middle and move one of them.</p>
     <table>
-      <tr><th>step</th><th>lo (a "no")</th><th>hi (a "yes")</th><th>mid</th><th>a[mid] ≥ 7 ?</th><th>what we do</th></tr>
+      <tr><th>step</th><th>lo (a "no")</th><th>hi (a "yes")</th><th>mid</th><th>a[mid] &gt;= 7 ?</th><th>what we do</th></tr>
       <tr><td>1</td><td>-1</td><td>7</td><td>3</td><td>yes</td><td>hi = 3</td></tr>
       <tr><td>2</td><td>-1</td><td>3</td><td>1</td><td>no</td><td>lo = 1</td></tr>
       <tr><td>3</td><td>1</td><td>3</td><td>2</td><td>no</td><td>lo = 2</td></tr>
-      <tr><td>end</td><td>2</td><td class="hi">3</td><td colspan="3">lo and hi are neighbours → answer is hi = 3</td></tr>
+      <tr><td>end</td><td>2</td><td class="hi">3</td><td colspan="3">lo and hi are neighbours → the answer is hi = 3</td></tr>
     </table>
-    <p class="note"><code>lo</code> always stands on a "no". <code>hi</code> always stands on a "yes". They walk toward each other until they touch.</p>
+    <p class="note">Why start at -1 and 7? They are one step outside the array. We <b>pretend</b> that -1 is a "no" and 7 is a "yes". The code never reads <code>a[-1]</code> or <code>a[7]</code>, because <code>mid</code> is always between them.</p>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — one template for everything</h3>
-    <p>Write a function <code>ok(x)</code> that answers the yes/no question. The loop never changes.</p>
+    <p>You write a function <code>ok(x)</code>. It answers the yes/no question for one value. The loop never changes.</p>
 <pre data-part="global"><code class="cpp">
 bool ok(long long x);          // you write this: no no no YES YES YES
 
@@ -54,22 +66,45 @@ long long firstYes(long long lo, long long hi) {
     return hi;                                // the first yes
 }
 </code></pre>
-    <p>For a sorted <code>vector</code>, C++ already has it:</p>
+    <p>For "find a value in a sorted <code>vector</code>", C++ already has this loop:</p>
 <pre data-part="main"><code class="cpp">
 int i = lower_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i] &gt;= x
 int j = upper_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i] &gt;  x
 // j - i = how many times x is in the array
 </code></pre>
+    <p class="tip-box"><b>Which one do I use?</b> Searching for a value in a sorted <code>vector</code>: use <code>lower_bound</code>. Everything else: use the template with <code>ok</code>.</p>
   </div>
 </section>
 
 <section>
   <h2>Binary search on the answer</h2>
-  <p>This is the trick that solves many 1200–1600 problems. You do not search in an array. You search in the <b>answers</b>.</p>
-  <div class="way">
-    <h3><b>Example</b> — n machines, machine i makes one item every t[i] seconds. What is the smallest time to make k items?</h3>
-    <p>Hard question: "what is the best time?" Easy question: "is time <code>T</code> enough?" Just count: in time T machine i makes <code>T / t[i]</code> items.</p>
-    <p>If T is enough, then T+1 is also enough → <b>no no no yes yes yes</b> → find the first yes.</p>
+  <p>This idea solves many 1200–1600 problems. <span class="tr" data-ar="أنت لا تبحث داخل مصفوفة، بل تبحث بين الإجابات الممكنة نفسها.">You do not search in an array. You search among the possible <b>answers</b>.</span></p>
+  <p>The hard question is "what is the smallest value that works?" The easy question is "does this one value work?" <span class="tr" data-ar="إذا كانت الإجابات على شكل: لا لا لا نعم نعم نعم، فالقالب يجد أول «نعم».">Are the easy answers no no no yes yes yes? Then the template finds the first yes.</span></p>
+  <p class="tip-box">Do you need the <b>last yes</b> (yes yes yes no no no)? Keep <code>lo</code> on a yes and <code>hi</code> on a no. Swap the two lines inside the <code>if</code>. Return <code>lo</code>.</p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> There are \( n \) machines. Machine \( i \) makes one item every \( t_i \) seconds. All machines work at the same time. What is the smallest time to make \( k \) items? Limits: \( 1 \le n \le 2 \cdot 10^5 \) and \( 1 \le k, t_i \le 10^9 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The smallest time \( T \). In \( T \) seconds, all machines together must make at least \( k \) items.</li>
+    <li><b>A small example by hand.</b> Take times 3, 2, 5 and \( k = 7 \). In 8 seconds the first machine makes 2 items, because \( 8 / 3 = 2.66 \) and we round down. We write "round down" as \( \lfloor 8 / 3 \rfloor = 2 \).
+      <table>
+        <tr><th>T</th><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+        <tr><th>items made</th><td>1+2+1 = 4</td><td>2+3+1 = 6</td><td>2+3+1 = 6</td><td>2+4+1 = 7</td><td>3+4+1 = 8</td></tr>
+        <tr><th>at least 7 ?</th><td>no</td><td>no</td><td>no</td><td class="hi">yes</td><td>yes</td></tr>
+      </table>
+      <p>The answer is 8.</p>
+    </li>
+    <li><b>The idea.</b> <span class="tr" data-ar="زيادة الوقت لا تُنقص عدد القطع أبدًا. لذلك تكون الإجابات: لا لا لا نعم نعم نعم.">More time never makes fewer items. So the answers are no no no yes yes yes.</span> We search for the first yes. <code>ok(T)</code> adds the items of all machines and checks:
+      \[ \lfloor T / t_1 \rfloor + \lfloor T / t_2 \rfloor + \dots + \lfloor T / t_n \rfloor \ge k \]
+      <p>Start: <code>lo = 0</code> is a "no", because 0 seconds make 0 items. For <code>hi</code>, let the fastest machine work alone. It needs \( k \cdot \min(t_i) \) seconds. That is a "yes".</p>
+    </li>
+    <li><b>Why is it fast enough?</b> The biggest <code>hi</code> is \( 10^9 \cdot 10^9 = 10^{18} \). It fits in <code>long long</code>. Cutting \( 10^{18} \) in half takes about 60 steps. Each step runs <code>ok</code>, which is one loop over \( n \) machines.
+      \[ 60 \cdot 2 \cdot 10^5 = 1.2 \cdot 10^7 \text{ steps} \]
+      <p>That is far below \( 10^8 \).</p>
+    </li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -80,7 +115,7 @@ vector&lt;long long&gt; t;
 bool ok(long long T) {                 // can we make k items in T seconds?
     long long made = 0;
     for (int i = 0; i &lt; n; i++) {
-        made += T / t[i];
+        made += T / t[i];              // integer division rounds down
         if (made &gt;= k) return true;    // stop early, so "made" never overflows
     }
     return false;
@@ -99,20 +134,56 @@ int main() {
     cout &lt;&lt; hi &lt;&lt; "\n";
 }
 </code></pre>
-  </div>
-  <p class="tip-box">Looking for the <b>last yes</b> (pattern yes yes yes no no no)? Keep <code>lo</code> on a yes and <code>hi</code> on a no, swap the two lines inside the <code>if</code>, and return <code>lo</code>.</p>
 </section>
 
-<p class="complexity">Speed: O(log n) steps. For answers up to 10^18 that is about 60 steps. Total = 60 × (cost of ok).</p>
+<p class="complexity">Speed: \( O(\log n) \) steps for a range of size \( n \). For answers up to \( 10^{18} \): about 60 steps. Total = 60 \( \times \) (cost of <code>ok</code>).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="البحث الثنائي يُستخدم فقط للبحث عن قيمة داخل مصفوفة.">Binary search is only for finding a value in an array.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يعمل مع أي سؤال إجابته نعم أو لا، بشرط أن تأتي كل إجابات «لا» قبل كل إجابات «نعم».">It works for any yes/no question. The rule: all the "no" answers come before all the "yes" answers.</span> In contests you search on the answer more often than in an array.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يعمل البحث الثنائي على أي مصفوفة.">It works on any array.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يجب أن تكون المصفوفة مرتّبة. على مصفوفة غير مرتّبة يعطي إجابة خاطئة دون أي رسالة خطأ.">The array must be sorted. On an unsorted array it gives a wrong answer, with no error message.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="بعض القيم تنجح وبعضها لا ينجح، إذن أستطيع استخدام البحث الثنائي.">Some values work and some do not, so I can binary search.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يصلح إلا إذا كانت «نعم» لا تأتي أبدًا قبل «لا». جرّب مثالًا صغيرًا باليد أولًا.">Only if a "yes" never comes before a "no". Test a small example by hand first.</span> If yes and no are mixed, this tool does not fit.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>The array is not sorted. Binary search on an unsorted array gives a wrong answer.</li>
-    <li><code>ok</code> is not monotonic. Check it: can a "yes" come before a "no"? Then this tool does not fit.</li>
-    <li><code>(lo + hi) / 2</code> can <span class="term" data-t="overflow">overflow</span>. Write <code>lo + (hi - lo) / 2</code> and use <code>long long</code>.</li>
-    <li>Wrong start: <code>lo</code> must really be a "no" and <code>hi</code> must really be a "yes". If you are not sure, make <code>hi</code> bigger.</li>
+    <li>Wrong start. <code>lo</code> must really be a "no" and <code>hi</code> must really be a "yes". Not sure? Make <code>hi</code> bigger.</li>
+    <li><code>(lo + hi) / 2</code> can <span class="term" data-t="overflow">overflow</span> when both are big. Write <code>lo + (hi - lo) / 2</code> and use <code>long long</code>.</li>
+    <li>You return the wrong end. For the first yes return <code>hi</code>. For the last yes return <code>lo</code>.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Answers with decimals</b> (binary search on real numbers). Skip it now. Come back after the guide: <a href="#what-next">After 1600</a>.</li>
+    <li><b>Ternary search.</b> It is a different tool and it is rare below 1600. Come back after the guide: <a href="#what-next">After 1600</a>.</li>
+    <li><b>Asking the judge questions</b> to guess a hidden number. Same loop, new input rules. You learn it in <a href="#interactive">Interactive problems</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="المصفوفة المرتّبة هي 2 4 4 7 9. أيّ فهرس يعطيه lower_bound للقيمة 4؟ وأيّ فهرس يعطيه upper_bound؟">The sorted array is 2 4 4 7 9. Which index does <code>lower_bound</code> give for 4? And <code>upper_bound</code>?</span>
+      <details><summary>Answer</summary><p><code>lower_bound</code> gives 1, the first 4. <code>upper_bound</code> gives 3, the 7. So 4 is there \( 3 - 1 = 2 \) times.</p></details></li>
+    <li><span class="tr" data-ar="للقيم x = 1, 2, 3, 4 تعطي ok الإجابات: نعم، لا، نعم، نعم. هل تستطيع استخدام البحث الثنائي؟">For x = 1, 2, 3, 4 your <code>ok</code> gives yes, no, yes, yes. Can you use binary search?</span>
+      <details><summary>Answer</summary><p>No. A "yes" comes before a "no", so <code>ok</code> is not monotonic.</p></details></li>
+    <li><span class="tr" data-ar="الإجابة بين 1 و 10^9، وكل استدعاء للدالة ok يكلّف 10^5 خطوة. كم خطوة تقريبًا في المجموع؟">The answer is between 1 and \( 10^9 \). One call of <code>ok</code> costs \( 10^5 \) steps. About how many steps in total?</span>
+      <details><summary>Answer</summary><p>Cutting \( 10^9 \) in half takes about 30 steps. \( 30 \cdot 10^5 = 3 \cdot 10^6 \) steps. That is fast.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">

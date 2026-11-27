@@ -121,6 +121,40 @@ td.dim { color: var(--muted); opacity: .55 }
 svg { max-width: 100%; height: auto }
 svg text { fill: var(--fg); font-family: var(--f-mono); font-size: 13px }
 
+/* ---------- lesson blocks of the new standard (see AUTHORING.md) ---------- */
+aside.before, aside.notnow { display: flex; flex-direction: column; gap: 6px; border-radius: 8px; padding: 10px 14px; font-size: .93rem }
+aside.before > *, aside.notnow > * { margin: 0; min-width: 0 }
+aside.before h2, aside.notnow h2 { font: 700 .72rem var(--f-head); letter-spacing: .08em; text-transform: uppercase; margin: 0 }
+aside.before { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--ok) }
+aside.before h2 { color: var(--ok) }
+aside.notnow { background: var(--sunken); border: 1px dashed var(--muted) }
+aside.notnow h2 { color: var(--muted) }
+.worked { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--sc, var(--accent)); border-radius: 8px; padding: 14px 16px }
+.worked h2 { margin-top: 0 }
+.worked .statement { background: var(--sunken); border-radius: 6px; padding: 8px 12px }
+.worked ol.steps { list-style: none; padding: 0; gap: 8px; counter-reset: step }
+.worked ol.steps > li { position: relative; padding-left: 34px; counter-increment: step }
+.worked ol.steps > li::before { content: counter(step); position: absolute; left: 0; top: .1em; width: 23px; height: 23px; border-radius: 50%;
+  display: grid; place-items: center; font: 700 .78rem var(--f-head); color: var(--sc, var(--accent)); border: 1.5px solid var(--sc, var(--accent)) }
+.worked ol.steps > li > * + * { margin-top: 6px }
+.myths ul { list-style: none; padding: 0; gap: 8px }
+.myths li { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface) }
+.myths li p { padding: 7px 12px }
+.myths .think { background: var(--warn-soft) }
+.myths .think b { color: var(--warn) }
+.myths .truth b { color: var(--ok) }
+.check ol { gap: 8px }
+.check details { margin-top: 4px }
+.check summary { cursor: pointer; color: var(--accent); font-weight: 600; font-size: .88rem; width: fit-content }
+.check details > p { margin-top: 4px; background: var(--accent-soft); border-radius: 6px; padding: 7px 12px }
+
+/* ---------- math (KaTeX). It takes the text colour, so it follows the theme. ---------- */
+.katex { font-size: 1.08em }
+.katex-display { margin: .3em 0; padding: 4px 0; max-width: 100%; overflow-x: auto; overflow-y: hidden }
+.complexity .katex, .cc .katex, table .katex { font-size: 1.04em }
+.cc .fx { overflow-wrap: anywhere }
+.cc .fx code { background: none; padding: 0; font-size: 1em }
+
 /* code */
 .codebox { position: relative }
 pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; line-height: 1.5; tab-size: 4 }
@@ -131,7 +165,15 @@ pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); bord
 
 /* Arabic terms */
 .term { text-decoration: underline dotted var(--accent); text-underline-offset: 3px; cursor: help }
-.ar { font-family: var(--f-ar); color: var(--muted); font-size: .92em; unicode-bidi: isolate }
+/* a sentence or phrase with an Arabic translation in the tooltip: quieter than .term, text colour unchanged */
+.tr { text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--muted) 50%, transparent);
+  text-decoration-thickness: 1px; text-underline-offset: 4px; cursor: help }
+.tr:hover, .tr:focus-visible { text-decoration-color: var(--accent) }
+.tr:focus-visible { outline: 0; background: var(--accent-soft) }
+:root[data-tr="off"] .tr { text-decoration: none; cursor: inherit; background: none }
+.side-top .tools { display: flex; gap: 6px }
+.trbtn { font-family: var(--f-ar); line-height: 1.2 }
+.trbtn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft) }
 #tip { position: absolute; z-index: 50; max-width: min(320px, calc(100vw - 24px)); background: var(--tip-bg); color: var(--tip-fg);
   border-radius: 7px; padding: 8px 12px; font-size: .88rem; line-height: 1.45; box-shadow: 0 6px 20px rgba(0,0,0,.25) }
 #tip.rtl { font-family: var(--f-ar); font-size: 1rem; direction: rtl; text-align: right }
@@ -196,6 +238,7 @@ pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); bord
 
 @media print {
   .side, .bar, .pager, .copy, #tip { display: none !important }
+  .check details > p { display: block }
   main { margin: 0; padding: 0 } body { background: #fff; font-size: 11px }
   .col.wide { max-width: none } .cgrid { grid-template-columns: repeat(3, 1fr); gap: 6px } .cc { break-inside: avoid }
 }

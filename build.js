@@ -19,6 +19,11 @@ for (const slug of slugs) {
   const html = fs.readFileSync(f, 'utf8');
   pages[slug] = html;
   for (const m of html.matchAll(/data-t="([^"]+)"/g)) if (!glossary[m[1]]) { console.warn(`MISSING glossary key "${m[1]}" in ${slug}`); bad++; }
+  // sentence translations: <span class="tr" data-ar="…">. The Arabic must be there; a quote inside it is written &quot;
+  for (const m of html.matchAll(/<[^<>]*\bclass="tr"[^<>]*>/g)) {
+    const ar = /\bdata-ar="([^"]*)"/.exec(m[0]);
+    if (!ar || !/[\u0600-\u06FF]/.test(ar[1])) { console.warn(`EMPTY or missing data-ar in ${slug}: ${m[0].slice(0, 80)}`); bad++; }
+  }
   for (const m of html.matchAll(/data-to="([^"]+)"/g)) if (!slugs.includes(m[1])) { console.warn(`BAD data-to "${m[1]}" in ${slug}`); bad++; }
   for (const m of html.matchAll(/href="#([^"]+)"/g)) if (!slugs.includes(m[1]) && m[1] !== 'glossary' && !/^train/.test(m[1])) { console.warn(`BAD link #${m[1]} in ${slug}`); bad++; }
   for (const m of html.matchAll(/data-p="([^"]+)"/g)) problems.push(slug + ' ' + m[1]);

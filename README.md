@@ -1,7 +1,7 @@
 # Zero to Codeforces
 
 A short, ordered problem-solving guide for beginners who know basic C++: from the first submission to about Codeforces 1600.
-Simple English, Arabic meanings on hover for hard words, every idea explained three ways (story, picture, code), and a cheat sheet.
+Simple English, Arabic meanings on hover or tap for hard words and hard sentences, math drawn with KaTeX, every idea explained three ways (story, picture, code), and a cheat sheet.
 
 The site is one static file: `index.html`. Open it in a browser, or host it anywhere.
 
@@ -20,7 +20,7 @@ The site is one static file: `index.html`. Open it in a browser, or host it anyw
 | `src/training.json` | The 1000-problem training set (generated, do not edit by hand) |
 | `data/cf-problems.json` | Snapshot of the Codeforces problem list (ratings and solve counts) |
 | `build.js` | Puts everything into `index.html` |
-| `tools/` | Checks: C++ compiles, problem links are real, problem suggestions |
+| `tools/` | Checks: C++ compiles, problem links are real, lessons follow the path rules, problem suggestions |
 
 ## Commands
 
@@ -29,6 +29,7 @@ node build.js                                  # build index.html
 node tools/check-code.js                       # compile every C++ block (needs g++)
 node tools/check-problems.js data/cf-problems.json   # check every practice link
 node tools/make-training.js                    # rebuild the 1000-problem training set from the snapshot
+node tools/check-path.js                       # path rules: block order, LaTeX, forward links, long sentences (see src/AUTHORING.md)
 node tools/readability.js                      # list long sentences and long words in the lessons
 node tools/suggest.js "binary search" 1000 1400       # most-solved problems for a tag
 curl -o data/cf-problems.json https://codeforces.com/api/problemset.problems   # refresh the snapshot
