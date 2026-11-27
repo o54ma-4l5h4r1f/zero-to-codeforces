@@ -1,4 +1,0 @@
-{
-  "iterator": { "en": "iterator", "ar": "مُكرِّر (موضع عنصر داخل الحاوية)", "note": "the place of a value inside a container; * opens it" },
-  "lambda": { "en": "lambda", "ar": "دالة صغيرة بلا اسم (lambda)", "note": "a small function written inside another call, like sort(..., [](int x, int y) { ... })" }
-}

@@ -1,7 +1,0 @@
-{
-  "output-buffer": { "en": "output buffer", "ar": "المخزن المؤقّت للمخرجات", "note": "a place in memory where printed text waits before it is really sent" },
-  "fermat": { "en": "Fermat's little theorem", "ar": "مبرهنة فيرما الصغرى", "note": "for a prime p: the inverse of a is a^(p-2) mod p" },
-  "segment-tree": { "en": "segment tree", "ar": "شجرة المقاطع", "note": "a structure that answers range questions and allows changes, O(log n) each" },
-  "fenwick-tree": { "en": "Fenwick tree (BIT)", "ar": "شجرة فينويك", "note": "a short structure for prefix sums when the array changes" },
-  "spanning-tree": { "en": "spanning tree", "ar": "شجرة ممتدّة (تصل كل الرؤوس)", "note": "a set of edges with no cycle that connects all vertices" }
-}

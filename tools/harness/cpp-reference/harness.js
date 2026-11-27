@@ -1,11 +1,11 @@
-// node harness.js page.html  -> compiles + runs every card, checks the values claimed in comments
+// node harness.js page.html [card number]  -> compiles + runs every card, checks the values claimed in comments. Use run.sh.
 const fs = require('fs'), path = require('path'), os = require('os'), { spawn } = require('child_process');
 const run = (cmd, args, input) => new Promise(res => { const p = spawn(cmd, args); let o = '', e = ''; p.stdout.on('data', d => o += d); p.stderr.on('data', d => e += d); const t = setTimeout(() => p.kill('SIGKILL'), 60000); p.on('close', (status, signal) => { clearTimeout(t); res({ status, signal, stdout: o, stderr: e }); }); p.stdin.on('error', () => {}); p.stdin.end(input || ''); });
 const jobs = [];
 const file = process.argv[2], only = process.argv[3];
 const html = fs.readFileSync(file, 'utf8');
 const un = s => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
-const work = path.join(__dirname, 'build'); fs.mkdirSync(work, { recursive: true });
+const work = path.join(__dirname, '..', '..', '..', 'build', 'harness', 'cpp-reference'); fs.mkdirSync(work, { recursive: true });   // git-ignored
 const HELP = fs.readFileSync(path.join(__dirname, 'helpers.h'), 'utf8');
 const cstr = s => '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
 const splitComment = l => { let q = null; for (let i = 0; i < l.length; i++) { const c = l[i];

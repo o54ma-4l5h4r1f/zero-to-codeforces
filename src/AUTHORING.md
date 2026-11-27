@@ -17,7 +17,8 @@ A page is "upgraded" when it follows this file. The checker knows an upgraded pa
   No `<html>`, `<head>`, `<body>`, `<h1>`, `<style>` or `<script>`. The site adds the title.
   The one exception: the JSON spec of a picture, `<script type="application/json">` inside `<figure class="viz">` (section 11).
 - New Arabic words go in ONE file: `src/glossary/<your-stage>.json` (for example `1.json`), same format as `00-base.json`.
-  Look in all glossary files first and reuse keys. Do not edit other shared files.
+  Look in all glossary files first and reuse keys. A key must exist in one file only. Do not edit other shared files.
+  Glossary Arabic follows the term list of section 5.
 - Run all of these before you finish. All must be clean for your pages:
 
 ```sh
@@ -26,6 +27,7 @@ node tools/check-code.js <slug>        # your C++ compiles, 0 failed
 node tools/check-problems.js           # every practice link is real, name and rating match
 node tools/check-path.js <slug>        # structure, LaTeX, forward links, long sentences, picture limits: 0 errors
 node tools/viz-gen.js                  # generated pictures still match their generator (section 11.5)
+                                       # to rewrite YOUR figures: node tools/viz-gen.js --write <slug>  (never another page)
 node tools/readability.js <slug>       # extra list of long sentences and long words
 ```
 
@@ -170,6 +172,13 @@ Rules for a `.tr`:
 - The Arabic is natural Modern Standard Arabic. Translate the meaning, not word by word.
 - Keep C++ names, variable names and numbers in Latin letters inside the Arabic: `استخدم lower_bound`, `n ≤ 5000`, `10^9`.
 - `data-ar` is plain text: no tags, no LaTeX. A quote mark inside it is written `&quot;` (or use «…»). It must not be empty: the build fails.
+- Write it in natural logical order: `10^9`, `a / b`, `-7 % 5`, `pre[r] - pre[l-1]`. The app shows every Latin, number and code run
+  left-to-right inside the Arabic (each run is isolated in `<bdi dir="ltr">`), so never reverse anything by hand.
+  Write arrows in words: «من a إلى b», not `a → b` and never `b ← a`.
+- Terms (fixed; the glossary uses them too): edge = ضلع · path = مسار · greedy algorithm = خوارزمية جشعة · monotonic = مطّرد ·
+  string = سلسلة نصية · prefix sums = المجاميع التراكمية · range = مجال · number = عدد, digit = رقم · judge = الحَكَم ·
+  verdict = نتيجة الحُكم · chart = رسم توضيحي · coin = عملة · one pass = مرور واحد · brute force = تجربة كل الاحتمالات ·
+  priority queue = طابور الأولوية · stress test = اختبار الضغط. Container names (`map`, `set`, `vector`) stay in Latin letters.
 - A `.tr` may contain `<code>`, `<b>`, math and a `.term`. On the `.term` the reader sees the word; on the rest, the sentence.
 
 ## 6. No rabbit holes
@@ -188,6 +197,26 @@ The reader follows the lessons in the order of `src/topics.json`. A lesson must 
 6. **Not now.** Name the 1–3 side topics a curious reader will want to chase from this page. Say why to skip them at this level and when to come back.
 7. **No loose ends.** Do not use a word, symbol or function you did not explain. Do not write "there are other ways" without naming the one to use.
 8. **Outside links** only in "Learn more" (and in practice items). The lesson is complete without them.
+9. **The order.** Stage 3 ends with the optional lessons: `dsu`, `toposort`, `interactive`. No required lesson may depend on them;
+   a required lesson that mentions DSU or toposort links them from "Not now" only. Add a new optional lesson after these, never between
+   required ones. `priority_queue` is taught where it is first needed (`dijkstra`); earlier lessons do not assume it.
+
+### 6.1 Cross-lesson rules (every page says the same thing)
+Lessons were written by different people. These facts are fixed so no two pages contradict each other. `tools/check-path.js`
+checks the ones marked (checked).
+
+- **Integer division** in C++ goes toward zero: `-7 / 2` is `-3`. Say "drops the fraction". It "rounds down" only for positive numbers;
+  if you write "rounds down", say "for positive numbers" in the same sentence. (checked: warning)
+- **Sort big → small:** the ONE default form is `sort(a.rbegin(), a.rend())`. `greater<int>()` may be mentioned once, as an equal form,
+  on a page that also shows the default form. (checked: error if `sort(…, greater<…>())` appears and `rbegin` does not)
+- **Fast power:** the ONE form is `power(a, b, m)` with three arguments. (checked: warning on a two-argument `power(…)` call)
+- **Prefix sums:** positions count from 1, `pre[0] = 0`, the sum of `a[l..r]` is `pre[r] - pre[l-1]`. Every page that shows the formula
+  uses this form, the cheat sheet too. (checked: warning on `pre[r + 1] - pre[l]`)
+- **Globals:** allowed for arrays and vectors that functions such as `dfs` share. They must be reset in every test case; say so.
+- **New C++ syntax** (`auto`, `auto [a, b]`, `&`, `const &`, lambdas, iterators): at its first use in a lesson, one plain sentence
+  and a link to `#cpp-reference`.
+- **Deep recursion:** say it is fine on Codeforces' large stack, and that it can crash on your own computer's 8 MB stack.
+- **"Before this lesson"** links only to EARLIER lessons in `src/topics.json`. (checked: error)
 
 ## 7. Code rules
 - C++17, `#include <bits/stdc++.h>`, `using namespace std;`. Beginner style: clear names, no macros, no clever tricks.
@@ -378,7 +407,7 @@ Each line has its own colour and its own dash pattern, its name at its end, and 
 Every step of a stepper, and every number in a picture that an algorithm produces, comes from **running the algorithm**.
 - Add a generator function to `tools/viz-gen.js` (see `GEN['bfs']`). It runs the algorithm, records one state per step and returns `{ spec, trace }`.
 - Put `data-gen="name"` on the figure and write `<script type="application/json">{}</script>`.
-- `node tools/viz-gen.js --write` fills in the JSON. `node tools/viz-gen.js --print name` shows a plain trace of each step: write the captions from it.
+- `node tools/viz-gen.js --write <slug>` fills in the JSON of that page only (`--write --all` rewrites every page: only when nobody else is editing). It also self-checks that, in an array scene, the cells that changed are the cells that are highlighted. `node tools/viz-gen.js --print name` shows a plain trace of each step: write the captions from it.
 - `node tools/viz-gen.js` (no argument) checks that every generated figure still matches its generator. Run it before you finish.
 - A picture with no algorithm in it (the 4 neighbours of a cell, a chart of built-in functions) is written by hand and has no `data-gen`.
 

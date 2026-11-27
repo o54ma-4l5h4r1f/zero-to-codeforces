@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="المصفوفة صفّ من صناديق مرقّمة تبدأ من 0. والنص صفّ من صناديق، في كل صندوق حرف واحد.">An array is a row of numbered boxes, starting at 0. A string is a row of boxes with one letter in each.</span></p>
+<p class="idea"><span class="tr" data-ar="المصفوفة صفّ من صناديق مرقّمة تبدأ من 0. والسلسلة النصية صفّ من صناديق، في كل صندوق حرف واحد.">An array is a row of numbered boxes, starting at 0. A string is a row of boxes with one letter in each.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -88,7 +88,7 @@
       <tr><td>number 0..25 → letter</td><td><code>char('a' + k)</code></td></tr>
       <tr><td>make small / big</td><td><code>c = tolower(c);</code> / <code>c = toupper(c);</code></td></tr>
       <tr><td>are two strings equal?</td><td><code>s == t</code></td></tr>
-      <tr><td>which comes first in a dictionary?</td><td><code>s &lt; t</code></td></tr>
+      <tr><td>which comes first in a dictionary? (same case: all small or all big letters)</td><td><code>s &lt; t</code></td></tr>
       <tr><td>join two strings / add one character</td><td><code>s + t</code> / <code>s += c;</code></td></tr>
       <tr><td>a piece: start at <code>pos</code>, take <code>len</code> characters</td><td><code>s.substr(pos, len)</code></td></tr>
     </table>
@@ -142,6 +142,34 @@ int main() {
 }
 </code></pre>
     <p class="note">Why <code>(int)s.size()</code>? The next lesson shows the reason with real output. For now, always write it.</p>
+    <p><b>Table:</b> some inputs are a grid of \( n \) rows and \( m \) columns, like a 5 by 5 matrix. Store it as a <code>vector</code> of rows. <code>g[r][c]</code> is the box in row <code>r</code>, column <code>c</code>. Both count from 0, and row 0 is the top.</p>
+    <figure class="viz" data-viz="plane" aria-label="A grid of 3 rows and 4 columns. Rows are numbered 0 to 2 from the top, columns 0 to 3 from the left. The cell in row 1, column 2 is marked g[1][2].">
+      <script type="application/json">
+{ "orient": "grid", "rows": 3, "cols": 4, "rowLabel": "row r", "colLabel": "column c",
+  "cells": [ { "at": [1, 2], "text": "1,2", "state": "active" } ],
+  "legend": { "active": "g[1][2]: row 1, column 2" } }
+</script>
+      <figcaption>First the row, then the column. <span class="tr" data-ar="الصف r موجود فقط إذا كان 0 ≤ r و r أصغر من n، وكذلك العمود مع m.">A row <code>r</code> exists only if <code>0 &lt;= r &amp;&amp; r &lt; n</code>. The same holds for a column <code>c</code> and <code>m</code>.</span></figcaption>
+    </figure>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+    vector&lt;vector&lt;int&gt;&gt; g(n, vector&lt;int&gt;(m));   // n rows, each with m numbers
+    for (int r = 0; r &lt; n; r++)
+        for (int c = 0; c &lt; m; c++) cin &gt;&gt; g[r][c];
+
+    for (int r = 0; r &lt; n; r++) {                 // print the sum of each row
+        long long rowSum = 0;
+        for (int c = 0; c &lt; m; c++) rowSum += g[r][c];
+        cout &lt;&lt; rowSum &lt;&lt; "\n";
+    }
+}
+</code></pre>
+    <p class="note">A grid of characters, like <code>#</code> and <code>.</code>, is a <code>vector&lt;string&gt; g(n);</code>. Then <code>cin &gt;&gt; g[r];</code> reads row <code>r</code>, and <code>g[r][c]</code> is one character.</p>
   </div>
 </section>
 
@@ -243,14 +271,14 @@ int main() {
   <h2>Practice ladder</h2>
   <ol>
     <li><a class="cf" data-p="71A">Way Too Long Words</a><span class="r">800</span></li>
-    <li><a class="cf" data-p="281A">Word Capitalization</a><span class="r">800</span></li>
     <li><a class="cf" data-p="112A">Petya and Strings</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="339A">Helpful Maths</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="281A">Word Capitalization</a><span class="r">800</span></li>
     <li><a class="cf" data-p="266A">Stones on the Table</a><span class="r">800</span></li>
     <li><a class="cf" data-p="59A">Word</a><span class="r">800</span></li>
-    <li><a class="cf" data-p="41A">Translation</a><span class="r">800</span></li>
     <li><a class="cf" data-p="110A">Nearly Lucky Number</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="41A">Translation</a><span class="r">800</span></li>
     <li><a class="cf" data-p="136A">Presents</a><span class="r">800</span></li>
-    <li><a class="cf" data-p="339A">Helpful Maths</a><span class="r">800</span></li>
   </ol>
 </section>
 

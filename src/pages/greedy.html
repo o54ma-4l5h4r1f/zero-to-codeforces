@@ -1,10 +1,11 @@
-<p class="idea"><span class="tr" data-ar="في كل خطوة خذ الخيار الذي يبدو الأفضل الآن، ولا تعد إلى الخلف أبدًا. غالبًا يعني ذلك: رتّب، ثم خذ.">At every step take the choice that looks best right now, and never go back. Very often this means: sort, then take.</span></p>
+<p class="idea"><span class="tr" data-ar="في كل خطوة خذ الخيار الذي يبدو الأفضل الآن، ولا تتراجع عنه أبدًا. غالبًا يعني ذلك: رتّب، ثم خذ.">At every step take the choice that looks best right now, and never go back. Very often this means: sort, then take.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
-    <li>You can sort numbers and pairs, and you know how pairs sort → <a href="#stl-basics">STL basics</a></li>
+    <li>You can sort by your own rule, and you know how pairs sort → <a href="#sorting">Sorting</a></li>
     <li>You can write a slow "try everything" solution → <a href="#brute-force">Brute force</a></li>
+    <li>You can compare a fast solution with a slow one (stress test) → <a href="#debugging">How to find your bug</a></li>
   </ul>
 </aside>
 
@@ -101,7 +102,7 @@ int main() {
   <table>
     <tr><th>The problem changes like this…</th><th>…you change this</th></tr>
     <tr><td><b>Sort by a different key.</b> Meetings: earliest end. Homework: shortest task.</td><td>What you put in <code>.first</code>: <code>m[i] = {e, s};</code> or <code>t[i] = {len, i};</code></td></tr>
-    <tr><td><b>Take from the other end.</b> "Fewest coins to get a big sum": the biggest coin helps most.</td><td><code>sort(a.begin(), a.end(), greater&lt;int&gt;());</code></td></tr>
+    <tr><td><b>Take from the other end.</b> "Fewest items whose sum is more than X" (like Twins below): the biggest item helps most.</td><td><code>sort(a.rbegin(), a.rend());</code></td></tr>
     <tr><td><b>Take while possible.</b> You have \( k \) coins of money. Buy as many items as you can.</td><td>Sort small → big, then <code>while (i &lt; n &amp;&amp; a[i] &lt;= k) { k -= a[i]; i++; }</code></td></tr>
   </table>
 
@@ -133,10 +134,10 @@ int main() {
   <ol>
     <li><b>Small cases by hand.</b> Solve 3–5 tiny inputs on paper. Does your rule give the best answer each time?</li>
     <li><b>Try to break it.</b> Look for a <span class="term" data-t="counterexample">counterexample</span>: ties, one huge item, very small numbers. One is enough to kill the idea.</li>
-    <li><b>Let the computer try.</b> Write a <a href="#brute-force">brute force</a>. Compare both on many small random inputs. See "stress testing" in <a href="#debugging">How to find your bug</a>.</li>
-    <li><b>The <span class="term" data-t="swap">swap</span> idea.</b> Take any best answer. <span class="tr" data-ar="ضع خيارك الجشع مكان خياره الأول. إذا لم تسُؤ الإجابة أبدًا، فقاعدتك صحيحة.">Put your greedy choice in place of its first choice. If it never gets worse, your rule is right.</span> Meetings: the meeting that ends first ends no later than any other, so the rest still fits.</li>
+    <li><b>Let the computer try.</b> Write a <a href="#brute-force">brute force</a>. Compare both on many small random inputs: a stress test, as in <a href="#debugging">How to find your bug</a>.</li>
+    <li><b>The <span class="term" data-t="swap">swap</span> idea.</b> Take any best answer. <span class="tr" data-ar="ضع خيارك الجشع مكان خياره الأول. إذا لم تسُؤ الإجابة أبدًا، فقاعدتك صحيحة.">Put your greedy choice in place of its first choice. If it never gets worse, your rule is right.</span> Homework with numbers: tasks of 30 and 10 minutes. Order 30, 10 finishes them at minutes 30 and 40. Swap to 10, 30: they finish at 10 and 40. The last one ends at the same time, and the first ends earlier. So short-first is never worse. Meetings: the meeting that ends first ends no later than any other, so the rest still fits.</li>
   </ol>
-  <p class="tip-box"><b>When to stop.</b> <span class="tr" data-ar="إذا كان اختيار الآن يغيّر أيّ الخيارات ستكون جيدة لاحقًا، وكل قاعدة تجرّبها تنكسر، فتوقّف عن الجشع.">A choice now changes which choices are good later, and every rule you try breaks? Stop trying greedy rules.</span> This problem probably needs a different tool. The coins 1, 3, 4 are such a problem.</p>
+  <p class="tip-box"><b>When to stop.</b> <span class="tr" data-ar="إذا كان اختيارك الآن يغيّر أيّ الخيارات ستكون جيدة لاحقًا، وكل قاعدة تجرّبها تفشل، فتوقّف عن تجربة القواعد الجشعة.">A choice now changes which choices are good later, and every rule you try breaks? Stop trying greedy rules.</span> This problem probably needs a different tool. The coins 1, 3, 4 are such a problem.</p>
 </section>
 
 <section class="worked">
@@ -169,7 +170,7 @@ int main() {
         cin &gt;&gt; a[i];
         total += a[i];
     }
-    sort(a.begin(), a.end(), greater&lt;int&gt;());   // biggest coin first
+    sort(a.rbegin(), a.rend());                 // big -&gt; small: biggest coin first
     int mine = 0, taken = 0;
     for (int i = 0; i &lt; n; i++) {
         if (mine &gt; total - mine) break;         // I already have strictly more
@@ -188,7 +189,7 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="إذا نجحت قاعدتي الجشعة في الأمثلة فهي صحيحة.">My greedy rule passes the samples, so it is correct.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الأمثلة نادرًا ما تحتوي على المثال المضاد. اختبرها بالطرق الأربع أعلاه.">The samples rarely hold the counterexample. Test the rule with the four steps above.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الأمثلة نادرًا ما تحتوي على المثال المضاد. اختبر القاعدة بالخطوات الأربع المذكورة أعلاه.">The samples rarely hold the counterexample. Test the rule with the four steps above.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="أخذ أكبر عملة أولًا يعطي دائمًا أقل عدد من العملات.">Taking the biggest coin first always gives the fewest coins.</span></p>
@@ -214,7 +215,7 @@ int main() {
   <h2>Not now</h2>
   <ul>
     <li><b>Problems where every greedy rule breaks</b>, like the fewest coins of 1, 3, 4. They need a table of small answers. You learn it in <a href="#dp">Dynamic programming</a>.</li>
-    <li><b>Sorting by two keys</b>, like "by end, then by length". You learn your own sort rules in <a href="#sorting">Sorting</a>.</li>
+    <li><b>A best choice that changes after every step</b>, like "always take the smallest of what is left" while new items arrive. That needs a container that gives the smallest fast: a priority queue, in <a href="#dijkstra">Shortest path (Dijkstra)</a>.</li>
   </ul>
 </aside>
 

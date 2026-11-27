@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="بضع صيغ صغيرة تحلّ محلّ حلقة طويلة. تعلّمها مرة واحدة، فتصبح مسائل كثيرة سطرًا واحدًا.">A few small formulas replace a long loop. Learn them once, and many 800 problems become one line.</span></p>
+<p class="idea"><span class="tr" data-ar="بضع صيغ صغيرة تحلّ محلّ حلقة طويلة. تعلّمها مرة واحدة، فيصبح حلّ مسائل كثيرة من مستوى 800 سطرًا واحدًا.">A few small formulas replace a long loop. Learn them once, and many 800 problems become one line.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -23,7 +23,7 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — the buses</h3>
-    <p>One bus takes 4 people. In C++, <code>10 / 4</code> is <b>2</b>. Division of two <code>int</code>s throws away the rest: it <span class="term" data-t="round-down">rounds down</span>. <button type="button" class="why" data-why="int-division">why?</button> But 2 buses leave 2 people on the street. We need to <span class="term" data-t="round-up">round up</span>.</p>
+    <p>One bus takes 4 people. In C++, <code>10 / 4</code> is <b>2</b>. Division of two <code>int</code>s throws away the rest. For numbers \( \ge 0 \) this <span class="term" data-t="round-down">rounds down</span>. <button type="button" class="why" data-why="int-division">why?</button> With a negative number it goes toward 0: <code>-7 / 2</code> is \( -3 \), not \( -4 \). But 2 buses leave 2 people on the street. We need to <span class="term" data-t="round-up">round up</span>.</p>
     <p>Look at more numbers of people \( a \). <code>a % 4</code> is the rest: the people who do not fill a bus.</p>
     <table>
       <tr><th>people \( a \)</th><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td></tr>
@@ -52,7 +52,7 @@
     </figure>
     <p>Count them with two easy questions:</p>
     <ul>
-      <li>Multiples of 3 from 1 to 17: \( \lfloor 17 / 3 \rfloor = 5 \). They are 3, 6, 9, 12, 15. The sign \( \lfloor x \rfloor \) means "round \( x \) down", like <code>17 / 3</code> in C++.</li>
+      <li>Multiples of 3 from 1 to 17: \( \lfloor 17 / 3 \rfloor = 5 \). They are 3, 6, 9, 12, 15. The sign \( \lfloor x \rfloor \) means "round \( x \) down", like <code>17 / 3</code> in C++ for positive numbers.</li>
       <li>Multiples of 3 from 1 to 4, the part before \( l \): \( \lfloor 4 / 3 \rfloor = 1 \). It is the 3.</li>
       <li>Take away the part before \( l \): \( 5 - 1 = 4 \).</li>
     </ul>
@@ -66,7 +66,7 @@
   "states": { "1,1": "active", "2,2": "active" },
   "legend": { "active": "the result is odd" } }
 </script>
-      <figcaption><span class="tr" data-ar="المجموع فردي فقط إذا كان عدد واحد فقط فرديًا. والضرب فردي فقط إذا كان العددان فرديين.">A sum is odd only when exactly one number is odd. A product is odd only when both are odd.</span></figcaption>
+      <figcaption><span class="tr" data-ar="المجموع فردي فقط إذا كان أحد العددين بالضبط فرديًا. وحاصل الضرب فردي فقط إذا كان العددان كلاهما فرديين.">A sum is odd only when exactly one number is odd. A product is odd only when both are odd.</span></figcaption>
     </figure>
     <p><b>Sum of \( 1 + 2 + \dots + n \).</b> Take \( n = 10 \). Pair the ends: \( 1 + 10 = 11 \), \( 2 + 9 = 11 \), and so on. There are 5 pairs of 11, so the sum is 55. In general:</p>
     \[ 1 + 2 + \dots + n = \frac{n \cdot (n + 1)}{2} \]
@@ -75,7 +75,7 @@
       <tr><th>I want…</th><th>math</th><th>C++</th><th>example</th></tr>
       <tr><td>is \( x \) even?</td><td>\( x \bmod 2 = 0 \)</td><td><code>x % 2 == 0</code></td><td>\( 8 \bmod 2 = 0 \): even</td></tr>
       <tr><td>is \( a \) divisible by \( b \)?</td><td>\( a \bmod b = 0 \)</td><td><code>a % b == 0</code></td><td>\( 12 \bmod 4 = 0 \): yes</td></tr>
-      <tr><td>\( a / b \) rounded down</td><td>\( \lfloor a / b \rfloor \)</td><td><code>a / b</code></td><td>\( \lfloor 10 / 4 \rfloor = 2 \)</td></tr>
+      <tr><td>\( a / b \) rounded down (\( a \ge 0, b &gt; 0 \))</td><td>\( \lfloor a / b \rfloor \)</td><td><code>a / b</code></td><td>\( \lfloor 10 / 4 \rfloor = 2 \)</td></tr>
       <tr><td>\( a / b \) rounded up</td><td>\( \lceil a / b \rceil \)</td><td><code>(a + b - 1) / b</code></td><td>\( \lceil 10 / 4 \rceil = 3 \)</td></tr>
       <tr><td>\( 1 + 2 + \dots + n \)</td><td>\( \frac{n (n + 1)}{2} \)</td><td><code>n * (n + 1) / 2</code></td><td>\( n = 100 \): 5050</td></tr>
       <tr><td>whole numbers in \( [l, r] \)</td><td>\( r - l + 1 \)</td><td><code>r - l + 1</code></td><td>\( [5, 17] \): 13</td></tr>
@@ -152,7 +152,7 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="ceil(10 / 4) في C++ يعطي 3.">In C++, <code>ceil(10 / 4)</code> gives 3.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يعطي 2، لأن 10 / 4 بين عددين صحيحين تساوي 2 قبل أن يعمل ceil.">It gives 2. <code>10 / 4</code> is already 2 before <code>ceil</code> runs.</span> Stay with integers and write <code>(a + b - 1) / b</code>.</p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يعطي 2، لأن 10 / 4 بين عددين صحيحين تساوي 2 قبل أن يعمل ceil.">It gives 2. <code>10 / 4</code> is already 2 before <code>ceil</code> runs.</span> Stay with integers and write <code>(a + b - 1) / b</code>. <button type="button" class="why" data-why="float-sum">why?</button></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="عدد الأعداد من l إلى r هو r − l.">The count of numbers from \( l \) to \( r \) is \( r - l \).</span></p>
@@ -168,7 +168,7 @@ int main() {
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><code>n * (n + 1) / 2</code> with <code>int n</code> can <span class="term" data-t="overflow">overflow</span>. It overflows from \( n = 46341 \), about \( 4.6 \cdot 10^4 \). Use <code>long long</code> when \( n \) can pass \( 10^4 \).</li>
+    <li><code>n * (n + 1) / 2</code> with <code>int n</code> can <span class="term" data-t="overflow">overflow</span>. It overflows from \( n = 46341 \), about \( 4.6 \cdot 10^4 \). The safe habit: always use <code>long long</code> here.</li>
     <li>Two numbers up to \( 10^9 \) multiplied in <code>int</code>. The product needs <code>long long</code> before you multiply.</li>
     <li>The digits loop does nothing for \( x = 0 \). If 0 is a possible input, handle it alone.</li>
   </ul>

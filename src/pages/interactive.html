@@ -1,6 +1,6 @@
-<p class="idea"><span class="tr" data-ar="برنامجك يتحاور مع الحَكَم. تطبع سؤالًا، فيجيب الحكم، وتستخدم الإجابة لتختار السؤال التالي.">Your program talks with the judge. You print a question, the judge answers, and you use the answer to choose the next question.</span></p>
+<p class="idea"><span class="tr" data-ar="برنامجك يتحاور مع الحَكَم. تطبع سؤالًا، فيجيب الحَكَم، وتستخدم الإجابة لتختار السؤال التالي.">Your program talks with the judge. You print a question, the judge answers, and you use the answer to choose the next question.</span></p>
 
-<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="المسائل التفاعلية ليست ضرورية قبل التقييم 1600. اقرأ الدرس عندما تقابل مسألة منها. تخطّيه الآن لا يمنعك من فهم الدروس التي بعده.">Interactive problems are not needed below 1600. Read this when you meet one. Skipping it now will not block the lessons after it.</span></p>
+<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="المسائل التفاعلية ليست ضرورية قبل التقييم 1600. هذا واحد من آخر ثلاثة دروس في المرحلة 3، ويمكنك قراءتها بأي ترتيب عندما تحتاجها مسألة.">Interactive problems are not needed below 1600. This is one of the last three lessons of Stage 3. Read them in any order, when a problem needs one.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -25,12 +25,12 @@
   <div class="way">
     <h3><b>1 · Story</b> — the guessing game with a real person</h3>
     <p>Remember the guessing game from <a href="#binary-search">Binary search</a>. Now your friend really sits in front of you. You say a number. You <b>wait</b>. Your friend answers. Only then you say the next number.</p>
-    <p>One danger: you write your question on paper but keep the paper in your pocket. Your friend waits for you, and you wait for your friend, for ever. In C++ the pocket is the <span class="term" data-t="output-buffer">output buffer</span>. To <span class="term" data-t="flush">flush</span> means to give the paper to your friend now.</p>
+    <p>One danger: you write your question on paper but keep the paper in your pocket. Your friend waits for you, and you wait for your friend, for ever. In C++ the pocket is the <span class="term" data-t="output-buffer">output buffer</span>. To <span class="term" data-t="flush">flush</span> means to give the paper to your friend now. <button type="button" class="why" data-why="endl">why?</button></p>
   </div>
 
   <div class="way">
     <h3><b>2 · Picture</b> — one dialogue</h3>
-    <p>The judge hides a number from 1 to 16 (here: 11). You print <code>? q</code>. <span class="tr" data-ar="يجيب الحكم 1 إذا كان الرقم المخفي ≥ q، ويجيب 0 إذا كان أصغر.">The judge answers 1 if the hidden number is at least q, and 0 if it is smaller.</span></p>
+    <p>The judge hides a number from 1 to 16 (here: 11). You print <code>? q</code>. <span class="tr" data-ar="يجيب الحَكَم 1 إذا كان العدد المخفي أكبر من q أو يساويه، ويجيب 0 إذا كان أصغر.">The judge answers 1 if the hidden number is at least q, and 0 if it is smaller.</span></p>
     <figure class="viz" data-viz="stepper" data-gen="guess" aria-label="Step by step: a dialogue with the judge. The hidden number is 11, between 1 and 16. Each question and answer makes the possible range on the number line smaller, until only 11 is left.">
       <script type="application/json">
 {
@@ -68,7 +68,7 @@
       </ol>
       <figcaption>Each question cuts the range in half: 16 → 8 → 4 → 2 → 1. So 4 questions are enough for 16 numbers.</figcaption>
     </figure>
-    <p><span class="tr" data-ar="احسب عدد الأسئلة قبل أن تكتب الكود، وقارنه بالحدّ المسموح.">Count the questions <b>before</b> you code, and compare with the limit.</span> For a range of size n you need \( \lceil \log_2 n \rceil \) questions. Here \( \lceil x \rceil \) means "round up". For 100 numbers: \( 2^6 = 64 \) is too small and \( 2^7 = 128 \) is enough, so 7 questions.</p>
+    <p><span class="tr" data-ar="احسب عدد الأسئلة قبل أن تكتب الكود، وقارنه بالحدّ المسموح.">Count the questions <b>before</b> you code, and compare with the limit.</span> For a range of size n you need \( \lceil \log_2 n \rceil \) questions. \( \log_2 n \) is the number of halvings from n down to 1, the same \( \log \) as in <a href="#complexity">Limits → speed</a>. Here \( \lceil x \rceil \) means "round up". For 100 numbers: \( 2^6 = 64 \) is too small and \( 2^7 = 128 \) is enough, so 7 questions.</p>
   </div>
 
   <div class="way">
@@ -79,12 +79,12 @@ int ask(int q) {
     cout &lt;&lt; "? " &lt;&lt; q &lt;&lt; endl;     // endl = new line + flush
     int reply;
     cin &gt;&gt; reply;                    // wait for the judge
-    if (reply == -1) exit(0);        // we broke a rule: stop at once
+    if (reply == -1) exit(0);        // we broke a rule: exit(0) ends the program
     return reply;
 }
 </code></pre>
     <p class="tip-box"><b>Flush.</b> Write <code>endl</code> after every line you print here. This is the one place where <code>endl</code> is better than <code>"\n"</code>. Keep the two fast-input lines of your template. The <code>endl</code> still flushes with them.</p>
-    <p><b>Test it at home: you are the judge.</b> Write a hidden number on paper. Run the program. When it prints <code>? 9</code>, type the true reply and press Enter. Count the questions, and check that the final answer is your number. Try the smallest and the biggest number too.</p>
+    <p><b>Test it at home: you are the judge.</b> Write a hidden number on paper. Run the program as in <a href="#run-your-code">Run and test your code</a>. When it prints <code>? 9</code>, type the true reply and press Enter. Count the questions, and check that the final answer is your number. Try the smallest and the biggest number too.</p>
   </div>
 </section>
 
@@ -96,7 +96,8 @@ int ask(int q) {
 <pre data-part="main"><code class="cpp">
 string s;
 cin &gt;&gt; s;
-return s == "&gt;=" ? 1 : 0;           // was: cin &gt;&gt; reply; ... return reply;
+if (s == "&gt;=") return 1;           // was: cin &gt;&gt; reply; ... return reply;
+return 0;
 </code></pre></li>
     <li><b>Find a position, not a value.</b> A hidden row of 0s and then 1s, positions 1 to n, with at least one 1. <code>? i</code> gives the value at position i. Find the first 1. It is the first "yes", as in the binary search lesson.
 <pre data-part="main"><code class="cpp">
@@ -162,11 +163,11 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="الأمثلة في نص المسألة ملف إدخال عادي.">The samples in the statement are a normal input file.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إنها تعرض حوارًا واحدًا فقط. يجب أن يعمل برنامجك لأي رقم مخفي.">They show one dialogue only. Your program must work for any hidden value.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إنها تعرض حوارًا واحدًا فقط. يجب أن يعمل برنامجك لأي عدد مخفي.">They show one dialogue only. Your program must work for any hidden value.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="يكفي أن أكتب &quot;\n&quot;، والتفريغ ليس مهمًّا.">Writing "\n" is enough. The flush does not matter.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="بدون تفريغ يبقى السؤال عندك، فتحصل على Idleness limit exceeded.">Without a flush the question stays in your pocket. The verdict is "Idleness limit exceeded".</span> Use <code>endl</code>.</p>
+      <p class="truth"><b>The truth:</b> Your template has <code>cin.tie(nullptr)</code>, so <code>cin</code> no longer flushes <code>cout</code> for you. <span class="tr" data-ar="بدون تفريغ يبقى السؤال عندك، فتكون نتيجة الحُكم Idleness limit exceeded.">Without a flush the question stays in your program. The verdict is "Idleness limit exceeded".</span> Use <code>endl</code>.</p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="سؤال زائد واحد لا يضرّ إذا كانت الإجابة النهائية صحيحة.">One extra question is fine if the final answer is right.</span></p>
@@ -180,7 +181,7 @@ int main() {
   <ul>
     <li>Wrong format: <code>?9</code> without the space, or no <code>!</code> before the answer. Copy the format from the statement.</li>
     <li>Many test cases: after <code>! x</code> some problems send one more reply to read. Check the statement.</li>
-    <li>Printing the next question before you read the reply to the last one.</li>
+    <li><span class="tr" data-ar="أن تطبع السؤال التالي قبل أن تقرأ الردّ على السؤال السابق.">Printing the next question before you read the reply to the last one.</span></li>
   </ul>
 </section>
 
@@ -194,11 +195,11 @@ int main() {
 <section class="check">
   <h2>Check yourself</h2>
   <ol>
-    <li><span class="tr" data-ar="الرقم المخفي بين 1 و 1000، والحدّ 10 أسئلة. هل يكفي البحث الثنائي؟">The hidden number is from 1 to 1000. The limit is 10 questions. Is binary search enough?</span>
+    <li><span class="tr" data-ar="العدد المخفي بين 1 و 1000، والحدّ 10 أسئلة. هل يكفي البحث الثنائي؟">The hidden number is from 1 to 1000. The limit is 10 questions. Is binary search enough?</span>
       <details><summary>Answer</summary><p>Yes. \( 2^{10} = 1024 \), which is at least 1000. So \( \lceil \log_2 1000 \rceil = 10 \).</p></details></li>
-    <li><span class="tr" data-ar="برنامجك صحيح، لكن الحكم يعطي Idleness limit exceeded. ما السبب غالبًا؟">Your program is correct, but the verdict is "Idleness limit exceeded". What is the likely reason?</span>
+    <li><span class="tr" data-ar="برنامجك صحيح، لكن نتيجة الحُكم هي Idleness limit exceeded. ما السبب غالبًا؟">Your program is correct, but the verdict is "Idleness limit exceeded". What is the likely reason?</span>
       <details><summary>Answer</summary><p>No flush. The question stayed in the buffer, so the judge never saw it. Use <code>endl</code>.</p></details></li>
-    <li><span class="tr" data-ar="كيف تختبر برنامجًا تفاعليًّا على جهازك دون حكم؟">How do you test an interactive program at home, with no judge?</span>
+    <li><span class="tr" data-ar="كيف تختبر برنامجًا تفاعليًّا على جهازك دون حَكَم؟">How do you test an interactive program at home, with no judge?</span>
       <details><summary>Answer</summary><p>Be the judge. Pick a hidden number, run the program, and type the true reply to each question.</p></details></li>
   </ol>
 </section>

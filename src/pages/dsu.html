@@ -1,12 +1,12 @@
-<p class="idea"><span class="tr" data-ar="ضع العناصر في مجموعات، ولكل مجموعة قائد واحد. سؤالان سريعان: من قائد x؟ وادمج هاتين المجموعتين.">Keep items in groups. Each group has one leader. Two fast operations: "who is the leader of x?" and "join these two groups".</span></p>
+<p class="idea"><span class="tr" data-ar="ضع العناصر في مجموعات، ولكل مجموعة قائد واحد. عمليتان سريعتان: «من قائد x؟» و«ادمج هاتين المجموعتين».">Keep items in groups. Each group has one leader. Two fast operations: "who is the leader of x?" and "join these two groups".</span></p>
 
-<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="لا تحتاج DSU قبل التقييم 1600. اقرأ الدرس عندما تحتاجه مسألة. تخطّيه الآن لا يمنعك من فهم الدروس التي بعده.">You do not need DSU below 1600. Read it when a problem needs it. Skipping it now will not block the lessons after it.</span> To count groups, DFS from <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> is enough.</p>
+<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="لا تحتاج DSU قبل التقييم 1600. هذا واحد من آخر ثلاثة دروس في المرحلة 3، ويمكنك قراءتها بأي ترتيب عندما تحتاجها مسألة.">You do not need DSU below 1600. It is one of the last three lessons of Stage 3. Read them in any order, when a problem needs one.</span> To count groups, DFS from <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> is enough.</p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
     <li>You know vertices, edges and connected components → <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a></li>
-    <li>You can read a function that calls itself → <a href="#recursion">Recursion and backtracking</a></li>
+    <li>You can read a function that calls itself and returns a value → <a href="#recursion">Recursion and backtracking</a></li>
   </ul>
 </aside>
 
@@ -45,13 +45,13 @@
   "code": ["int find(int x) {","    if (parent[x] == x) return x;","    return parent[x] = find(parent[x]);","}","bool unite(int a, int b) {","    a = find(a);  b = find(b);","    if (a == b) return false;","    if (sz[a] < sz[b]) swap(a, b);","    parent[b] = a;  sz[a] += sz[b];","    return true;","}"],
   "steps": [
     {"g":{"states":{"1":"","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 1","2":"size 1","3":"size 1","4":"size 1","5":"size 1","6":"size 1"},"edges":[],"edgeStates":{}},"p":{"values":[1,2,3,4,5,6],"states":{}},"v":{"items":[["call",""],["groups",6]]}},
-    {"line":[6,8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 1","4":"size 1","5":"size 1","6":"size 1"},"edges":[{"from":2,"to":1}],"edgeStates":{"2-1":"active"}},"p":{"values":[1,1,3,4,5,6],"states":{"1":"active"}},"v":{"items":[["call","unite(1, 2)"],["groups",5]]}},
-    {"line":[6,8,9],"g":{"states":{"1":"","2":"","3":"active","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 1","6":"size 1"},"edges":[{"from":2,"to":1},{"from":4,"to":3}],"edgeStates":{"4-3":"active"}},"p":{"values":[1,1,3,3,5,6],"states":{"3":"active"}},"v":{"items":[["call","unite(3, 4)"],["groups",4]]}},
-    {"line":[6,8,9],"g":{"states":{"1":"","2":"","3":"","4":"","5":"active","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 2"},"edges":[{"from":2,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{"6-5":"active"}},"p":{"values":[1,1,3,3,5,5],"states":{"5":"active"}},"v":{"items":[["call","unite(5, 6)"],["groups",3]]}},
+    {"line":[6,8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 1","4":"size 1","5":"size 1","6":"size 1"},"edges":[{"from":2,"to":1}],"edgeStates":{"2-1":"active"}},"p":{"values":[1,1,3,4,5,6],"states":{"2":"active"}},"v":{"items":[["call","unite(1, 2)"],["groups",5]]}},
+    {"line":[6,8,9],"g":{"states":{"1":"","2":"","3":"active","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 1","6":"size 1"},"edges":[{"from":2,"to":1},{"from":4,"to":3}],"edgeStates":{"4-3":"active"}},"p":{"values":[1,1,3,3,5,6],"states":{"4":"active"}},"v":{"items":[["call","unite(3, 4)"],["groups",4]]}},
+    {"line":[6,8,9],"g":{"states":{"1":"","2":"","3":"","4":"","5":"active","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 2"},"edges":[{"from":2,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{"6-5":"active"}},"p":{"values":[1,1,3,3,5,5],"states":{"6":"active"}},"v":{"items":[["call","unite(5, 6)"],["groups",3]]}},
     {"line":6,"g":{"states":{"1":"active","2":"","3":"active","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 2"},"edges":[{"from":2,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{}},"p":{"values":[1,1,3,3,5,5],"states":{}},"v":{"items":[["call","unite(2, 4)"],["groups",3]]}},
-    {"line":[8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 4","5":"size 2"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{"3-1":"active"}},"p":{"values":[1,1,1,3,5,5],"states":{"2":"active"}},"v":{"items":[["call","unite(2, 4)"],["groups",2]]}},
+    {"line":[8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 4","5":"size 2"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{"3-1":"active"}},"p":{"values":[1,1,1,3,5,5],"states":{"3":"active"}},"v":{"items":[["call","unite(2, 4)"],["groups",2]]}},
     {"line":6,"g":{"states":{"1":"active","2":"","3":"","4":"","5":"active","6":""},"notes":{"1":"size 4","5":"size 2"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{}},"p":{"values":[1,1,1,3,5,5],"states":{}},"v":{"items":[["call","unite(2, 6)"],["groups",2]]}},
-    {"line":[8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 6"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":5,"to":1},{"from":6,"to":5}],"edgeStates":{"5-1":"active"}},"p":{"values":[1,1,1,3,1,5],"states":{"4":"active"}},"v":{"items":[["call","unite(2, 6)"],["groups",1]]}},
+    {"line":[8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 6"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":5,"to":1},{"from":6,"to":5}],"edgeStates":{"5-1":"active"}},"p":{"values":[1,1,1,3,1,5],"states":{"5":"active"}},"v":{"items":[["call","unite(2, 6)"],["groups",1]]}},
     {"line":[6,7],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 6"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":5,"to":1},{"from":6,"to":5}],"edgeStates":{}},"p":{"values":[1,1,1,3,1,5],"states":{}},"v":{"items":[["call","unite(1, 3)"],["groups",1]]}}
   ]
 }
@@ -83,7 +83,7 @@
   "steps": [
     {"g":{"states":{"1":"","2":"","3":"","4":"","5":"active"},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":2},{"from":4,"to":3},{"from":5,"to":4}],"edgeStates":{}},"p":{"values":[1,1,2,3,4],"states":{}},"v":{"items":[["path",[5]]]}},
     {"line":2,"g":{"states":{"1":"active","2":"read","3":"read","4":"read","5":"read"},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":2},{"from":4,"to":3},{"from":5,"to":4}],"edgeStates":{}},"p":{"values":[1,1,2,3,4],"states":{}},"v":{"items":[["path",[5,4,3,2,1]]]}},
-    {"line":3,"g":{"states":{"1":"","2":"","3":"","4":"","5":""},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":1},{"from":5,"to":1}],"edgeStates":{"3-1":"active","4-1":"active","5-1":"active"}},"p":{"values":[1,1,1,1,1],"states":{"2":"active","3":"active","4":"active"}},"v":{"items":[["path",[]]]}},
+    {"line":3,"g":{"states":{"1":"","2":"","3":"","4":"","5":""},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":1},{"from":5,"to":1}],"edgeStates":{"3-1":"active","4-1":"active","5-1":"active"}},"p":{"values":[1,1,1,1,1],"states":{"3":"active","4":"active","5":"active"}},"v":{"items":[["path",[]]]}},
     {"line":2,"g":{"states":{"1":"active","2":"","3":"","4":"","5":"read"},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":1},{"from":5,"to":1}],"edgeStates":{}},"p":{"values":[1,1,1,1,1],"states":{}},"v":{"items":[["path",[5,1]]]}}
   ]
 }
@@ -99,50 +99,56 @@
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — a small struct you can reuse</h3>
-    <p>Items are numbered 1 to <code>n</code>. <code>sz[x]</code> is the size of the group, and it is correct only when <code>x</code> is a leader.</p>
+    <h3><b>3 · Code</b> — three small functions you can reuse</h3>
+    <p>Items are numbered 1 to <code>n</code>. <span class="tr" data-ar="sz[x] هو حجم المجموعة، وهو صحيح فقط عندما يكون x قائدًا."><code>sz[x]</code> is the size of the group, and it is correct only when <code>x</code> is a leader.</span> The two arrays are global, as in Graphs. Call <code>init(n)</code> at the start of every test.</p>
 <pre data-part="global"><code class="cpp">
-struct DSU {
-    vector&lt;int&gt; parent, sz;                 // sz[leader] = size of its group
-    DSU(int n) : parent(n + 1), sz(n + 1, 1) {
-        for (int i = 0; i &lt;= n; i++) parent[i] = i;   // everybody is alone
-    }
-    int find(int x) {                       // the leader of x
-        if (parent[x] == x) return x;
-        return parent[x] = find(parent[x]); // path compression
-    }
-    bool unite(int a, int b) {              // false = they were already together
-        a = find(a); b = find(b);
-        if (a == b) return false;
-        if (sz[a] &lt; sz[b]) swap(a, b);      // a is the bigger group
-        parent[b] = a;                      // small group goes under the big one
-        sz[a] += sz[b];
-        return true;
-    }
-};
+vector&lt;int&gt; parent, sz;                     // sz[leader] = size of its group
+
+void init(int n) {
+    parent.assign(n + 1, 0);
+    sz.assign(n + 1, 1);
+    for (int i = 0; i &lt;= n; i++) parent[i] = i;   // everybody is alone
+}
+
+int find(int x) {                           // the leader of x
+    if (parent[x] == x) return x;
+    return parent[x] = find(parent[x]);     // path compression
+}
+
+bool unite(int a, int b) {                  // false = they were already together
+    a = find(a);
+    b = find(b);
+    if (a == b) return false;
+    if (sz[a] &lt; sz[b]) swap(a, b);          // a is the bigger group
+    parent[b] = a;                          // small group goes under the big one
+    sz[a] += sz[b];
+    return true;
+}
 </code></pre>
+    <p class="note">The line <code>return parent[x] = find(parent[x]);</code> does two things. It stores the leader in <code>parent[x]</code>, and it returns that leader.</p>
   </div>
 </section>
 
 <section>
   <h2>Change it to fit</h2>
-  <p>The struct above is the DEFAULT. Never change it. Each problem changes only the few lines in <code>main</code>. Here <code>d</code> is a <code>DSU d(n);</code>.</p>
+  <p>The three functions above are the DEFAULT. Never change them. Each problem changes only the few lines in <code>main</code>.</p>
   <ul>
     <li><b>Count the groups.</b> Start with <code>groups = n</code>. <span class="tr" data-ar="كل استدعاء لـ unite يعيد true يقلّل عدد المجموعات بواحد.">Every <code>unite</code> that returns <code>true</code> makes one group less.</span>
 <pre data-part="main"><code class="cpp">
-if (d.unite(a, b)) groups--;
+if (unite(a, b)) groups--;
 </code></pre></li>
     <li><b>The size of the group of x.</b> Read the size at the leader only.
 <pre data-part="main"><code class="cpp">
-int size = d.sz[d.find(x)];
+int size = sz[find(x)];
 </code></pre></li>
-    <li><b>Does the new edge close a cycle?</b> <span class="tr" data-ar="إذا أعادت unite القيمة false، فقد كان a و b متصلين من قبل. إذن الحافة الجديدة تصنع دورة.">If <code>unite</code> returns <code>false</code>, a and b were already connected. So the new edge closes a cycle.</span>
+    <li><b>Does the new edge close a cycle?</b> <span class="tr" data-ar="إذا أعادت unite القيمة false، فقد كان a و b متصلين من قبل. إذن الضلع الجديد يصنع دورة.">If <code>unite</code> returns <code>false</code>, a and b were already connected. So the new edge closes a cycle.</span>
 <pre data-part="main"><code class="cpp">
-if (!d.unite(a, b)) cycle = true;
+if (!unite(a, b)) cycle = true;
 </code></pre></li>
     <li><b>"Are a and b connected?"</b> Compare the leaders.
 <pre data-part="main"><code class="cpp">
-cout &lt;&lt; (d.find(a) == d.find(b) ? "YES" : "NO") &lt;&lt; "\n";
+if (find(a) == find(b)) cout &lt;&lt; "YES\n";
+else cout &lt;&lt; "NO\n";
 </code></pre></li>
   </ul>
 </section>
@@ -171,36 +177,40 @@ cout &lt;&lt; (d.find(a) == d.find(b) ? "YES" : "NO") &lt;&lt; "\n";
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-struct DSU {                                // the same struct as above
-    vector&lt;int&gt; parent, sz;
-    DSU(int n) : parent(n + 1), sz(n + 1, 1) {
-        for (int i = 0; i &lt;= n; i++) parent[i] = i;
-    }
-    int find(int x) {
-        if (parent[x] == x) return x;
-        return parent[x] = find(parent[x]);
-    }
-    bool unite(int a, int b) {
-        a = find(a); b = find(b);
-        if (a == b) return false;
-        if (sz[a] &lt; sz[b]) swap(a, b);
-        parent[b] = a;
-        sz[a] += sz[b];
-        return true;
-    }
-};
+vector&lt;int&gt; parent, sz;                     // the same functions as above
+
+void init(int n) {
+    parent.assign(n + 1, 0);
+    sz.assign(n + 1, 1);
+    for (int i = 0; i &lt;= n; i++) parent[i] = i;
+}
+
+int find(int x) {
+    if (parent[x] == x) return x;
+    return parent[x] = find(parent[x]);
+}
+
+bool unite(int a, int b) {
+    a = find(a);
+    b = find(b);
+    if (a == b) return false;
+    if (sz[a] &lt; sz[b]) swap(a, b);
+    parent[b] = a;
+    sz[a] += sz[b];
+    return true;
+}
 
 int main() {
     int n, m;
     cin &gt;&gt; n &gt;&gt; m;
-    DSU d(n);
+    init(n);
     int groups = n, best = 1;               // n cities, all alone
     for (int i = 0; i &lt; m; i++) {
         int a, b;
         cin &gt;&gt; a &gt;&gt; b;
-        if (d.unite(a, b)) {                // a real join: one group less
+        if (unite(a, b)) {                  // a real join: one group less
             groups--;
-            best = max(best, d.sz[d.find(a)]);
+            best = max(best, sz[find(a)]);
         }
         cout &lt;&lt; groups &lt;&lt; " " &lt;&lt; best &lt;&lt; "\n";
     }
@@ -218,7 +228,7 @@ int main() {
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="ليس دائمًا. في الصورة parent[4] = 3 لكن القائد هو 1.">Not always. In the picture <code>parent[4]</code> is 3, but the leader is 1.</span> Always compare <code>find(a) == find(b)</code>.</p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يستطيع DSU أن يحذف حافة أو يقسم مجموعة إلى قسمين.">DSU can remove an edge, or split a group in two.</span></p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يستطيع DSU أن يحذف ضلعًا أو يقسم مجموعة إلى قسمين.">DSU can remove an edge, or split a group in two.</span></p>
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يستطيع. بعد الدمج تبقى المجموعتان مندمجتين إلى الأبد.">It cannot. After a join, the two groups stay joined for ever.</span> If the problem removes edges, plain DSU does not fit (see "Not now").</p>
     </li>
     <li>
@@ -233,7 +243,7 @@ int main() {
   <ul>
     <li>Writing <code>parent[a] = b</code> in <code>unite</code>. Join the leaders: first <code>a = find(a); b = find(b);</code>.</li>
     <li>Reading <code>sz[x]</code> for any x. The size is correct only at the leader: <code>sz[find(x)]</code>.</li>
-    <li>Items 1 to n but <code>DSU d(n - 1)</code>, or a reused DSU in many test cases. Make a new <code>DSU d(n);</code> for each test.</li>
+    <li>Items 1 to n but <code>init(n - 1)</code>, or no <code>init</code> in a new test case. Call <code>init(n)</code> at the start of each test.</li>
   </ul>
 </section>
 
@@ -250,7 +260,7 @@ int main() {
   <ol>
     <li><span class="tr" data-ar="المصفوفة parent للعناصر 1 إلى 4 هي 1 1 2 3. ما قيمة find(4)؟ وكيف تصبح parent بعده؟">The <code>parent</code> values of items 1 to 4 are 1, 1, 2, 3. What is <code>find(4)</code>? What is <code>parent</code> after it?</span>
       <details><summary>Answer</summary><p><code>find(4)</code> walks 4 → 3 → 2 → 1, so it returns 1. Path compression makes <code>parent</code> = 1, 1, 1, 1.</p></details></li>
-    <li><span class="tr" data-ar="تضيف الحواف 1-2 ثم 2-3 ثم 3-1. أي حافة تصنع دورة؟ وماذا تعيد unite لها؟">You add the edges 1-2, then 2-3, then 3-1. Which edge closes a cycle? What does <code>unite</code> return for it?</span>
+    <li><span class="tr" data-ar="تضيف الأضلاع 1-2 ثم 2-3 ثم 3-1. أي ضلع يصنع دورة؟ وماذا تعيد unite له؟">You add the edges 1-2, then 2-3, then 3-1. Which edge closes a cycle? What does <code>unite</code> return for it?</span>
       <details><summary>Answer</summary><p>The edge 3-1. Items 3 and 1 already have the same leader, so <code>unite</code> returns <code>false</code>.</p></details></li>
     <li><span class="tr" data-ar="لديك 10 عناصر، و 4 استدعاءات لـ unite أعادت true. كم مجموعة الآن؟">You have 10 items. Four <code>unite</code> calls returned <code>true</code>. How many groups are there now?</span>
       <details><summary>Answer</summary><p>\( 10 - 4 = 6 \). Each real join makes one group less.</p></details></li>
@@ -270,6 +280,7 @@ int main() {
     <li><a class="cf" data-p="25D">Roads not only in Berland</a><span class="r">1900</span></li>
     <li><a href="https://cses.fi/problemset/task/1676">CSES: Road Construction</a><span class="r">CSES</span> — the problem of "Solve one together". Submit the program there.</li>
   </ol>
+  <p class="note">Roads not only in Berland (1900) is above this guide's goal. Keep it for after 1600.</p>
 </section>
 
 <section class="more">

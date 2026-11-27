@@ -43,7 +43,7 @@ static void t_start() {
   //#lim_ll2
   CK((unsigned long long)LLONG_MAX == (1ULL << 63) - 1);
   //#mem_ints
-  CK(fabs(256.0 * 1024 * 1024 / sizeof(int) - 6e7) / 6e7 < 0.15);
+  CK(fabs(256.0 * 1024 * 1024 / sizeof(int) - 6.7e7) / 6.7e7 < 0.01);   // 67 108 864
 }
 
 static void t_parity() {

@@ -259,10 +259,16 @@ button.why:hover, button.why:focus-visible { color: var(--accent); border-color:
 .cc { background: var(--surface); border: 1px solid var(--line); border-radius: 7px; padding: 9px 11px; cursor: help; min-width: 0 }
 .cc:hover, .cc:focus-visible { border-color: var(--sc, var(--accent)) }
 .cc pre { border: 0; padding: 0; background: none; font-size: .78rem; line-height: 1.45 }
-.cc .fx { font: 500 .88rem/1.5 var(--f-mono); overflow-wrap: anywhere; padding-left: 1em; text-indent: -1em }
+/* a formula line: the words are labels (plain font, muted), the code is what you type (mono, full colour) */
+.cc .fx { font: 400 .86rem/1.55 var(--f-body); color: var(--muted); overflow-wrap: anywhere; padding-left: 1em; text-indent: -1em }
+.cc .fx code { font-family: var(--f-mono); font-weight: 600; color: var(--fg) }
+.cc .fx .katex { color: var(--fg) }
 .cc .fx + .fx { margin-top: 2px }
 .cc table { font-size: .8rem; width: 100% }
 .cc.span2 { grid-column: span 2 }
+.cc[hidden], .cheat section[hidden], .extra section[hidden] { display: none }
+.cheat section[id], .extra section[id] { scroll-margin-top: 64px }
+.cardsearch { margin: 4px 0 12px } .cardsearch .note { margin: 8px 0 0 }
 @media (max-width: 700px) { .cc.span2 { grid-column: auto } }
 
 /* training */

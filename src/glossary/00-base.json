@@ -1,7 +1,7 @@
 {
   "sorted": { "en": "sorted", "ar": "مرتّب", "note": "in order, from small to big" },
   "monotonic": { "en": "monotonic", "ar": "مطّرد (يتغيّر في اتجاه واحد فقط)", "note": "only goes one way: once it becomes yes, it stays yes" },
-  "overflow": { "en": "overflow", "ar": "تجاوز الحدّ الأقصى للمتغيّر", "note": "the number is too big for the type, so it becomes garbage" },
+  "overflow": { "en": "overflow", "ar": "تجاوز الحدّ الأقصى للمتغيّر", "note": "the number is too big for the type, so it becomes a wrong, random value" },
   "algorithm": { "en": "algorithm", "ar": "خوارزمية", "note": "a clear list of steps that solves a problem" },
   "complexity": { "en": "complexity", "ar": "تعقيد (عدد العمليات)", "note": "how the number of steps grows when the input grows" },
   "constraints": { "en": "constraints", "ar": "القيود (حدود المدخلات)", "note": "the limits of the input, like 1 ≤ n ≤ 100000" },
@@ -11,8 +11,8 @@
   "subsequence": { "en": "subsequence", "ar": "متتالية جزئية (غير متّصلة بالضرورة)", "note": "some elements in the same order, gaps allowed" },
   "substring": { "en": "substring", "ar": "سلسلة جزئية متّصلة", "note": "a part of a string with no gaps" },
   "permutation": { "en": "permutation", "ar": "تبديلة (ترتيب للأعداد من 1 إلى n)", "note": "the numbers 1..n, each exactly once, in some order" },
-  "greedy": { "en": "greedy", "ar": "خوارزمية طمّاعة", "note": "always take the best choice right now" },
-  "brute-force": { "en": "brute force", "ar": "تجربة كل الاحتمالات", "note": "try every possibility" },
+  "greedy": { "en": "greedy", "ar": "خوارزمية جشعة", "note": "always take the best choice right now" },
+  "brute-force": { "en": "brute force", "ar": "تجربة كل الاحتمالات (البحث الشامل)", "note": "try every possibility" },
   "simulation": { "en": "simulation", "ar": "محاكاة", "note": "do exactly the steps the statement describes" },
   "divisible": { "en": "divisible", "ar": "يقبل القسمة", "note": "a is divisible by b when a % b == 0" },
   "remainder": { "en": "remainder", "ar": "باقي القسمة", "note": "what is left after division: 7 % 3 = 1" },
@@ -38,5 +38,9 @@
   "prefix": { "en": "prefix", "ar": "بادئة (الجزء الأوّل)", "note": "the first k elements" },
   "suffix": { "en": "suffix", "ar": "لاحقة (الجزء الأخير)", "note": "the last k elements" },
   "query": { "en": "query", "ar": "استعلام (سؤال)", "note": "one question: the problem asks you, or (interactive) you ask the judge" },
-  "test-case": { "en": "test case", "ar": "حالة اختبار", "note": "one input the judge runs your code on" }
+  "test-case": { "en": "test case", "ar": "حالة اختبار", "note": "one input the judge runs your code on" },
+  "signal": { "en": "signal", "ar": "علامة (دليل في نص المسألة)", "note": "a word, a limit or a kind of question in the statement that points to a tool" },
+  "contribution": { "en": "contribution", "ar": "مساهمة العنصر في الناتج", "note": "how much one element adds to the final answer, counted over all the places it appears" },
+  "complement": { "en": "complement", "ar": "المتمِّم (الحالات المعاكسة)", "note": "the cases you do NOT want; count them and subtract from all cases" },
+  "routine": { "en": "routine", "ar": "خطوات ثابتة تكرّرها كل مرة", "note": "the same steps you do every time, in the same order" }
 }

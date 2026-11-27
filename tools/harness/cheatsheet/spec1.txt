@@ -1,3 +1,26 @@
+== pocket | s4 | Which tool? Pocket version
+-- choose-a-tool | The routine for every problem, from the end of the page "Which tool?". Do the steps in this order.
+1. Limits → allowed cost ($$: 10^8$$ steps per second).
+2. The task in one sentence.
+3. Samples by hand.
+4. Kind of answer: yes/no, count, min/max, build, queries.
+5. Brute force and its cost. Fits? Code it.
+6. Too slow? What is repeated? Remove it with a tool.
+7. Edge cases and {{: long long}}, then submit.
+-- choose-a-tool span2 | 12 strong signals in a statement and the tool each one points to. The page "Which tool?" explains each one.
+$$: n \le 20$$ → try all subsets (mask).
+$$: n \le 5000$$ → $$: O(n^2)$$ is fine.
+$$: n \le 2 \cdot 10^5$$ → sort, one loop, $$: O(n \log n)$$.
+Values up to $$: 10^{12}$$ → $$: \sqrt{n}$$ loop; up to $$: 10^{18}$$ → formula or $$: \log$$; {{: long long}}.
+Many "sum l..r" queries → prefix sums.
+Longest window with sum $$: \le S$$ → two pointers.
+"Min value that works", monotonic → binary search on the answer.
+Only frequencies matter → counting.
+Order does not matter → sort first.
+"Modulo $$: 10^9+7$$", count ways → DP or C(n, k).
+Fewest moves, equal cost → BFS; weights → Dijkstra.
+"Print any" → constructive: solve tiny $$: n$$ by hand.
+
 == start | s0 | Limits and types
 -- complexity | About 10^8 simple steps run in 1 second. Read n from the limits, then pick the speed you need.
 |! $$: n \le$$ | speed
@@ -9,10 +32,10 @@
 || $$: 10^{12}$$ | $$: O(\sqrt{n})$$
 || $$: 10^{18}$$ | $$: O(\log n)$$, $$: O(1)$$
 -- overflow | How big a number each type can hold. If a sum or product can pass 2·10^9, use long long.
-{{: int}} $$lim_int: \approx \pm 2 \cdot 10^9$$ · $$lim_int2: (2^{31} - 1)$$
+{{: int}} $$lim_int: \approx \pm 2 \cdot 10^9$$ · $$lim_int2: (2^{31} - 1)$$ [why:int-max]
 {{: long long}} $$lim_ll: \approx \pm 9 \cdot 10^{18}$$ · $$lim_ll2: (2^{63} - 1)$$
-1 second $$: \approx 10^8$$ steps
-256 MB $$mem_ints: \approx 6 \cdot 10^7$$ ints
+1 second $$: \approx 10^8$$ steps [why:ten-to-eight]
+256 MB $$mem_ints: \approx 6.7 \cdot 10^7$$ ints [why:memory-256]
 -- overflow | Multiply two ints safely: start with 1LL so the whole product is computed as long long.
 >>> main mul1ll
 long long p = 1LL * a * b;

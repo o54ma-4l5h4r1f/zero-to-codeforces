@@ -1,7 +1,0 @@
-{
-  "handle": { "en": "handle", "ar": "اسم المستخدم", "note": "your name on Codeforces, shown in its colour" },
-  "standard-input": { "en": "standard input", "ar": "الإدخال القياسي", "note": "where cin reads from: what you type, or the test file on the judge" },
-  "standard-output": { "en": "standard output", "ar": "الإخراج القياسي", "note": "where cout writes to: your screen, or the file the judge checks" },
-  "terminal": { "en": "terminal", "ar": "الطرفية (نافذة الأوامر)", "note": "a window where you type commands, like g++ a.cpp" },
-  "compiler": { "en": "compiler", "ar": "المترجم", "note": "the program that turns your C++ code into a program you can run" }
-}

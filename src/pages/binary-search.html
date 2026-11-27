@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="اقسم منطقة البحث إلى نصفين مرة بعد مرة. حوالي 30 خطوة تكفي للبحث بين مليار رقم.">Cut the search area in half again and again. About 30 steps are enough for a billion numbers.</span> <button type="button" class="why" data-why="halving-log">why?</button></p>
+<p class="idea"><span class="tr" data-ar="اقسم منطقة البحث إلى نصفين مرة بعد مرة. حوالي 30 خطوة تكفي للبحث بين مليار عدد.">Cut the search area in half again and again. About 30 steps are enough for a billion numbers.</span> <button type="button" class="why" data-why="halving-log">why?</button></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -79,7 +79,7 @@
     <h3><b>3 · Code</b> — one template for everything</h3>
     <p>You write a function <code>ok(x)</code>. It answers the yes/no question for one value. The loop never changes.</p>
 <pre data-part="global"><code class="cpp">
-bool ok(long long x);          // you write this: no no no YES YES YES
+bool ok(long long x);          // only says that ok exists; you write its body
 
 long long firstYes(long long lo, long long hi) {
     // lo = a value where ok is false (or one step before the range)
@@ -98,6 +98,7 @@ int i = lower_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i
 int j = upper_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i] &gt;  x
 // j - i = how many times x is in the array
 </code></pre>
+    <p><code>lower_bound</code> gives a place (an iterator), not a number. <code>- a.begin()</code> turns the place into an index. <span class="tr" data-ar="إذا كانت كل القيم أصغر من x، يُرجع lower_bound القيمة a.end()، فيكون i = n. تحقّق من i &lt; n قبل أن تقرأ a[i].">If every value is smaller than <code>x</code>, it returns <code>a.end()</code>, so <code>i == n</code>. Check <code>i &lt; n</code> before you read <code>a[i]</code>.</span> More: <a href="#cpp-reference">C++ reference</a>, part "Iterators".</p>
     <p class="tip-box"><b>Which one do I use?</b> Searching for a value in a sorted <code>vector</code>: use <code>lower_bound</code>. Everything else: use the template with <code>ok</code>.</p>
   </div>
 </section>
@@ -158,6 +159,7 @@ int j = upper_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i
         </ol>
         <figcaption>We tested only 3 times out of 15. With \( 10^{18} \) possible times, about 60 tests are enough.</figcaption>
       </figure>
+      <p>In the code, <code>n</code>, <code>k</code> and <code>t</code> are global, so <code>ok</code> can read them. With many test cases, fill them again in every test.</p>
     </li>
     <li><b>Why is it fast enough?</b> The biggest <code>hi</code> is \( 10^9 \cdot 10^9 = 10^{18} \). It fits in <code>long long</code>. Cutting \( 10^{18} \) in half takes about 60 steps. Each step runs <code>ok</code>, which is one loop over \( n \) machines.
       \[ 60 \cdot 2 \cdot 10^5 = 1.2 \cdot 10^7 \text{ steps} \]
@@ -168,13 +170,13 @@ int j = upper_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-int n; long long k;
+int n; long long k;                    // global, so ok() can read them
 vector&lt;long long&gt; t;
 
 bool ok(long long T) {                 // can we make k items in T seconds?
     long long made = 0;
     for (int i = 0; i &lt; n; i++) {
-        made += T / t[i];              // integer division rounds down
+        made += T / t[i];              // drops the fraction: 8 / 3 is 2
         if (made &gt;= k) return true;    // stop early, so "made" never overflows
     }
     return false;
@@ -182,7 +184,7 @@ bool ok(long long T) {                 // can we make k items in T seconds?
 
 int main() {
     cin &gt;&gt; n &gt;&gt; k;
-    t.resize(n);
+    t.resize(n);                       // now t has n boxes
     for (auto &amp;x : t) cin &gt;&gt; x;
     long long lo = 0;                                     // 0 seconds: not enough
     long long hi = *min_element(t.begin(), t.end()) * k;  // fastest machine alone: enough
@@ -210,7 +212,7 @@ int main() {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="بعض القيم تنجح وبعضها لا ينجح، إذن أستطيع استخدام البحث الثنائي.">Some values work and some do not, so I can binary search.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يصلح إلا إذا كانت «نعم» لا تأتي أبدًا قبل «لا». جرّب مثالًا صغيرًا باليد أولًا.">Only if a "yes" never comes before a "no". Test a small example by hand first.</span> If yes and no are mixed, this tool does not fit.</p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يصلح إلا إذا لم تأتِ «نعم» قبل «لا» أبدًا. جرّب مثالًا صغيرًا باليد أولًا.">Only if a "yes" never comes before a "no". Test a small example by hand first.</span> If yes and no are mixed, this tool does not fit.</p>
     </li>
   </ul>
 </section>

@@ -1,5 +1,0 @@
-{
-  "off-by-one": { "en": "off-by-one", "ar": "خطأ بفارق واحد", "note": "a loop or index that goes one step too far or stops one step too early, like reading a[n]" },
-  "stl": { "en": "STL", "ar": "المكتبة القياسية في C++", "note": "the Standard Template Library: ready tools like sort, vector, pair, max_element" },
-  "half-open": { "en": "half-open range", "ar": "مجال نصف مفتوح", "note": "the start is included, the stop is not: [0, 5) is 0, 1, 2, 3, 4" }
-}

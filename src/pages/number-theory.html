@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="خمس أدوات صغيرة للأعداد الصحيحة: القاسم المشترك الأكبر، والقواسم، واختبار العدد الأولي، والتحليل، والغربال. كل أداة حلقة قصيرة تحفظها.">Five small tools for whole numbers: GCD, divisors, the prime test, factorisation and the sieve. Each one is a short loop you can learn by heart.</span></p>
+<p class="idea"><span class="tr" data-ar="خمس أدوات صغيرة للأعداد الصحيحة: القاسم المشترك الأكبر، والقواسم، واختبار العدد الأولي، والتحليل إلى عوامل أولية، والغربال. كل أداة حلقة قصيرة يمكنك حفظها.">Five small tools for whole numbers: GCD, divisors, the prime test, factorisation and the sieve. Each one is a short loop you can learn by heart.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -34,7 +34,8 @@
   <div class="way">
     <h3><b>1 · Story</b> — a number as a rectangle of tiles</h3>
     <p>You have 36 square tiles. You build a full rectangle with them. You can build \( 1 \times 36 \), \( 2 \times 18 \), \( 3 \times 12 \), \( 4 \times 9 \) or \( 6 \times 6 \).</p>
-    <p>Each side is a divisor of 36. The sides come in pairs. With 7 tiles you can build only \( 1 \times 7 \). So 7 is a prime: its only divisors are 1 and 7.</p>
+    <p>Each side is a divisor of 36: it divides 36 with no remainder, so <code>36 % 4 == 0</code>. And 36 is a multiple of 4. The sides come in pairs. With 7 tiles you can build only \( 1 \times 7 \). So 7 is a prime: its only divisors are 1 and 7.</p>
+    <p><span class="tr" data-ar="العدد الأولي له قاسمان فقط بالضبط: 1 والعدد نفسه. العدد 9 ليس أوليًا لأن 9 = 3 · 3.">A prime has exactly two divisors: 1 and itself. 9 is not a prime, because \( 9 = 3 \cdot 3 \).</span></p>
   </div>
 
   <div class="way">
@@ -46,7 +47,7 @@
       <tr><th>the pair 36 / i</th><td>36</td><td>18</td><td>12</td><td>9</td><td>—</td><td class="hi">6</td></tr>
     </table>
     <p>So the divisors are 1, 2, 3, 4, 6, 9, 12, 18, 36. At \( i = 6 \) both sides are 6. Count it once.</p>
-    <p><span class="tr" data-ar="الضلع الصغير لا يتجاوز 6، لأن 6 × 6 = 36. لذلك نتوقف عندما يصبح i × i أكبر من n.">The small side is never bigger than 6, because \( 6 \cdot 6 = 36 \). So we stop when <code>i * i</code> is bigger than <code>n</code>.</span> This stop point is the square root: \( \sqrt{36} = 6 \). For \( n = 10^{12} \) the loop makes only \( 10^6 \) steps.</p>
+    <p><span class="tr" data-ar="الضلع الصغير لا يتجاوز 6، لأن 6 × 6 = 36. لذلك نتوقف عندما يصبح i * i أكبر من n.">The small side is never bigger than 6, because \( 6 \cdot 6 = 36 \). So we stop when <code>i * i</code> is bigger than <code>n</code>.</span> <button type="button" class="why" data-why="sqrt-divisors">why?</button> This stop point is the square root: \( \sqrt{36} = 6 \). For \( n = 10^{12} \) the loop makes only \( 10^6 \) steps.</p>
   </div>
 
   <div class="way">
@@ -54,8 +55,8 @@
 
     <h4>Part A · GCD and LCM</h4>
     <p>Example: \( \gcd(10, 6) = 2 \), the biggest number that divides both. The LCM of 10 and 6 is 30, the smallest number that both divide.</p>
-    <p>Euclid's <span class="term" data-t="algorithm">algorithm</span> finds the GCD. Picture a paper of \( 10 \times 6 \). Cut the biggest squares you can, again and again. The last square size is the GCD.</p>
-    <figure class="viz" data-viz="stepper" data-gen="nt-euclid" aria-label="Step by step: Euclid's algorithm on 10 and 6, drawn as a 10 by 6 paper cut into the biggest squares, with the values of a, b and a % b.">
+    <p>Euclid's <span class="term" data-t="algorithm">algorithm</span> finds the GCD. <button type="button" class="why" data-why="euclid">why?</button> Picture a paper of \( 10 \times 6 \). Cut the biggest squares you can, again and again. The last square size is the GCD.</p>
+    <figure class="viz" data-viz="stepper" data-gen="nt-euclid" aria-label="Step by step: Euclid's algorithm on 10 and 6, drawn as a 10 by 6 paper cut into the biggest squares, with the values of a, b and the remainder r.">
       <script type="application/json">
 {
   "scenes": [
@@ -65,11 +66,11 @@
   "legend": {"active":"paper still left","done":"a square we cut"},
   "code": ["while (b != 0) {","    long long r = a % b;","    a = b;","    b = r;","}","// the answer is a"],
   "steps": [
-    {"line":1,"p":{"rects":[{"from":[0,0],"to":[10,6],"label":"10 x 6 left","state":"active"}]},"v":{"items":[["a",10],["b",6],["a % b",""]]}},
-    {"line":[2,3,4],"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,6],"label":"4 x 6 left","state":"active"}]},"v":{"items":[["a",6],["b",4],["a % b",4]]}},
-    {"line":[2,3,4],"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,4],"label":"4","state":"done"},{"from":[6,4],"to":[10,6],"label":"4 x 2 left","state":"active"}]},"v":{"items":[["a",4],["b",2],["a % b",2]]}},
-    {"line":[2,3,4],"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,4],"label":"4","state":"done"},{"from":[6,4],"to":[8,6],"label":"2","state":"done"},{"from":[8,4],"to":[10,6],"label":"2","state":"done"}]},"v":{"items":[["a",2],["b",0],["a % b",0]]}},
-    {"line":6,"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,4],"label":"4","state":"done"},{"from":[6,4],"to":[8,6],"label":"2","state":"done"},{"from":[8,4],"to":[10,6],"label":"2","state":"done"}]},"v":{"items":[["a",2],["b",0],["a % b",""]]}}
+    {"line":1,"p":{"rects":[{"from":[0,0],"to":[10,6],"label":"10 x 6 left","state":"active"}]},"v":{"items":[["a",10],["b",6],["r",""]]}},
+    {"line":[2,3,4],"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,6],"label":"4 x 6 left","state":"active"}]},"v":{"items":[["a",6],["b",4],["r",4]]}},
+    {"line":[2,3,4],"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,4],"label":"4","state":"done"},{"from":[6,4],"to":[10,6],"label":"4 x 2 left","state":"active"}]},"v":{"items":[["a",4],["b",2],["r",2]]}},
+    {"line":[2,3,4],"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,4],"label":"4","state":"done"},{"from":[6,4],"to":[8,6],"label":"2","state":"done"},{"from":[8,4],"to":[10,6],"label":"2","state":"done"}]},"v":{"items":[["a",2],["b",0],["r",0]]}},
+    {"line":6,"p":{"rects":[{"from":[0,0],"to":[6,6],"label":"6","state":"done"},{"from":[6,0],"to":[10,4],"label":"4","state":"done"},{"from":[6,4],"to":[8,6],"label":"2","state":"done"},{"from":[8,4],"to":[10,6],"label":"2","state":"done"}]},"v":{"items":[["a",2],["b",0],["r",""]]}}
   ]
 }
 </script>
@@ -101,7 +102,8 @@ vector&lt;long long&gt; divisors(long long n) {
             if (i != n / i) big.push_back(n / i);  // the big side (not twice for 6 * 6)
         }
     }
-    small.insert(small.end(), big.rbegin(), big.rend());   // all of them, small to big
+    reverse(big.begin(), big.end());                // big sides, now small to big
+    for (long long x : big) small.push_back(x);    // all of them, small to big
     return small;
 }
 </code></pre>
@@ -134,7 +136,7 @@ vector&lt;long long&gt; factorise(long long n) {   // 60 -&gt; 2 2 3 5
 </code></pre>
 
     <h4>Part E · The sieve: all primes up to n</h4>
-    <p>Write the numbers 1 to 30. Take the next number that is not crossed out: it is prime. Cross out its multiples. Repeat.</p>
+    <p>Write the numbers 1 to 30. Take the next number that is not crossed out: it is prime. Cross out its multiples. Repeat. <button type="button" class="why" data-why="sieve-history">why?</button></p>
     <figure class="viz" data-viz="stepper" data-gen="nt-sieve" aria-label="Step by step: the sieve on the numbers 1 to 30 in five rows of six. The multiples of 2, 3 and 5 are crossed out, and the primes stay.">
       <script type="application/json">
 {
@@ -247,7 +249,7 @@ int main() {
 </code></pre>
 </section>
 
-<p class="complexity">Speed: <code>gcd</code> is \( O(\log n) \). Divisors, prime test and factorisation are \( O(\sqrt{n}) \): fine for one \( n \) up to \( 10^{12} \). The sieve is about \( O(n \log \log n) \): fine for \( n = 10^7 \).</p>
+<p class="complexity">Speed: <code>gcd</code> is \( O(\log n) \). Divisors, prime test and factorisation are \( O(\sqrt{n}) \): fine for one \( n \) up to \( 10^{12} \). The sieve is almost \( O(n) \): fine for \( n = 10^7 \).</p>
 
 <section class="myths">
   <h2>Wrong ideas people get</h2>

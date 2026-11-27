@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="ابدأ كل مسألة من نفس الملف الصغير، واختبره على الأمثلة قبل الإرسال. هكذا تفكّر في المسألة، لا في التجهيز.">Start every problem from the same small file, and test it on the samples before you submit. Then you think about the problem, not the setup.</span></p>
+<p class="idea"><span class="tr" data-ar="ابدأ كل مسألة من نفس الملف الصغير، وغيّر فيه الدالة solve() فقط. هكذا تفكّر في المسألة، لا في التجهيز.">Start every problem from the same small file, and change only <code>solve()</code> in it. Then you think about the problem, not the setup.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -46,19 +46,20 @@ int main() {
     <tr><td><code>#include &lt;bits/stdc++.h&gt;</code></td><td>Brings in all of standard C++ with one line: <code>cin</code>, <code>vector</code>, <code>sort</code> and the rest. <button type="button" class="why" data-why="bits-stdc">why?</button></td></tr>
     <tr><td><code>using namespace std;</code></td><td>Lets you write <code>cin</code>, not <code>std::cin</code>.</td></tr>
     <tr><td><code>void solve() {</code></td><td>A function that solves <b>one</b> test case. <code>void</code>: it returns nothing; it prints.</td></tr>
-    <tr><td><code>int n; cin &gt;&gt; n;</code></td><td>Reads the size of the array.</td></tr>
+    <tr><td><code>int n; cin &gt;&gt; n;</code></td><td>Reads the size of the array. A variable made inside <code>{ }</code> ends at the <code>}</code>. The next call of <code>solve()</code> makes a new one.</td></tr>
     <tr><td><code>vector&lt;int&gt; a(n);</code></td><td>An <span class="term" data-t="array">array</span> of <code>n</code> numbers, at places 0 to <code>n - 1</code>.</td></tr>
     <tr><td><code>for (...) cin &gt;&gt; a[i];</code></td><td>Reads the <code>n</code> numbers, one by one.</td></tr>
-    <tr><td><code>long long sum = 0;</code></td><td>A number type that holds bigger values than <code>int</code>. Start at 0.</td></tr>
+    <tr><td><code>long long sum = 0;</code></td><td>A number type that holds bigger values than <code>int</code>. Start at 0. Why it is needed: see "Not now".</td></tr>
     <tr><td><code>for (int x : a) sum += x;</code></td><td><code>x</code> takes each value of <code>a</code> in turn. We add it to <code>sum</code>.</td></tr>
-    <tr><td><code>if ... cout &lt;&lt; "YES\n";</code></td><td>Prints the answer. <code>"\n"</code> ends the line.</td></tr>
+    <tr><td><code>if (sum % 2 == 0)</code></td><td><code>%</code> gives the remainder: <code>7 % 2</code> is 1. So <code>sum % 2 == 0</code> means "sum is even".</td></tr>
+    <tr><td><code>cout &lt;&lt; "YES\n";</code></td><td>Prints the answer. <code>"\n"</code> ends the line.</td></tr>
     <tr><td><code>int main() {</code></td><td>The program starts here.</td></tr>
     <tr><td><code>ios::sync_with_stdio(false);</code><br><code>cin.tie(nullptr);</code></td><td>Two lines that make <code>cin</code> and <code>cout</code> fast. <span class="tr" data-ar="تحتاجهما عندما يكون الإدخال كبيرًا، مثل 200000 عدد. ضعهما دائمًا.">You need them for big <span class="term" data-t="input">input</span>, like 200 000 numbers. Always keep them.</span> <button type="button" class="why" data-why="sync-stdio">why?</button></td></tr>
     <tr><td><code>int t; cin &gt;&gt; t;</code></td><td>Reads the number of test cases.</td></tr>
     <tr><td><code>while (t--) solve();</code></td><td><span class="tr" data-ar="الحلقة تفحص t ثم تنقصه بواحد. لذلك تعمل solve() بالضبط t مرة.">The loop checks <code>t</code>, then makes it 1 smaller. So <code>solve()</code> runs exactly <code>t</code> times.</span></td></tr>
   </table>
-  <p class="note">All variables live inside <code>solve()</code>. So every test case starts with fresh variables. Nothing is left over from the last test.</p>
-  <p class="tip-box"><span class="tr" data-ar="المسألة ليس فيها t؟ احذف سطر قراءة t، واكتب int t = 1 بدلًا منه.">The problem has no <code>t</code>? Delete <code>cin &gt;&gt; t;</code> and write <code>int t = 1;</code> instead.</span></p>
+  <p class="note"><span class="tr" data-ar="ضع المتغيّرات داخل solve()، فتبدأ كل حالة اختبار بمتغيّرات جديدة.">Keep the variables inside <code>solve()</code>. Then every test case starts with fresh variables.</span> One exception comes in later lessons: a function like <code>dfs</code> may need to share an array. Then make that array global, outside all functions. <span class="tr" data-ar="ويجب أن تعيد ضبط المتغيّر العام في بداية كل حالة اختبار.">You must then reset it at the start of every test case.</span></p>
+  <p class="tip-box"><span class="tr" data-ar="المسألة ليس فيها t؟ استبدل السطرين int t; و cin &gt;&gt; t; بسطر واحد: int t = 1;">The problem has no <code>t</code>? Replace the two lines <code>int t;</code> and <code>cin &gt;&gt; t;</code> with one line: <code>int t = 1;</code></span> Then <code>solve()</code> runs once.</p>
 </section>
 
 <section>
@@ -68,12 +69,22 @@ int main() {
 int n;
 cin &gt;&gt; n;
 vector&lt;long long&gt; a(n);
-for (auto &amp;x : a) cin &gt;&gt; x;      // the &amp; is needed: it writes into the array
+for (auto &amp;x : a) cin &gt;&gt; x;      // x is each box of a, in turn
 </code></pre>
+  <p><code>auto</code> lets C++ write the type for you; here it is <code>long long</code>. <span class="tr" data-ar="العلامة &amp; تجعل x هو الصندوق الحقيقي في المصفوفة، لا نسخة منه.">The <code>&amp;</code> makes <code>x</code> the real box of the array, not a copy.</span> Without <code>&amp;</code>, <code>cin</code> fills a copy and the array does not change. More in the <a href="#cpp-reference">C++ reference</a>, part "References and pointers".</p>
   <p>Print YES or NO from a <code>bool</code>:</p>
 <pre data-part="main"><code class="cpp">
 bool ok = (n % 2 == 0);
-cout &lt;&lt; (ok ? "YES" : "NO") &lt;&lt; "\n";
+cout &lt;&lt; (ok ? "YES" : "NO") &lt;&lt; "\n";   // ? : means: if ok, "YES", else "NO"
+</code></pre>
+  <p>A function that gives back a value. <code>void</code> gives back nothing; <code>long long</code> here gives back a number with <code>return</code>:</p>
+<pre data-part="global"><code class="cpp">
+long long sumOf(const vector&lt;long long&gt; &amp;a) {   // &amp;: no copy; const: a is not changed
+    long long s = 0;
+    for (long long x : a) s += x;
+    return s;                                      // the caller gets s
+}
+// in solve(): cout &lt;&lt; sumOf(a) &lt;&lt; "\n";   for a = {1, 2, 3} it prints 6
 </code></pre>
   <p>Print an array on one line:</p>
 <pre data-part="main"><code class="cpp">
@@ -84,42 +95,45 @@ cout &lt;&lt; "\n";
 
 <section class="worked">
   <h2>Solve one together</h2>
-  <p class="statement"><b>Problem.</b> You wrote the template above. Run it on your computer with this sample. Check it before you submit.<br>
-  Sample input: <code>2</code>, then <code>3</code> and <code>1 2 3</code>, then <code>2</code> and <code>1 2</code>. Expected output: <code>YES</code>, then <code>NO</code>.</p>
+  <p class="statement"><b>Problem</b> (4A, Watermelon, from the first lesson). The input is one number \( w \), with \( 1 \le w \le 100 \). Print YES if \( w \) is even and bigger than 2, else NO. Turn the template into a solution.</p>
   <ol class="steps">
-    <li><b>Where does the input come from?</b> <code>cin</code> reads from the <span class="term" data-t="standard-input">standard input</span>. On your computer this is what you type or paste. On the judge it is the test file. <code>cout</code> writes to the <span class="term" data-t="standard-output">standard output</span>. <span class="tr" data-ar="الحَكَم يقارن ما تطبعه بالجواب الصحيح. لذلك اطبع الجواب فقط، بلا أي كلام إضافي.">The judge compares what you print with the right answer. So print only the answer, no extra words.</span></li>
-    <li><b>Save the file.</b> Save the code as <code>a.cpp</code> in a folder.</li>
-    <li><b>Compile it.</b> Open a <span class="term" data-t="terminal">terminal</span> in that folder. Type this line and press Enter:
-<pre data-part="skip"><code>g++ -std=c++17 -Wall a.cpp -o a</code></pre>
-      <p><code>g++</code> is the <span class="term" data-t="compiler">compiler</span>. It turns your code into a program named <code>a</code>. <code>-std=c++17</code> picks the C++ version. <code>-Wall</code> prints warnings: hints about likely bugs. Read them.</p></li>
-    <li><b>Run it.</b> Type <code>./a</code> on Linux or Mac, or <code>.\a</code> on Windows. The program now waits for input. Copy the sample input from the problem page, paste it, and press Enter.
-<pre data-part="skip"><code>2
-3
-1 2 3
-2
-1 2
-YES
-NO</code></pre>
-      <p>The first five lines are what you pasted. The last two lines are what your program printed.</p></li>
-    <li><b>Compare.</b> <span class="tr" data-ar="قارن كل سطر بالجواب المتوقع، حرفًا بحرف. YES ليست Yes.">Compare each line with the expected output, letter by letter. <code>YES</code> is not <code>Yes</code>.</span> Same? Test every sample of the problem the same way. Then submit.</li>
+    <li><b>What is asked?</b> One answer for one number. <span class="tr" data-ar="لا يوجد t في الإدخال، فالدالة solve() يجب أن تعمل مرة واحدة.">There is no <code>t</code> in the input, so <code>solve()</code> must run once.</span></li>
+    <li><b>Change <code>main</code>.</b> Replace the lines <code>int t;</code> and <code>cin &gt;&gt; t;</code> with <code>int t = 1;</code>. The <code>while</code> line stays.</li>
+    <li><b>Write <code>solve()</code>.</b> It reads <code>w</code> and prints YES or NO. The array and the sum are gone: this problem does not need them.</li>
+    <li><b>What stays?</b> The two include lines and the two fast lines. They are the same for every problem.</li>
+    <li><b>Is it right?</b> With the sample input 8 it must print YES. How to run it and check this is the next lesson.</li>
   </ol>
-  <p class="note">No compiler on your computer yet? Codeforces has a <b>Custom Invocation</b> page in the Problemset menu. Paste the code and the input there, then click Run. Use it until your own computer is ready.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+void solve() {
+    int w;
+    cin &gt;&gt; w;
+    if (w % 2 == 0 &amp;&amp; w &gt; 2) cout &lt;&lt; "YES\n";   // even, and not 2
+    else cout &lt;&lt; "NO\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t = 1;                  // 4A has no t: solve() runs once
+    while (t--) solve();
+}
+</code></pre>
 </section>
 
 <section class="myths">
   <h2>Wrong ideas people get</h2>
   <ul>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الكود يُترجَم بلا أخطاء، إذن هو صحيح.">The code compiles, so it is correct.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الترجمة تفحص الكتابة فقط، لا الفكرة. شغّل الأمثلة لتختبر الفكرة.">Compiling checks only the spelling, not the idea. Run the samples to test the idea.</span></p>
-    </li>
-    <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="لا حاجة لاختبار الأمثلة على جهازي، فالحَكَم سيخبرني.">I do not need to test the samples myself. The judge will tell me.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="في المسابقة كل إرسال خاطئ يكلّفك نقاطًا. اختبار المثال يأخذ 30 ثانية فقط.">In a contest every wrong submit costs you points. Testing a sample takes 30 seconds.</span></p>
-    </li>
-    <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="رسالة مثل «أدخل n» تجعل البرنامج ألطف.">A message like "Enter n:" makes the program nicer.</span></p>
       <p class="truth"><b>The truth:</b> The judge reads every character you print. <span class="tr" data-ar="أي نص زائد يجعل الجواب خاطئًا.">Any extra text makes the answer wrong.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="لا فرق بين أن أضع المتغيّرات داخل solve() أو خارجها.">It makes no difference if the variables are inside or outside <code>solve()</code>.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="المتغيّر العام يحتفظ بقيمته من حالة الاختبار السابقة. ضعه داخل solve()، أو أعد ضبطه في بداية كل حالة.">A global variable keeps its value from the last test case. Keep it inside <code>solve()</code>, or reset it at the start of every test case.</span></p>
     </li>
   </ul>
 </section>
@@ -136,9 +150,9 @@ NO</code></pre>
 <aside class="notnow">
   <h2>Not now</h2>
   <ul>
+    <li><b>How to run the program and test it on the samples.</b> That is the whole next lesson: <a href="#run-your-code">Run and test your code</a>.</li>
     <li><b>Why <code>sum</code> is a <code>long long</code>.</b> A sum of many numbers can be too big for <code>int</code>. The full story is in <a href="#overflow">int or long long?</a></li>
-    <li><b>Why fast input matters.</b> Slow reading can turn a good idea into Time limit exceeded. You learn to count the cost in <a href="#big-o">How much does my code cost?</a></li>
-    <li><b>Long templates with many shortcuts.</b> Strong coders use them, but they hide errors from a beginner. Come back after 1600: <a href="#what-next">After 1600</a>.</li>
+    <li><b>The one place where you need <code>endl</code>.</b> In interactive problems the judge answers your output, so you must use <code>endl</code> there. You learn it in <a href="#interactive">Interactive problems</a>.</li>
   </ul>
 </aside>
 
@@ -146,9 +160,9 @@ NO</code></pre>
   <h2>Check yourself</h2>
   <ol>
     <li><span class="tr" data-ar="المسألة ليس فيها عدد حالات اختبار t. ماذا تغيّر في القالب؟">The problem has no number of test cases <code>t</code>. What do you change in the template?</span>
-      <details><summary>Answer</summary><p>Delete <code>cin &gt;&gt; t;</code> and write <code>int t = 1;</code>. Then <code>solve()</code> runs once.</p></details></li>
+      <details><summary>Answer</summary><p>Replace the two lines <code>int t;</code> and <code>cin &gt;&gt; t;</code> with one line: <code>int t = 1;</code>. Then <code>solve()</code> runs once. If you delete only <code>cin &gt;&gt; t;</code> and add <code>int t = 1;</code>, the code has <code>t</code> twice and does not compile.</p></details></li>
     <li><span class="tr" data-ar="لماذا نضع المتغيّرات داخل solve() وليس خارجها؟">Why do the variables live inside <code>solve()</code>, not outside it?</span>
-      <details><summary>Answer</summary><p>Each call of <code>solve()</code> makes them new. So no value from the last test case is left over.</p></details></li>
+      <details><summary>Answer</summary><p>Each call of <code>solve()</code> makes them new. So no value from the last test case is left over. A global variable must be reset by you at the start of every test case.</p></details></li>
     <li><span class="tr" data-ar="البرنامج طبع «Answer: 3» والجواب المتوقع «3». هل سيقبله الحَكَم؟">Your program prints <code>Answer: 3</code>. The expected output is <code>3</code>. Is it accepted?</span>
       <details><summary>Answer</summary><p>No. You get Wrong answer. Print only <code>3</code>.</p></details></li>
   </ol>

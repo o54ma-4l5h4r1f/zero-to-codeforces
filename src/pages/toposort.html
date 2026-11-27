@@ -1,12 +1,12 @@
 <p class="idea"><span class="tr" data-ar="بعض المهام يجب أن تأتي قبل غيرها. الترتيب الطوبولوجي يضع كل المهام في صف واحد يحترم كل القواعد.">Some tasks must come before others. Topological sort puts all tasks in one line, so that every rule is respected.</span></p>
 
-<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="لا تحتاج الترتيب الطوبولوجي قبل التقييم 1600. اقرأ الدرس عندما تحتاجه مسألة. تخطّيه الآن لا يمنعك من فهم الدروس التي بعده.">You do not need topological sort below 1600. Read it when a problem needs it. Skipping it now will not block the lessons after it.</span></p>
+<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="لا تحتاج الترتيب الطوبولوجي قبل التقييم 1600. هذا واحد من آخر ثلاثة دروس في المرحلة 3، ويمكنك قراءتها بأي ترتيب عندما تحتاجها مسألة.">You do not need topological sort below 1600. It is one of the last three lessons of Stage 3. Read them in any order, when a problem needs one.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
     <li>You can store a graph in <code>adj</code> and run BFS with a <code>queue</code> → <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a></li>
-    <li>You know <code>priority_queue</code> with <code>greater</code> → <a href="#stl-containers">map, set, stack, queue</a></li>
+    <li>You know <code>priority_queue</code> with <code>greater</code> (smallest on top) → <a href="#dijkstra">Shortest path (Dijkstra)</a></li>
     <li>You can fill a DP array in a good order → <a href="#dp">Dynamic programming</a></li>
   </ul>
 </aside>
@@ -98,7 +98,7 @@
 
   <div class="way">
     <h3><b>3 · Code</b> — Kahn's algorithm</h3>
-    <p><code>adj[a]</code> holds every b with an arrow a → b. <code>indeg[b]</code> counts the arrows into b. Vertices are 1 to <code>n</code>.</p>
+    <p><code>adj[a]</code> holds every b with an arrow a → b. <code>indeg[b]</code> counts the arrows into b. Vertices are 1 to <code>n</code>. The <code>&amp;</code> in <code>vector&lt;vector&lt;int&gt;&gt;&amp; adj</code> means "use the real <code>adj</code>, do not copy it" (<a href="#cpp-reference">C++ reference</a>, "References"). <code>indeg</code> has no <code>&amp;</code>: the function gets its own copy and may change it.</p>
 <pre data-part="global"><code class="cpp">
 vector&lt;int&gt; topoOrder(int n, vector&lt;vector&lt;int&gt;&gt;&amp; adj, vector&lt;int&gt; indeg) {
     queue&lt;int&gt; q;
@@ -123,16 +123,16 @@ vector&lt;int&gt; topoOrder(int n, vector&lt;vector&lt;int&gt;&gt;&amp; adj, vec
   <h2>Change it to fit</h2>
   <p>The plain <code>queue</code> above is the DEFAULT. Use it unless the problem asks for one of these.</p>
   <ul>
-    <li><b>"Print IMPOSSIBLE if there is a cycle."</b> Some vertices never became free. So the order is shorter than n.
+    <li><b>"Print IMPOSSIBLE if there is a cycle."</b> <span class="tr" data-ar="بعض الرؤوس لم تصبح حرّة أبدًا.">Some vertices never became free.</span> So the order is shorter than n.
 <pre data-part="main"><code class="cpp">
 if ((int)order.size() &lt; n) cout &lt;&lt; "IMPOSSIBLE\n";
 </code></pre></li>
-    <li><b>"Print the smallest order"</b> (smallest first number, then smallest second…). Always take the smallest free vertex. Use a <code>priority_queue</code> with <code>greater</code>. <span class="tr" data-ar="الطابور ذو الأولوية ليس فيه q.front()، لذلك اكتب q.top().">A <code>priority_queue</code> has no <code>q.front()</code>, so write <code>q.top()</code>.</span>
+    <li><b>"Print the smallest order"</b> (smallest first number, then smallest second…). Always take the smallest free vertex. Use a <code>priority_queue</code> with <code>greater</code>, as in <a href="#dijkstra">Dijkstra</a>. <span class="tr" data-ar="طابور الأولوية priority_queue ليس فيه q.front()، لذلك اكتب q.top().">A <code>priority_queue</code> has no <code>q.front()</code>, so write <code>q.top()</code>.</span>
 <pre data-part="main"><code class="cpp">
 priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; q;   // was: queue&lt;int&gt; q;
 int v = q.top(); q.pop();                              // was: q.front()
 </code></pre></li>
-    <li><b>"The longest chain of tasks"</b> (longest path). Go through <code>order</code> from left to right. When you reach v, all vertices before v are finished. <code>best[v]</code> = the most arrows on a path that ends at v.
+    <li><b>"The longest chain of tasks"</b> (longest path). This is a small DP, as in <a href="#dp">Dynamic programming</a>. Go through <code>order</code> from left to right. When you reach v, all vertices before v are finished. <code>best[v]</code> = the most arrows on a path that ends at v.
 <pre data-part="main"><code class="cpp">
 vector&lt;int&gt; best(n + 1, 0);
 for (int v : order)
@@ -246,9 +246,9 @@ int main() {
 <section class="check">
   <h2>Check yourself</h2>
   <ol>
-    <li><span class="tr" data-ar="القواعد هي 3 → 1 و 1 → 2. اكتب ترتيبًا صحيحًا.">The rules are 3 → 1 and 1 → 2. Write a correct order.</span>
+    <li><span class="tr" data-ar="القاعدتان: 3 يأتي قبل 1، و 1 يأتي قبل 2. اكتب ترتيبًا صحيحًا.">The rules are 3 → 1 and 1 → 2. Write a correct order.</span>
       <details><summary>Answer</summary><p>3 1 2. Here it is the only one: 3 must be first and 2 must be last.</p></details></li>
-    <li><span class="tr" data-ar="الحواف هي 1 → 2 و 1 → 3 و 2 → 3. ما درجات الدخول؟ وأي رأس يدخل الطابور أولًا؟">The arrows are 1 → 2, 1 → 3 and 2 → 3. What are the in-degrees? Which vertex enters the queue first?</span>
+    <li><span class="tr" data-ar="الأسهم هي: من 1 إلى 2، ومن 1 إلى 3، ومن 2 إلى 3. ما درجة دخول كل رأس؟ وأيّ رأس يدخل الطابور أوّلًا؟">The arrows are 1 → 2, 1 → 3 and 2 → 3. What are the in-degrees? Which vertex enters the queue first?</span>
       <details><summary>Answer</summary><p>Vertex 1 has 0, vertex 2 has 1, vertex 3 has 2. Only vertex 1 is free at the start.</p></details></li>
     <li><span class="tr" data-ar="في مخطّط فيه 6 رؤوس انتهى البرنامج والترتيب فيه 4 رؤوس فقط. ماذا يعني ذلك؟">A graph has 6 vertices. At the end the order has only 4. What does that mean?</span>
       <details><summary>Answer</summary><p>There is a cycle. Two vertices never reached in-degree 0, so no correct order exists.</p></details></li>
@@ -264,8 +264,9 @@ int main() {
     <li><a class="cf" data-p="1593E">Gardener and Tree</a><span class="r">1600</span></li>
     <li><a class="cf" data-p="919D">Substring</a><span class="r">1700</span></li>
     <li><a class="cf" data-p="1572A">Book</a><span class="r">1800</span></li>
-    <li><a href="https://cses.fi/problemset/task/1680">CSES: Longest Flight Route</a><span class="r">CSES</span> — DP on the order.</li>
+    <li><a href="https://cses.fi/problemset/task/1680">CSES: Longest Flight Route</a><span class="r">CSES</span> — DP on the order: it practises the "longest chain" change.</li>
   </ol>
+  <p class="note">Substring (1700) and Book (1800) are above this guide's goal. Keep them for after 1600.</p>
   <p class="note">Gardener and Tree has no arrows. But it uses the same idea: a queue of vertices whose degree became small.</p>
 </section>
 

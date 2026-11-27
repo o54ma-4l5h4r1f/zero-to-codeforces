@@ -3,7 +3,7 @@
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
-    <li>You know that 13 is \( 8 + 4 + 1 \), or 1101 in binary → <a href="#modular">Modular arithmetic</a> (fast power)</li>
+    <li>You can split a number into digits with <code>% 10</code> and <code>/ 10</code> → <a href="#basic-math">Basic math</a>. This lesson does the same with 2: 13 is \( 8 + 4 + 1 \), or 1101 in binary. <button type="button" class="why" data-why="binary">why?</button></li>
     <li>You know "try every option" and its cost → <a href="#brute-force">Brute force</a></li>
     <li>You know that an <code>int</code> overflows above about \( 2 \cdot 10^9 \) → <a href="#overflow">int or long long?</a></li>
   </ul>
@@ -45,7 +45,7 @@
       <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
       <tr><td>1</td><td>1</td><td class="hi">1</td><td>1</td><td class="hi">0</td></tr>
     </table>
-    <p>AND is 1 only if <b>both</b> bits are 1. OR is 1 if <b>at least one</b> is 1. <span class="tr" data-ar="XOR يعطي 1 فقط عندما يكون البِتّان مختلفين.">XOR is 1 only when the two bits are <b>different</b>.</span> Now apply the rules to 12 and 10:</p>
+    <p>AND is 1 only if <b>both</b> bits are 1. OR is 1 if <b>at least one</b> is 1. <span class="tr" data-ar="XOR يعطي 1 فقط عندما يكون البِتّان مختلفين.">XOR is 1 only when the two bits are <b>different</b>.</span> <button type="button" class="why" data-why="xor">why?</button> Now apply the rules to 12 and 10:</p>
     <figure class="viz" data-viz="stepper" data-gen="bits-ops" aria-label="Step by step: 12 AND 10, 12 OR 10 and 12 XOR 10, computed one bit at a time from the right.">
       <script type="application/json">
 {
@@ -88,7 +88,7 @@ cout &lt;&lt; (a &lt;&lt; 1) &lt;&lt; "\n";         // 24  = 11000: all bits mov
 cout &lt;&lt; (a &gt;&gt; 1) &lt;&lt; "\n";         // 6   = 110: all bits move right = divide by 2
 cout &lt;&lt; (1 &lt;&lt; 5) &lt;&lt; "\n";         // 32  = 2^5: only bit 5 is on
 </code></pre>
-    <p><code>~x</code> flips every bit of <code>x</code>. On this page we use it only inside <code>x &amp; ~(1 &lt;&lt; k)</code> (see Change it to fit).</p>
+    <p><code>~x</code> flips every bit of <code>x</code>. On this page we use it only inside <code>x &amp; ~(1 &lt;&lt; k)</code> (see Change it to fit). On a whole number it gives a negative result: <code>~x</code> is always <code>-x - 1</code>, so <code>~12</code> is -13.</p>
     <p><b>A subset as a mask.</b> You have \( n \) items, numbered from 0. <span class="tr" data-ar="العدد mask يمثّل اختيارًا واحدًا: إذا كان البِت i يساوي 1 فالعنصر i مأخوذ.">A number <code>mask</code> is one choice: if bit <code>i</code> is 1, item <code>i</code> is taken.</span> With \( n = 3 \), mask 5 is 101: take items 0 and 2. The masks 0 to 7 are all \( 2^3 = 8 \) choices. You see all 8 in "Solve one together".</p>
 <pre data-part="main"><code class="cpp">
 for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++)    // every subset, one by one
@@ -144,7 +144,7 @@ bool on = (x &gt;&gt; k) &amp; 1;             // 1 if bit k is on, else 0
 <pre data-part="main"><code class="cpp">
 x = x | (1 &lt;&lt; k);
 </code></pre></li>
-    <li><b>Clear bit k</b> (make it 0). AND with a mask where every bit is 1 except bit <code>k</code>.
+    <li><b>Clear bit k</b> (make it 0). <span class="tr" data-ar="طبّق AND مع قناع كل بِتاته 1 ما عدا البِت k.">AND with a mask where every bit is 1 except bit <code>k</code>.</span>
       <figure class="viz" data-viz="array" data-gen="bits-clear" aria-label="13 AND NOT 1: bit 0 becomes 0, so 1101 becomes 1100, which is 12.">
         <script type="application/json">
 {
@@ -250,7 +250,7 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="الرمز ^ في C++ يعني الأُسّ، فـ 2 ^ 3 تساوي 8.">In C++, <code>^</code> means power, so <code>2 ^ 3</code> is 8.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الرمز ^ هو XOR. ناتج 2 ^ 3 هو 1. لكتابة 2 أُس k اكتب 1 &lt;&lt; k.">It is XOR: <code>2 ^ 3</code> is 1. For \( 2^k \), write <code>1 &lt;&lt; k</code>.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الرمز ^ هو XOR، فناتج 2 ^ 3 هو 1. لحساب 2 مرفوعًا للقوة k اكتب 1 &lt;&lt; k.">It is XOR: <code>2 ^ 3</code> is 1. For \( 2^k \), write <code>1 &lt;&lt; k</code>.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="التعبير x &amp; 1 == 0 يختبر إن كان x زوجيًا.">The test <code>x &amp; 1 == 0</code> checks that <code>x</code> is even.</span></p>

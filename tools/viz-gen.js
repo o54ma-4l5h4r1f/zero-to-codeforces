@@ -1,8 +1,9 @@
 // Makes the JSON of the pictures by RUNNING the algorithm. No step state is typed by hand (rule in src/AUTHORING.md).
 //   node tools/viz-gen.js            check: every <figure class="viz" data-gen="NAME"> holds exactly what its generator makes
-//   node tools/viz-gen.js --write    write the generated JSON into the pages (the captions in <ol class="viz-steps"> stay yours)
+//   node tools/viz-gen.js --write SLUG [SLUG ...]   write the generated JSON into those pages only (captions in <ol class="viz-steps"> stay yours)
+//   node tools/viz-gen.js --write --all             rewrite every page (only when nobody else is editing pages)
 //   node tools/viz-gen.js --print NAME   print the JSON and a plain trace of each step (use it to write the captions)
-// To add a picture: add a function to GEN below, put data-gen="its-name" on the figure, run with --write.
+// To add a picture: add a function to GEN below, put data-gen="its-name" on the figure, run with --write <your slug>.
 const fs = require('fs'), path = require('path');
 const dir = path.join(__dirname, '..', 'src', 'pages');
 const { validate } = require('../src/viz.js');
@@ -464,7 +465,7 @@ GEN['count-letters'] = () => {
     spec: {
       scenes: [{ type: 'array', id: 's', label: 's', values: s.split('') }, { type: 'array', id: 'cnt', label: 'cnt', values: cnt.map(() => 0), rows: [{ label: 'letter', values: letters }] }, { type: 'vars', id: 'v', items: [] }],
       legend: { done: 'already read', active: 'the letter now and its box' },
-      code: ['int cnt[26] = {0};', 'for (char c : s)', "    cnt[c - 'a']++;"],
+      code: ['vector<int> cnt(26, 0);', 'for (char c : s)', "    cnt[c - 'a']++;"],
       steps
     }, trace
   };
@@ -623,7 +624,7 @@ GEN['nt-euclid'] = () => {
   const snap = (line, r, note) => {
     const rects = cut.map(c => ({ from: c.from, to: c.to, label: c.label, state: 'done' }));
     if (w > 0 && h > 0) rects.push({ from: [x0, y0], to: [x0 + w, y0 + h], label: `${w} x ${h} left`, state: 'active' });
-    steps.push({ line, p: { rects }, v: { items: [['a', a], ['b', b], ['a % b', r == null ? '' : r]] } });
+    steps.push({ line, p: { rects }, v: { items: [['a', a], ['b', b], ['r', r == null ? '' : r]] } });   // r = the remainder of the OLD a and b (the code's variable), so it equals the new b
     trace.push(note);
   };
   snap(1, null, `start: a=${a} b=${b}, paper ${w} x ${h}`);
@@ -807,7 +808,7 @@ GEN['con-split8'] = () => {
         else edges.push({ from: i, to: parent[i] });
       }
       if (newEdge) edgeStates[newEdge + '-' + parent[newEdge]] = 'active';
-      const ast = {}; changed.forEach(i => { ast[i - 1] = 'active'; });
+      const ast = {}; changed.forEach(i => { ast[i] = 'active'; });   // states of a scene with start: 1 are keyed by the printed index
       const st = { g: { states, notes, edges, edgeStates }, p: { values: parent.slice(1), states: ast }, v: { items: [['call', op], ['groups', groups]] } };
       steps.push(line.length === 0 ? st : { line, ...st });
       trace.push(note);
@@ -847,7 +848,7 @@ GEN['con-split8'] = () => {
         if (parent[i] !== i) edges.push({ from: i, to: parent[i] });
       }
       changed.forEach(i => { edgeStates[i + '-' + parent[i]] = 'active'; });
-      const ast = {}; changed.forEach(i => { ast[i - 1] = 'active'; });
+      const ast = {}; changed.forEach(i => { ast[i] = 'active'; });   // states of a scene with start: 1 are keyed by the printed index
       const st = { g: { states, notes: { 1: 'leader' }, edges, edgeStates }, p: { values: parent.slice(1), states: ast }, v: { items: [['path', path]] } };
       steps.push(Array.isArray(line) && line.length === 0 ? st : { line, ...st });
       trace.push(note);
@@ -1021,10 +1022,10 @@ GEN['con-split8'] = () => {
     };
     (function sum(n) {
       stack.push(n);
-      if (n === 0) { ret[0] = 0; snap(2, 'sum(0): base case, return 0'); stack.pop(); return 0; }
+      if (n === 0) { ret[0] = 0; stack.pop(); snap(2, 'sum(0): base case, return 0'); return 0; }   // pop first: a call that returned is off the stack
       snap(3, `sum(${n}) starts, calls sum(${n - 1}) and waits`);
       const r = n + sum(n - 1);
-      ret[n] = r; snap(3, `sum(${n}) = ${n} + ${r - n} = ${r}, returns`); stack.pop();
+      ret[n] = r; stack.pop(); snap(3, `sum(${n}) = ${n} + ${r - n} = ${r}, returns`);
       return r;
     })(N);
     return {
@@ -1302,27 +1303,58 @@ function pretty(spec) {
   }
   return '{\n' + lines.join(',\n') + '\n}';
 }
+// self-check: in an array scene, a cell whose value changed since the last step must be highlighted in that step
+// (when the step highlights anything at all in that scene). This catches an index shifted by one (the old dsu bug:
+// states of a scene with "start": 1 are keyed by the printed index, not by the 0-based position).
+function selfCheck(spec) {
+  const E = [];
+  if (!Array.isArray(spec.steps) || !Array.isArray(spec.scenes)) return E;
+  spec.scenes.filter(sc => sc.type === 'array').forEach(sc => {
+    const base = sc.start || 0;
+    let prev = sc.values;
+    spec.steps.forEach((st, k) => {
+      const o = st[sc.id] || {}, vals = o.values || sc.values, states = 'states' in o ? o.states : sc.states;
+      if (k > 0 && Array.isArray(vals) && Array.isArray(prev) && vals.length === prev.length && states) {
+        const lit = new Set();
+        vals.forEach((_, j) => { const v = Array.isArray(states) ? states[j] : states[j + base]; if (v) lit.add(j + base); });
+        // a cell that was cleared (a pop: new value "" or null) does not count, the new top is what gets lit
+        const changed = vals.map((v, j) => (v !== '' && v != null && JSON.stringify(v) !== JSON.stringify(prev[j]) ? j + base : null)).filter(x => x != null);
+        const miss = changed.filter(j => !lit.has(j));
+        if (lit.size && miss.length) E.push(`step ${k + 1}, scene "${sc.id}": cell(s) ${miss.join(', ')} changed but are not highlighted (highlighted: ${[...lit].join(', ')})`);
+      }
+      prev = vals;
+    });
+  });
+  return E;
+}
 const arg = process.argv.slice(2);
 if (arg[0] === '--print') {
   const r = make(arg[1]);
   console.log(pretty(r.spec)); console.log('\nTRACE'); r.trace.forEach((t, i) => console.log(`${i + 1}. ${t}`));
+  selfCheck(r.spec).forEach(m => console.log('SELF-CHECK: ' + m));
   process.exit(0);
 }
-const write = arg[0] === '--write';
+// --write needs the pages to touch: --write dsu recursion   (or --write --all). It never rewrites another page by accident.
+const write = arg[0] === '--write', only = arg.slice(1).filter(a => !a.startsWith('--')).map(a => a.replace(/\.html$/, ''));
+if (write && !only.length && !arg.includes('--all')) {
+  console.log('Say which pages to write: node tools/viz-gen.js --write <slug> [<slug> ...]   (or --write --all to rewrite every page)');
+  process.exit(1);
+}
 let n = 0, bad = 0;
 for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.html')).sort()) {
-  const file = path.join(dir, f), html = fs.readFileSync(file, 'utf8');
+  const file = path.join(dir, f), html = fs.readFileSync(file, 'utf8'), mine = !write || !only.length || only.includes(f.replace(/\.html$/, ''));
   const out = html.replace(/(<figure\b[^>]*\bdata-gen="([^"]+)"[^>]*>\s*<script type="application\/json">)([\s\S]*?)(<\/script>)/g, (all, a, name, old, z) => {
     n++;
     if (!GEN[name]) { console.log(`${f}: no generator "${name}" in tools/viz-gen.js`); bad++; return all; }
     const kind = /data-viz="([^"]+)"/.exec(a)[1], spec = make(name).spec, E = validate(kind, spec), now = '\n' + pretty(spec) + '\n';
     if (E.length) { console.log(`${f}: generator "${name}" makes a bad spec: ${E.join('; ')}`); bad++; return all; }
+    for (const m of selfCheck(spec)) { console.log(`${f}: figure "${name}" self-check: ${m}`); bad++; }
     if (old === now) return all;
-    if (!write) { console.log(`${f}: figure "${name}" is not what the generator makes. Run: node tools/viz-gen.js --write`); bad++; return all; }
+    if (!write || !mine) { console.log(`${f}: figure "${name}" is not what the generator makes. Run: node tools/viz-gen.js --write ${f.replace(/\.html$/, '')}`); bad++; return all; }
     console.log(`${f}: wrote "${name}"`);
     return a + now + z;
   });
-  if (write && out !== html) fs.writeFileSync(file, out);
+  if (write && mine && out !== html) fs.writeFileSync(file, out);
 }
 console.log(`${n} generated picture(s), ${bad} problem(s)`);
 process.exit(bad ? 1 : 0);

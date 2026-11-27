@@ -1,4 +1,4 @@
-// node gen.js ref.src out.html
+// node gen.js ref.src out.html   (run.sh writes src/pages/cpp-reference.html; edit ref.src, never the page by hand)
 const fs = require('fs');
 const [src, out] = process.argv.slice(2);
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

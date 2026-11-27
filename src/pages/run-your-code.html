@@ -1,0 +1,200 @@
+<p class="idea"><span class="tr" data-ar="قبل كل إرسال شغّل كودك على الأمثلة وعلى اختبارات صغيرة من عندك، ثم قارن ما طبعه بالجواب المتوقع سطرًا بسطر.">Before every submit, run your code on the samples and on your own small tests. Then compare what it prints with the expected output, line by line.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know what a sample and a verdict are → <a href="#how-codeforces-works">How Codeforces works</a></li>
+    <li>You have the template and the 4A program → <a href="#cpp-template">Your C++ template</a></li>
+  </ul>
+</aside>
+
+<section>
+  <h2>Input and output are only text</h2>
+  <p>Your program does not see the problem page. It sees only text. The text it reads is the <span class="term" data-t="standard-input">standard input</span> (stdin). <code>cin</code> reads from it. The text it prints is the <span class="term" data-t="standard-output">standard output</span> (stdout). <code>cout</code> writes to it.</p>
+  <div class="tablewrap">
+<svg viewBox="0 0 320 318" width="320" role="img" aria-label="Picture of one test. The input text 8 goes into your program through cin. The program prints YES through cout. This output YES is compared with the expected output YES. They are the same, so this test passes.">
+<rect x="40" y="6" width="240" height="50" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"/>
+<text x="160" y="26" text-anchor="middle" font-weight="700">input text (stdin)</text>
+<text x="160" y="46" text-anchor="middle">8</text>
+<path d="M160 56 V84" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M154 78 L160 86 L166 78" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<text x="172" y="76">cin &gt;&gt; w</text>
+<rect x="40" y="88" width="240" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+<text x="160" y="113" text-anchor="middle" font-weight="700">your program</text>
+<path d="M160 128 V156" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M154 150 L160 158 L166 150" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<text x="172" y="148">cout &lt;&lt; "YES"</text>
+<rect x="40" y="160" width="240" height="50" rx="8" fill="var(--surface)" stroke="var(--line)" stroke-width="1.5"/>
+<text x="160" y="180" text-anchor="middle" font-weight="700">output text (stdout)</text>
+<text x="160" y="200" text-anchor="middle">YES</text>
+<path d="M160 210 V238" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="172" y="230">compare</text>
+<rect x="40" y="242" width="240" height="50" rx="8" fill="var(--surface)" stroke="var(--ok)" stroke-width="1.5"/>
+<text x="160" y="262" text-anchor="middle" font-weight="700">expected output</text>
+<text x="160" y="282" text-anchor="middle">YES</text>
+<text x="160" y="312" text-anchor="middle">same text: this test passes</text>
+</svg>
+  </div>
+  <p>On Codeforces the judge puts the test into stdin. Then it compares your stdout with the right answer. <span class="tr" data-ar="لذلك اطبع الجواب فقط، بلا أي كلام إضافي مثل «أدخل n».">So print only the answer, no extra words like "Enter n".</span></p>
+  <p><span class="tr" data-ar="الأمر cin يتخطّى المسافات وفواصل الأسطر. لذلك «3» ثم سطر «1 2 3» تُقرأ تمامًا مثل «3 1 2 3».">The command <code>cin</code> skips spaces and line breaks. So <code>3</code> and then a line <code>1 2 3</code> read exactly like <code>3 1 2 3</code>.</span> You never need to read a line break yourself.</p>
+</section>
+
+<section>
+  <h2>The default way: Custom test on Codeforces</h2>
+  <p>You need nothing on your computer. Codeforces has a page named <b>Custom test</b>. Inside a contest the same page is named <b>Custom invocation</b>. It runs your code on any input you give it.</p>
+  <ol>
+    <li>In the language list, choose <b>GNU G++17</b>, <b>G++20</b> or <b>G++23</b>. Do the same when you submit.</li>
+    <li>Paste your whole program into the big box for the code.</li>
+    <li>Copy the sample input from the problem page. Paste it into the box named <b>Input</b>.</li>
+    <li>Press <b>Run</b>. Read the box named <b>Output</b>. The page also shows the time and the memory your program used.</li>
+  </ol>
+  <p class="tip-box"><span class="tr" data-ar="هذه هي الطريقة الافتراضية: لا تحتاج إلى تثبيت أي شيء، والمترجم هو نفسه الذي يستخدمه الحَكَم.">This is the default way. You install nothing, and the <span class="term" data-t="compiler">compiler</span> is the same one the judge uses.</span></p>
+</section>
+
+<section>
+  <h2>The local way: on your own computer</h2>
+  <p>Later you may want to run code without the browser. This needs the compiler <code>g++</code> on your computer. Save the code as <code>a.cpp</code>. Open a <span class="term" data-t="terminal">terminal</span> in that folder.</p>
+<pre data-part="skip"><code>g++ -std=c++17 -Wall a.cpp -o a
+./a
+./a &lt; in.txt</code></pre>
+  <table>
+    <tr><th>Line</th><th>What it does</th></tr>
+    <tr><td>1. Compile</td><td>Turns <code>a.cpp</code> into a program named <code>a</code>. <code>-std=c++17</code> picks the C++ version. <code>-Wall</code> prints warnings: hints about likely bugs.</td></tr>
+    <tr><td>2. Run</td><td>On Windows type <code>.\a</code>. The program starts and waits for input. Paste or type the input, then press Enter. The output appears under it.</td></tr>
+    <tr><td>3. Input from a file</td><td>Reads the input from the file <code>in.txt</code>. You do not paste it again each time.</td></tr>
+  </table>
+  <p class="note">On Windows, use <code>&lt;</code> in the Command Prompt (cmd): <code>a &lt; in.txt</code>. PowerShell does not accept <code>&lt;</code>. Some programs read "until the input ends". To end the input, press Ctrl+D (Linux, Mac), or Ctrl+Z and then Enter (Windows). Text printed with <code>cerr</code> also shows in the terminal, but the judge ignores it.</p>
+</section>
+
+<section>
+  <h2>Test before every submit</h2>
+  <ol>
+    <li><b>Every sample.</b> Run every sample, not only the first. Copy the whole input, down to the last line.</li>
+    <li><b>Compare letter by letter.</b> YES is not Yes, and 3.0 is not 3. Look at every line of the expected output.</li>
+    <li><b>Your own small tests.</b> The samples are few and easy. Add three of your own:
+      <ul>
+        <li>the <b>smallest</b> input: \( n = 1 \), or the smallest value, like \( w = 1 \);</li>
+        <li>the <b>biggest</b> values: like \( w = 100 \), or a number \( 10^9 \);</li>
+        <li><b>all equal</b>: like 5 5 5 5.</li>
+      </ul>
+      Work out the right answer by hand first. Then run the test.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Read a compile error</h2>
+  <p>A <span class="term" data-t="compile">compile</span> error means the code is not valid C++. Here a <code>;</code> is missing after <code>cin &gt;&gt; w</code>. This is the real message of <code>g++</code>:</p>
+<pre data-part="skip"><code>a.cpp:6:13: error: expected ';' before 'if'
+    6 |     cin &gt;&gt; w
+      |             ^
+a.cpp:8:5: error: 'else' without a previous 'if'</code></pre>
+  <p><code>a.cpp:6:13</code> means: file <code>a.cpp</code>, line 6, character 13. <span class="tr" data-ar="أصلح الخطأ الأول فقط، ثم ترجم مرة أخرى. الأخطاء التالية غالبًا تأتي من الأول.">Fix only the first error, then compile again. The errors after it often come from the first one.</span> Here the <code>else</code> error goes away when you add the <code>;</code>.</p>
+  <p class="note">The most common messages and their fixes are in the <a href="#cpp-reference">C++ reference</a>, part "Reading errors".</p>
+</section>
+
+<section>
+  <h2>After you submit: what to run next</h2>
+  <table>
+    <tr><th>Verdict</th><th>What to do next</th></tr>
+    <tr><td><b>Wrong answer on test 1</b></td><td>Test 1 is often the sample. Run the sample again and compare each line.</td></tr>
+    <tr><td><b>Wrong answer</b> on a later test</td><td>Make your own small tests: smallest, biggest, all equal. Check each one by hand.</td></tr>
+    <tr><td><b>Time limit exceeded</b></td><td>Your idea does too many steps. The next two lessons teach you to count them.</td></tr>
+    <tr><td><b>Runtime error</b></td><td>Look for an index outside the array or a division by zero. Run your smallest test.</td></tr>
+    <tr><td><b>Compilation error</b></td><td>Check the language you chose. Then click the verdict and read the first error.</td></tr>
+  </table>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> Test the 4A program from the last lesson before you submit it. The sample input is <code>8</code>. The expected output is <code>YES</code>.</p>
+  <ol class="steps">
+    <li><b>Open Custom test.</b> Choose the language <b>GNU G++17</b>. Paste the whole program into the code box.</li>
+    <li><b>The sample.</b> Paste <code>8</code> into the Input box and press Run. The Output box shows <code>YES</code>. This matches the expected output. But one sample is not enough.</li>
+    <li><b>Your own tests, by hand first.</b>
+      <table>
+        <tr><th>Input</th><th>Why this test</th><th>Right answer</th><th>Program printed</th></tr>
+        <tr><td>1</td><td>the smallest \( w \)</td><td>NO</td><td>NO</td></tr>
+        <tr><td class="hi">2</td><td class="hi">even, but 1 + 1 has odd parts</td><td class="hi">NO</td><td class="hi">NO</td></tr>
+        <tr><td>3</td><td>odd</td><td>NO</td><td>NO</td></tr>
+        <tr><td>100</td><td>the biggest \( w \)</td><td>YES</td><td>YES</td></tr>
+      </table>
+      Every line matches.</li>
+    <li><b>The trap test.</b> Remove <code>&amp;&amp; w &gt; 2</code> from the code and run the input <code>2</code> again. Now it prints YES, which is wrong. <span class="tr" data-ar="اختبار صغير من عندك وجد الخطأ قبل أن يجده الحَكَم.">Your own small test found the bug before the judge did.</span> Put the condition back.</li>
+    <li><b>Submit.</b> All tests match, so submit the code.</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+void solve() {
+    int w;
+    cin &gt;&gt; w;
+    if (w % 2 == 0 &amp;&amp; w &gt; 2) cout &lt;&lt; "YES\n";   // even, and not 2
+    else cout &lt;&lt; "NO\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t = 1;
+    while (t--) solve();
+}
+</code></pre>
+</section>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الكود يُترجَم بلا أخطاء، إذن هو صحيح.">The code compiles, so it is correct.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الترجمة تفحص الكتابة فقط، لا الفكرة. شغّل الأمثلة لتختبر الفكرة.">Compiling checks only the spelling, not the idea. Run the samples to test the idea.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="لا حاجة لاختبار الأمثلة بنفسي، فالحَكَم سيخبرني.">I do not need to test the samples myself. The judge will tell me.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="في المسابقة يكلّفك الإرسال الخاطئ نقاطًا أو دقائق جزاء. اختبار المثال يأخذ 30 ثانية.">In a contest a wrong submit costs you points or penalty minutes. Testing a sample takes 30 seconds.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="البرنامج لا يطبع شيئًا، إذن هو معطّل.">My program prints nothing, so it is broken.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="غالبًا هو ينتظر بقية الإدخال. الصق الإدخال كاملًا، ثم اضغط Enter.">Most often it waits for the rest of the input. Paste the whole input, then press Enter.</span></p>
+    </li>
+  </ul>
+</section>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You paste only the first line of the sample. The program waits for the rest.</li>
+    <li>You change the code but run the old program. On your computer, compile again after every change.</li>
+    <li>You test with your own input and trust the output. Work out the right answer by hand first.</li>
+  </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>How to count the steps behind Time limit exceeded.</b> You learn it in <a href="#big-o">How much does my code cost?</a></li>
+    <li><b>A full checklist for each verdict, and tests made by the computer.</b> Your hand tests are enough for now. You learn the rest in <a href="#debugging">How to find your bug</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="على جهازك يقرأ البرنامج n = 3 ثم لا يطبع شيئًا وينتظر. ما السبب المحتمل؟">On your computer the program reads <code>n = 3</code>, then prints nothing and waits. What is the likely reason?</span>
+      <details><summary>Answer</summary><p>It waits for the 3 numbers. You pasted only the first line of the input. Paste the whole input.</p></details></li>
+    <li><span class="tr" data-ar="المترجم يعرض 5 أخطاء. أيّها تصلح أولًا؟">The compiler shows 5 errors. Which one do you fix first?</span>
+      <details><summary>Answer</summary><p>The first one. Then compile again: the other errors often came from it.</p></details></li>
+    <li><span class="tr" data-ar="هل تختلف القراءة إذا كانت الأعداد «1 2 3» على سطر واحد أو على ثلاثة أسطر؟">Does <code>cin</code> read differently when <code>1 2 3</code> is on one line or on three lines?</span>
+      <details><summary>Answer</summary><p>No. <code>cin</code> skips spaces and line breaks, so both give the same three numbers.</p></details></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://codeforces.com/problemset/customtest">Codeforces: Custom test</a> — the page from this lesson. You must be logged in.</li>
+    <li><a href="https://usaco.guide/">USACO Guide</a> — a free guide to competitive programming, with C++ lessons.</li>
+    <li><a href="#cpp-reference">C++ reference</a> — the part "Program skeleton" has the compile commands; "Reading errors" explains common messages.</li>
+  </ul>
+</section>

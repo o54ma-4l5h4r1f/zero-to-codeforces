@@ -3,7 +3,7 @@
     "id": 0,
     "name": "Start here",
     "rating": "before you solve",
-    "goal": "Learn how the site works, how to read a problem, and how to not lose easy points.",
+    "goal": "Learn how the site works, how to read a problem, how to run and test your code, and how to not lose easy points.",
     "ready": "you got your first Accepted and you can say which speed (O) your code needs from the limits.",
     "topics": [
       {
@@ -17,6 +17,10 @@
       {
         "slug": "cpp-template",
         "title": "Your C++ template"
+      },
+      {
+        "slug": "run-your-code",
+        "title": "Run and test your code"
       },
       {
         "slug": "big-o",
@@ -33,10 +37,6 @@
       {
         "slug": "how-to-practice",
         "title": "How to practice"
-      },
-      {
-        "slug": "debugging",
-        "title": "How to find your bug"
       }
     ]
   },
@@ -44,7 +44,7 @@
     "id": 1,
     "name": "Foundations",
     "rating": "800 – 1000",
-    "goal": "Turn a statement into code. Most problems here need no special algorithm, only careful work.",
+    "goal": "Turn a statement into code. Most problems here need no special algorithm, only careful work, a way to find bugs, and sorting.",
     "ready": "you solve most 800 problems in under 15 minutes without help.",
     "topics": [
       {
@@ -68,6 +68,14 @@
         "title": "Brute force"
       },
       {
+        "slug": "debugging",
+        "title": "How to find your bug"
+      },
+      {
+        "slug": "sorting",
+        "title": "Sorting"
+      },
+      {
         "slug": "greedy",
         "title": "Greedy"
       }
@@ -77,16 +85,12 @@
     "id": 2,
     "name": "Core tools",
     "rating": "1000 – 1300",
-    "goal": "The ten tools that solve most Div. 2 A and B problems, and many C problems.",
+    "goal": "The tools that solve most Div. 2 A and B problems, and many C problems.",
     "ready": "you solve 1200 problems alone more often than not.",
     "topics": [
       {
         "slug": "stl-containers",
         "title": "map, set, stack, queue"
-      },
-      {
-        "slug": "sorting",
-        "title": "Sorting"
       },
       {
         "slug": "counting",
@@ -109,12 +113,12 @@
         "title": "GCD, primes, divisors"
       },
       {
-        "slug": "modular",
-        "title": "Mod and fast power"
-      },
-      {
         "slug": "bits",
         "title": "Bits"
+      },
+      {
+        "slug": "modular",
+        "title": "Mod and fast power"
       },
       {
         "slug": "constructive",
@@ -126,8 +130,8 @@
     "id": 3,
     "name": "Algorithms",
     "rating": "1300 – 1600",
-    "goal": "Real algorithms: recursion, graphs and dynamic programming.",
-    "ready": "you can write BFS, DSU and a simple DP from memory, and you solve Div. 2 C sometimes.",
+    "goal": "Real algorithms: recursion, graphs, dynamic programming and shortest paths. DSU, topological sort and interactive problems come last and are optional.",
+    "ready": "you can write BFS and a simple DP from memory, and you solve Div. 2 C sometimes. DSU is optional.",
     "topics": [
       {
         "slug": "recursion",
@@ -150,16 +154,16 @@
         "title": "Shortest path (Dijkstra)"
       },
       {
+        "slug": "combinatorics",
+        "title": "Counting with nCr"
+      },
+      {
         "slug": "dsu",
         "title": "DSU (union-find)"
       },
       {
         "slug": "toposort",
         "title": "Topological sort"
-      },
-      {
-        "slug": "combinatorics",
-        "title": "Counting with nCr"
       },
       {
         "slug": "interactive",

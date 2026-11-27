@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="لا حيلة ولا قانون. اقرأ القواعد، ثم اجعل برنامجك ينفّذها خطوة بخطوة.">No trick, no formula. Read the rules, then make your program follow them step by step.</span></p>
+<p class="idea"><span class="tr" data-ar="لا حيلة ولا صيغة. اقرأ القواعد، ثم اجعل برنامجك ينفّذها خطوة بخطوة.">No trick, no formula. Read the rules, then make your program follow them step by step.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -92,7 +92,7 @@ int main() {
         cin &gt;&gt; a &gt;&gt; b;
         inside -= a;          // first they exit
         inside += b;          // then they enter
-        best = max(best, inside);
+        best = max(best, inside);   // max(x, y) = the bigger of the two
     }
     cout &lt;&lt; best &lt;&lt; "\n";
 }
@@ -125,7 +125,7 @@ int main() {
 
 <section class="worked">
   <h2>Solve one together</h2>
-  <p class="statement"><b>Problem</b> (266B, Queue at the School). \( n \) children stand in a queue. The string <code>s</code> shows them: <code>B</code> is a boy, <code>G</code> is a girl. Each second, every boy who stands right before a girl swaps places with her. All swaps of one second happen at the same time. Print the queue after \( t \) seconds. Limits: \( 1 \le n, t \le 50 \).</p>
+  <p class="statement"><b>Problem</b> (266B, Queue at the School). \( n \) children stand in a queue. The string <code>s</code> shows them: <code>B</code> is a boy, <code>G</code> is a girl. <span class="tr" data-ar="في كل ثانية، كل ولد يقف مباشرة قبل بنت يتبادل معها المكان.">Each second, every boy who stands right before a girl swaps places with her.</span> All swaps of one second happen at the same time. Print the queue after \( t \) seconds. Limits: \( 1 \le n, t \le 50 \).</p>
   <ol class="steps">
     <li><b>What is asked?</b> The string after \( t \) seconds. Nothing is counted, so no clever idea is needed.</li>
     <li><b>A small example by hand.</b> <code>s = BGGBG</code> and \( t = 2 \). Look at each pair of neighbours from the left.
@@ -203,7 +203,7 @@ int main() {
   <ol>
     <li><span class="tr" data-ar="محطات الترام هي (0, 4) ثم (3, 1) ثم (2, 6). ماذا يطبع البرنامج؟">The tram stops are (0, 4), (3, 1), (2, 6). What does the program print?</span>
       <details><summary>Answer</summary><p>6. Inside: 4, then \( 4 - 3 + 1 = 2 \), then \( 2 - 2 + 6 = 6 \). The biggest is 6.</p></details></li>
-    <li><span class="tr" data-ar="في مسألة الطابور، لماذا نكتب i++ بعد التبديل؟">In Queue at the School, why do we write <code>i++</code> after a swap?</span>
+    <li><span class="tr" data-ar="في مسألة Queue at the School، لماذا نكتب i++ بعد التبديل؟">In Queue at the School, why do we write <code>i++</code> after a swap?</span>
       <details><summary>Answer</summary><p>The boy now stands at <code>i + 1</code>. Without the skip he can swap again in the same second.</p></details></li>
     <li><span class="tr" data-ar="لديك t ≤ 100 ثانية و n ≤ 1000 طفل. هل تكفي المحاكاة الكاملة؟">You have \( t \le 100 \) seconds and \( n \le 1000 \) children. Is a full simulation fast enough?</span>
       <details><summary>Answer</summary><p>Yes. \( 100 \cdot 1000 = 10^5 \) steps, far below \( 10^8 \).</p></details></li>
@@ -217,8 +217,8 @@ int main() {
     <li><a class="cf" data-p="231A">Team</a><span class="r">800</span></li>
     <li><a class="cf" data-p="282A">Bit++</a><span class="r">800</span></li>
     <li><a class="cf" data-p="158A">Next Round</a><span class="r">800</span></li>
-    <li><a class="cf" data-p="116A">Tram</a><span class="r">800</span></li>
     <li><a class="cf" data-p="263A">Beautiful Matrix</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="116A">Tram</a><span class="r">800</span></li>
     <li><a class="cf" data-p="266B">Queue at the School</a><span class="r">800</span></li>
     <li><a class="cf" data-p="1352A">Sum of Round Numbers</a><span class="r">800</span></li>
   </ol>

@@ -462,14 +462,14 @@ addOne(v);                         // v = 2 3
 cout << countA("banana");          // 3
 --- | A parameter with a default value can be left out in the call; defaults must be the last parameters.
 [global]
-int power(int base, int exp = 2) {
-    int r = 1;
-    for (int i = 0; i < exp; i++) r *= base;
+int repeatAdd(int x, int times = 2) {
+    int r = 0;
+    for (int i = 0; i < times; i++) r += x;
     return r;
 }
 [main]
-cout << power(5);         // 25
-cout << power(2, 10);     // 1024
+cout << repeatAdd(5);         // 10
+cout << repeatAdd(2, 10);     // 20
 --- to=recursion | A recursive function calls itself on a smaller input; it needs a base case that stops, or it crashes.
 [global]
 long long fact(int n) {
@@ -573,9 +573,7 @@ for (int i = 0; i < 2; i++) {
     for (int j = 0; j < 3; j++)
         cout << g[i][j] << " ";
     cout << "\n";
-}
-// 1 2 3
-// 4 5 9
+}                   // prints 1 2 3, then 4 5 9
 --- to=arrays-strings | Three ways to set every element; memset works only for 0 and -1.
 [main]
 int a[5];
@@ -1081,7 +1079,6 @@ s.erase(5);
 cout << *s.begin();          // 1
 auto it = s.lower_bound(0);  // first >= 0
 cout << (it == s.end());     // 0
-for (int x : s) cout << x;   // 1
 --- to=stl-containers | A multiset is a sorted set that keeps repeats; erase(value) removes all copies, erase(find(value)) removes one.
 [main]
 multiset<int> ms = {3, 1, 3};   // sorted, repeats
@@ -1098,7 +1095,6 @@ map<string, int> cnt;          // key -> value
 cnt["ali"] = 5;
 cnt["omar"]++;                 // starts at 0
 cout << cnt["omar"];           // 1
-cout << cnt.count("sara");     // 0
 for (auto [name, c] : cnt)
     cout << name << c << " ";  // ali5 omar1
 cnt.erase("ali");
@@ -1290,8 +1286,6 @@ cout << max(a, b);                 // 8
 cout << max({a, b, 10});           // 10
 // WRONG: max(a, big)   int with long long
 cout << max((long long)a, big);    // 5
-auto [lo, hi] = minmax(a, b);
-cout << lo << hi;                  // 38
 --- span2 to=stl-basics | max_element and min_element return an iterator: put * in front for the value, subtract begin() for the index.
 [main]
 vector<int> v = {4, 9, 2};

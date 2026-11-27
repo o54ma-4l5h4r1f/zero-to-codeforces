@@ -6,7 +6,7 @@
   "maximum": { "en": "maximum", "ar": "القيمة العظمى (الأكبر)", "note": "the biggest value" },
   "minimum": { "en": "minimum", "ar": "القيمة الصغرى (الأصغر)", "note": "the smallest value" },
   "unsigned": { "en": "unsigned", "ar": "بلا إشارة (لا يقبل القيم السالبة)", "note": "a number type that cannot be negative; 0 − 1 becomes a huge number" },
-  "round-down": { "en": "round down (floor)", "ar": "تقريب إلى الأسفل", "note": "throw away the part after the point: 7 / 2 rounded down is 3" },
+  "round-down": { "en": "round down (floor)", "ar": "تقريب إلى الأسفل", "note": "for positive numbers, throw away the part after the point: 7 / 2 rounded down is 3" },
   "digit": { "en": "digit", "ar": "رقم (خانة واحدة من العدد)", "note": "one of 0…9; the number 4072 has four digits" },
   "arithmetic-progression": { "en": "arithmetic progression", "ar": "متتالية حسابية", "note": "numbers with the same step between neighbours, like 3, 5, 7, 9" },
   "absolute-value": { "en": "absolute value", "ar": "القيمة المطلقة", "note": "the number without its sign: abs(−5) = 5" },
@@ -14,5 +14,8 @@
   "possibility": { "en": "possibility", "ar": "احتمال", "note": "one of the things that can happen or can be chosen" },
   "choice": { "en": "choice", "ar": "اختيار", "note": "what you decide to take at one step" },
   "counterexample": { "en": "counterexample", "ar": "مثال مضادّ", "note": "one small input that shows an idea is wrong" },
-  "swap": { "en": "swap", "ar": "مبادلة (تبديل موضعَي عنصرين)", "note": "two things change places" }
+  "swap": { "en": "swap", "ar": "مبادلة (تبديل موضعَي عنصرين)", "note": "two things change places" },
+  "off-by-one": { "en": "off-by-one", "ar": "خطأ بفارق واحد", "note": "a loop or index that goes one step too far or stops one step too early, like reading a[n]" },
+  "stl": { "en": "STL", "ar": "المكتبة القياسية في C++", "note": "the Standard Template Library: ready tools like sort, vector, pair, max_element" },
+  "half-open": { "en": "half-open range", "ar": "مجال نصف مفتوح", "note": "the start is included, the stop is not: [0, 5) is 0, 1, 2, 3, 4" }
 }

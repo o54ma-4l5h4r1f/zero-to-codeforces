@@ -104,14 +104,14 @@ int main() {
 
 <section>
   <h2>Change it to fit</h2>
-  <p>The same tool fits many problems. <span class="tr" data-ar="غيّر ما تجرّبه فقط، ثم احسب الكلفة وقارنها بـ 10^8.">Change only <b>what</b> you try. Then count the cost and compare it with \( 10^8 \).</span> The DEFAULT is the pairs loop above.</p>
+  <p>The same tool fits many problems. <span class="tr" data-ar="غيّر ما تجرّبه فقط، ثم احسب التكلفة وقارنها بـ 10^8.">Change only <b>what</b> you try. Then count the cost and compare it with \( 10^8 \).</span> The DEFAULT is the pairs loop above.</p>
   <table>
     <tr><th>The problem needs…</th><th>Change the loops to</th><th>Cost</th><th>Fast enough up to about</th></tr>
     <tr><td>all pairs (DEFAULT)</td><td><code>for i</code>, <code>for (j = i + 1 …)</code></td><td>\( \frac{n^2}{2} \), so \( O(n^2) \)</td><td>\( n = 10^4 \): \( 5 \cdot 10^7 \)</td></tr>
     <tr><td>all triples</td><td>add <code>for (int k = j + 1; k &lt; n; k++)</code></td><td>\( \frac{n^3}{6} \), so \( O(n^3) \)</td><td>\( n = 500 \): \( 2 \cdot 10^7 \)</td></tr>
     <tr><td>every value of the answer</td><td><code>for (int x = 1; x &lt;= limit; x++)</code>, then <code>if (ok(x))</code></td><td>limit \( \times \) (cost of one check)</td><td>limit \( \cdot \) check \( \le 10^8 \)</td></tr>
   </table>
-  <p>For "every value of the answer", go from small to big. <span class="tr" data-ar="أول قيمة تنجح هي أصغر إجابة، فتوقّف عندها بـ break.">The first value that works is the smallest answer, so stop there with <code>break</code>.</span> The next part solves one problem this way.</p>
+  <p>For "every value of the answer", go from small to big. <span class="tr" data-ar="أول قيمة تنجح هي أصغر إجابة، فتوقّف عندها بـ break.">The first value that works is the smallest answer, so stop there with <code>break</code>.</span> A <code>break</code> leaves only the loop it is in. The next part solves one problem this way.</p>
   <p class="note">A fourth form, "all subsets", tries every group of elements. It needs a new tool; see "Not now" below.</p>
 </section>
 
@@ -151,14 +151,14 @@ int main() {
 
 <p class="complexity">Speed: (number of possibilities) \( \times \) (cost of one check). One loop is \( O(n) \), all pairs \( O(n^2) \), all triples \( O(n^3) \). Keep it below about \( 10^8 \).</p>
 
-<p class="tip-box">Brute force has a second job. When you write a faster solution, a slow brute force tells you if it is correct. See "stress testing" in <a href="#debugging">How to find your bug</a>.</p>
+<p class="tip-box">Brute force has a second job. When you write a faster solution, a slow brute force tells you if it is correct. The next lesson shows how: "stress testing".</p>
 
 <section class="myths">
   <h2>Wrong ideas people get</h2>
   <ul>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="القوة الغاشمة حيلة للمبتدئين، والحل الحقيقي دائمًا أذكى.">Brute force is a beginner's trick. The real solution is always more clever.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا كان عدد الخطوات أقل من 10^8 فهي أفضل إجابة: سريعة الكتابة وصعبة الخطأ.">If the steps stay below \( 10^8 \), it is the best answer. It is fast to write and hard to get wrong.</span></p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="تجربة كل الاحتمالات حيلة للمبتدئين، والحل الحقيقي دائمًا أذكى.">Brute force is a beginner's trick. The real solution is always more clever.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا بقي عدد الخطوات أقل من 10^8 فهذا أفضل حل: سريع الكتابة، ومن الصعب أن تخطئ فيه.">If the steps stay below \( 10^8 \), it is the best answer. It is fast to write and hard to get wrong.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="حلقتان متداخلتان سريعتان، لأن كل خطوة صغيرة جدًا.">Two nested loops are fine, because each step is tiny.</span></p>
@@ -166,7 +166,7 @@ int main() {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="الحدود الصغيرة تعني أن هناك صيغة مخفية يجب أن أجدها.">Small limits mean there is a hidden formula I must find.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الحدود الصغيرة رسالة من الكاتب: مسموح لك أن تجرّب كل شيء.">Small limits are a message from the author: you may try everything.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الحدود الصغيرة رسالة من واضع المسألة: مسموح لك أن تجرّب كل شيء.">Small limits are a message from the author: you may try everything.</span></p>
     </li>
   </ul>
 </section>
@@ -185,6 +185,7 @@ int main() {
   <ul>
     <li><b>All subsets</b> ("choose any group of items"). With \( n \le 20 \) there are \( 2^{20} \approx 10^6 \) groups. You list them with bits in <a href="#bits">Bits</a>.</li>
     <li><b>All orders and all ways to build something</b> step by step. You learn it in <a href="#recursion">Recursion and backtracking</a>.</li>
+    <li><b>A brute force that checks your fast code.</b> You learn it right after this lesson: <a href="#debugging">How to find your bug</a>.</li>
   </ul>
 </aside>
 

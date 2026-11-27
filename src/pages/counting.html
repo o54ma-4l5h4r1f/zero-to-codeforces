@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="احسب كم مرة تظهر كل قيمة. ثم أجب من هذه الأعداد، لا من المصفوفة الطويلة.">Count how many times each value appears. Then answer from the counts, not from the long array.</span></p>
+<p class="idea"><span class="tr" data-ar="احسب كم مرة تظهر كل قيمة، ثم أجب باستخدام هذه العدّادات، لا بالمرور على المصفوفة الطويلة.">Count how many times each value appears. Then answer from the counts, not from the long array.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -39,7 +39,7 @@
     {"type":"vars","id":"v","items":[]}
   ],
   "legend": {"done":"already read","active":"the letter now and its box"},
-  "code": ["int cnt[26] = {0};","for (char c : s)","    cnt[c - 'a']++;"],
+  "code": ["vector<int> cnt(26, 0);","for (char c : s)","    cnt[c - 'a']++;"],
   "steps": [
     {"line":1,"s":{"states":{},"pointers":{"c":null}},"cnt":{"values":[0,0,0,0,0,0,0],"states":{}},"v":{"items":[["c",""],["c - 'a'",""]]}},
     {"line":[2,3],"s":{"states":{"0":"active"},"pointers":{"c":0}},"cnt":{"values":[0,0,1,0,0,0,0],"states":{"2":"active"}},"v":{"items":[["c","c"],["c - 'a'",2]]}},
@@ -60,7 +60,7 @@
         <li>Read 'b' again. <code>cnt[1]</code> becomes 2.</li>
         <li>Read 'a'. <code>cnt[0]</code> becomes 2.</li>
         <li>Read 'g'. <code>'g' - 'a'</code> is 6, so <code>cnt[6]</code> becomes 1.</li>
-        <li><span class="tr" data-ar="نقرأ e فيصبح cnt[4] يساوي 1. انتهت المرّة الواحدة على الكلمة.">Read 'e': <code>cnt[4]</code> becomes 1. The one pass is over.</span></li>
+        <li><span class="tr" data-ar="نقرأ e فيصبح cnt[4] يساوي 1. انتهى المرور الوحيد على الكلمة.">Read 'e': <code>cnt[4]</code> becomes 1. The one pass is over.</span></li>
       </ol>
       <figcaption>Now read the boxes. 5 different letters. 'a' and 'b' are the most common. 'd' and 'f' never appear.</figcaption>
     </figure>
@@ -71,7 +71,7 @@
 <pre data-part="main"><code class="cpp">
 string s;
 cin &gt;&gt; s;
-int cnt[26] = {0};                     // one box for each letter a..z
+vector&lt;int&gt; cnt(26, 0);              // one box for each letter a..z, all 0
 for (char c : s) cnt[c - 'a']++;
 int kinds = 0;
 for (int i = 0; i &lt; 26; i++)
@@ -81,10 +81,11 @@ for (int i = 0; i &lt; 26; i++)
 <pre data-part="main"><code class="cpp">
 map&lt;int, int&gt; cnt;                    // cnt[x] = how many times x appears
 for (int x : a) cnt[x]++;
-for (auto [value, times] : cnt)        // values come sorted
+for (auto [value, times] : cnt)        // each element is a pair: value, count
     cout &lt;&lt; value &lt;&lt; " appears " &lt;&lt; times &lt;&lt; " times\n";
 </code></pre>
-    <p class="tip-box"><b>Which one do I use?</b> <span class="tr" data-ar="إذا كانت القيم بين 0 و 10^6، استخدم مصفوفة. وإلا، أو إذا كانت سالبة أو نصوصًا، استخدم map.">Values between 0 and \( 10^6 \): an array. Bigger, negative, or strings: a <code>map</code>.</span></p>
+    <p class="note">The values come out sorted. <code>auto [value, times]</code> names the two parts of each pair, as in <a href="#stl-containers">map, set, stack, queue</a>.</p>
+    <p class="tip-box"><b>Which one do I use?</b> <span class="tr" data-ar="إذا كانت القيم بين 0 و 10^6 فاستخدم مصفوفة. وإذا كانت أكبر من ذلك أو سالبة أو سلاسل نصية فاستخدم map.">Values between 0 and \( 10^6 \): an array. Bigger, negative, or strings: a <code>map</code>.</span></p>
   </div>
 </section>
 
@@ -104,7 +105,7 @@ for (auto [value, times] : cnt)        // values come sorted
 
 <section class="worked">
   <h2>Solve one together</h2>
-  <p class="statement"><b>Problem.</b> You get an array \( a_0, a_1, \dots, a_{n-1} \). Count the pairs \( i &lt; j \) with \( a_j - a_i = j - i \). Limits: \( 1 \le n \le 2 \cdot 10^5 \) and \( 1 \le a_i \le n \). There are up to \( 10^4 \) tests; the sum of all \( n \) is at most \( 2 \cdot 10^5 \).</p>
+  <p class="statement"><b>Problem.</b> You get an array \( a_0, a_1, \dots, a_{n-1} \). Count the pairs \( i &lt; j \) with \( a_j - a_i = j - i \). Limits: \( 1 \le n \le 2 \cdot 10^5 \) and \( 1 \le a_i \le n \). <span class="tr" data-ar="قد يصل عدد الاختبارات إلى 10^4، ومجموع كل قيم n لا يتجاوز 2·10^5.">There are up to \( 10^4 \) tests; the sum of all \( n \) is at most \( 2 \cdot 10^5 \).</span></p>
   <ol class="steps">
     <li><b>What is asked?</b> One number per test: how many pairs fit the rule.</li>
     <li><b>A small example by hand.</b> Take <code>a = 3 2 5 6 5 7</code>. The pair \( (0, 3) \) fits: \( 6 - 3 = 3 \) and \( 3 - 0 = 3 \). Checking every pair works here: 15 pairs. For \( n = 2 \cdot 10^5 \) it is \( 2 \cdot 10^{10} \) pairs. Too slow.</li>
@@ -186,7 +187,7 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="لعدّ الأزواج أحتاج حلقتين متداخلتين على i و j.">To count pairs I need two loops, over <code>i</code> and over <code>j</code>.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="تكفي مرّة واحدة: لكل عنصر أضف عدد العناصر المتساوية التي جاءت قبله.">One pass is enough: for each element, add how many equal ones came before it.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يكفي مرور واحد: لكل عنصر أضف عدد العناصر المساوية له التي جاءت قبله.">One pass is enough: for each element, add how many equal ones came before it.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="مصفوفة العدّ تصلح لأي قيم.">A count array works for any values.</span></p>
@@ -194,7 +195,7 @@ int main() {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="n يتّسع في int، إذن عدد الأزواج يتّسع أيضًا.">\( n \) fits in <code>int</code>, so the number of pairs fits too.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="مع n = 2*10^5 قد يصل عدد الأزواج إلى 2*10^10، وهذا أكبر من حدّ int. استخدم long long.">With \( n = 2 \cdot 10^5 \) there can be \( 2 \cdot 10^{10} \) pairs. That is more than <code>int</code> holds. Use <code>long long</code>.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="مع n = 2·10^5 قد يصل عدد الأزواج إلى 2·10^10، وهذا أكبر من حدّ int. استخدم long long.">With \( n = 2 \cdot 10^5 \) there can be \( 2 \cdot 10^{10} \) pairs. That is more than <code>int</code> holds. Use <code>long long</code>.</span></p>
     </li>
   </ul>
 </section>
@@ -203,7 +204,7 @@ int main() {
   <h2>Common mistakes</h2>
   <ul>
     <li>Many <span class="term" data-t="test-case">test cases</span>: you forget to clear the counts. Make the <code>map</code> inside the test loop, as above.</li>
-    <li>A big count array cleared in every test. With \( 10^4 \) tests that is too slow. Clear only the boxes you used.</li>
+    <li>A big count array cleared in every test. With \( 10^4 \) tests that is too slow. Clear only the boxes you used: loop over this test's values again and set <code>cnt[x] = 0</code>.</li>
     <li><code>cnt[c]</code> for a letter, with 26 boxes. Write <code>cnt[c - 'a']</code>. Capital letters need <code>c - 'A'</code>.</li>
   </ul>
 </section>
@@ -220,11 +221,11 @@ int main() {
 <section class="check">
   <h2>Check yourself</h2>
   <ol>
-    <li><span class="tr" data-ar="بعد عدّ الكلمة aabbbc، كم قيمة cnt[1]؟">You count the word <code>aabbbc</code>. What is <code>cnt[1]</code>?</span>
+    <li><span class="tr" data-ar="بعد عدّ الكلمة aabbbc، ما قيمة cnt[1]؟">You count the word <code>aabbbc</code>. What is <code>cnt[1]</code>?</span>
       <details><summary>Answer</summary><p>3. Box 1 is the letter 'b', and 'b' appears 3 times.</p></details></li>
     <li><span class="tr" data-ar="المصفوفة 5 5 5 5. كم زوجًا i &lt; j فيه a[i] == a[j]؟">The array is 5 5 5 5. How many pairs \( i &lt; j \) have <code>a[i] == a[j]</code>?</span>
       <details><summary>Answer</summary><p>6. One pass adds \( 0 + 1 + 2 + 3 = 6 \). The formula gives \( \frac{4 \cdot 3}{2} = 6 \).</p></details></li>
-    <li><span class="tr" data-ar="القيم تصل إلى 10^9 و n = 2*10^5. هل تعدّ بمصفوفة أم بـ map؟">The values go up to \( 10^9 \) and \( n = 2 \cdot 10^5 \). Array or <code>map</code>?</span>
+    <li><span class="tr" data-ar="القيم تصل إلى 10^9 و n = 2·10^5. هل تعدّ بمصفوفة أم بـ map؟">The values go up to \( 10^9 \) and \( n = 2 \cdot 10^5 \). Array or <code>map</code>?</span>
       <details><summary>Answer</summary><p>A <code>map</code>. An array would need \( 10^9 \) boxes. The map keeps at most \( 2 \cdot 10^5 \).</p></details></li>
   </ol>
 </section>

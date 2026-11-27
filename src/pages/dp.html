@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="حُلّ المسائل الصغيرة أوّلًا واكتب إجاباتها. ابنِ كل إجابة أكبر من الإجابات التي عندك.">Solve the small problems first and write down their answers. Build each bigger answer from the answers you already have.</span></p>
+<p class="idea"><span class="tr" data-ar="حُلّ المسائل الصغيرة أوّلًا واكتب إجاباتها. ابنِ كل إجابة أكبر من الإجابات التي عندك.">Solve the small problems first and write down their answers. Build each bigger answer from the answers you already have.</span> <button type="button" class="why" data-why="dp-name">why?</button></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -26,7 +26,7 @@
     <h3><b>1 · Story</b> — climbing stairs</h3>
     <p>You climb stairs. Each move goes 1 step or 2 steps up. In how many ways can you reach step 6?</p>
     <p>Think about your <b>last move</b>. You come to step 6 from step 5 or from step 4. So the ways to 6 = the ways to 5 + the ways to 4.</p>
-    <p><span class="tr" data-ar="اصعد واكتب الجواب على كل درجة بالطباشير. لدرجة جديدة تقرأ فقط الرقمين تحتها، ولا تعدّ من جديد أبدًا.">Walk up and write the answer on every step with chalk. For a new step you read only the two numbers below it. You never count again.</span> This is <span class="term" data-t="dynamic-programming">dynamic programming</span> (DP).</p>
+    <p><span class="tr" data-ar="اصعد واكتب الجواب على كل درجة بالطباشير. لدرجة جديدة تقرأ فقط العددين اللذين تحتها، ولا تعدّ من جديد أبدًا.">Walk up and write the answer on every step with chalk. For a new step you read only the two numbers below it. You never count again.</span> This is <span class="term" data-t="dynamic-programming">dynamic programming</span> (DP).</p>
   </div>
 
   <div class="way">
@@ -78,6 +78,15 @@
 </script>
       <figcaption>Greedy takes 4 first: 4 + 1 + 1, so 3 coins. DP tries every last coin and finds 3 + 3. Here \( dp_5 \) is the math way to write <code>dp[5]</code>.</figcaption>
     </figure>
+    <p>In code, a sum you cannot make yet holds a big number <code>INF</code>. <code>1e9</code> means \( 10^9 \). It is bigger than any real answer.</p>
+<pre data-part="main"><code class="cpp">
+const int INF = 1e9;                     // "cannot make this sum yet"
+vector&lt;int&gt; dp(S + 1, INF);
+dp[0] = 0;                               // sum 0 needs no coin
+for (int x = 1; x &lt;= S; x++)
+    for (int c : coins)                  // try every coin as the last one
+        if (c &lt;= x &amp;&amp; dp[x - c] != INF) dp[x] = min(dp[x], dp[x - c] + 1);
+</code></pre>
   </div>
 
   <div class="way">
@@ -90,12 +99,12 @@
       <tr><td>3. The <span class="term" data-t="base-case">base cases</span>?</td><td><code>dp[0] = 1</code>, <code>dp[1] = 1</code></td></tr>
       <tr><td>4. The order of filling? Where is the answer?</td><td><code>i</code> from 2 up; answer <code>dp[n]</code></td></tr>
     </table>
-    <p class="tip-box"><span class="tr" data-ar="عالق في السؤال 2؟ اسأل: ما هو الاختيار الأخير؟ آخر حركة، آخر قطعة نقود، آخر عنصر.">Stuck on question 2? Ask: "What was the <b>last</b> choice?" The last move, the last coin, the last item.</span> Each possible last choice gives one smaller <span class="term" data-t="subproblem">subproblem</span>.</p>
+    <p class="tip-box"><span class="tr" data-ar="عالق في السؤال 2؟ اسأل: ما هو الاختيار الأخير؟ آخر حركة، آخر عملة، آخر عنصر.">Stuck on question 2? Ask: "What was the <b>last</b> choice?" The last move, the last coin, the last item.</span> Each possible last choice gives one smaller <span class="term" data-t="subproblem">subproblem</span>.</p>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-const int MOD = 1000000007;
+const long long MOD = 1000000007;
 
 int main() {
     int n;
@@ -120,10 +129,10 @@ int main() {
   <p>Now every step <code>i</code> has a price <code>cost[i]</code> or a gift <code>gain[i]</code>. <span class="tr" data-ar="يتغيّر سطر واحد: الجمع + يصبح min أو max. وتتغيّر الحالة الأساسية معه.">One line changes: the <code>+</code> becomes <code>min</code> or <code>max</code>. The base case changes with it.</span></p>
 <pre data-part="main"><code class="cpp">
 dp[i] = dp[i - 1] + dp[i - 2];                  // count ways:    dp[0] = 1
-dp[i] = min(dp[i - 1], dp[i - 2]) + cost[i];    // cheapest way:  dp[0] = 0
-dp[i] = max(dp[i - 1], dp[i - 2]) + gain[i];    // richest way:   dp[0] = 0
+dp[i] = min(dp[i - 1], dp[i - 2]) + cost[i];    // cheapest way:  dp[0] = 0, dp[1] = cost[1]
+dp[i] = max(dp[i - 1], dp[i - 2]) + gain[i];    // richest way:   dp[0] = 0, dp[1] = gain[1]
 </code></pre>
-  <p class="note">For "minimum", a cell you cannot reach must start <b>big</b> (like <code>1e9</code>), not 0. For "maximum", it starts very small.</p>
+  <p class="note">For "minimum", a cell you cannot reach must start <b>big</b>, not 0. For "maximum", it starts very small (like <code>-INF</code>).</p>
 
   <h3>One number → two numbers in the state (a grid)</h3>
   <p>You walk in a grid from the top-left cell. Each move goes right or down. <code>dp[i][j]</code> = the number of paths to cell <code>(i, j)</code>. The last move came from above or from the left.</p>
@@ -148,7 +157,7 @@ dp[i] = max(dp[i - 1], dp[i - 2]) + gain[i];    // richest way:   dp[0] = 0
 }
 </script>
     <ol class="viz-steps">
-      <li>First row and first column: only one path (all right, or all down). Write 1.</li>
+      <li>First row and first column: only one path. The loop writes these 1s when it reaches them; here they are shown at once.</li>
       <li>Cell (1, 1): from above 1, from the left 1. Together 2.</li>
       <li>Cell (1, 2): \( 1 + 2 = 3 \).</li>
       <li>Cell (1, 3): \( 1 + 3 = 4 \).</li>
@@ -162,7 +171,7 @@ dp[i] = max(dp[i - 1], dp[i - 2]) + gain[i];    // richest way:   dp[0] = 0
 
   <h3>Take or skip each item (0/1 knapsack)</h3>
   <p>There are \( n \) items. Item <code>i</code> has a weight and a value. The bag holds weight <code>W</code>. Each item is used at most once. Find the best total value. This is the <span class="term" data-t="knapsack">knapsack</span> problem.</p>
-  <p><code>dp[c]</code> = the best value with total weight at most <code>c</code>, using the items read so far. A new item: skip it (<code>dp[c]</code> stays) or take it (<code>dp[c - w] + v</code>).</p>
+  <p><span class="tr" data-ar="dp[c] = أفضل قيمة بوزن كلّي لا يتجاوز c، باستخدام العناصر التي قرأناها حتى الآن."><code>dp[c]</code> = the best value with total weight at most <code>c</code>, using the items read so far.</span> A new item: skip it (<code>dp[c]</code> stays) or take it (<code>dp[c - w] + v</code>).</p>
   <p>Why does the weight loop go down? Look at one item with weight 2 and value 3, and a bag of 4.</p>
   <figure class="viz" data-viz="table" data-gen="dp-knap" aria-label="Table dp[0] to dp[4] for one item with weight 2 and value 3. Going up, dp[4] becomes 6: the item is used twice. Going down, dp[4] becomes 3, which is right.">
     <script type="application/json">
@@ -264,7 +273,7 @@ int main() {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="dp[i] هو دائمًا الجواب للعنصر رقم i."><code>dp[i]</code> is always the answer for the i-th element.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="dp[i] هو ما تعرّفه أنت في السؤال 1. في مسألة القطع النقدية، i مجموع وليس رقم عنصر."><code>dp[i]</code> is whatever YOU define in question 1. In min coins, <code>x</code> is a sum, not the number of an element.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="dp[i] هو ما تعرّفه أنت في السؤال 1. في مسألة أقلّ عدد من العملات، x مجموع وليس رقم عنصر."><code>dp[i]</code> is whatever YOU define in question 1. In min coins, <code>x</code> is a sum, not the number of an element.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="الطريقة الجشعة نوع من البرمجة الديناميكية.">Greedy is a kind of DP.</span></p>
@@ -277,7 +286,7 @@ int main() {
   <h2>Common mistakes</h2>
   <ul>
     <li>You read outside the array: <code>dp[i - 2]</code> when <code>i = 1</code>. Fill the base cases first and start the loop after them.</li>
-    <li>For a minimum, the table starts with 0. Then 0 always wins. Start with a big value like <code>1e9</code>.</li>
+    <li>For a minimum, the table starts with 0. Then 0 always wins. Start with <code>INF = 1e9</code>.</li>
     <li>You forget <code>% MOD</code>, or you use <code>int</code> for big sums. Use <code>long long</code>.</li>
   </ul>
 </section>
@@ -296,7 +305,7 @@ int main() {
   <ol>
     <li><span class="tr" data-ar="درج، وكل حركة تصعد 1 أو 2 أو 3 درجات. ما قيمة dp[4]؟">Stairs where a move goes 1, 2 or 3 steps up. What is <code>dp[4]</code>?</span>
       <details><summary>Answer</summary><p>7. The table is 1, 1, 2, 4, 7. Each cell is the sum of the three cells before it: \( 4 + 2 + 1 = 7 \).</p></details></li>
-    <li><span class="tr" data-ar="القطع 1 و 5 و 6 والمجموع 10. كم قطعة تعطي الطريقة الجشعة، وكم تعطي البرمجة الديناميكية؟">Coins 1, 5, 6 and sum 10. How many coins does greedy use? How many does DP use?</span>
+    <li><span class="tr" data-ar="العملات 1 و 5 و 6 والمجموع 10. كم عملة تستخدم الطريقة الجشعة، وكم عملة تستخدم البرمجة الديناميكية؟">Coins 1, 5, 6 and sum 10. How many coins does greedy use? How many does DP use?</span>
       <details><summary>Answer</summary><p>Greedy: 6 + 1 + 1 + 1 + 1, so 5 coins. DP: 5 + 5, so 2 coins.</p></details></li>
     <li><span class="tr" data-ar="في مسألة الحقيبة 0/1، ماذا يحدث إذا صعدت حلقة الوزن من w إلى W؟">In 0/1 knapsack, what goes wrong if the weight loop goes up, from <code>w</code> to <code>W</code>?</span>
       <details><summary>Answer</summary><p>A cell can read a cell that already holds the same item. So one item can be taken two or more times.</p></details></li>

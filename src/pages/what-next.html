@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="أنهيت الدليل. هذه خريطة قصيرة للمواضيع التالية. تعلّم موضوعًا فقط عندما تطلبه منك مسألة.">You finished the guide. Here is a short map of the next topics. Learn one only when a problem asks for it.</span></p>
+<p class="idea"><span class="tr" data-ar="أنهيت الدليل. هذه خريطة قصيرة للمواضيع التالية. لا تتعلّم موضوعًا إلا عندما تحتاجه مسألة.">You finished the guide. Here is a short map of the next topics. Learn one only when a problem asks for it.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -24,7 +24,7 @@
     <tr><td><b><span class="term" data-t="segment-tree">Segment tree</span></b> or <b><span class="term" data-t="fenwick-tree">Fenwick tree</span></b></td><td>Sums (or min / max) of a <span class="term" data-t="range">range</span> while the array also changes. \( O(\log n) \) for each operation. Fenwick is shorter; the segment tree can do more.</td><td>Two kinds of queries are mixed: "change <code>a[i]</code>" and "sum of <code>a[l..r]</code>", both up to \( 2 \cdot 10^5 \) times. Prefix sums would be rebuilt every time.</td><td>EDU "Segment Tree" · CPA: Data Structures · USACO Gold</td></tr>
     <tr><td><b>Bitmask DP</b></td><td>DP where the state is a set of items, stored in one number. See <a href="#bits">Bits</a> and <a href="#dp">Dynamic programming</a>.</td><td>\( n \le 20 \), and the answer depends on <b>which</b> items are already used (visit all cities, give each task to one person).</td><td>USACO Gold · AtCoder DP contest (task O)</td></tr>
     <tr><td><b>DP on trees</b></td><td>The best answer for each <span class="term" data-t="subtree">subtree</span>, built from the children. See <a href="#trees">Trees</a>.</td><td>A tree is given, and the answer for a vertex depends on its children: "the biggest set of vertices with no two neighbours".</td><td>USACO Gold · AtCoder DP contest (task P)</td></tr>
-    <tr><td><b>Minimum <span class="term" data-t="spanning-tree">spanning tree</span> (Kruskal)</b></td><td>The cheapest set of edges that connects all vertices. Sort the edges, then use <a href="#dsu">DSU</a>.</td><td>"Connect all cities with the smallest total cost." If you skipped DSU, read that lesson first.</td><td>EDU "Disjoint Sets Union" · USACO Gold</td></tr>
+    <tr><td><b>Minimum <span class="term" data-t="spanning-tree">spanning tree</span> (Kruskal)</b></td><td>The cheapest set of edges that connects all vertices. Sort the edges, then use <a href="#dsu">DSU</a>.</td><td>"Connect all cities with the smallest total cost." If you skipped the optional DSU lesson, read it first.</td><td>EDU "Disjoint Sets Union" · USACO Gold</td></tr>
     <tr><td><b>LCA / binary lifting</b></td><td>The lowest common ancestor of two vertices in a tree. It gives the distance between any two vertices in \( O(\log n) \).</td><td>Many questions "distance between u and v in a tree", with \( q \) up to \( 2 \cdot 10^5 \). One BFS per question is too slow.</td><td>CPA: Graphs · USACO Platinum</td></tr>
   </table>
 
@@ -33,7 +33,8 @@
     <tr><th>Topic</th><th>What it solves</th><th>You need this when…</th><th>Where to learn</th></tr>
     <tr><td><b>Sparse table</b></td><td>Min / max / gcd of a range in \( O(1) \) when the array never changes.</td><td>Many min or max range questions, and no changes to the array.</td><td>CPA: Data Structures</td></tr>
     <tr><td><b>Bellman-Ford / Floyd-Warshall</b></td><td>Shortest paths with negative edges, or between all pairs. See <a href="#dijkstra">Dijkstra</a> first.</td><td>An edge weight can be negative, or you need every pair and \( n \le 500 \).</td><td>CPA: Graphs · USACO Gold</td></tr>
-    <tr><td><b>String hashing</b></td><td>Compare two substrings in \( O(1) \): turn each one into a number.</td><td>You compare many pieces of one long string.</td><td>CPA: String Processing · USACO Gold</td></tr>
+    <tr><td><b>0-1 BFS</b></td><td>Shortest paths when every weight is 0 or 1. A <code>deque</code> in place of the priority queue: \( O(n + m) \).</td><td>"Some moves are free, the others cost 1." Dijkstra also works, only a bit slower.</td><td>CPA: Graphs ("0-1 BFS")</td></tr>
+    <tr><td><b>Hashing</b> (strings, and a safe <code>unordered_map</code>)</td><td>Compare two substrings in \( O(1) \): turn each one into a number. The same idea, with your own hash, makes <code>unordered_map</code> safe from tests made to slow it down.</td><td>You compare many pieces of one long string, or a <code>map</code> is too slow.</td><td>CPA: String Processing · USACO Gold</td></tr>
     <tr><td><b>KMP / Z-function</b></td><td>Find a pattern inside a long text in \( O(n) \).</td><td>Find all places of a word in a text of length \( 10^6 \).</td><td>CPA: String Processing</td></tr>
     <tr><td><b>Sqrt tricks</b></td><td>Cut the array into blocks of size \( \sqrt{n} \). Each query costs about \( \sqrt{n} \) steps.</td><td>The queries are too hard for prefix sums, and \( n \sqrt{n} \) steps fit the time.</td><td>CPA: Data Structures ("Sqrt Decomposition")</td></tr>
     <tr><td><b>Game theory basics</b></td><td>Winning and losing positions, the game of Nim.</td><td>"Two players play perfectly. Who wins?"</td><td>CPA: Game Theory · CSES book, chapter 25</td></tr>
@@ -51,7 +52,12 @@
     <li><b>Topological sort with DFS</b>: CPA "Topological Sorting". Kahn's queue from the lesson is enough.</li>
     <li><b>Proofs of Fermat's rule and of "stars and bars"</b>, and <b>inclusion–exclusion</b>: CPA "Algebra" and "Combinatorics".</li>
     <li><b>Harder interactive problems</b>: solve the interactive problems of Div. 2 C and D after each contest.</li>
-    <li><b>Matrix power, the smallest-prime-factor sieve, fast prime tests, meet in the middle</b>: CPA, by name.</li>
+    <li><b>Matrix power, the smallest-prime-factor sieve, fast prime tests, meet in the middle</b> (\( n \) up to 40): CPA, by name.</li>
+    <li><b>Making a DP faster</b> (less memory, fewer cells): USACO Gold, and the AtCoder DP contest after task F.</li>
+    <li><b>The maximum of every window with a <code>deque</code></b>: CPA "Minimum stack / Minimum queue".</li>
+    <li><b>How negative numbers are stored</b> (why <code>~12</code> is -13), <b><code>unsigned</code> and <code>__int128</code></b>: CPA "Bit manipulation". <code>long long</code> is enough below 1600.</li>
+    <li><b>The exact math definition of \( O \)</b> and <b>full proofs</b> of constructive patterns: the CSES book, chapter 2, and the editorials.</li>
+    <li><b>Long templates with many shortcuts</b>: look at strong coders' code after 1600. Keep your short template until then.</li>
   </ul>
 </section>
 
@@ -76,7 +82,7 @@
   <ol>
     <li><span class="tr" data-ar="المسألة: n ≤ 18 مدينة، زُر كل المدن بأقل تكلفة. أي موضوع من الخريطة يناسبها؟">A problem: \( n \le 18 \) cities, visit all of them with the smallest cost. Which topic of the map fits?</span>
       <details><summary>Answer</summary><p>Bitmask DP. \( n \) is tiny, and the state is the set of cities already visited.</p></details></li>
-    <li><span class="tr" data-ar="المسألة فيها 2·10^5 عملية من نوعين: «غيّر a[i]» و«اجمع a[l..r]». لماذا لا تكفي المجاميع البادئة؟">A problem mixes \( 2 \cdot 10^5 \) operations "change <code>a[i]</code>" and "sum of <code>a[l..r]</code>". Why are prefix sums not enough?</span>
+    <li><span class="tr" data-ar="المسألة فيها 2·10^5 عملية من نوعين: «غيّر a[i]» و«اجمع a[l..r]». لماذا لا تكفي المجاميع التراكمية؟">A problem mixes \( 2 \cdot 10^5 \) operations "change <code>a[i]</code>" and "sum of <code>a[l..r]</code>". Why are prefix sums not enough?</span>
       <details><summary>Answer</summary><p>Each change would rebuild the prefix array: \( n \) steps each time. That is about \( 4 \cdot 10^{10} \) steps. Use a Fenwick tree or a segment tree.</p></details></li>
     <li><span class="tr" data-ar="هل يجب أن تتعلّم كتابة quick sort بيدك لتصل إلى 1600؟">Must you learn to write quick sort yourself to reach 1600?</span>
       <details><summary>Answer</summary><p>No. On Codeforces you call <code>sort</code>. Hand-written sorts are for exams and interviews.</p></details></li>

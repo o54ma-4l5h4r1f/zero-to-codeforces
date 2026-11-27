@@ -1,11 +1,11 @@
-<p class="idea"><span class="tr" data-ar="لا تغيّر الكود عشوائيًا على أمل أن ينجح. اقرأ الحكم، واتبع قائمة فحص بالترتيب، وقارن كودك بحل بطيء وبسيط.">Do not change code and hope. Look at the verdict, follow a checklist in order, and test your code against a slow, simple solution.</span></p>
+<p class="idea"><span class="tr" data-ar="لا تغيّر الكود عشوائيًا على أمل أن ينجح. اقرأ نتيجة الحُكم، واتبع قائمة فحص بالترتيب، وقارن كودك بحل بطيء وبسيط.">Do not change code and hope. Look at the verdict, follow a checklist in order, and test your code against a slow, simple solution.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
-    <li>You know the verdicts WA, TLE and RE → <a href="#how-codeforces-works">How Codeforces works</a></li>
-    <li>You can count the steps of a loop → <a href="#big-o">How much does my code cost?</a></li>
-    <li>You know when to use <code>long long</code> → <a href="#overflow">int or long long?</a></li>
+    <li>You can run a program on your own tests → <a href="#run-your-code">Run and test your code</a></li>
+    <li>You can trace a loop by hand → <a href="#simulation">Do what the statement says</a></li>
+    <li>You can write a slow "try everything" solution → <a href="#brute-force">Brute force</a></li>
   </ul>
 </aside>
 
@@ -44,40 +44,29 @@
 
   <div class="way">
     <h3><b>3 · Code</b> — everything in one file</h3>
-    <p>Toy task: find the biggest sum of a <span class="term" data-t="subarray">subarray</span>, a block of neighbours with at least one element.</p>
+    <p>Toy task: find the biggest number of an array. <code>fast</code> is the one loop from <a href="#arrays-strings">Arrays and strings</a>. <code>slow</code> does it another way: sort, then take the last.</p>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-long long fast(const vector&lt;int&gt; &amp;a) {     // the solution you want to submit: n steps
-    long long best = a[0], cur = 0;
-    for (int x : a) {
-        cur = max(cur + x, (long long)x);  // continue the old subarray, or start at x
-        best = max(best, cur);
-    }
+int fast(const vector&lt;int&gt; &amp;a) {          // the solution you want to submit
+    int best = a[0];
+    for (int x : a) best = max(best, x);
     return best;
 }
 
-long long slow(const vector&lt;int&gt; &amp;a) {     // every subarray: n * n steps, surely right
-    int n = a.size();
-    long long best = a[0];
-    for (int i = 0; i &lt; n; i++) {
-        long long sum = 0;
-        for (int j = i; j &lt; n; j++) {
-            sum += a[j];                   // sum of a[i..j]
-            best = max(best, sum);
-        }
-    }
-    return best;
+int slow(vector&lt;int&gt; a) {                 // another, simple way; a is a copy here
+    sort(a.begin(), a.end());
+    return a.back();                       // the last value is the biggest
 }
 
 int main() {
-    mt19937 rng(12345);                    // random generator; same tests on every run
+    mt19937 rng(12345);                    // makes random numbers; same tests on every run
     for (int test = 1; test &lt;= 1000; test++) {
         int n = rng() % 6 + 1;             // n from 1 to 6
         vector&lt;int&gt; a(n);
         for (int &amp;x : a) x = (int)(rng() % 11) - 5;   // values from -5 to 5
-        long long f = fast(a), s = slow(a);
+        int f = fast(a), s = slow(a);
         if (f != s) {                      // the first input where they differ
             cout &lt;&lt; "DIFFERENT on test " &lt;&lt; test &lt;&lt; "\n" &lt;&lt; n &lt;&lt; "\n";
             for (int x : a) cout &lt;&lt; x &lt;&lt; " ";
@@ -88,8 +77,8 @@ int main() {
     cout &lt;&lt; "all 1000 tests are equal\n";
 }
 </code></pre>
-    <p>Try it: change <code>best = a[0]</code> in <code>fast</code> to <code>best = 0</code>. <span class="tr" data-ar="الآن يطبع البرنامج مصفوفة صغيرة كل أعدادها سالبة. هذا هو الخطأ: الجواب لا يمكن أن يكون مصفوفة جزئية فارغة.">Now the program prints a small array of only negative numbers. That is the bug: the answer cannot be an empty subarray.</span></p>
-    <p class="note">You do not need to understand how <code>fast</code> works. Only the idea matters: compare it with <code>slow</code>.</p>
+    <p>Three new pieces. <span class="tr" data-ar="في const vector&lt;int&gt; &amp;a تعني &amp; أن الدالة تستخدم المصفوفة نفسها بلا نسخ، وتعني const أنها لا تغيّرها.">In <code>const vector&lt;int&gt; &amp;a</code>, the <code>&amp;</code> means "use the real vector, no copy". <code>const</code> means "the function does not change it".</span> <code>slow</code> has no <code>&amp;</code>: it gets its own copy, so its <code>sort</code> does not touch the test. <code>mt19937 rng(12345)</code> makes random numbers, and <code>rng() % 6</code> turns one into 0 to 5. More in the <a href="#cpp-reference">C++ reference</a>, part "References and pointers".</p>
+    <p>Run it like any program: in Custom test with an empty Input box, or on your computer. It prints <code>all 1000 tests are equal</code>. Now change <code>best = a[0]</code> in <code>fast</code> to <code>best = 0</code>. <span class="tr" data-ar="الآن يطبع البرنامج مصفوفة صغيرة كل أعدادها سالبة. هذا هو الخطأ: أكبر عدد فيها أقل من 0.">Now the program prints a small array of only negative numbers. That is the bug: its biggest number is below 0.</span></p>
   </div>
 </section>
 
@@ -148,6 +137,8 @@ int main() {
 </code></pre>
 </section>
 
+<p class="complexity">Speed: a stress test runs <code>fast</code> and <code>slow</code> on 1000 inputs with \( n \le 6 \). That is a few thousand steps: far below one second. Keep \( n \) small.</p>
+
 <section>
   <h2>Print what your program thinks</h2>
   <p>A trace table by hand is slow for big loops. Let the program print it. Use <code>cerr</code>, not <code>cout</code>. <span class="tr" data-ar="الحَكَم يتجاهل cerr، لذلك السطر المنسي لا يسبّب إجابة خاطئة.">The judge ignores <code>cerr</code>, so a forgotten line does not give Wrong answer.</span></p>
@@ -171,7 +162,7 @@ for (int i = 0; i &lt; n; i++) {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="سأغيّر سطرًا وأرسل مرة أخرى لأرى ما يحدث.">I will change one line and submit again to see what happens.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="كل إرسال خاطئ يكلّف نقاطًا. ابحث عن مثال يفشل فيه الكود أولًا، ثم أصلحه.">Each wrong submit costs points. First find an input that fails, then fix the code.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="كل إرسال خاطئ يكلّفك نقاطًا أو دقائق جزاء. ابحث عن مثال يفشل فيه الكود أولًا، ثم أصلحه.">Each wrong submit costs you points or penalty minutes. First find an input that fails, then fix the code.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="Time limit exceeded يعني أن الكود يحتاج تحسينات صغيرة.">Time limit exceeded means the code needs small speed-ups.</span></p>
@@ -192,8 +183,8 @@ for (int i = 0; i &lt; n; i++) {
 <aside class="notnow">
   <h2>Not now</h2>
   <ul>
-    <li><b>How <code>fast</code> above works.</b> It is a known trick for the biggest subarray sum. You meet ideas like it in <a href="#dp">Dynamic programming</a>.</li>
-    <li><b>How to write a good <code>slow</code>.</b> "Try every case" is a full lesson: <a href="#brute-force">Brute force</a>.</li>
+    <li><b>Runtime errors in stacks, queues and deep recursion.</b> These tools come later. Each lesson names its own traps: <a href="#stl-containers">map, set, stack, queue</a> and <a href="#recursion">Recursion</a>.</li>
+    <li><b>Compiler options that catch bugs for you</b>, like wrong indexes. They need a compiler set up on your computer. Custom test and your hand checks are enough for now: <a href="#what-next">After 1600</a>.</li>
   </ul>
 </aside>
 
@@ -209,12 +200,25 @@ for (int i = 0; i &lt; n; i++) {
   </ol>
 </section>
 
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <p class="note">Each problem has a trap that the samples do not show. Make your own small tests before you submit.</p>
+  <ol>
+    <li><a class="cf" data-p="96A">Football</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="133A">HQ9+</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="131A">cAPS lOCK</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="339B">Xenia and Ringroad</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="466A">Cheap Travel</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="514A">Chewbaсca and Number</a><span class="r">1200</span></li>
+  </ol>
+</section>
+
 <section class="more">
   <h2>Learn more</h2>
   <ul>
     <li><a href="https://codeforces.com/blog/entry/81841">Stress Testing Tutorial</a> — the same idea as above, as a tutorial.</li>
     <li><a href="https://codeforces.com/blog/entry/111217">[Tutorial] Common Mistakes in Competitive Programming and How to Avoid Them</a> — a long list of real bugs, very useful.</li>
-    <li><a href="https://codeforces.com/blog/entry/15547">Catching silly mistakes with GCC</a> — compiler options that find bugs for you.</li>
+    <li><a href="https://codeforces.com/blog/entry/15547">Catching silly mistakes with GCC</a> — compiler options that find bugs for you. Read it later, when you compile on your own computer.</li>
     <li><a href="https://usaco.guide/general/debugging-cpp">USACO Guide: Debugging C++</a> — more ways to print and to find a crash.</li>
   </ul>
 </section>

@@ -77,7 +77,7 @@
     <tr><td>\( n \le 10^{18} \)</td><td>\( O(\log n) \) or \( O(1) \)</td><td>about 60</td><td>A formula, or cutting in half.</td></tr>
   </table>
   <p class="tip-box">The row \( n \le 2 \cdot 10^5 \) is the most common one. <b>It means: two nested loops over \( n \) are too slow.</b> <button type="button" class="why" data-why="limits-2e5">why?</button></p>
-  <p class="note">\( O(1) \) means the number of steps does not grow with \( n \).</p>
+  <p class="note"><span class="tr" data-ar="O(1) تعني أن عدد الخطوات لا يكبر عندما تكبر n.">\( O(1) \) means the number of steps does not grow with \( n \).</span></p>
 </section>
 
 <section class="worked">
@@ -88,7 +88,7 @@
     <li><b>A small example by hand.</b> The numbers are 3, 9, 4, 1. Some pairs: \( 9 - 3 = 6 \), \( 4 - 1 = 3 \), \( 9 - 1 = 8 \). The best is 8. It uses the biggest number and the smallest number.</li>
     <li><b>The idea.</b> First idea: try every pair with two nested loops. Count the steps for the biggest \( n \):
       \[ (2 \cdot 10^5)^2 = 4 \cdot 10^{10} \text{ steps} \]
-      <p>That is about 400 seconds. Too slow. <span class="tr" data-ar="فكرة أفضل: الإجابة دائمًا هي أكبر رقم ناقص أصغر رقم. حلقة واحدة تجد الاثنين معًا.">Better idea: the answer is always the biggest number minus the smallest number. One loop finds both.</span></p>
+      <p>That is about 400 seconds. Too slow. <span class="tr" data-ar="فكرة أفضل: الإجابة دائمًا هي أكبر عدد ناقص أصغر عدد. حلقة واحدة تجد الاثنين معًا.">Better idea: the answer is always the biggest number minus the smallest number. One loop finds both.</span></p>
     </li>
     <li><b>Why is it fast enough?</b> One loop does \( 2 \cdot 10^5 \) steps. That is far below \( 10^8 \). The speed is \( O(n) \).</li>
   </ol>
@@ -128,8 +128,8 @@ int main() {
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="عندما تكون n ≤ 5000 فهو مقبول. الحدود الصغيرة تعني أن الطريقة البسيطة تكفي.">For \( n \le 5000 \) it is fine. Small limits mean: the simple way is enough.</span> Do not write a hard, fast solution when \( n \le 100 \).</p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="أكبر رقم في الحدود هو n.">The biggest number in the limits is my \( n \).</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="n هو عدد العناصر التي تمرّ عليها الحلقات، لا حجم القيم. عشرة أرقام كل منها حتى 10^9 مدخلات صغيرة جدًا.">\( n \) is how many items your loops go over, not how big the values are.</span> Ten numbers up to \( 10^9 \) each are a tiny input.</p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="أكبر عدد في الحدود هو n.">The biggest number in the limits is my \( n \).</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="n هو عدد العناصر التي تمرّ عليها الحلقات، لا حجم القيم. عشرة أعداد، كل منها حتى 10^9، مدخلات صغيرة جدًا.">\( n \) is how many items your loops go over, not how big the values are.</span> Ten numbers up to \( 10^9 \) each are a tiny input.</p>
     </li>
   </ul>
 </section>

@@ -155,13 +155,14 @@ static void t_ranges() {
   SEC = "ranges";
   for (int it = 0; it < 400; it++) {
     int n = rnd(1, 9); vector<ll> a(n); for (auto &v : a) v = rnd(-9, 9);
+    { vector<ll> b(n + 1, 0); for (int i = 1; i <= n; i++) b[i] = a[i - 1];   // positions from 1, as in the lesson
     //#pre_build
-    vector<ll> pre(n + 1); pre[0] = 0; for (int i = 0; i < n; i++) pre[i+1] = pre[i] + a[i];
-    for (int l = 0; l < n; l++) for (int r = l; r < n; r++) { ll w = 0; for (int i = l; i <= r; i++) w += a[i]; CK((@{pre_query}) == w); }
-    vector<ll> d(n + 1, 0), want(n, 0);
-    for (int q = 0; q < 5; q++) { int l = rnd(0, n - 1), r = rnd(l, n - 1); ll v = rnd(-5, 5); @{diff_upd}; for (int i = l; i <= r; i++) want[i] += v; }
+    vector<ll> pre(n + 1); pre[0] = 0; for (int i = 1; i <= n; i++) pre[i] = pre[i-1] + b[i];
+    for (int l = 1; l <= n; l++) for (int r = l; r <= n; r++) { ll w = 0; for (int i = l; i <= r; i++) w += b[i]; CK((@{pre_query}) == w); } }
+    vector<ll> d(n + 2, 0), want(n + 1, 0);
+    for (int q = 0; q < 5; q++) { int l = rnd(1, n), r = rnd(l, n); ll v = rnd(-5, 5); @{diff_upd}; for (int i = l; i <= r; i++) want[i] += v; }
     //#diff_final
-    { ll run = 0; for (int i = 0; i < n; i++) { run += d[i]; CK(run == want[i]); } }
+    { ll run = 0; for (int i = 1; i <= n; i++) { run += d[i]; CK(run == want[i]); } CK(d[0] == 0); }
     { int R = rnd(1, 5), Cn = rnd(1, 5); vector<vector<ll>> a(R + 1, vector<ll>(Cn + 1, 0)), P = a;
     for (int i = 1; i <= R; i++) for (int j = 1; j <= Cn; j++) { a[i][j] = rnd(-9, 9); @{pre2_build}; }
     for (int r1 = 1; r1 <= R; r1++) for (int r2 = r1; r2 <= R; r2++) for (int c1 = 1; c1 <= Cn; c1++) for (int c2 = c1; c2 <= Cn; c2++) {

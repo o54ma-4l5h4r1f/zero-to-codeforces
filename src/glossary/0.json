@@ -1,7 +1,7 @@
 {
   "judge": { "en": "judge", "ar": "الحَكَم الآلي", "note": "the program on the site that runs your code and checks the answer" },
-  "verdict": { "en": "verdict", "ar": "نتيجة الحكم على الحلّ", "note": "the result the judge gives your code, like Accepted or Wrong answer" },
-  "rating": { "en": "rating", "ar": "التقييم (رقم يدلّ على مستواك)", "note": "a number that shows your level; it changes after each contest" },
+  "verdict": { "en": "verdict", "ar": "نتيجة الحُكم على الحلّ", "note": "the result the judge gives your code, like Accepted or Wrong answer" },
+  "rating": { "en": "rating", "ar": "التقييم (عدد يدلّ على مستواك)", "note": "a number that shows your level; it changes after each contest" },
   "contest": { "en": "contest / round", "ar": "مسابقة", "note": "about two hours, a few new problems, many people at the same time" },
   "division": { "en": "division (Div.)", "ar": "قسم (مستوى المسابقة)", "note": "the level of a contest: Div. 4 is the easiest, Div. 1 the hardest" },
   "submit": { "en": "submit", "ar": "إرسال الحلّ", "note": "send your code to the judge" },
@@ -20,11 +20,20 @@
   "exact": { "en": "exact", "ar": "دقيق تمامًا", "note": "fully correct, with no small error" },
   "upsolving": { "en": "upsolving", "ar": "حلّ المسائل التي لم تحلّها بعد انتهاء المسابقة", "note": "after a contest, solve the problems you could not solve" },
   "virtual": { "en": "virtual participation", "ar": "مشاركة افتراضية (مسابقة قديمة بتوقيت حقيقي)", "note": "do an old contest with a real timer, as if it is live" },
-  "stress-test": { "en": "stress testing", "ar": "اختبار الحلّ بمدخلات عشوائية كثيرة", "note": "run your code and a slow correct code on many random inputs and compare" },
+  "stress-test": { "en": "stress testing", "ar": "اختبار الضغط (مقارنة حلّك بحلّ بطيء على مدخلات عشوائية كثيرة)", "note": "run your code and a slow correct code on many random inputs and compare" },
   "random": { "en": "random", "ar": "عشوائي", "note": "chosen by chance, not by a rule" },
-  "uninitialised": { "en": "uninitialised", "ar": "غير مُهيَّأ (بلا قيمة ابتدائية)", "note": "a variable that never got a start value, so it holds garbage" },
+  "uninitialised": { "en": "uninitialised", "ar": "غير مُهيَّأ (بلا قيمة ابتدائية)", "note": "a variable that never got a start value, so it holds a wrong, random value" },
   "out-of-range": { "en": "out of range", "ar": "خارج حدود المصفوفة", "note": "an index below 0 or above the last position" },
   "habit": { "en": "habit", "ar": "عادة", "note": "something you do every time, without thinking" },
   "data-type": { "en": "type", "ar": "نوع البيانات", "note": "what kind of value a variable holds and how big it can be, like int or long long" },
-  "checklist": { "en": "checklist", "ar": "قائمة تحقّق", "note": "a list of things to check, one by one, in order" }
+  "checklist": { "en": "checklist", "ar": "قائمة تحقّق", "note": "a list of things to check, one by one, in order" },
+  "cost": { "en": "cost", "ar": "التكلفة (عدد الخطوات التي ينفّذها الكود)", "note": "how many steps the code does" },
+  "logarithm": { "en": "logarithm", "ar": "اللوغاريتم", "note": "log n: how many times you halve n to reach 1; log 8 = 3" },
+  "byte": { "en": "byte", "ar": "بايت (وحدة قياس الذاكرة)", "note": "the unit of memory; an int takes 4 bytes" },
+  "worst-case": { "en": "worst case", "ar": "أسوأ حالة", "note": "the input that makes your code do the most steps" },
+  "handle": { "en": "handle", "ar": "اسم المستخدم", "note": "your name on Codeforces, shown in its colour" },
+  "standard-input": { "en": "standard input", "ar": "الإدخال القياسي", "note": "where cin reads from: what you type, or the test file on the judge" },
+  "standard-output": { "en": "standard output", "ar": "الإخراج القياسي", "note": "where cout writes to: your screen, or the file the judge checks" },
+  "terminal": { "en": "terminal", "ar": "الطرفية (نافذة الأوامر)", "note": "a window where you type commands, like g++ a.cpp" },
+  "compiler": { "en": "compiler", "ar": "المترجم", "note": "the program that turns your C++ code into a program you can run" }
 }

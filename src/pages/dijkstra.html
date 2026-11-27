@@ -1,10 +1,10 @@
-<p class="idea"><span class="tr" data-ar="أقصر مسار عندما يكون لكل حافة طول. في كل خطوة ثبّت أقرب رأس لم يُثبَّت بعد.">The shortest path when every edge has a length. Again and again, fix the closest vertex that is not fixed yet.</span></p>
+<p class="idea"><span class="tr" data-ar="أقصر مسار عندما يكون لكل ضلع طول. في كل خطوة ثبّت أقرب رأس لم يُثبَّت بعد.">The shortest path when every edge has a length. Again and again, fix the closest vertex that is not fixed yet.</span> <button type="button" class="why" data-why="dijkstra">why?</button></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
     <li>You can store a graph and run BFS → <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a></li>
-    <li>You know <code>priority_queue</code> with <code>greater</code> (smallest on top) → <a href="#stl-containers">map, set, stack, queue</a></li>
+    <li>You know <code>queue</code> and <code>pair</code> → <a href="#stl-containers">map, set, stack, queue</a>. <code>priority_queue</code> is new here.</li>
     <li>You know when a sum needs <code>long long</code> → <a href="#overflow">int or long long?</a></li>
   </ul>
 </aside>
@@ -70,9 +70,17 @@
 
   <div class="way">
     <h3><b>3 · Code</b> — the distances from one vertex</h3>
-    <p><code>g[v]</code> holds pairs {neighbour, weight}. When a distance gets better, push a new pair. The old pair stays in the queue, so skip it when it comes out.</p>
+    <p><b>First, the new tool.</b> A <code>priority_queue</code> is a box of values. <span class="tr" data-ar="الدالة top() تعطي دائمًا أكبر قيمة في الصندوق. ومع greater تعطي أصغر قيمة.">Its <code>top()</code> always gives the <b>biggest</b> value inside. With <code>greater</code> it gives the <b>smallest</b>.</span> <code>push(x)</code> adds a value, <code>pop()</code> removes the top. Both cost \( O(\log n) \); <code>top()</code> costs \( O(1) \).</p>
+<pre data-part="main"><code class="cpp">
+priority_queue&lt;int&gt; big;                                // biggest on top
+priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; small;  // smallest on top
+small.push(5); small.push(2); small.push(8);
+cout &lt;&lt; small.top();                                     // 2
+small.pop();                                             // removes 2; top() is now 5
+</code></pre>
+    <p>Dijkstra uses the "smallest on top" form, with pairs {distance, vertex}. Read the long type from the inside out. <code>g</code> is a <code>vector</code>: for every vertex, a list of pairs {neighbour, weight}. When a distance gets better, push a new pair. The old pair stays in the queue, so skip it when it comes out.</p>
 <pre data-part="global"><code class="cpp">
-const long long INF = 1e18;                      // "not reached yet"
+const long long INF = 1e18;                      // 10^18: "not reached yet"
 vector&lt;vector&lt;pair&lt;int, long long&gt;&gt;&gt; g;          // g[v] = {neighbour, weight}
 
 vector&lt;long long&gt; dijkstra(int start, int n) {
@@ -99,13 +107,13 @@ vector&lt;long long&gt; dijkstra(int start, int n) {
     return dist;
 }
 </code></pre>
-    <p class="note">Put the distance <b>first</b> in the pair. Pairs are compared by the first number.</p>
+    <p class="note">Put the distance <b>first</b> in the pair. Pairs are compared by the first number. <code>1e18</code> means \( 10^{18} \); it is exact in a <code>long long</code>. In <code>for (auto edge : g[v])</code>, <code>auto</code> lets C++ write the type for you: here <code>edge</code> is a <code>pair&lt;int, long long&gt;</code> (<a href="#cpp-reference">C++ reference</a>, "Variables and types").</p>
   </div>
 </section>
 
 <section>
   <h2>Change it to fit</h2>
-  <p class="tip-box"><b>Which tool?</b> Every edge costs the same → <a href="#graphs-bfs-dfs">BFS</a>: simpler and faster. Weights 0 or more → Dijkstra. <span class="tr" data-ar="أوزان سالبة ← Dijkstra لا يصلح. تحتاج أداة أخرى تتعلّمها لاحقًا.">Negative weights → Dijkstra is not safe. You need another tool, which you learn later.</span></p>
+  <p class="tip-box"><b>Which tool?</b> Every edge costs the same → <a href="#graphs-bfs-dfs">BFS</a>: simpler and faster. Weights 0 or more → Dijkstra. <span class="tr" data-ar="إذا كانت هناك أوزان سالبة فإن Dijkstra لا يصلح. تحتاج أداة أخرى تتعلّمها لاحقًا.">Negative weights → Dijkstra is not safe. You need another tool, which you learn later.</span></p>
   <p>Why BFS is wrong here. BFS counts edges, not lengths:</p>
   <figure class="viz" data-viz="graph" aria-label="Three vertices. The edge 1-3 has weight 10. The edges 1-2 and 2-3 have weight 1. The best way from 1 to 3 is 1, 2, 3 with cost 2.">
     <script type="application/json">
@@ -125,7 +133,7 @@ vector&lt;long long&gt; dijkstra(int start, int n) {
   "states": { "2": "bad" }, "notes": { "2": "fixed at 2?" },
   "legend": { "bad": "called final too early" } }
     </script>
-    <figcaption><span class="tr" data-ar="Dijkstra يأخذ الرأس 2 أوّلًا لأن 2 أصغر من 3، ويعدّ المسافة 2 نهائية. لكن 1 ← 3 ← 2 تكلّف 3 − 2 = 1.">Dijkstra takes vertex 2 first (2 is less than 3) and calls 2 final. But 1 → 3 → 2 costs \( 3 - 2 = 1 \).</span> Our code would correct it later with extra work. On big tests that extra work can be huge.</figcaption>
+    <figcaption><span class="tr" data-ar="Dijkstra يأخذ الرأس 2 أوّلًا لأن 2 أصغر من 3، ويعدّ مسافته نهائية. لكن المسار من 1 إلى 3 ثم إلى 2 يكلّف 3 − 2 = 1.">Dijkstra takes vertex 2 first (2 is less than 3) and calls 2 final. But 1 → 3 → 2 costs \( 3 - 2 = 1 \).</span> Our code would correct it later with extra work. On big tests that extra work can be huge.</figcaption>
   </figure>
   <p><b>Default:</b> the code above, with the edges read in both directions. Then change one thing:</p>
   <ul>
@@ -219,7 +227,7 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="BFS يكفي، حتى مع الأوزان.">BFS is enough, even with weights.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="BFS يعدّ الحواف ولا يجمع الأوزان. يعمل فقط إذا كانت كل الحواف بالتكلفة نفسها.">BFS counts edges and ignores weights. It works only if every edge costs the same.</span> See the first small picture.</p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="BFS يعدّ الأضلاع ولا يجمع الأوزان. يعمل فقط إذا كانت كل الأضلاع بالتكلفة نفسها.">BFS counts edges and ignores weights. It works only if every edge costs the same.</span> See the first small picture.</p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="Dijkstra يعمل مع أي أوزان، حتى السالبة.">Dijkstra works with any weights, even negative ones.</span></p>

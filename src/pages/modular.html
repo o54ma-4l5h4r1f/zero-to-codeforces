@@ -1,18 +1,18 @@
-<p class="idea"><span class="tr" data-ar="عندما تكون الإجابة أكبر من أي نوع، احتفظ بباقي القسمة فقط. خذ الباقي بعد كل جمع وضرب، فتبقى الأعداد صغيرة.">When the answer is too big for any type, keep only its remainder. Take the remainder after every \( + \) and \( \times \), and the numbers stay small.</span></p>
+<p class="idea"><span class="tr" data-ar="عندما تكون الإجابة أكبر من أن يتّسع لها أي نوع، احتفظ بباقي القسمة فقط. خذ الباقي بعد كل جمع وضرب، فتبقى الأعداد صغيرة.">When the answer is too big for any type, keep only its remainder. Take the remainder after every \( + \) and \( \times \), and the numbers stay small.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
     <li>You know <code>%</code>, the remainder of a division → <a href="#basic-math">Basic math</a></li>
     <li>You know that <code>long long</code> holds up to about \( 9 \cdot 10^{18} \) → <a href="#overflow">int or long long?</a></li>
-    <li>You know that halving again and again takes few steps → <a href="#binary-search">Binary search</a></li>
+    <li>You can write 13 as 1101 in binary, and <code>b / 2</code> drops its last bit → <a href="#bits">Bits</a></li>
   </ul>
 </aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> \( 10^9 + 7 \)" (or 998244353).</li>
+    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> \( 10^9 + 7 \)" (or 998244353). <button type="button" class="why" data-why="mod-998">why?</button> Both are used the same way: same code, other number.</li>
     <li>You count the number of ways, and it grows very fast.</li>
     <li>You need \( a^b \) with a huge \( b \), like \( b = 10^{18} \). That is fast <span class="term" data-t="power">power</span>.</li>
     <li>"The last digit of …" is the same idea, modulo 10.</li>
@@ -32,7 +32,7 @@
       <figcaption>A clock keeps only the <span class="term" data-t="remainder">remainder</span>. 15 divided by 12 is 1, and 3 is left.</figcaption>
     </figure>
     <p>We write \( 15 \bmod 12 = 3 \). In C++ it is <code>15 % 12</code>. You can add the hours one by one, or all together. The clock shows the same time.</p>
-    <p class="note">Why does the judge ask for a remainder? The real answer can have thousands of digits. The remainder by \( 10^9 + 7 \) fits in an <code>int</code>. It still shows that your method is right.</p>
+    <p class="note">Why does the judge ask for a remainder? The real answer can have thousands of digits. The remainder by \( 10^9 + 7 \) fits in an <code>int</code>. <button type="button" class="why" data-why="mod-1e9-7">why?</button> It still shows that your method is right.</p>
   </div>
 
   <div class="way">
@@ -55,14 +55,14 @@ cout &lt;&lt; ((-7 % 5) + 5) % 5;    // prints 3: add m, then take % again
       <script type="application/json">
 { "mod": 5, "at": -7, "label": "7 steps back from 0: 3", "states": { "0": "read", "3": "active" }, "legend": { "read": "start: 0", "active": "the true remainder: 3" } }
 </script>
-      <figcaption>In C++ the result of <code>%</code> is negative when the number is negative. Add <code>m</code>, then take <code>%</code> again.</figcaption>
+      <figcaption>In C++ the result of <code>%</code> can be negative when the number is negative. Add <code>m</code>, then take <code>%</code> again.</figcaption>
     </figure>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — fast power, \( 3^{13} \) in 4 steps</h3>
     <p>\( 3^{13} \) means 13 threes multiplied: 12 multiplications one by one. For \( b = 10^{18} \) that is far too slow.</p>
-    <p>The trick: \( 13 = 8 + 4 + 1 \). So \( 3^{13} = 3^8 \cdot 3^4 \cdot 3^1 \). Writing 13 as a sum of 1, 2, 4, 8, … is writing it in <span class="term" data-t="binary">binary</span>: 13 is 1101. You get \( 3^2, 3^4, 3^8 \) by squaring again and again.</p>
+    <p>The trick: \( 13 = 8 + 4 + 1 \). So \( 3^{13} = 3^8 \cdot 3^4 \cdot 3^1 \). Writing 13 as a sum of 1, 2, 4, 8, … is writing it in <span class="term" data-t="binary">binary</span>, as in <a href="#bits">Bits</a>: 13 is 1101. You get \( 3^2, 3^4, 3^8 \) by squaring again and again.</p>
     <figure class="viz" data-viz="stepper" data-gen="mod-power" aria-label="Step by step: fast power computes 3 to the power 13. The bits of 13 are 1 1 0 1, and each bit says if a power of 3 is multiplied into the result.">
       <script type="application/json">
 {
@@ -121,7 +121,7 @@ sum = (sum + a[i]) % m;                // sum stays below m
 <pre data-part="main"><code class="cpp">
 prod = prod * (a[i] % m) % m;          // both are below m, the product fits in long long
 </code></pre></li>
-    <li><b>A difference, mod m.</b> <code>x - y</code> can be negative. Add <code>m</code>, then take <code>%</code> again.
+    <li><b>A difference, mod m.</b> <code>x - y</code> can be negative. Add <code>m</code>, then take <code>%</code> again. <button type="button" class="why" data-why="negative-mod">why?</button>
 <pre data-part="main"><code class="cpp">
 long long d = ((x - y) % m + m) % m;   // always from 0 to m - 1
 </code></pre></li>
@@ -132,7 +132,7 @@ long long d = ((x - y) % m + m) % m;   // always from 0 to m - 1
 
 <section class="worked">
   <h2>Solve one together</h2>
-  <p class="statement"><b>Problem.</b> There are \( n \) lamps. Each lamp is on or off. In how many ways can you set them, so that at least one lamp is on? Print the answer modulo \( 10^9 + 7 \). Limits: \( 1 \le n \le 10^{18} \).</p>
+  <p class="statement"><b>Problem.</b> There are \( n \) lamps. Each lamp is on or off. <span class="tr" data-ar="بكم طريقة يمكنك ضبطها بحيث يكون مصباح واحد على الأقل مضاءً؟">In how many ways can you set them, so that at least one lamp is on?</span> Print the answer modulo \( 10^9 + 7 \). Limits: \( 1 \le n \le 10^{18} \).</p>
   <ol class="steps">
     <li><b>What is asked?</b> The number of on/off settings with at least one lamp on, as a remainder.</li>
     <li><b>A small example by hand.</b> For \( n = 2 \): off-off, off-on, on-off, on-on. Three of the four have a lamp on.
@@ -220,7 +220,7 @@ int main() {
       <details><summary>Answer</summary><p>C++ prints -2. The true remainder is \( (-2 + 3) \bmod 3 = 1 \).</p></details></li>
     <li><span class="tr" data-ar="ما هو الرقم الأخير من 3^13؟">What is the last digit of \( 3^{13} \)?</span>
       <details><summary>Answer</summary><p>3. \( 3^{13} = 1594323 \), and the last digit is the remainder by 10. In code: <code>power(3, 13, 10)</code>.</p></details></li>
-    <li><span class="tr" data-ar="كم خطوة تحتاج power(2, b, m) عندما b = 10^9 تقريبًا؟">About how many steps does <code>power(2, b, m)</code> make for \( b = 10^9 \)?</span>
+    <li><span class="tr" data-ar="كم خطوة تقريبًا تحتاج power(2, b, m) عندما b = 10^9؟">About how many steps does <code>power(2, b, m)</code> make for \( b = 10^9 \)?</span>
       <details><summary>Answer</summary><p>About 30. Each step halves <code>b</code>, and halving \( 10^9 \) down to 0 takes about 30 steps.</p></details></li>
   </ol>
 </section>

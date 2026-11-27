@@ -601,15 +601,15 @@ cout &lt;&lt; countA("banana");          // 3
   </div>
   <div class="cc" data-tip="A parameter with a default value can be left out in the call; defaults must be the last parameters.">
 <pre data-part="global"><code class="cpp">
-int power(int base, int exp = 2) {
-    int r = 1;
-    for (int i = 0; i &lt; exp; i++) r *= base;
+int repeatAdd(int x, int times = 2) {
+    int r = 0;
+    for (int i = 0; i &lt; times; i++) r += x;
     return r;
 }
 </code></pre>
 <pre data-part="main"><code class="cpp">
-cout &lt;&lt; power(5);         // 25
-cout &lt;&lt; power(2, 10);     // 1024
+cout &lt;&lt; repeatAdd(5);         // 10
+cout &lt;&lt; repeatAdd(2, 10);     // 20
 </code></pre>
   </div>
   <div class="cc" data-to="recursion" data-tip="A recursive function calls itself on a smaller input; it needs a base case that stops, or it crashes.">
@@ -740,9 +740,7 @@ for (int i = 0; i &lt; 2; i++) {
     for (int j = 0; j &lt; 3; j++)
         cout &lt;&lt; g[i][j] &lt;&lt; " ";
     cout &lt;&lt; "\n";
-}
-// 1 2 3
-// 4 5 9
+}                   // prints 1 2 3, then 4 5 9
 </code></pre>
   </div>
   <div class="cc" data-to="arrays-strings" data-tip="Three ways to set every element; memset works only for 0 and -1.">
@@ -1385,7 +1383,6 @@ s.erase(5);
 cout &lt;&lt; *s.begin();          // 1
 auto it = s.lower_bound(0);  // first &gt;= 0
 cout &lt;&lt; (it == s.end());     // 0
-for (int x : s) cout &lt;&lt; x;   // 1
 </code></pre>
   </div>
   <div class="cc" data-to="stl-containers" data-tip="A multiset is a sorted set that keeps repeats; erase(value) removes all copies, erase(find(value)) removes one.">
@@ -1406,7 +1403,6 @@ map&lt;string, int&gt; cnt;          // key -&gt; value
 cnt["ali"] = 5;
 cnt["omar"]++;                 // starts at 0
 cout &lt;&lt; cnt["omar"];           // 1
-cout &lt;&lt; cnt.count("sara");     // 0
 for (auto [name, c] : cnt)
     cout &lt;&lt; name &lt;&lt; c &lt;&lt; " ";  // ali5 omar1
 cnt.erase("ali");
@@ -1648,8 +1644,6 @@ cout &lt;&lt; max(a, b);                 // 8
 cout &lt;&lt; max({a, b, 10});           // 10
 // WRONG: max(a, big)   int with long long
 cout &lt;&lt; max((long long)a, big);    // 5
-auto [lo, hi] = minmax(a, b);
-cout &lt;&lt; lo &lt;&lt; hi;                  // 38
 </code></pre>
   </div>
   <div class="cc span2" data-to="stl-basics" data-tip="max_element and min_element return an iterator: put * in front for the value, subtract begin() for the index.">

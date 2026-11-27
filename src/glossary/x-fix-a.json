@@ -1,0 +1,12 @@
+{
+ "non-decreasing": {
+ "en": "non-decreasing",
+ "ar": "غير متناقص",
+ "note": "each number is at least the one before it; equal neighbours are allowed: 1 2 2 5"
+ },
+ "palindrome": {
+ "en": "palindrome",
+ "ar": "متناظر (يُقرأ من الطرفين بالشكل نفسه)",
+ "note": "reads the same from left to right and from right to left: level, abba"
+ }
+}

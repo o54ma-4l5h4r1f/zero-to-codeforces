@@ -10,10 +10,13 @@
 //   (e) pictures (figure.viz): at most 2 steppers per lesson, at most 12 steps per stepper (the JSON itself is checked by build.js)
 //   (f) "why?" chips: exact markup, the story exists in src/whys/, at most 3 per page, never inside code, a tooltip,
 //       a picture, a link, a heading or a <summary>. The stories themselves get the math and Arabic rules of (a).
+//   (g) cross-lesson rules (AUTHORING.md 6.1): sort(…, greater<…>()) without the default form sort(a.rbegin(), a.rend()) on the page;
+//       "before" links that are not earlier lessons
 // WARNINGS (never fail): (d) sentences longer than 22 words, plain-text math (<sup>, ≤, × …) that should be LaTeX,
 //   LaTeX commands outside the allowed table, fewer than 6 sentence translations (.tr),
 //   a stepper caption with more than 2 sentences, a stepper with fewer than 3 steps;
-//   a story with fewer than 3 or more than 8 sentences, or not 2–4 sentence translations.
+//   a story with fewer than 3 or more than 8 sentences, or not 2–4 sentence translations;
+//   (g) greater<…>() in sort more than once, a two-argument power(…), pre[r + 1] - pre[l], "rounds down" for division without "positive".
 // On old pages (not upgraded yet) the same findings are printed as "old:" notes and do not fail.
 const fs = require('fs'), path = require('path');
 const { sentences } = require('./readability.js');
@@ -154,6 +157,7 @@ for (const slug of files) {
       const n = count(bf, /<li\b/g);
       if (n < 1 || n > 3) S.push(`"before" has ${n} items, needs 1–3`);
       if (me > 0 && count(bf, /href="#/g) < n) S.push('"before": every item needs a link to an earlier lesson');
+      for (const m of bf.matchAll(/href="#([^"]+)"/g)) if (order.includes(m[1]) && order.indexOf(m[1]) >= me) S.push(`"before" links to #${m[1]}, which is not an earlier lesson in src/topics.json`);
     }
     if (wk) {
       const st = wk.indexOf('<ol class="steps"');
@@ -191,6 +195,21 @@ for (const slug of files) {
     for (const x of long) W.push(`${x.words.length} words: ${x.text.slice(0, 160)}`);
     const ntr = count(html, /class="tr"/g);
     if (upgraded && ntr < MIN_TR) W.push(`only ${ntr} sentence translations (.tr), add at least ${MIN_TR}`);
+  }
+
+  // ---------- (g) cross-lesson rules (AUTHORING.md 6.1) ----------
+  if (lesson || slug === 'cheatsheet') {
+    const code = (raw.match(/<pre[\s\S]*?<\/pre>|<code[\s\S]*?<\/code>/g) || []).join('\n').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    const greaterSorts = code.match(/\bsort\s*\([^;]*greater\s*<[^;]*\)/g) || [];
+    if (greaterSorts.length && !/rbegin\s*\(/.test(code)) E.push('sort(…, greater<…>()) is used but the default form sort(a.rbegin(), a.rend()) is never shown on this page');
+    if (greaterSorts.length > 1) W.push(`sort with greater<…>() appears ${greaterSorts.length} times; the default is sort(a.rbegin(), a.rend()), greater<int>() at most once`);
+    for (const m of code.matchAll(/\bpower\s*\(([^()]*(?:\([^()]*\))?[^()]*)\)/g)) {
+      const args = m[1].split(',').filter(x => x.trim()).length;
+      if (args === 2) W.push(`two-argument power(${m[1].trim()}): the one form is power(a, b, m)`);
+    }
+    if (/pre\s*\[\s*r\s*\+\s*1\s*\]\s*-\s*pre\s*\[\s*l\s*\]/.test(code + html)) W.push('pre[r + 1] - pre[l]: prefix sums count positions from 1 in this guide, write pre[r] - pre[l - 1]');
+    for (const x of sentences(html)) if (/\brounds? down\b/i.test(x.text) && /\/|divi/i.test(x.text) && !/positive|non-negative|floor/i.test(x.text))
+      W.push(`"rounds down" for integer division: C++ drops the fraction (toward zero); say "for positive numbers": ${x.text.slice(0, 120)}`);
   }
 
   if (upgraded) { errors += E.length; warns += W.length; } else oldNotes += E.length + W.length;

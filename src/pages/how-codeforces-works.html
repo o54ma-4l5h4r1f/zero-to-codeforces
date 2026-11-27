@@ -20,13 +20,13 @@
 
 <section>
   <h2>Which contests to join</h2>
-  <p>Each contest has a <span class="term" data-t="division">division</span>. It shows the level. <button type="button" class="why" data-why="cf-words">why?</button> <span class="tr" data-ar="المسابقة تغيّر تقييمك فقط إذا كان تقييمك أقل من الحدّ المكتوب في العمود الأخير.">A contest changes your rating only if your rating is below the limit in the last column.</span></p>
+  <p>Each contest has a <span class="term" data-t="division">division</span>. It shows the level. <button type="button" class="why" data-why="cf-words">why?</button> <span class="tr" data-ar="المسابقة تغيّر تقييمك فقط إذا كان تقييمك داخل المدى المكتوب في العمود الأخير.">A contest changes your rating only if your rating is in the range in the last column.</span></p>
   <table>
     <tr><th>Contest</th><th>Level</th><th>For you now?</th><th>Changes your rating if it is</th></tr>
     <tr><td class="hi">Div. 4</td><td>The easiest</td><td class="hi">Yes. Start here.</td><td>below 1400</td></tr>
     <tr><td class="hi">Div. 3</td><td>Easy</td><td class="hi">Yes.</td><td>below 1600</td></tr>
     <tr><td class="hi">Educational Round</td><td>Like Div. 2, with classic ideas</td><td class="hi">Yes. Solve A and B.</td><td>below 2100</td></tr>
-    <tr><td>Div. 2</td><td>Medium</td><td>Yes, after a few contests. Problem A is still easy.</td><td>below 2100</td></tr>
+    <tr><td>Div. 2</td><td>Medium</td><td>Yes, after a few contests. Problem A is still easy.</td><td>below 2100 (below 1900 when a Div. 1 round runs at the same time)</td></tr>
     <tr><td>Div. 1</td><td>Hard</td><td>Not yet.</td><td>1900 or more</td></tr>
   </table>
   <p class="tip-box"><span class="tr" data-ar="يجب أن تسجّل في المسابقة قبل أن تبدأ. زر التسجيل موجود في صفحة Contests.">You must <b>register</b> for a contest before it starts. The button is on the Contests page.</span></p>
@@ -56,7 +56,7 @@
     <tr><td><b>Runtime error</b> (RE)</td><td>Your program crashed.</td><td>Look for an index outside the array or a division by zero.</td></tr>
     <tr><td><b>Compilation error</b> (CE)</td><td>The code does not <span class="term" data-t="compile">compile</span>.</td><td>Click the verdict to read the error. Check the language you chose.</td></tr>
   </table>
-  <p class="note">In a contest you may see <b>Pretests passed</b>. Pretests are only the first part of the tests. The full tests run after the contest.</p>
+  <p class="note">In a contest you may see <b>Pretests passed</b>. Pretests are only the first part of the tests. The full tests run after the contest. <span class="tr" data-ar="الإرسال الخاطئ في المسابقة له ثمن: نقاط في Div. 1 و Div. 2، ودقائق جزاء في Div. 3 و Div. 4 والجولات التعليمية.">A wrong submit in a contest has a price: points in Div. 1 and Div. 2, penalty minutes in Div. 3, Div. 4 and Educational rounds.</span></p>
 </section>
 
 <section class="worked">
@@ -66,7 +66,7 @@
     <li><b>Make an account.</b> Open <a href="https://codeforces.com/">codeforces.com</a>. Click <b>Register</b> at the top right. Pick a handle and confirm your e-mail.</li>
     <li><b>Open the problem.</b> Click <b>Problemset</b> in the top menu. Find problem 4A, or click it in "Your first problem" at the end of this page.</li>
     <li><b>Solve it by hand.</b> \( w = 8 \): 2 + 6 works, so YES. \( w = 7 \): an odd weight never splits into two even parts, so NO. \( w = 2 \): only 1 + 1, and 1 is odd, so NO. <span class="tr" data-ar="الجواب YES فقط إذا كان w زوجيًا وأكبر من 2.">The answer is YES only if <code>w</code> is even and bigger than 2.</span></li>
-    <li><b>Write and test the code on your computer.</b> Run it with the <span class="term" data-t="sample">sample</span> input 8. It must print YES. The next lessons show how to read a statement and how to run your code.</li>
+    <li><b>Write and test the code.</b> Run it with the <span class="term" data-t="sample">sample</span> input 8. It must print YES. The next lessons show how to read a statement, how to start from a template, and how to run your code.</li>
     <li><b>Submit, click by click.</b>
       <ol>
         <li>On the problem page, click <b>Submit Code</b> in the menu above the problem.</li>

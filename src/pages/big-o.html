@@ -199,11 +199,11 @@ cout &lt;&lt; a[0] + a[n - 1] &lt;&lt; "\n";   // 1 step, for n = 10 or n = 10^9
     <tr><td><code>count(v.begin(), v.end(), x)</code></td><td>\( O(n) \)</td><td>Looks at every element.</td></tr>
     <tr><td><code>reverse(...)</code>, <code>max_element(...)</code>, <code>min_element(...)</code></td><td>\( O(n) \)</td><td>Looks at every element.</td></tr>
     <tr><td><code>vector&lt;int&gt; c(n)</code>, a copy <code>b = v</code></td><td>\( O(n) \)</td><td>Writes \( n \) values.</td></tr>
-    <tr><td><code>void f(vector&lt;int&gt; v)</code>, then <code>f(v)</code></td><td>\( O(n) \) per call</td><td>Copies the whole <code>vector</code>. Write <code>const vector&lt;int&gt;&amp; v</code>: \( O(1) \).</td></tr>
+    <tr><td><code>void f(vector&lt;int&gt; v)</code>, then <code>f(v)</code></td><td>\( O(n) \) per call</td><td>Copies the whole <code>vector</code>. Write <code>const vector&lt;int&gt;&amp; v</code>: \( O(1) \). The <code>&amp;</code> means "no copy"; <code>const</code> means "the function does not change it". See the <a href="#cpp-reference">C++ reference</a>, part "References and pointers".</td></tr>
     <tr><td><code>cout &lt;&lt; x &lt;&lt; endl</code></td><td>slow</td><td><code>endl</code> does a <span class="term" data-t="flush">flush</span> each time. Use <code>"\n"</code>.</td></tr>
   </table>
   <p class="note">Measured: \( 2 \cdot 10^5 \) calls of <code>v.insert(v.begin(), x)</code> took 1.3 seconds. \( 2 \cdot 10^5 \) calls of <code>push_back</code> took less than 0.001 seconds. Printing \( 10^6 \) lines took 1.3 seconds with <code>endl</code> and 0.05 seconds with <code>"\n"</code>. <code>s.find(t)</code> with a longer string <code>t</code> of length \( m \) can cost up to \( n \cdot m \).</p>
-  <p class="tip-box"><span class="tr" data-ar="خطوة O(n) داخل حلقة من n دورة تعطي O(n^2)، حتى لو كان الكود سطرين فقط.">An \( O(n) \) line inside a loop of \( n \) rounds gives \( O(n^2) \), even if the code is two lines.</span></p>
+  <p class="tip-box"><span class="tr" data-ar="سطر من نوع O(n) داخل حلقة من n دورة يعطي O(n^2)، حتى لو كان الكود سطرين فقط.">An \( O(n) \) line inside a loop of \( n \) rounds gives \( O(n^2) \), even if the code is two lines.</span></p>
 </section>
 
 <section>
@@ -304,7 +304,7 @@ int main() {
       <ul>
         <li>Part 1: one loop, \( O(n) \).</li>
         <li>Part 2: <code>sort</code>, \( O(n \log n) \).</li>
-        <li>Part 3: the <code>break</code> can stop early. <span class="tr" data-ar="لكن في أسوأ حالة، عندما تكون كل الأرقام متساوية، لا يحدث break أبدًا.">But in the <span class="term" data-t="worst-case">worst case</span>, all numbers are equal and the <code>break</code> never happens.</span> Then it checks every pair: about \( n^2 / 2 \), so \( O(n^2) \).</li>
+        <li>Part 3: the <code>break</code> can stop early. <span class="tr" data-ar="لكن في أسوأ حالة، عندما تكون كل الأعداد متساوية، لا يحدث break أبدًا.">But in the <span class="term" data-t="worst-case">worst case</span>, all numbers are equal and the <code>break</code> never happens.</span> Then it checks every pair: about \( n^2 / 2 \), so \( O(n^2) \).</li>
       </ul>
       Keep the bigger part: the whole code is \( O(n^2) \).</li>
     <li><b>Why is it fast enough?</b> Put in \( n = 5000 \):
@@ -317,7 +317,7 @@ int main() {
 
 <section>
   <h2>Practice: what does this code cost?</h2>
-  <p><span class="tr" data-ar="لكل كود: عُدَّ الخطوات لقيمة كبيرة من n، ثم اكتب O(…). الإجابات مخفية.">For each code: count the steps for a big \( n \), then write its \( O(\dots) \).</span> They go from easy to tricky.</p>
+  <p><span class="tr" data-ar="لكل كود: عُدَّ الخطوات لقيمة كبيرة من n، ثم اكتب O(…) الخاص به.">For each code: count the steps for a big \( n \), then write its \( O(\dots) \).</span> They go from easy to tricky.</p>
   <ol>
     <li>
 <pre data-part="main"><code class="cpp">
@@ -399,7 +399,7 @@ for (int q = 0; q &lt; n; q++) {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="الرمز O(…) يخبرني بالوقت الدقيق للكود.">Big-O tells me the exact running time.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="هو يتجاهل الأرقام الثابتة، فكودان O(n) قد يختلفان في الوقت 10 مرات.">It drops the numbers in front, so two \( O(n) \) codes can differ 10 times.</span> Near \( 10^8 \) steps, be careful. Far from it, Big-O decides.</p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إنه يُهمل الأعداد الثابتة المضروبة، لذلك قد يختلف كودان من نوع O(n) في الوقت 10 مرات.">It drops the numbers in front, so two \( O(n) \) codes can differ 10 times.</span> Near \( 10^8 \) steps, be careful. Far from it, Big-O decides.</p>
     </li>
   </ul>
 </section>
@@ -418,8 +418,8 @@ for (int q = 0; q &lt; n; q++) {
   <ol>
     <li><span class="tr" data-ar="n ≤ 10^6، وكودك يعمل بسرعة O(n log n). هل يمرّ في ثانية واحدة؟">\( n \le 10^6 \) and your code is \( O(n \log n) \). Does it pass in 1 second?</span>
       <details><summary>Answer</summary><p>Yes. \( \log 10^6 \approx 20 \), so about \( 2 \cdot 10^7 \) steps. That is below \( 10^8 \).</p></details></li>
-    <li><span class="tr" data-ar="هناك t ≤ 10^4 اختبار، ومجموع n لا يتجاوز 2·10^5. كل اختبار ينشئ vector بحجم 10^6. كم خطوة في المجموع؟">There are \( t \le 10^4 \) tests and the sum of \( n \) is at most \( 2 \cdot 10^5 \). Each test makes a <code>vector</code> of size \( 10^6 \). About how many steps?</span>
-      <details><summary>Answer</summary><p>About \( 10^4 \cdot 10^6 = 10^{10} \). Too slow. Make the <code>vector</code> of size \( n + 1 \) instead.</p></details></li>
+    <li><span class="tr" data-ar="هناك t ≤ 10^4 اختبار، ومجموع n لا يتجاوز 2·10^5. كل اختبار ينشئ vector بحجم 10^6. كم خطوة تقريبًا في المجموع؟">There are \( t \le 10^4 \) tests and the sum of \( n \) is at most \( 2 \cdot 10^5 \). Each test makes a <code>vector</code> of size \( 10^6 \). About how many steps?</span>
+      <details><summary>Answer</summary><p>About \( 10^4 \cdot 10^6 = 10^{10} \). Too slow. Make the work of each test depend on its \( n \). If the values are at most \( n \), use a <code>vector</code> of size \( n + 1 \). If not, keep one global array and clear only the cells this test used.</p></details></li>
     <li><span class="tr" data-ar="هل تتّسع المصفوفة int a[20000][20000] في حدّ ذاكرة 256 MB؟">Does <code>int a[20000][20000]</code> fit in a memory limit of 256 MB?</span>
       <details><summary>Answer</summary><p>No. \( 4 \cdot 10^8 \) values of 4 bytes are \( 1.6 \cdot 10^9 \) bytes: about 1600 MB.</p></details></li>
   </ol>

@@ -1,6 +1,0 @@
-{
-  "signal": { "en": "signal", "ar": "علامة (دليل في نص المسألة)", "note": "a word, a limit or a kind of question in the statement that points to a tool" },
-  "contribution": { "en": "contribution", "ar": "مساهمة العنصر في الناتج", "note": "how much one element adds to the final answer, counted over all the places it appears" },
-  "complement": { "en": "complement", "ar": "المتمِّم (الحالات المعاكسة)", "note": "the cases you do NOT want; count them and subtract from all cases" },
-  "routine": { "en": "routine", "ar": "خطوات ثابتة تكرّرها كل مرة", "note": "the same steps you do every time, in the same order" }
-}

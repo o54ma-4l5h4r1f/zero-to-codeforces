@@ -13,14 +13,14 @@
   <ul>
     <li>What is the <b>biggest number</b> my program can make? Not only the input: also every sum and every <span class="term" data-t="product">product</span>.</li>
     <li>Bigger than \( 2 \cdot 10^9 \)? Then that variable must be <code>long long</code>.</li>
-    <li><span class="tr" data-ar="إذا لم تتّسع القيمة يحدث تجاوز: لا خطأ ولا تحذير، فقط رقم خاطئ.">If it does not fit, you get <span class="term" data-t="overflow">overflow</span>: no error, no warning, only a wrong number.</span></li>
+    <li><span class="tr" data-ar="إذا لم تتّسع القيمة يحدث تجاوز: لا خطأ ولا تحذير، فقط عدد خاطئ.">If it does not fit, you get <span class="term" data-t="overflow">overflow</span>: no error, no warning, only a wrong number.</span></li>
   </ul>
 </section>
 
 <section>
   <h2>Where int ends</h2>
   <p>Each <span class="term" data-t="data-type">type</span> has a biggest value. Here is <code>int</code> on a line. One tick is one billion, \( 10^9 \).</p>
-  <figure class="viz" data-viz="numberline" aria-label="A number line from minus 3 billion to plus 3 billion. A green bar shows the values an int can hold: from about minus 2.15 billion to about plus 2.15 billion. A sum of 3.5 billion is outside the bar.">
+  <figure class="viz" data-viz="numberline" aria-label="A number line from minus 3 billion to plus 4 billion. A green bar shows the values an int can hold: from about minus 2.15 billion to about plus 2.15 billion. A sum of 3.5 billion is outside the bar.">
     <script type="application/json">
 {
   "min": -3, "max": 4, "step": 0.5, "labelStep": 1,
@@ -54,7 +54,7 @@
     <tr><td><code>46340 * 46341</code></td><td>2 147 441 940</td><td>2 147 441 940 (fits)</td></tr>
     <tr><td><code>46341 * 46342</code></td><td>2 147 534 622</td><td class="hi">−2 147 432 674</td></tr>
   </table>
-  <p>The first row goes past the max and comes back at the min. <span class="tr" data-ar="لا تثق في الرقم الخاطئ أبدًا: لغة C++ لا تَعِد بأي نتيجة عند التجاوز.">Never trust the wrong number: C++ promises no result at all on overflow.</span> You often see the wrapped value, but not always.</p>
+  <p>The first row goes past the max and comes back at the min. <span class="tr" data-ar="لا تثق في العدد الخاطئ أبدًا: لغة C++ لا تَعِد بأي نتيجة عند التجاوز.">Never trust the wrong number: C++ promises no result at all on overflow.</span> You often see the wrapped value, but not always.</p>
   <p class="note">The last two rows show the exact edge for \( n \cdot (n + 1) \): it overflows <code>int</code> from \( n = 46341 \). So <code>n * (n + 1) / 2</code> breaks already at \( n = 46341 \), long before \( n = 10^5 \).</p>
 </section>
 
@@ -104,7 +104,7 @@ int main() {
   <table>
     <tr><th>Rule</th><th>Example from real limits</th><th>Biggest result</th></tr>
     <tr><td>A <b>sum</b> of many numbers: the sum is <code>long long</code>.</td><td>\( n \le 2 \cdot 10^5 \) numbers, each \( \le 10^9 \)</td><td>\( 2 \cdot 10^{14} \)</td></tr>
-    <tr><td>A <b>product</b> of two numbers above 46 340: write <code>1LL *</code> first.</td><td>\( a, b \le 10^5 \)</td><td>\( 10^{10} \)</td></tr>
+    <tr><td>A <b>product</b> that can pass \( 2 \cdot 10^9 \): write <code>1LL *</code> first. Two numbers above 46 340 always do. So does \( 10^9 \cdot 3 \).</td><td>\( a, b \le 10^5 \)</td><td>\( 10^{10} \)</td></tr>
     <tr><td>A <b>count of pairs</b>: <code>n * (n - 1) / 2</code> in <code>long long</code>.</td><td>\( n \le 2 \cdot 10^5 \)</td><td>about \( 2 \cdot 10^{10} \)</td></tr>
     <tr><td>An <b>input</b> above \( 2 \cdot 10^9 \): read it into <code>long long</code>.</td><td>\( n \le 10^{12} \)</td><td>\( 10^{12} \)</td></tr>
     <tr><td>Two numbers up to \( 10^9 \) <b>added</b>: <code>int</code> is still fine.</td><td>\( a, b \le 10^9 \)</td><td>\( 2 \cdot 10^9 \), only just</td></tr>
@@ -146,10 +146,11 @@ int main() {
   <table>
     <tr><th>Do not write</th><th>Why</th><th>Write</th></tr>
     <tr><td><code>pow(a, b)</code></td><td>returns a <code>double</code>, may be off by 1 <button type="button" class="why" data-why="pow-double">why?</button></td><td>a loop that multiplies</td></tr>
-    <tr><td><code>ceil(a / b)</code> with integers</td><td><code>a / b</code> is already rounded down</td><td><code>(a + b - 1) / b</code></td></tr>
+    <tr><td><code>ceil(a / b)</code> with integers</td><td><code>a / b</code> already dropped the fraction (for positive numbers: rounded down)</td><td><code>(a + b - 1) / b</code></td></tr>
     <tr><td><code>sqrt(x)</code> for big <code>x</code></td><td>may be off by 1</td><td>check <code>r * r</code> and fix <code>r</code> by 1</td></tr>
     <tr><td><code>a / b == c</code> with doubles</td><td>not <span class="term" data-t="exact">exact</span></td><td><code>a == b * c</code> with integers</td></tr>
   </table>
+  <p>Some answers really have a decimal point, like an average. Then print it like this: <code>cout &lt;&lt; fixed &lt;&lt; setprecision(9) &lt;&lt; x;</code>. <span class="tr" data-ar="بدون هذا السطر قد يطبع cout عددًا مثل 1.33333e+06، فيكون الجواب خاطئًا.">Without it, <code>cout</code> may print a number like <code>1.33333e+06</code>, and the answer is wrong.</span> <code>setprecision(9)</code> prints 9 digits after the point.</p>
   <p>To <span class="term" data-t="round-up">round up</span> a division of positive integers, stay in integers:</p>
 <pre data-part="main"><code class="cpp">
 long long n, m, a;                     // problem 1A: n, m, a up to 10^9
@@ -169,10 +170,10 @@ cout &lt;&lt; rows * cols &lt;&lt; "\n";           // up to 10^18: needs long lo
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="لو حدث تجاوز لأخبرني البرنامج بخطأ.">If there was an overflow, the program would show an error.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يوجد خطأ ولا تحذير. تحصل على رقم خاطئ بصمت، ثم على Wrong answer.">There is no error and no warning. You get a wrong number in silence, then Wrong answer.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يوجد خطأ ولا تحذير. تحصل على عدد خاطئ بصمت، ثم على Wrong answer.">There is no error and no warning. You get a wrong number in silence, then Wrong answer.</span></p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="long long يتّسع لأي رقم.">A <code>long long</code> holds any number.</span></p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="long long يتّسع لأي عدد.">A <code>long long</code> holds any number.</span></p>
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="حدّه حوالي 9·10^18. حاصل ضرب ثلاثة أعداد حتى 10^9 لا يتّسع فيه.">Its limit is about \( 9 \cdot 10^{18} \). A product of three numbers up to \( 10^9 \) does not fit.</span></p>
     </li>
   </ul>

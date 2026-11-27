@@ -1,8 +1,13 @@
-// Generates cheatsheet.html + tests.cpp from spec*.txt + tests.in.cpp, so the tested text IS the published text.
+// Generates src/pages/cheatsheet.html + tests.cpp from spec*.txt + t*.in.cpp, so the tested text IS the published text.
+// Run it through run.sh (bash tools/harness/cheatsheet/run.sh). Edit spec*.txt, never src/pages/cheatsheet.html by hand.
+// Generated test files go to build/harness/cheatsheet/ (git-ignored).
 const fs = require('fs'), path = require('path');
 const D = __dirname;
 const spec = ['spec1.txt', 'spec2.txt', 'spec3.txt'].map(f => fs.readFileSync(path.join(D, f), 'utf8')).join('\n');
-const slugs = new Set(JSON.parse(fs.readFileSync(process.argv[2] + '/src/topics.json', 'utf8')).flatMap(s => s.topics.map(t => t.slug)));
+const REPO = path.resolve(process.argv[2] || path.join(D, '..', '..', '..'));
+const OUT = path.join(REPO, 'build', 'harness', 'cheatsheet'); fs.mkdirSync(OUT, { recursive: true });
+const slugs = new Set(JSON.parse(fs.readFileSync(REPO + '/src/topics.json', 'utf8')).flatMap(s => s.topics.map(t => t.slug))
+  .concat(JSON.parse(fs.readFileSync(REPO + '/src/extras.json', 'utf8')).map(e => e.slug)));
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const escAttr = s => esc(s).replace(/"/g, '&quot;');
 const snips = {}, formulas = new Set(), display = [];
@@ -57,22 +62,26 @@ for (const raw of spec.split('\n')) {
     (table = table || []).push('      <tr>' + m[2].split(' | ').map(c => `<${tag}>${inline(c)}</${tag}>`).join('') + '</tr>');
   }
   else if (/^(==|--|>>>|<<<)/.test(line)) die('bad line: ' + line);
-  else { closeTable(); card.html += `    <div class="fx">${inline(line)}</div>\n`; }
+  else {                                   // a line of text; " [why:KEY]" at the end adds a "why?" chip (src/whys/)
+    closeTable();
+    const w = /\s*\[why:([a-z0-9-]+)\]$/.exec(line), body = w ? line.slice(0, w.index) : line;
+    card.html += `    <div class="fx">${inline(body)}${w ? ` <button type="button" class="why" data-why="${w[1]}">why?</button>` : ''}</div>\n`;
+  }
 }
 closeTable();
 let html = '<ul class="chips cjump">\n' + secs.map(s =>
-  `  <li><a href="#cheatsheet" data-jump="cs-${s.id}" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">${esc(s.title)}</a></li>`).join('\n') + '\n</ul>\n\n';
+  `  <li><a href="#cheatsheet" data-jump="cs-${s.id}">${esc(s.title)}</a></li>`).join('\n') + '\n</ul>\n\n';   // src/app.js scrolls to data-jump
 let nCards = 0;
 for (const s of secs) {
-  html += `<section class="${s.cls}" id="cs-${s.id}" style="scroll-margin-top:64px">\n<h2>${esc(s.title)}</h2>\n<div class="cgrid">\n`;
+  html += `<section class="${s.cls}" id="cs-${s.id}">\n<h2>${esc(s.title)}</h2>\n<div class="cgrid">\n`;
   for (const c of s.cards) { nCards++; html += `  <div class="cc${c.span2 ? ' span2' : ''}" data-to="${c.to}" data-tip="${escAttr(c.tip)}">\n${c.html}  </div>\n`; }
   html += '</div>\n</section>\n\n';
 }
-fs.writeFileSync(path.join(D, 'cheatsheet.html'), html.trimEnd() + '\n');
+fs.writeFileSync(path.join(REPO, 'src', 'pages', 'cheatsheet.html'), html.trimEnd() + '\n');
 
 // ---- tests ----
 let t = fs.readdirSync(D).filter(f => /^t\d.*\.in\.cpp$/.test(f)).sort().map(f => fs.readFileSync(path.join(D, f), 'utf8')).join('\n');
-for (const n in snips) if (/^#include/.test(snips[n])) fs.writeFileSync(path.join(D, 'full_' + n + '.cpp'), snips[n] + '\n');
+for (const n in snips) if (/^#include/.test(snips[n])) fs.writeFileSync(path.join(OUT, 'full_' + n + '.cpp'), snips[n] + '\n');
 const used = new Set(), fused = new Set();
 t = t.replace(/@\{(\w+)(?:\|(.*?)=>(.*?))?\}@?/g, (all, n, from, to) => {
   if (snips[n] === undefined) die('test uses unknown snippet ' + n); used.add(n);
@@ -82,8 +91,8 @@ t = t.replace(/@\{(\w+)(?:\|(.*?)=>(.*?))?\}@?/g, (all, n, from, to) => {
 });
 for (const m of t.matchAll(/\/\/#(\w+)/g)) { if (!formulas.has(m[1])) die('test marks unknown formula ' + m[1]); fused.add(m[1]); }
 const missS = Object.keys(snips).filter(n => !used.has(n)), missF = [...formulas].filter(n => !fused.has(n));
-fs.writeFileSync(path.join(D, 'tests.cpp'), t);
-fs.writeFileSync(path.join(D, 'snips.json'), JSON.stringify(snips, null, 1));
+fs.writeFileSync(path.join(OUT, 'tests.cpp'), t);
+fs.writeFileSync(path.join(OUT, 'snips.json'), JSON.stringify(snips, null, 1));
 console.log(secs.map(s => `${s.title}: ${s.cards.length}`).join('\n'));
 console.log(`\n${secs.length} sections, ${nCards} cards, ${Object.keys(snips).length} code snippets (${used.size} used in tests), ${formulas.size} formulas (${fused.size} marked in tests), ${display.length} display-only code bits`);
 console.log('display-only: ' + [...new Set(display)].join(' | '));

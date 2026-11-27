@@ -32,7 +32,15 @@
     <tr><td>\( 10^{18} \)</td><td>ten to the 18</td><td>1 with 18 zeros</td></tr>
   </table>
   <p>The sign \( \le \) means "less than or equal". So \( 1 \le n \le 2 \cdot 10^5 \) reads: <span class="tr" data-ar="n عدد صحيح من 1 إلى 200000، والطرفان مسموح بهما.">\( n \) is a whole number from 1 to 200 000, and both ends are allowed.</span></p>
-  <p>\( a_i \) means "the number at place \( i \) of the array <code>a</code>". The statement counts places from 1: \( a_1, a_2, \dots, a_n \).</p>
+  <p>The statement uses a few more signs. Each one with a small example:</p>
+  <table>
+    <tr><th>You see</th><th>It means</th><th>Example</th></tr>
+    <tr><td>\( a_i \)</td><td>"a with index \( i \)": the number at place \( i \) of the array <code>a</code></td><td>\( a = 5, 7, 9 \): \( a_2 = 7 \)</td></tr>
+    <tr><td>\( a_1, a_2, \dots, a_n \)</td><td>\( n \) numbers, counted from 1</td><td>\( n = 3 \): \( a_1, a_2, a_3 \)</td></tr>
+    <tr><td>\( [l, r] \)</td><td>from \( l \) to \( r \), both ends included. It holds \( r - l + 1 \) numbers.</td><td>\( [2, 5] \): 2, 3, 4, 5. That is 4 numbers.</td></tr>
+    <tr><td>\( |x| \)</td><td>\( x \) without its minus sign</td><td>\( |-4| = 4 \), \( |4| = 4 \)</td></tr>
+    <tr><td>\( 10^9 + 7 \)</td><td>the number 1 000 000 007</td><td>"print the answer modulo \( 10^9 + 7 \)": a later lesson</td></tr>
+  </table>
   <p class="note">The biggest values are the ones that break code. The judge always has a test with them.</p>
 </section>
 
@@ -80,6 +88,11 @@
     <tr><td>"print any valid answer"</td><td>Many answers are correct. Yours can differ from the sample.</td></tr>
     <tr><td>1-indexed</td><td>The statement counts from 1. Your C++ array counts from 0.</td></tr>
     <tr><td>non-negative / positive</td><td>\( \ge 0 \) / \( &gt; 0 \). Zero is not positive.</td></tr>
+    <tr><td><span class="term" data-t="non-decreasing">non-decreasing</span></td><td>Each number is \( \ge \) the one before. Equal neighbours are allowed: 1 2 2 5.</td></tr>
+    <tr><td>strictly increasing</td><td>Each number is \( &gt; \) the one before. No equal neighbours: 1 2 5.</td></tr>
+    <tr><td><span class="term" data-t="adjacent">adjacent</span></td><td>Next to each other: \( a_i \) and \( a_{i+1} \).</td></tr>
+    <tr><td><span class="term" data-t="palindrome">palindrome</span></td><td>Reads the same from both ends: <code>"level"</code>, <code>"abba"</code>, 1 2 1.</td></tr>
+    <tr><td><span class="term" data-t="prefix">prefix</span> / <span class="term" data-t="suffix">suffix</span></td><td>A start / an end of a string or array: <code>"co"</code> / <code>"de"</code> of <code>"code"</code>.</td></tr>
   </table>
 </section>
 
@@ -116,7 +129,7 @@ int main() {
     while (t--) {                        // one round of the loop per test case
         int n;
         cin &gt;&gt; n;
-        vector&lt;int&gt; a(n);
+        vector&lt;int&gt; a(n);               // an array of n numbers: a[0] ... a[n-1]
         for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
         int ups = 0;
         for (int i = 1; i &lt; n; i++)      // a[i-1] exists only for i &gt;= 1

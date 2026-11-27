@@ -1,8 +1,6 @@
 {
-  "connected-component": { "en": "connected component", "ar": "مكوّن متّصل (مجموعة رؤوس يصل بعضها إلى بعض)", "note": "a group of vertices where you can go from any one to any other" },
   "leader": { "en": "leader (representative)", "ar": "قائد المجموعة (ممثّلها)", "note": "the one element that stands for its whole group" },
   "path-compression": { "en": "path compression", "ar": "ضغط المسار", "note": "after find(x), x points straight to the leader, so the next find is fast" },
-  "directed": { "en": "directed", "ar": "موجَّه (له اتجاه)", "note": "each edge is an arrow: you can go from a to b but not back" },
   "in-degree": { "en": "in-degree", "ar": "درجة الدخول (عدد الأسهم الداخلة إلى الرأس)", "note": "how many arrows point to this vertex" },
   "topological-order": { "en": "topological order", "ar": "ترتيب طوبولوجي", "note": "an order of the vertices where every arrow goes from left to right" },
   "prerequisite": { "en": "prerequisite", "ar": "متطلَّب سابق", "note": "something you must finish first" },
@@ -11,5 +9,9 @@
   "precompute": { "en": "precompute", "ar": "حساب مُسبق", "note": "calculate once at the start, then reuse many times" },
   "interactive": { "en": "interactive", "ar": "تفاعلي", "note": "your program and the judge send messages to each other" },
   "flush": { "en": "flush", "ar": "تفريغ المخزن المؤقّت (إرسال المخرجات فورًا)", "note": "send the printed text now, do not keep it in memory" },
-  "subtree": { "en": "subtree", "ar": "شجرة فرعية", "note": "a vertex of a tree together with everything below it" }
+  "output-buffer": { "en": "output buffer", "ar": "المخزن المؤقّت للمخرجات", "note": "a place in memory where printed text waits before it is really sent" },
+  "fermat": { "en": "Fermat's little theorem", "ar": "مبرهنة فيرما الصغرى", "note": "for a prime p, and a not a multiple of p: the inverse of a is a^(p-2) mod p" },
+  "segment-tree": { "en": "segment tree", "ar": "شجرة المقاطع", "note": "a structure that answers range questions and allows changes, O(log n) each" },
+  "fenwick-tree": { "en": "Fenwick tree (BIT)", "ar": "شجرة فينويك", "note": "a short piece of code for prefix sums when the array changes" },
+  "spanning-tree": { "en": "spanning tree", "ar": "شجرة ممتدّة (تصل كل الرؤوس)", "note": "a set of edges with no cycle that connects all vertices" }
 }

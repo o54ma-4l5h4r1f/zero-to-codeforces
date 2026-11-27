@@ -1,7 +1,8 @@
 // Mutation check: break each published snippet in a small way and make sure the harness notices.
 const fs = require('fs'), path = require('path'), { spawn } = require('child_process');
-const D = __dirname, OUT = '/dev/shm/csmut'; fs.mkdirSync(OUT, { recursive: true });
-const snips = JSON.parse(fs.readFileSync(path.join(D, 'snips.json'), 'utf8'));
+// Run run.sh first (it writes snips.json). Usage: node tools/harness/cheatsheet/mutate.js [mutants per snippet] [snippet]
+const D = __dirname, GEN = path.join(D, '..', '..', '..', 'build', 'harness', 'cheatsheet'), OUT = path.join(GEN, 'mutants'); fs.mkdirSync(OUT, { recursive: true });
+const snips = JSON.parse(fs.readFileSync(path.join(GEN, 'snips.json'), 'utf8'));
 const tpl = fs.readdirSync(D).filter(f => /^t\d.*\.in\.cpp$/.test(f)).sort().map(f => fs.readFileSync(path.join(D, f), 'utf8')).join('\n');
 const OPS = [[' + 1', ' + 2'], [' - 1', ' - 2'], ['<=', '<'], ['>=', '>'], [' < ', ' <= '], [' > ', ' >= '], ['==', '!='], ['!=', '=='], ['&&', '||'], ['||', '&&'],
   [' + ', ' - '], [' - ', ' + '], [' * ', ' + '], [' / ', ' % '], [' % ', ' / '], ['min(', 'max('], ['max(', 'min('], ['.begin()', '.begin() + 1'], ['rbegin', 'begin'],
@@ -49,6 +50,6 @@ function finish() {
   const killedNames = new Set(res.filter(x => x.r === 'killed').map(x => x.n));
   const never = [...new Set(res.map(x => x.n))].filter(n => !killedNames.has(n));
   out += 'snippets with no killed mutant: ' + never.join(' ') + '\n';
-  fs.writeFileSync(path.join(D, 'mutation.log'), out); console.log(out);
+  fs.writeFileSync(path.join(GEN, 'mutation.log'), out); console.log(out);
 }
 next();

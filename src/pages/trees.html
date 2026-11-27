@@ -80,8 +80,8 @@
       <tr><th>its parent (parent form)</th><td>1</td><td>1</td><td>2</td><td>2</td><td>3</td><td>6</td></tr>
       <tr><th>its line in the edge list</th><td>1 2</td><td>1 3</td><td>2 4</td><td>2 5</td><td>3 6</td><td>6 7</td></tr>
     </table>
-    <p>Every vertex except the root has one parent, so there are \( n - 1 = 6 \) edges. The program below reads the edge list. The root is vertex 1.</p>
-    <p><span class="tr" data-ar="لا نحتاج مصفوفة visited. الشجرة بلا دورة، فالطريق الوحيد للرجوع إلى رأس زرناه هو الأب.">You need no <code>visited</code> array. A tree has no cycle, so the only visited neighbour is the parent.</span> Skip the parent, and you never come back:</p>
+    <p><span class="tr" data-ar="كل رأس ما عدا الجذر له أب واحد، لذلك توجد n - 1 = 6 أضلاع.">Every vertex except the root has one parent, so there are \( n - 1 = 6 \) edges.</span> The program below reads the edge list. The root is vertex 1. As in Graphs, <code>g</code>, <code>depth</code> and <code>sz</code> are global because <code>dfs</code> needs them; the <code>assign</code> lines reset them for each test.</p>
+    <p><span class="tr" data-ar="لا نحتاج مصفوفة visited. الشجرة بلا دورة، فالجار الوحيد الذي زرناه من قبل هو الأب.">You need no <code>visited</code> array. A tree has no cycle, so the only visited neighbour is the parent.</span> Skip the parent, and you never come back:</p>
     <figure class="viz" data-viz="graph" aria-label="The same tree. The DFS is at vertex 2, which came from vertex 1. Its neighbours are 1, 4 and 5. The edge to 1 is skipped because 1 is the parent. The edges to 4 and 5 are used.">
       <script type="application/json">
 { "unit": 80,
@@ -245,8 +245,8 @@ int main() {
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا. بلا دورة، الجار الوحيد الذي زرته هو الأب. يكفي أن تتخطّاه.">No. With no cycle, the only visited neighbour is the parent. Skipping it is enough.</span></p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="السطر «a b» في قائمة الحواف يعني أن a هو أب b.">The line "a b" in the edge list means that <code>a</code> is the parent of <code>b</code>.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الحافة لا اتجاه لها. أنت تختار الجذر، ثم يحدّد DFS من هو الأب.">An edge has no direction. You choose the root, and the DFS decides who is the parent.</span> Read the statement: sometimes the root is given.</p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="السطر «a b» في قائمة الأضلاع يعني أن a هو الأب و b هو الابن.">The line "a b" in the edge list means that <code>a</code> is the parent of <code>b</code>.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الضلع لا اتجاه له. أنت تختار الجذر، ثم يحدّد DFS من هو الأب.">An edge has no direction. You choose the root, and the DFS decides who is the parent.</span> Read the statement: sometimes the root is given.</p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="حجم الشجرة الفرعية جاهز عندما أدخل إلى الرأس.">The size of a subtree is ready when I enter the vertex.</span></p>
@@ -260,7 +260,7 @@ int main() {
   <ul>
     <li>You read \( n \) edges. A tree has \( n - 1 \) edges.</li>
     <li>You forget <code>if (to == parent) continue;</code>. Then the DFS jumps between two vertices forever.</li>
-    <li>A tree can be one long chain of \( 2 \cdot 10^5 \) vertices. The DFS then goes that many calls deep. On some judges this crashes. If you see a strange runtime error, use BFS.</li>
+    <li>A tree can be one long chain of \( 2 \cdot 10^5 \) vertices. The DFS then goes that many calls deep. On Codeforces the stack is big (256 MB), so even \( 10^6 \) calls deep is fine there. On your own computer the stack is often 8 MB, and such a chain can crash. That is the stack, not your code.</li>
   </ul>
 </section>
 
@@ -277,7 +277,7 @@ int main() {
   <ol>
     <li><span class="tr" data-ar="في الشجرة التي في الصورة، ما عمق الرأس 6 وما حجم شجرته الفرعية؟">In the tree of the picture, what are the depth of vertex 6 and the size of its subtree?</span>
       <details><summary>Answer</summary><p>Depth 2 (bosses 3 and 1). Size 2 (vertex 6 and vertex 7).</p></details></li>
-    <li><span class="tr" data-ar="شجرة فيها 10 رؤوس. كم حافة فيها؟">A tree has 10 vertices. How many edges does it have?</span>
+    <li><span class="tr" data-ar="شجرة فيها 10 رؤوس. كم ضلعًا فيها؟">A tree has 10 vertices. How many edges does it have?</span>
       <details><summary>Answer</summary><p>9. Every vertex except the root has exactly one edge to its parent.</p></details></li>
     <li><span class="tr" data-ar="لماذا نضيف sz[to] بعد استدعاء dfs(to, v) وليس قبله؟">Why do we add <code>sz[to]</code> after the call <code>dfs(to, v)</code>, and not before it?</span>
       <details><summary>Answer</summary><p>Before the call, <code>sz[to]</code> is still 0. The call fills it. Size is an "up" value.</p></details></li>

@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="اجمع الأعداد مرة واحدة واحفظ كل مجموع جارٍ. بعد ذلك، مجموع أي جزء من المصفوفة هو عملية طرح واحدة.">Add the numbers once and save every running sum. After that, the sum of any part of the array is one subtraction.</span></p>
+<p class="idea"><span class="tr" data-ar="اجمع الأعداد مرة واحدة واحفظ كل مجموع تراكمي. بعد ذلك، مجموع أي جزء من المصفوفة هو عملية طرح واحدة.">Add the numbers once and save every running sum. After that, the sum of any part of the array is one subtraction.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -14,7 +14,7 @@
   <ul>
     <li>Many <span class="term" data-t="query">queries</span>: "what is the sum from position \( l \) to position \( r \)?"</li>
     <li>"How many good positions are between \( l \) and \( r \)?" Put 1 on good positions and 0 on the others. Now it is a sum.</li>
-    <li>The array does not change between the queries.</li>
+    <li><span class="tr" data-ar="المصفوفة لا تتغيّر بين الاستعلامات.">The array does not change between the queries.</span></li>
     <li>\( n \) and the number of queries are both up to \( 2 \cdot 10^5 \). A loop for every query is too slow.</li>
   </ul>
 </section>
@@ -60,7 +60,7 @@
       </ol>
       <figcaption>Each <code>pre[i]</code> stands under <code>a[i]</code>. It is the sum of <code>a[i]</code> and everything to its left.</figcaption>
     </figure>
-    <p><b>One query.</b> The sum of <code>a[2..4]</code> is \( 1 + 4 + 1 = 6 \). <span class="tr" data-ar="خذ كل شيء حتى r، ثم أزل كل شيء قبل l.">Take everything up to <code>r</code>, then remove everything before <code>l</code>.</span></p>
+    <p><b>One query.</b> <code>a[2..4]</code> means <code>a[2]</code>, <code>a[3]</code>, <code>a[4]</code>: both ends are included. The same holds for \( [l, r] \). The sum of <code>a[2..4]</code> is \( 1 + 4 + 1 = 6 \). <span class="tr" data-ar="خذ كل شيء حتى r، ثم أزل كل شيء قبل l.">Take everything up to <code>r</code>, then remove everything before <code>l</code>.</span></p>
     <figure class="viz" data-viz="array" data-gen="pre-query" aria-label="The array a = 3 1 4 1 5 from index 1 with the row pre = 0 3 4 8 9 14 from index 0. The part a[2..4] is framed. The boxes pre[4] = 9 and pre[1] = 3 are marked.">
       <script type="application/json">
 {
@@ -111,7 +111,7 @@ int main() {
     }
 }
 </code></pre>
-    <p class="tip-box"><b>One rule for every problem.</b> Positions from 1, <code>pre[0] = 0</code>, answer <code>pre[r] - pre[l - 1]</code>. Most inputs count from 1 too, so you never convert.</p>
+    <p class="tip-box"><b>One rule for every problem.</b> Positions from 1, <code>pre[0] = 0</code>, answer <code>pre[r] - pre[l - 1]</code>. Most array inputs count from 1 too, so you rarely convert. A string counts from 0: then use <code>s[i - 1]</code> for position <code>i</code>, as in the problem below.</p>
   </div>
 </section>
 
@@ -177,8 +177,8 @@ int main() {
   <p>Three smaller changes. Each changes one line of the build loop.</p>
   <ul>
     <li><b>Count, not sum:</b> for example, the even numbers. <code>cnt[i] = cnt[i - 1] + (a[i] % 2 == 0 ? 1 : 0)</code>. The count in <code>[l, r]</code> is <code>cnt[r] - cnt[l - 1]</code>.</li>
-    <li><b>Biggest so far:</b> <code>mx[i] = max(mx[i - 1], a[i])</code>. <span class="tr" data-ar="هذا يعطي أكبر قيمة في a[1..i] فقط. لا يمكن طرح الأكبر، فلا يعمل مع [l, r].">This gives the max of <code>a[1..i]</code> only. A max cannot be subtracted, so it does not work for any <code>[l, r]</code>.</span></li>
-    <li><b>A grid:</b> the sum of the rectangle from \( (1, 1) \) to \( (i, j) \) is \( P_{i,j} = a_{i,j} + P_{i-1,j} + P_{i,j-1} - P_{i-1,j-1} \).</li>
+    <li><b>Biggest so far:</b> <code>mx[i] = max(mx[i - 1], a[i])</code>. <span class="tr" data-ar="هذا يعطي أكبر قيمة في a[1..i] فقط. لا يمكن طرح القيمة الكبرى، لذلك لا يصلح لمجال [l, r] عامّ.">This gives the max of <code>a[1..i]</code> only. A max cannot be subtracted, so it does not work for any <code>[l, r]</code>.</span></li>
+    <li><b>A grid:</b> the same rule, rows and columns from 1, row 0 and column 0 all 0. The sum of the rectangle from \( (1, 1) \) to \( (i, j) \) is \( P_{i,j} = a_{i,j} + P_{i-1,j} + P_{i,j-1} - P_{i-1,j-1} \).</li>
   </ul>
 </section>
 
@@ -230,7 +230,7 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="حلقة واحدة من l إلى r لكل استعلام ليست بطيئة.">One loop from <code>l</code> to <code>r</code> per query is not slow.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الاستعلامات كثيرة. 2*10^5 استعلام في 2*10^5 خطوة تساوي 4*10^10 خطوة.">There are many queries. \( 2 \cdot 10^5 \) queries of \( 2 \cdot 10^5 \) steps make \( 4 \cdot 10^{10} \) steps.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الاستعلامات كثيرة: 2·10^5 استعلام، كلٌّ منها 2·10^5 خطوة، أي 4·10^10 خطوة.">There are many queries. \( 2 \cdot 10^5 \) queries of \( 2 \cdot 10^5 \) steps make \( 4 \cdot 10^{10} \) steps.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="مجموع a[l..r] هو pre[r] - pre[l].">The sum of <code>a[l..r]</code> is <code>pre[r] - pre[l]</code>.</span></p>

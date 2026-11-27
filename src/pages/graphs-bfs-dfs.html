@@ -14,7 +14,7 @@
   <ul>
     <li>The statement has cities and roads, friends, or computers and cables: things and <b>links between pairs</b>.</li>
     <li>"Can you reach B from A?" or "How many groups are there?" → DFS or BFS.</li>
-    <li><span class="tr" data-ar="«أقلّ عدد من الحركات» وكل حركة لها التكلفة نفسها ← استخدم BFS.">"The <b>minimum number of moves</b>" and every move costs the same → BFS.</span></li>
+    <li><span class="tr" data-ar="«أقلّ عدد من الحركات» وكل حركة لها التكلفة نفسها: استخدم BFS.">"The <b>minimum number of moves</b>" and every move costs the same → BFS.</span></li>
     <li>A <span class="term" data-t="grid">grid</span> (maze) with walls where you move up, down, left, right. A grid is also a graph.</li>
   </ul>
 </section>
@@ -137,7 +137,7 @@ vector&lt;int&gt; bfs(int start) {
 
 int main() {
     cin &gt;&gt; n &gt;&gt; m;                        // n vertices (1..n), m edges
-    g.assign(n + 1, vector&lt;int&gt;());
+    g.assign(n + 1, vector&lt;int&gt;());      // n + 1 empty lists (also clears old ones)
     visited.assign(n + 1, false);
     for (int i = 0; i &lt; m; i++) {
         int a, b;
@@ -158,7 +158,8 @@ int main() {
 }
 </code></pre>
     <p class="note">This is an <span class="term" data-t="undirected">undirected</span> graph. If the statement says <span class="term" data-t="directed">directed</span> (one-way roads), write only <code>g[a].push_back(b)</code>.</p>
-    <p class="note">A DFS on a chain of \( 10^6 \) vertices goes \( 10^6 \) calls deep. On some judges this crashes. <button type="button" class="why" data-why="stack-overflow">why?</button> If you see a strange runtime error, use BFS.</p>
+    <p class="note"><code>g</code> and <code>visited</code> are global, because <code>dfs</code> needs them. With many test cases, reset them at the start of every test, as the two <code>assign</code> lines do.</p>
+    <p class="note">A DFS on a chain of \( 10^6 \) vertices goes \( 10^6 \) calls deep. On Codeforces the stack is big (256 MB), so this is fine there. <button type="button" class="why" data-why="stack-overflow">why?</button> On your own computer the stack is often 8 MB, and a chain of about \( 2 \cdot 10^5 \) can already crash. That is the stack, not your code.</p>
   </div>
 </section>
 
@@ -237,7 +238,7 @@ for (int d = 0; d &lt; 4; d++) {
         <figcaption>The number in a cell is its distance from the start. The goal cell gets 7, so the answer is 7.</figcaption>
       </figure>
     </li>
-    <li><b>The idea.</b> Run BFS from the start cell. <span class="tr" data-ar="dist[x][y] هو عدد الحركات للوصول إلى الخانة. القيمة -1 تعني أننا لم نصل إليها بعد.">Keep <code>dist[x][y]</code>, the number of moves to reach the cell. The value -1 means "not reached yet".</span> So <code>dist</code> is also the visited mark. The answer is <code>dist[n-1][m-1]</code>.</li>
+    <li><b>The idea.</b> Run BFS from the start cell. <span class="tr" data-ar="احفظ dist[x][y]، وهو عدد الحركات للوصول إلى الخانة. القيمة -1 تعني أننا لم نصل إليها بعد.">Keep <code>dist[x][y]</code>, the number of moves to reach the cell. The value -1 means "not reached yet".</span> So <code>dist</code> is also the visited mark. The answer is <code>dist[n-1][m-1]</code>.</li>
     <li><b>Why is it fast enough?</b> The biggest grid has \( 1000 \cdot 1000 = 10^6 \) cells. Each cell enters the queue once and looks at 4 neighbours.
       \[ 4 \cdot 10^6 \text{ steps} \]
       <p>That is far below \( 10^8 \).</p>
@@ -280,12 +281,12 @@ int main() {
   <h2>Wrong ideas people get</h2>
   <ul>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="DFS يعطي أيضًا أقصر طريق.">DFS also gives the shortest path.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="DFS يجد طريقًا ما، وليس الأقصر. لأقلّ عدد من الحركات استخدم BFS.">DFS finds some path, not the shortest one. For the minimum number of moves use BFS.</span></p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="DFS يعطي أيضًا أقصر مسار.">DFS also gives the shortest path.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="DFS يجد مسارًا ما، وليس الأقصر. لأقلّ عدد من الحركات استخدم BFS.">DFS finds some path, not the shortest one. For the minimum number of moves use BFS.</span></p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="BFS يعطي أقصر طريق في أي مخطّط.">BFS gives the shortest path in any graph.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="فقط إذا كانت كل الحواف لها التكلفة نفسها. إذا اختلفت أطوال الطرق فإجابة BFS خاطئة.">Only if every edge costs the same. If the roads have different lengths, the BFS answer is wrong.</span> The tool for that case comes later (see "Not now").</p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="BFS يعطي أقصر مسار في أي مخطّط.">BFS gives the shortest path in any graph.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="فقط إذا كانت كل الأضلاع لها التكلفة نفسها. إذا اختلفت أطوال الطرق فإجابة BFS خاطئة.">Only if every edge costs the same. If the roads have different lengths, the BFS answer is wrong.</span> The tool for that case comes later (see "Not now").</p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="أضع علامة الزيارة على الرأس عندما أُخرجه من الطابور.">I mark a vertex as visited when I take it out of the queue.</span></p>
@@ -297,9 +298,9 @@ int main() {
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>No <span class="term" data-t="visited">visited</span> mark. In a graph with a <span class="term" data-t="cycle">cycle</span> you then walk in a circle forever.</li>
+    <li>No <span class="term" data-t="visited">visited</span> mark. A <span class="term" data-t="cycle">cycle</span> is a path that comes back to its start, like 1-2-3-1. In a graph with a cycle you then walk in a circle forever.</li>
     <li>You add the edge in one direction only, or the size is <code>g(n)</code> while vertices are 1..n. Use <code>n + 1</code>.</li>
-    <li>Many <span class="term" data-t="test-case">test cases</span>: you forget to clear <code>g</code> and <code>visited</code> before each one.</li>
+    <li>Many <span class="term" data-t="test-case">test cases</span>: you forget to clear <code>g</code> and <code>visited</code> before each one. Put the two <code>assign</code> lines inside the test loop.</li>
   </ul>
 </section>
 
@@ -308,19 +309,19 @@ int main() {
   <ul>
     <li><b>Roads with different lengths.</b> BFS counts edges, not lengths. You learn the right tool in <a href="#dijkstra">Shortest path (Dijkstra)</a>.</li>
     <li><b>Trees.</b> A tree is a connected graph with no cycle. It has its own tricks. You learn them in <a href="#trees">Trees</a>.</li>
-    <li><b>An order where some tasks must come first.</b> That is a question on a directed graph. You learn it in <a href="#toposort">Topological sort</a>.</li>
+    <li><b>An order where some tasks must come first.</b> That is a question on a directed graph. It is in <a href="#toposort">Topological sort</a>, an optional lesson at the end of Stage 3.</li>
   </ul>
 </aside>
 
 <section class="check">
   <h2>Check yourself</h2>
   <ol>
-    <li><span class="tr" data-ar="مخطّط فيه 5 رؤوس والحواف 1-2 و 2-3 و 4-5. كم مكوّنًا متصلًا فيه؟">A graph has 5 vertices and the edges 1-2, 2-3 and 4-5. How many connected components does it have?</span>
+    <li><span class="tr" data-ar="مخطّط فيه 5 رؤوس والأضلاع 1-2 و 2-3 و 4-5. كم مكوّنًا متصلًا فيه؟">A graph has 5 vertices and the edges 1-2, 2-3 and 4-5. How many connected components does it have?</span>
       <details><summary>Answer</summary><p>Two. One group is 1, 2, 3. The other group is 4, 5.</p></details></li>
     <li><span class="tr" data-ar="تريد أقلّ عدد من الحركات في متاهة. هل تستخدم DFS أم BFS؟ ولماذا؟">You need the minimum number of moves in a maze. Do you use DFS or BFS? Why?</span>
       <details><summary>Answer</summary><p>BFS. It moves level by level, so the first time it reaches a cell is the shortest way.</p></details></li>
-    <li><span class="tr" data-ar="في المخطّط 10^5 رأس و 2·10^5 حافة. كم خطوة تقريبًا يحتاج BFS؟">A graph has \( 10^5 \) vertices and \( 2 \cdot 10^5 \) edges. About how many steps does BFS need?</span>
-      <details><summary>Answer</summary><p>About \( n + m = 3 \cdot 10^5 \) steps. Each vertex and each edge is used once.</p></details></li>
+    <li><span class="tr" data-ar="في المخطّط 10^5 رأس و 2·10^5 ضلع. كم خطوة تقريبًا يحتاج BFS؟">A graph has \( 10^5 \) vertices and \( 2 \cdot 10^5 \) edges. About how many steps does BFS need?</span>
+      <details><summary>Answer</summary><p>About \( n + 2m = 5 \cdot 10^5 \) steps. Each vertex is taken once, and each edge is looked at twice, once from each end. That is still \( O(n + m) \).</p></details></li>
   </ol>
 </section>
 

@@ -212,12 +212,12 @@ for (auto [value, k] : f)
 <<<
 
 == ranges | s0 | Prefix sums, two pointers, binary search
--- prefix-sums | Sum of any part of an array in O(1) after one O(n) pass. pre has n + 1 elements.
-build: {{#pre_build: pre[0] = 0, pre[i+1] = pre[i] + a[i]}}
-sum of {{: a[l..r]}} = {{pre_query: pre[r+1] - pre[l]}}
--- prefix-sums | Difference array: add v to a whole range [l..r] in O(1), many times. One prefix sum at the end gives the real values. d has n + 1 elements.
+-- prefix-sums | Sum of any part of an array in O(1) after one O(n) pass. Positions count from 1, as in the lesson: a[1..n], and pre has n + 1 elements.
+build: {{#pre_build: pre[0] = 0, pre[i] = pre[i-1] + a[i]}}
+sum of {{: a[l..r]}} = {{pre_query: pre[r] - pre[l-1]}}
+-- prefix-sums | Difference array: add v to a whole range [l..r] in O(1), many times. One prefix sum at the end gives the real values. Positions from 1; d has n + 2 elements.
 add v on l..r: {{diff_upd: d[l] += v, d[r+1] -= v}}
-then {{#diff_final: a[i] = d[0] + ... + d[i]}}
+then {{#diff_final: a[i] = d[1] + ... + d[i]}}
 -- prefix-sums span2 | 2D prefix sums: sum of any rectangle in O(1). Rows and columns are 1-indexed; row 0 and column 0 stay 0.
 build: {{pre2_build: P[i][j] = a[i][j] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]}}
 query: {{pre2_query: sum = P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1]}}

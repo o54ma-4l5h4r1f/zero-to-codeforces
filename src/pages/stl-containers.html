@@ -40,7 +40,7 @@
       <tr><td>first in, first out</td><td><code>queue&lt;int&gt;</code></td><td><code>push(x)</code>, <code>front()</code>, <code>pop()</code></td><td>\( O(1) \)</td></tr>
     </table>
     <p class="note">\( O(\log n) \) is small: for \( n = 2 \cdot 10^5 \) it is about 18 steps.</p>
-    <p>Now watch a stack check the brackets of <code>([]{})</code>. <span class="tr" data-ar="القوس المفتوح يُوضع في المكدّس. القوس المغلق يجب أن يطابق القوس الموجود في القمّة.">An opening bracket goes on the stack. A closing bracket must match the top.</span></p>
+    <p>Now watch a stack check the brackets of <code>([]{})</code>. <span class="tr" data-ar="قوس الفتح يُوضع في المكدّس، وقوس الإغلاق يجب أن يطابق القوس الموجود في القمّة.">An opening bracket goes on the stack. A closing bracket must match the top.</span></p>
     <figure class="viz" data-viz="stepper" data-gen="stack-brackets" aria-label="Step by step: a stack checks the brackets of the string ([]{}). The stack is drawn as a row of boxes, the top is on the right.">
       <script type="application/json">
 {
@@ -73,7 +73,7 @@
         <li>Read <code>)</code>. The top <code>(</code> matches, so pop: the stack is empty.</li>
         <li><span class="tr" data-ar="انتهت السلسلة، و good ما زال true، والمكدّس فارغ. الجواب YES.">The string ended, <code>good</code> is still true and the stack is empty. The answer is YES.</span></li>
       </ol>
-      <figcaption>The top of the stack is always the last bracket that is still open. For <code>([)]</code> the <code>)</code> meets <code>[</code> on top, so the answer is NO.</figcaption>
+      <figcaption>The top of the stack is always the last bracket that is still open. <span class="tr" data-ar="في ([)] يقابل القوسُ ) القوسَ [ في القمّة، لذلك الجواب NO.">For <code>([)]</code> the <code>)</code> meets <code>[</code> on top, so the answer is NO.</span></figcaption>
     </figure>
   </div>
 
@@ -117,13 +117,12 @@ cout &lt;&lt; *s.begin() &lt;&lt; "\n";                // 2 = the smallest value
 <pre data-part="main"><code class="cpp">
 map&lt;string, int&gt; cnt;
 string w;
-while (cin &gt;&gt; w) cnt[w]++;                 // a new key starts at 0
+while (cin &gt;&gt; w) cnt[w]++;                 // read words until the input ends
 for (auto [word, times] : cnt)             // keys come in sorted order
     cout &lt;&lt; word &lt;&lt; " " &lt;&lt; times &lt;&lt; "\n";
-auto it = cnt.begin();                     // the first (smallest) key
-// it-&gt;first is that word, it-&gt;second is its count
 </code></pre>
-    <p class="note"><code>s.begin()</code> is not a value. It is the <b>place</b> of the first value, an <span class="term" data-t="iterator">iterator</span>. <code>*</code> opens the place. In a map, <code>it-&gt;first</code> is the key and <code>it-&gt;second</code> is the value. That is all you need now.</p>
+    <p>A new key starts at 0, so <code>cnt[w]++</code> works for a word seen for the first time. <span class="tr" data-ar="كل عنصر في map هو زوج: المفتاح ثم القيمة. الكتابة auto [word, times] تعطي الجزأين اسمين.">Each element of a <code>map</code> is a <code>pair</code>: the key, then the value. <code>auto [word, times]</code> gives the two parts names.</span> So <code>word</code> is the key (<code>.first</code>) and <code>times</code> is the value (<code>.second</code>). <code>auto</code> lets C++ write the type for you. More: <a href="#cpp-reference">C++ reference</a>, part "pair and tuple".</p>
+    <p class="note"><code>s.begin()</code> is not a value. It is the <b>place</b> of the first value, an <span class="term" data-t="iterator">iterator</span>. <code>*</code> opens the place. A search that finds nothing gives <code>s.end()</code>, the place after the last value. That is all you need now.</p>
     <p class="tip-box"><b>Which one do I use?</b> Use <code>map</code>, not <code>unordered_map</code>. On Codeforces, special tests can make <code>unordered_map</code> very slow. <button type="button" class="why" data-why="hash-attack">why?</button></p>
   </div>
 </section>
@@ -141,7 +140,7 @@ auto it = cnt.begin();                     // the first (smallest) key
       </table>
       <p>The value 5 is in the bag twice. <code>- 5</code> takes out only one of them.</p>
     </li>
-    <li><b>The idea.</b> Go down the table in the picture. We need duplicates, removal of any value, the smallest and the biggest. That row says <code>multiset</code>. <span class="tr" data-ar="لإزالة نسخة واحدة فقط من x اكتب erase(s.find(x)). أما erase(x) فيزيل كل النسخ.">To remove only one copy, write <code>bag.erase(bag.find(x))</code>. Plain <code>bag.erase(x)</code> removes every copy.</span> The smallest value is <code>*bag.begin()</code>. The biggest is <code>*bag.rbegin()</code>: the "r" means "from the right end".</li>
+    <li><b>The idea.</b> Go down the table in the picture. We need duplicates, removal of any value, the smallest and the biggest. That row says <code>multiset</code>. <span class="tr" data-ar="لإزالة نسخة واحدة فقط من x اكتب bag.erase(bag.find(x)). أما bag.erase(x) وحده فيزيل كل النسخ.">To remove only one copy, write <code>bag.erase(bag.find(x))</code>. Plain <code>bag.erase(x)</code> removes every copy.</span> The smallest value is <code>*bag.begin()</code>. The biggest is <code>*bag.rbegin()</code>: the "r" means "from the right end".</li>
     <li><b>Why is it fast enough?</b> Each command costs \( O(\log q) \), about 18 steps. All commands: \( 2 \cdot 10^5 \cdot 18 \approx 3.6 \cdot 10^6 \) steps. That is far below \( 10^8 \).</li>
   </ol>
 <pre><code class="cpp">
@@ -181,11 +180,11 @@ int main() {
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="المجموعة تحفظ القيم مرتّبة من الأصغر إلى الأكبر، وترتيب الإدخال يضيع.">A <code>set</code> keeps them sorted, small to big. The insert order is lost.</span> Need the input order? Keep a <code>vector</code> too.</p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="قراءة m[x] لا تغيّر الخريطة.">Reading <code>m[x]</code> does not change the map.</span></p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="قراءة m[x] لا تغيّر الـ map.">Reading <code>m[x]</code> does not change the map.</span></p>
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا لم يكن x موجودًا، فإن m[x] يضيفه بالقيمة 0.">If <code>x</code> is missing, <code>m[x]</code> adds it with value 0.</span> Then <code>m.size()</code> grows. To only check, write <code>m.count(x)</code>.</p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="في multiset يزيل erase(x) نسخة واحدة من x.">In a <code>multiset</code>, <code>s.erase(x)</code> removes one copy of <code>x</code>.</span></p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="في multiset يزيل s.erase(x) نسخة واحدة من x.">In a <code>multiset</code>, <code>s.erase(x)</code> removes one copy of <code>x</code>.</span></p>
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يزيل كل النسخ. لإزالة نسخة واحدة اكتب s.erase(s.find(x)).">It removes all copies. For one copy, write <code>s.erase(s.find(x))</code>.</span></p>
     </li>
   </ul>
@@ -194,9 +193,9 @@ int main() {
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><code>top()</code>, <code>front()</code> or <code>pop()</code> on an empty container. The program crashes. Check <code>!st.empty()</code> first.</li>
+    <li><code>top()</code>, <code>front()</code> or <code>pop()</code> on an empty container. The program may crash or give garbage. Check <code>!st.empty()</code> first.</li>
     <li><code>*s.begin()</code> on an empty set. It reads garbage. Check <code>!s.empty()</code> first.</li>
-    <li><code>s.find(x)</code> when <code>x</code> is not there gives <code>s.end()</code>. Erasing <code>s.end()</code> crashes. Be sure <code>x</code> is inside.</li>
+    <li><code>s.find(x)</code> when <code>x</code> is not there gives <code>s.end()</code>. Erasing <code>s.end()</code> is an error: it may crash or break the set. Be sure <code>x</code> is inside.</li>
   </ul>
 </section>
 
@@ -204,7 +203,7 @@ int main() {
   <h2>Not now</h2>
   <ul>
     <li><b>More about iterators:</b> <code>s.lower_bound(x)</code>, <code>prev</code>, <code>next</code>. You meet <code>lower_bound</code> in <a href="#binary-search">Binary search</a>.</li>
-    <li><b><code>priority_queue</code> and <code>deque</code>.</b> A <code>multiset</code> covers the same needs for now. <code>priority_queue</code> comes with <a href="#dijkstra">Dijkstra</a>.</li>
+    <li><b><code>priority_queue</code> and <code>deque</code>.</b> This lesson does not teach them. A <code>multiset</code> covers the same needs for now. You meet <code>priority_queue</code> where it is first needed, in <a href="#dijkstra">Dijkstra</a>. That lesson teaches it from the start.</li>
     <li><b>Making <code>unordered_map</code> safe</b> with your own hash. Not needed below 1600: <a href="#what-next">After 1600</a>.</li>
   </ul>
 </aside>
@@ -239,6 +238,6 @@ int main() {
     <li><a href="https://en.cppreference.com/w/cpp/container">cppreference: containers</a> — the full list of every container and its functions.</li>
     <li><a href="https://usaco.guide/bronze/intro-sets">USACO Guide: Sets and Maps</a> — short text with examples.</li>
     <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 4 "Data structures".</li>
-    <li><a href="https://codeforces.com/blog/entry/62393">Codeforces blog: Blowing up unordered_map</a> — why <code>unordered_map</code> can be slow on Codeforces.</li>
+    <li><a href="https://codeforces.com/blog/entry/62393">Codeforces blog: Blowing up unordered_map</a> — why <code>unordered_map</code> can be slow on Codeforces. For curiosity only: not needed below 1600.</li>
   </ul>
 </section>

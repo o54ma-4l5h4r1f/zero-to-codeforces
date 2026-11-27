@@ -21,6 +21,8 @@ jobs:
       - run: node build.js
       - run: node tools/check-problems.js
       - run: node tools/check-code.js
+      - run: node tools/check-path.js
+      - run: node tools/viz-gen.js
       - run: mkdir _site && cp index.html _site/index.html && touch _site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:

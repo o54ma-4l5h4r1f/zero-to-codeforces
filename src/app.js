@@ -12,6 +12,27 @@
       .replace(/\\([a-z]+)/g, '$1').replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
   }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  /* Arabic text with code, numbers and formulas inside it (a tooltip, the word list).
+     The Arabic is right-to-left; each Latin/number run (10^9, -7 % 5, pre[r] - pre[l-1], solve(), 1 → 2) is put in its own
+     <bdi dir="ltr"> so it reads left-to-right in the order it was written. Every piece is escaped: the result is safe HTML. */
+  var AR_RUN = /([^؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿«»]+)/;
+  var PAIRS = { ')': '(', ']': '[', '}': '{' };
+  function count(s, c) { return s.split(c).length - 1; }
+  function arHtml(s) {
+    return String(s).split(AR_RUN).map(function (p, i) {
+      if (i % 2 === 0 || !/[A-Za-z0-9]/.test(p)) return esc(p);           /* Arabic, or only spaces and punctuation */
+      var a = 0, b = p.length, ch;
+      for (;;) {                                  /* leave sentence punctuation and unmatched brackets outside the run */
+        ch = p.charAt(a);
+        if (a < b && (/[\s,.:;!?]/.test(ch) || ('([{'.indexOf(ch) >= 0 && count(p.slice(a, b), ch) > count(p.slice(a, b), { '(': ')', '[': ']', '{': '}' }[ch])))) { a++; continue; }
+        ch = p.charAt(b - 1);
+        if (b > a && (/[\s,.:;!?]/.test(ch) || (PAIRS[ch] && count(p.slice(a, b), ch) > count(p.slice(a, b), PAIRS[ch])))) { b--; continue; }
+        break;
+      }
+      if (!/[A-Za-z0-9]/.test(p.slice(a, b))) return esc(p);
+      return esc(p.slice(0, a)) + '<bdi dir="ltr">' + esc(p.slice(a, b)) + '</bdi>' + esc(p.slice(b));
+    }).join('');
+  }
 
   /* ----- progress (saved in this browser only) ----- */
   var done = {};
@@ -234,7 +255,7 @@
     var h = '<div class="col"><div class="page-h"><div class="eyebrow">Word list</div><h1>English → Arabic</h1></div>' +
       '<input class="search" id="gq" type="search" placeholder="Search a word…" aria-label="Search a word">' +
       '<table class="gloss"><thead><tr><th>English</th><th>العربية</th><th>Simple meaning</th></tr></thead><tbody>';
-    keys.forEach(function (k) { var g = D.glossary[k]; h += '<tr><td>' + esc(g.en) + '</td><td lang="ar">' + esc(g.ar) + '</td><td>' + esc(g.note || '') + '</td></tr>'; });
+    keys.forEach(function (k) { var g = D.glossary[k]; h += '<tr><td>' + esc(g.en) + '</td><td lang="ar" dir="rtl">' + arHtml(g.ar) + '</td><td>' + esc(g.note || '') + '</td></tr>'; });
     return h + '</tbody></table></div>';
   }
   function topic(t) {
@@ -251,8 +272,9 @@
     var t = flat.filter(function (x) { return x.slug === slug; })[0];
     hideTip(); closeWhy(false); document.body.classList.remove('open');
     if (t) main.innerHTML = topic(t);
-    else if (slug === 'cheatsheet') main.innerHTML = '<div class="col wide cheat"><div class="page-h"><div class="eyebrow">Everything on one page</div><h1>Cheat sheet</h1><p class="note">Point at a card (or tap it) to see what it does and open its lesson.</p></div>' + D.pages.cheatsheet + '</div>';
-    else if (extraOf(slug)) main.innerHTML = '<div class="col extra' + (extraOf(slug).wide ? ' wide' : '') + '"><div class="page-h"><div class="eyebrow">Reference</div><h1>' + esc(extraOf(slug).title) + '</h1></div>' + D.pages[slug] + (slug === 'why' ? whyPage() : '') + '</div>';
+    else if (slug === 'cheatsheet') main.innerHTML = '<div class="col wide cheat"><div class="page-h"><div class="eyebrow">Everything on one page</div><h1>Cheat sheet</h1><p class="note">Point at a card (or tap it) to see what it does and open its lesson.</p></div>' + cardSearch() + D.pages.cheatsheet + '</div>';
+    else if (extraOf(slug)) main.innerHTML = '<div class="col extra' + (extraOf(slug).wide ? ' wide' : '') + '"><div class="page-h"><div class="eyebrow">Reference</div><h1>' + esc(extraOf(slug).title) + '</h1></div>' +
+      (/class="cc\b/.test(D.pages[slug]) ? cardSearch() : '') + D.pages[slug] + (slug === 'why' ? whyPage() : '') + '</div>';
     else if (slug === 'glossary') main.innerHTML = glossary();
     else if (T && slug === 'training') main.innerHTML = trainHome();
     else if (T && /^train-/.test(slug) && (slug === 'train-mixed' || trackOf[slug.slice(6)])) main.innerHTML = trainTrack(slug.slice(6));
@@ -260,6 +282,29 @@
     enhance(main); drawSide(slug.replace(/^train-/, ''));
     document.querySelectorAll('.quick a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + slug); });
     window.scrollTo(0, 0);
+  }
+
+  /* ----- pages made of cards (cheat sheet, C++ reference): a search box that hides the cards that do not match.
+     It looks at the card text and its tip; every word typed must be found. Nothing is remembered. ----- */
+  function cardSearch() {
+    return '<div class="cardsearch"><input class="search" id="cq" type="search" placeholder="Search the cards: sort, mod, string…" aria-label="Search the cards" autocomplete="off">' +
+      '<p class="note" id="cq-none" role="status" hidden>No cards match. Try a shorter word.</p></div>';
+  }
+  function filterCards(q) {
+    var words = q.toLowerCase().split(/\s+/).filter(Boolean), shown = 0;
+    main.querySelectorAll('.cc').forEach(function (c) {
+      var t = (c.textContent + ' ' + (c.getAttribute('data-tip') || '')).toLowerCase();
+      var ok = words.every(function (w) { return t.indexOf(w) >= 0; });
+      c.hidden = !ok; if (ok) shown++;
+    });
+    main.querySelectorAll('section').forEach(function (sec) {
+      if (sec.querySelector('.cc')) sec.hidden = !sec.querySelector('.cc:not([hidden])');
+    });
+    main.querySelectorAll('a[data-jump]').forEach(function (a) {        /* a jump chip goes away with its section */
+      var t = document.getElementById(a.getAttribute('data-jump')), li = a.closest('li') || a;
+      li.hidden = !!(t && t.hidden);
+    });
+    var none = $('#cq-none'); if (none) none.hidden = shown > 0;
   }
 
   /* ----- "Why?" notes: a card for one story, and the #why page with all of them ----- */
@@ -319,10 +364,10 @@
     var html, rtl = false;
     if (el.classList.contains('term')) {
       var g = D.glossary[el.getAttribute('data-t')]; if (!g) return;
-      html = esc(g.ar) + (g.note ? '<span class="en">' + esc(g.note) + '</span>' : ''); rtl = true;
+      html = '<span class="ar">' + arHtml(g.ar) + '</span>' + (g.note ? '<span class="en">' + esc(g.note) + '</span>' : ''); rtl = true;
     } else if (el.classList.contains('tr')) {
       var ar = el.getAttribute('data-ar'); if (!ar) return;
-      html = esc(ar); rtl = true;
+      html = arHtml(ar); rtl = true;
     } else {
       var to = el.getAttribute('data-to'), tt = flat.filter(function (x) { return x.slug === to; })[0], te = extraOf(to);
       html = esc(el.getAttribute('data-tip') || '') + (tt ? '<br><a href="#' + to + '">Open lesson: ' + esc(tt.title) + ' →</a>' : te ? '<br><a href="#' + to + '">Open: ' + esc(te.title) + ' →</a>' : '');
@@ -350,6 +395,17 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { hideTip(); closeWhy(); document.body.classList.remove('open'); } });
 
   document.addEventListener('click', function (e) {
+    var jl = e.target.closest && e.target.closest('a[data-jump]');      /* jump links inside a page: <a href="#page" data-jump="ID"> */
+    if (jl) {
+      var to = document.getElementById(jl.getAttribute('data-jump'));
+      if (to) {
+        e.preventDefault();
+        var q = $('#cq'); if (q && q.value && to.hidden) { q.value = ''; filterCards(''); }
+        to.scrollIntoView({ block: 'start' });
+        var hd = to.querySelector('h2, h3') || to; hd.tabIndex = -1; hd.focus({ preventScroll: true });
+        return;
+      }
+    }
     var wb = e.target.closest && e.target.closest('button.why[data-why]');
     if (wb) { openWhy(wb.getAttribute('data-why'), wb); return; }
     if (e.target.closest('.why-x') || e.target === scrim) { closeWhy(); return; }
@@ -374,6 +430,7 @@
     }
   });
   document.addEventListener('input', function (e) {
+    if (e.target.id === 'cq') { hideTip(); filterCards(e.target.value); return; }
     if (e.target.id !== 'gq') return;
     var q = e.target.value.toLowerCase();
     document.querySelectorAll('.gloss tbody tr').forEach(function (tr) { tr.hidden = tr.textContent.toLowerCase().indexOf(q) < 0; });

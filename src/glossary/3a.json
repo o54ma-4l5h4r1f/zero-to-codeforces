@@ -12,15 +12,15 @@
   "neighbour": { "en": "neighbour", "ar": "جار", "note": "a vertex joined to this vertex by one edge" },
   "visited": { "en": "visited", "ar": "تمّت زيارته", "note": "a mark that says: I was already here" },
   "connected": { "en": "connected", "ar": "متّصل", "note": "you can walk from any vertex to any other vertex" },
-  "connected-component": { "en": "connected component", "ar": "مكوِّن متّصل", "note": "a group of vertices that can all reach each other" },
+  "connected-component": { "en": "connected component", "ar": "مكوّن متّصل (مجموعة رؤوس يصل بعضها إلى بعض)", "note": "a group of vertices that can all reach each other" },
   "dfs": { "en": "DFS (depth-first search)", "ar": "البحث بالعمق أوّلًا", "note": "go as deep as you can, then come back" },
   "bfs": { "en": "BFS (breadth-first search)", "ar": "البحث بالعرض أوّلًا", "note": "visit level by level: first distance 1, then 2, then 3…" },
   "undirected": { "en": "undirected", "ar": "غير موجَّه (يُعبَر في الاتجاهين)", "note": "you can use the edge in both directions" },
-  "directed": { "en": "directed", "ar": "موجَّه (في اتجاه واحد)", "note": "the edge goes one way only, from a to b" },
+  "directed": { "en": "directed", "ar": "موجَّه (في اتجاه واحد)", "note": "each edge is an arrow: you can go from a to b but not back" },
   "path": { "en": "path", "ar": "مسار", "note": "a walk from one vertex to another along edges" },
   "shortest-path": { "en": "shortest path", "ar": "أقصر مسار", "note": "the path with the smallest length (or smallest total weight)" },
   "grid": { "en": "grid", "ar": "شبكة (جدول من الخانات)", "note": "a table of cells with rows and columns" },
-  "weight": { "en": "weight", "ar": "وزن (تكلفة الحافّة)", "note": "the number written on an edge: its length or cost" },
+  "weight": { "en": "weight", "ar": "وزن (تكلفة الضلع)", "note": "the number written on an edge: its length or cost" },
   "priority-queue": { "en": "priority queue", "ar": "طابور الأولوية", "note": "a container that always gives you the smallest (or biggest) element first" },
   "root": { "en": "root", "ar": "جذر", "note": "the top vertex of a tree; everything hangs from it" },
   "parent": { "en": "parent", "ar": "الأب", "note": "the vertex directly above this one" },
@@ -28,5 +28,6 @@
   "leaf": { "en": "leaf", "ar": "ورقة (رأس بلا أبناء)", "note": "a vertex with no children" },
   "depth": { "en": "depth", "ar": "عمق (البعد عن الجذر)", "note": "the number of edges from the root to this vertex" },
   "subtree": { "en": "subtree", "ar": "شجرة فرعية", "note": "a vertex together with everything below it" },
-  "diameter": { "en": "diameter", "ar": "قُطر الشجرة (أطول مسار فيها)", "note": "the longest path between two vertices of the tree" }
+  "diameter": { "en": "diameter", "ar": "قُطر الشجرة (أطول مسار فيها)", "note": "the longest path between two vertices of the tree" },
+  "call-stack": { "en": "call stack", "ar": "مكدّس الاستدعاءات (الاستدعاءات التي تنتظر)", "note": "the list of function calls that started and are still waiting for a call they made" }
 }

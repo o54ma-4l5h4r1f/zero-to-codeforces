@@ -5,14 +5,15 @@
   <ul>
     <li>You know the idea "try every case and check it" → <a href="#brute-force">Brute force</a></li>
     <li>You can compare a number of steps with \( 10^8 \) → <a href="#complexity">Limits → speed</a></li>
+    <li>You can try every subset with a mask → <a href="#bits">Bits</a></li>
   </ul>
 </aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li><b>\( n \) is very small.</b> \( n \le 20 \) means "try all <span class="term" data-t="subset">subsets</span>": \( 2^{20} \approx 10^6 \).</li>
-    <li>\( n \le 10 \) means "try all orders": \( 10! \approx 3.6 \cdot 10^6 \). Here \( 10! = 10 \cdot 9 \cdot \dots \cdot 1 \).</li>
+    <li><b>\( n \) is very small.</b> \( n \le 20 \) means "try all <span class="term" data-t="subset">subsets</span>": \( 2^{20} \approx 10^6 \). <button type="button" class="why" data-why="two-to-ten">why?</button></li>
+    <li>\( n \le 10 \) means "try all orders": \( 10! \approx 3.6 \cdot 10^6 \). <button type="button" class="why" data-why="factorial">why?</button> Here \( 10! = 10 \cdot 9 \cdot \dots \cdot 1 \).</li>
     <li>For every item you make a choice: take it or skip it, group A or group B, plus or minus.</li>
     <li>The statement says "print all …" or "count all ways …", and the numbers are tiny.</li>
   </ul>
@@ -31,6 +32,7 @@
   <div class="way">
     <h3><b>2 · Picture</b> — a function waits for the call it made</h3>
     <p>The smallest recursion: \( \text{sum}(3) = 3 + 2 + 1 = 6 \). Read the rule as "sum of 1..n is n plus the sum of 1..n-1". The base case comes first: the sum of nothing is 0.</p>
+    <p><span class="tr" data-ar="هذه الدالة تُرجع جوابها بـ return. الاستدعاء الذي طلبها يستخدم هذه القيمة.">This function <b>returns</b> its answer with <code>return</code>. The call that asked uses that value.</span> So <code>sum(3)</code> waits for <code>sum(2)</code> to return 3, then returns \( 3 + 3 \).</p>
     <figure class="viz" data-viz="stepper" data-gen="rec-sum" aria-label="Step by step: sum(3) calls sum(2), which calls sum(1), which calls sum(0). Then the answers come back: 0, 1, 3, 6. The call stack is shown under the picture.">
       <script type="application/json">
 {
@@ -44,10 +46,10 @@
     {"line":3,"g":{"states":{"0":"","1":"","2":"","3":"active"},"notes":{"0":"","1":"","2":"","3":"running"}},"v":{"items":[["call stack",["sum(3)"]],["last returned",""]]}},
     {"line":3,"g":{"states":{"0":"","1":"","2":"active","3":"queued"},"notes":{"0":"","1":"","2":"running","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)"]],["last returned",""]]}},
     {"line":3,"g":{"states":{"0":"","1":"active","2":"queued","3":"queued"},"notes":{"0":"","1":"running","2":"waits","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)","sum(1)"]],["last returned",""]]}},
-    {"line":2,"g":{"states":{"0":"done","1":"queued","2":"queued","3":"queued"},"notes":{"0":"returns 0","1":"waits","2":"waits","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)","sum(1)","sum(0)"]],["last returned",0]]}},
-    {"line":3,"g":{"states":{"0":"done","1":"done","2":"queued","3":"queued"},"notes":{"0":"returns 0","1":"returns 1","2":"waits","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)","sum(1)"]],["last returned",1]]}},
-    {"line":3,"g":{"states":{"0":"done","1":"done","2":"done","3":"queued"},"notes":{"0":"returns 0","1":"returns 1","2":"returns 3","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)"]],["last returned",3]]}},
-    {"line":3,"g":{"states":{"0":"done","1":"done","2":"done","3":"done"},"notes":{"0":"returns 0","1":"returns 1","2":"returns 3","3":"returns 6"}},"v":{"items":[["call stack",["sum(3)"]],["last returned",6]]}}
+    {"line":2,"g":{"states":{"0":"done","1":"active","2":"queued","3":"queued"},"notes":{"0":"returns 0","1":"running","2":"waits","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)","sum(1)"]],["last returned",0]]}},
+    {"line":3,"g":{"states":{"0":"done","1":"done","2":"active","3":"queued"},"notes":{"0":"returns 0","1":"returns 1","2":"running","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)"]],["last returned",1]]}},
+    {"line":3,"g":{"states":{"0":"done","1":"done","2":"done","3":"active"},"notes":{"0":"returns 0","1":"returns 1","2":"returns 3","3":"running"}},"v":{"items":[["call stack",["sum(3)"]],["last returned",3]]}},
+    {"line":3,"g":{"states":{"0":"done","1":"done","2":"done","3":"done"},"notes":{"0":"returns 0","1":"returns 1","2":"returns 3","3":"returns 6"}},"v":{"items":[["call stack",[]],["last returned",6]]}}
   ]
 }
 </script>
@@ -68,7 +70,7 @@
   <div class="way">
     <h3><b>3 · Code</b> — take or skip: all subsets of {1, 2, 3}</h3>
     <p>For each number choose: <b>take</b> it or <b>skip</b> it. <code>go(i)</code> means "numbers before index <code>i</code> are decided". The vector <code>chosen</code> holds the taken numbers.</p>
-    <p><span class="tr" data-ar="هذا هو التراجع: افعل (أضف العدد)، ثم استدعِ، ثم تراجع (احذفه) قبل الاختيار التالي.">This is <span class="term" data-t="backtracking">backtracking</span>: do (add the number), recurse, then undo (remove it) before the next choice.</span></p>
+    <p><span class="tr" data-ar="هذا هو التراجع: افعل (أضف العدد)، ثم استدعِ الدالة نفسها، ثم تراجع (احذفه) قبل الاختيار التالي.">This is <span class="term" data-t="backtracking">backtracking</span>: do (add the number), recurse, then undo (remove it) before the next choice.</span></p>
     <figure class="viz" data-viz="stepper" data-gen="rec-subsets" aria-label="Step by step: the call tree of all subsets of 1, 2, 3. Going left takes a number, going right skips it. The 8 bottom calls print the 8 subsets.">
       <script type="application/json">
 {
@@ -115,7 +117,10 @@ vector&lt;int&gt; a, chosen;
 
 void print(const vector&lt;int&gt;&amp; v) {
     cout &lt;&lt; "{";
-    for (int k = 0; k &lt; (int)v.size(); k++) cout &lt;&lt; (k ? "," : "") &lt;&lt; v[k];
+    for (int k = 0; k &lt; (int)v.size(); k++) {
+        if (k &gt; 0) cout &lt;&lt; ",";
+        cout &lt;&lt; v[k];
+    }
     cout &lt;&lt; "}\n";
 }
 
@@ -138,12 +143,13 @@ int main() {
 }
 </code></pre>
     <p class="note">Input <code>3</code> and <code>1 2 3</code> prints the 8 subsets in the order of the picture.</p>
+    <p class="note"><code>n</code>, <code>a</code> and <code>chosen</code> are global, because <code>go</code> needs them. That is fine for a function like this. With many test cases, reset them at the start of every test. In <code>print</code>, <code>const vector&lt;int&gt;&amp; v</code> means "use the real vector, do not copy it, and do not change it" (<a href="#cpp-reference">C++ reference</a>, "References").</p>
   </div>
 </section>
 
 <section>
   <h2>Change it to fit</h2>
-  <p><b>Default:</b> the take-or-skip function above. For "all orders", use <code>next_permutation</code> instead of your own recursion.</p>
+  <p><b>Default:</b> for plain "all subsets", the mask loop from <a href="#bits">Bits</a> is shorter. Use the take-or-skip function in three cases: you must stop early, an item has more than 2 choices, or you build something step by step. For "all orders", use <code>next_permutation</code> instead of your own recursion.</p>
   <ul>
     <li><b>Count, do not print.</b> Example: count the subsets with sum <code>target</code>. Pass the sum as a parameter. Then there is nothing to undo.
 <pre data-part="main"><code class="cpp">
@@ -158,7 +164,7 @@ void go(int i, long long sum) {
 if ((int)chosen.size() &gt; k) return;              // stop early
 if (i == n) { if ((int)chosen.size() == k) print(chosen); return; }
 </code></pre></li>
-    <li><b>All orders (<span class="term" data-t="permutation">permutations</span>).</b> Sort first. <code>next_permutation</code> changes <code>p</code> to the next order and returns <code>false</code> after the last one. For 1 2 3 you get 6 orders: 123, 132, 213, 231, 312, 321.
+    <li><b>All orders (<span class="term" data-t="permutation">permutations</span>).</b> Sort first. <code>next_permutation</code> changes <code>p</code> to the next order and returns <code>false</code> after the last one. A <code>do { … } while (…);</code> loop runs its body first and tests after, so the sorted start is used too. For 1 2 3 you get 6 orders: 123, 132, 213, 231, 312, 321.
 <pre data-part="main"><code class="cpp">
 sort(p.begin(), p.end());                        // start from the smallest order
 do {
@@ -239,7 +245,7 @@ int main() {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="الحالة الأساسية تفصيل صغير، أكتبه في النهاية.">The base case is a small detail. I add it at the end.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="بدون حالة أساسية لا تتوقّف الاستدعاءات أبدًا، فينهار البرنامج. اكتبها أوّلًا.">Without a base case the calls never stop, and the program crashes. Write it first.</span> On Codeforces you get "Runtime error".</p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="بدون حالة أساسية لا تتوقّف الاستدعاءات أبدًا، فينهار البرنامج أو لا ينتهي. اكتبها أوّلًا.">Without a base case the calls never stop. The program crashes or runs for ever. Write it first.</span> <button type="button" class="why" data-why="stack-overflow">why?</button> On Codeforces you get "Runtime error" or "Time limit exceeded".</p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="الاستدعاء الذاتي بطيء دائمًا.">Recursion is always slow.</span></p>

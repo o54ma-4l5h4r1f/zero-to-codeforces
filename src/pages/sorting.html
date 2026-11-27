@@ -5,7 +5,6 @@
   <ul>
     <li>You can call <code>sort</code> and use a <code>pair</code> → <a href="#stl-basics">STL basics</a></li>
     <li>You can read \( O(n \log n) \) and \( O(n^2) \) → <a href="#complexity">Limits → speed</a></li>
-    <li>You know "take the smallest first" ideas → <a href="#greedy">Greedy</a></li>
   </ul>
 </aside>
 
@@ -14,7 +13,7 @@
   <ul>
     <li>The order of the input does not matter. You choose a group, pairs, or "any \( k \) elements".</li>
     <li>The statement asks for the smallest difference, or for equal elements.</li>
-    <li>A <span class="term" data-t="greedy">greedy</span> idea: "serve the shortest first", "take the biggest first".</li>
+    <li>A choice like "serve the shortest first" or "take the biggest first".</li>
     <li>The output must be "in order of score", "by name", and so on.</li>
   </ul>
 </section>
@@ -36,7 +35,7 @@
       <tr><th>gap to the left neighbour</th><td>–</td><td>3</td><td>4</td><td class="hi">1</td><td>4</td></tr>
     </table>
     <p>Before sorting there are 10 pairs to check. After sorting, only 4 neighbours. Now take \( n = 2 \cdot 10^5 \) values. All pairs: about \( 2 \cdot 10^{10} \) checks, far too slow. Sort plus one loop: about \( n \log_2 n \approx 3.6 \cdot 10^6 \) steps.</p>
-    <p>Why is sorting so fast? One idea inside it is the <span class="term" data-t="merge">merge</span>. <span class="tr" data-ar="لدمج قائمتين مرتّبتين، قارن العنصرين الأوّلين وخذ الأصغر. كرّر ذلك.">To merge two sorted lists, compare their two front values and take the smaller one. Repeat.</span></p>
+    <p>Why is sorting so fast? One idea inside it is the <span class="term" data-t="merge">merge</span>. <span class="tr" data-ar="لدمج قائمتين مرتّبتين، قارن أوّل عنصر في كل قائمة وخذ الأصغر منهما. كرّر ذلك.">To merge two sorted lists, compare their two front values and take the smaller one. Repeat.</span></p>
     <figure class="viz" data-viz="stepper" data-gen="merge" aria-label="Step by step: the sorted lists a = 2 5 8 and b = 1 3 9 are merged into one sorted list c, with one pointer i in a and one pointer j in b.">
       <script type="application/json">
 {
@@ -98,14 +97,14 @@ int main() {
 
 <section>
   <h2>Change it to fit</h2>
-  <p>This is the real skill. <span class="tr" data-ar="لا تغيّر طريقة الترتيب. غيّر فقط ما يُرتَّب أو قاعدة المقارنة.">You never change how <code>sort</code> works. You change what you sort, or the rule that compares two values.</span></p>
+  <p>This is the real skill. <span class="tr" data-ar="أنت لا تغيّر طريقة عمل sort أبدًا. أنت تغيّر ما تُرتّبه، أو القاعدة التي تقارن بين قيمتين.">You never change how <code>sort</code> works. You change what you sort, or the rule that compares two values.</span></p>
 
-  <p><b>1. Big → small.</b> Use this one form:</p>
+  <p><b>1. Big → small.</b> Use this one form, from <a href="#stl-basics">STL basics</a>:</p>
 <pre data-part="main"><code class="cpp">
 sort(a.rbegin(), a.rend());                // 13 9 8 4 1
 </code></pre>
 
-  <p><b>2. Your own order.</b> Give <code>sort</code> a small function, a <span class="term" data-t="lambda">lambda</span>. <span class="tr" data-ar="الدالة ترجع true فقط إذا كان يجب أن يأتي x قبل y.">It returns <code>true</code> only when <code>x</code> must come <b>before</b> <code>y</code>.</span> Here: by the last digit.</p>
+  <p><b>2. Your own order.</b> Give <code>sort</code> a small function, a <span class="term" data-t="lambda">lambda</span>. It is written in place: <code>[]</code>, then the two values, then the body in <code>{ }</code>. <span class="tr" data-ar="الدالة ترجع true فقط إذا كان يجب أن يأتي x قبل y.">It returns <code>true</code> only when <code>x</code> must come <b>before</b> <code>y</code>.</span> Here: by the last digit.</p>
 <pre data-part="main"><code class="cpp">
 sort(a.begin(), a.end(), [](int x, int y) {
     return x % 10 &lt; y % 10;                // 13 5 21 44 -&gt; 21 13 44 5
@@ -113,7 +112,7 @@ sort(a.begin(), a.end(), [](int x, int y) {
 </code></pre>
   <p class="note">Always use <code>&lt;</code> or <code>&gt;</code> here, never <code>&lt;=</code>. <span class="tr" data-ar="إذا كانت القيمتان متساويتين، يجب أن ترجع الدالة false.">For two equal values the function must return <code>false</code>.</span> With <code>&lt;=</code> the program can crash.</p>
 
-  <p><b>3. By one key, then by another.</b> Score big → small. Equal scores: name a → z.</p>
+  <p><b>3. By one key, then by another.</b> Score big → small. Equal scores: name a → z. Here <code>const auto &amp;x</code> means: <code>x</code> is the real pair (no copy), C++ writes its type, and the rule does not change it. More in the <a href="#cpp-reference">C++ reference</a>.</p>
 <pre data-part="main"><code class="cpp">
 vector&lt;pair&lt;int, string&gt;&gt; v;              // (score, name)
 sort(v.begin(), v.end(), [](const auto &amp;x, const auto &amp;y) {
@@ -142,7 +141,7 @@ for (int v = 0; v &lt;= 100; v++)
 </code></pre>
   <p class="note">Use it only when a problem needs \( O(n) \). The default is <code>sort</code>.</p>
 
-  <p class="tip-box"><b>Sort first, then think.</b> Many tools need sorted input. You saw <a href="#greedy">greedy</a>. Two pointers and binary search come next, and both start with a sort.</p>
+  <p class="tip-box"><b>Sort first, then think.</b> Many tools need sorted input. The next lesson, Greedy, starts with a sort. Two pointers and binary search come later, and both start with a sort too.</p>
 </section>
 
 <section class="worked">
@@ -158,7 +157,7 @@ for (int v = 0; v &lt;= 100; v++)
         <tr><td>2, 3, 1</td><td>0, 1, 1 + 2 = 3</td><td class="hi">4</td></tr>
       </table>
     </li>
-    <li><b>The idea.</b> <span class="tr" data-ar="كل من يأتي بعد شخص ما ينتظر وقت هذا الشخص. لذلك الأقصر يجب أن يأتي أولًا.">Everyone after a person waits for that person's time. So the shortest one goes first.</span> Sort by time. The answer is person numbers, so use idea 4: pairs (time, number) built <b>before</b> the sort.</li>
+    <li><b>The idea.</b> <span class="tr" data-ar="كل من يأتي بعد شخص ما ينتظر وقت هذا الشخص. لذلك الأقصر يجب أن يأتي أولًا.">Everyone after a person waits for that person's time. So the shortest one goes first.</span> Sort by time. The answer is person numbers, so use idea 4: pairs (time, number) built <b>before</b> the sort. <code>for (auto [t, id] : p)</code> gives the names <code>t</code> and <code>id</code> to <code>.first</code> and <code>.second</code> of each pair.</li>
     <li><b>Why is it fast enough?</b> The sort costs about \( 2 \cdot 10^5 \cdot 18 \approx 3.6 \cdot 10^6 \) steps. The total wait is at most \( 2 \cdot 10^5 \cdot 2 \cdot 10^5 \cdot 10^4 = 4 \cdot 10^{14} \). That needs <code>long long</code>.</li>
   </ol>
 <pre><code class="cpp">
@@ -220,7 +219,7 @@ int main() {
   <ul>
     <li><b>Bubble, insertion, selection, quick and heap sort.</b> They are for university exams and interviews. You do not need them to solve Codeforces problems below 1600: <a href="#what-next">After 1600</a>.</li>
     <li><b>Writing merge sort yourself</b>, and counting "inversions" with it. It needs a function that calls itself: <a href="#recursion">Recursion</a>.</li>
-    <li><b>The count array in full.</b> Idea 6 is the main tool of the next lesson: <a href="#counting">Counting</a>.</li>
+    <li><b>The count array in full.</b> Idea 6 is the main tool of a later lesson: <a href="#counting">Counting</a>.</li>
   </ul>
 </aside>
 

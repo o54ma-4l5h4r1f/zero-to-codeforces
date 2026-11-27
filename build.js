@@ -105,7 +105,20 @@ if (fs.existsSync(cfFile)) {
 for (const f of ['viz.js', 'app.js']) if (/<\/script|<!--/i.test(read(f))) { console.warn(`src/${f} contains "</script" or "<!--": it would end the inline script of the page`); bad++; }
 const trainFile = S('training.json');
 const training = fs.existsSync(trainFile) ? JSON.parse(fs.readFileSync(trainFile, 'utf8')) : null;
-const data = 'window.CFG_DATA = ' + JSON.stringify({ stages, glossary, pages, cf, training, extras: extras.filter(e => pages[e.slug]), whys }).replace(/<\//g, '<\\/').replace(/<!--/g, '<\\!--') + ';';
+// Smaller page, same content: drop the indentation at the start of lines (never inside <pre> or <textarea>, where it is shown)
+// and write the JSON of each picture without spaces. Only what is embedded changes; src/ stays as it is.
+function compact(html) {
+  return html.split(/(<pre\b[\s\S]*?<\/pre>|<textarea\b[\s\S]*?<\/textarea>|<script type="application\/json">[\s\S]*?<\/script>)/).map((part, i) => {
+    if (i % 2 === 0) return part.replace(/\n[ \t]+/g, '\n');
+    const js = /^<script type="application\/json">([\s\S]*)<\/script>$/.exec(part);
+    if (!js) return part;
+    try { return '<script type="application/json">' + JSON.stringify(JSON.parse(js[1])) + '</script>'; } catch (e) { return part; }
+  }).join('');
+}
+const outPages = {}; for (const k in pages) outPages[k] = compact(pages[k]);
+const outWhys = { themes: whys.themes, used: whys.used, stories: {} };
+for (const k in whys.stories) outWhys.stories[k] = Object.assign({}, whys.stories[k], { body: compact(whys.stories[k].body) });
+const data = 'window.CFG_DATA = ' + JSON.stringify({ stages, glossary, pages: outPages, cf, training, extras: extras.filter(e => pages[e.slug]), whys: outWhys }).replace(/<\//g, '<\\/').replace(/<!--/g, '<\\!--') + ';';
 const body = read('shell.html')
   .replace('/*CSS*/', () => read('style.css'))
   .replace('/*DATA*/', () => data)

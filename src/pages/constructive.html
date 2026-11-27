@@ -42,8 +42,8 @@
   <div class="way">
     <h3><b>2 · What never changes</b> — the total sum</h3>
     <p>However you split, the total stays \( 1 + 2 + \dots + n = \frac{n (n + 1)}{2} \). Each group must get half of it.</p>
-    <p>For \( n = 5 \) the total is 15. Half of 15 is not a whole number, so the answer is NO. For \( n = 6 \) the total is 21: also NO.</p>
-    <p><span class="tr" data-ar="الشيء الذي لا يتغيّر مهما فعلت يسمّى ثابتًا. إذا كان المجموع فرديًا فلا يوجد تقسيم.">A thing that never changes, whatever you do, is an <span class="term" data-t="invariant">invariant</span>. If the total is odd, no split exists.</span> The total is even exactly when \( n \bmod 4 \) is 0 or 3. So the table was right.</p>
+    <p>For \( n = 5 \) the total is 15. <span class="tr" data-ar="نصف 15 ليس عددًا صحيحًا، لذلك الجواب NO.">Half of 15 is not a whole number, so the answer is NO.</span> For \( n = 6 \) the total is 21: also NO.</p>
+    <p><span class="tr" data-ar="الشيء الذي لا يتغيّر مهما فعلت يسمّى ثابتًا. إذا كان المجموع فرديًا فلا يوجد تقسيم.">A thing that never changes, whatever you do, is an <span class="term" data-t="invariant">invariant</span>. If the total is odd, no split exists.</span> Another invariant you will meet: swapping two elements never changes the sum of an array. The total is even exactly when \( n \bmod 4 \) is 0 or 3. So the table was right.</p>
   </div>
 
   <div class="way">
@@ -159,11 +159,11 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="يجب أن يطابق ناتجي ناتج المثال تمامًا.">My output must be the same as the sample output.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا. القاضي يقبل أي إجابة صحيحة عندما يقول نص المسألة «اطبع أيًّا منها».">No. When the statement says "print any", the judge accepts every <span class="term" data-t="valid">valid</span> answer.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا. الحَكَم يقبل أي إجابة صحيحة عندما يقول نص المسألة «اطبع أيًّا منها».">No. When the statement says "print any", the judge accepts every <span class="term" data-t="valid">valid</span> answer.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="إذا نجح النمط مع n = 4 و 6 و 8 فهو ينجح دائمًا.">If my pattern works for \( n = 4 \), 6 and 8, it always works.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="جرّب الأعداد الفردية والأعداد الصغيرة جدًا أيضًا. شغّل المدقّق على كل n.">Test odd \( n \) and the smallest \( n \) too. Run the checker on every \( n \).</span> The reversed shape above works for 4, 6, 8 and fails for 3.</p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="جرّب قيم n الفردية وأصغر قيمة ممكنة لـ n أيضًا. شغّل المدقّق على كل n.">Test odd \( n \) and the smallest \( n \) too. Run the checker on every \( n \).</span> The reversed shape above works for 4, 6, 8 and fails for 3.</p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="توجد طريقة ذكية واحدة يجب أن أتعلّمها لحل هذه المسائل.">There is one clever method I must learn for these problems.</span></p>
@@ -186,6 +186,7 @@ int main() {
   <ul>
     <li><b>Full proofs</b> that a pattern works for every \( n \). At this level a short reason plus a checker is enough. Come back after the guide: <a href="#what-next">After 1600</a>.</li>
     <li><b>Building graphs and trees</b> ("print a tree with …"). You need graphs first: <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a>.</li>
+    <li><b>Stuck, and no pattern shows up?</b> See <a href="#choose-a-tool">Which tool?</a>, the section "When your first idea fails".</li>
   </ul>
 </aside>
 

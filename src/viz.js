@@ -294,10 +294,16 @@
   };
   /* ----- graph (also trees and DSU) ----- */
   SC.graph = {
-    layout: function (all) {
+    layout: function (all, avail) {
       var s = all[0], xs = s.nodes.map(function (n) { return n.x; }), ys = s.nodes.map(function (n) { return n.y; });
       var L = { x0: Math.min.apply(0, xs), x1: Math.max.apply(0, xs), y0: Math.min.apply(0, ys), y1: Math.max.apply(0, ys) };
       L.u = Math.min(s.unit || 76, L.x1 > L.x0 ? 500 / (L.x1 - L.x0) : 76); L.r = 17; L.px = 40; L.py = 42;
+      /* on a phone a wide graph (the 15-call tree) gets tighter spacing and smaller circles instead of a scroll bar.
+         Desktop is never changed: the test is the screen width, not the width of the column. */
+      var phone = typeof matchMedia === 'function' && matchMedia('(max-width: 640px)').matches;
+      if (phone && avail && L.x1 > L.x0 && L.px * 2 + (L.x1 - L.x0) * L.u > avail) {
+        L.px = 26; L.u = Math.max(L.u * 0.7, (avail - 2 * L.px) / (L.x1 - L.x0)); L.r = L.u < 46 ? 14 : 17;
+      }
       return L;
     },
     draw: function (s, L) {

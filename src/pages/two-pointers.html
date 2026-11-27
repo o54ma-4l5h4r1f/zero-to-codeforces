@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="استخدم فهرسين يتحرّكان إلى الأمام فقط. معًا يقومان بـ 2n خطوة على الأكثر، فتحلّ مرّة واحدة محلّ حلقتين متداخلتين بطيئتين.">Use two indexes that only move forward. Together they make at most \( 2n \) steps, so one pass replaces a slow double loop.</span></p>
+<p class="idea"><span class="tr" data-ar="استخدم فهرسين لا يتحرّكان إلا إلى الأمام. معًا يقومان بـ 2n خطوة على الأكثر، فيُغني مرورٌ واحد عن حلقتين متداخلتين بطيئتين.">Use two indexes that only move forward. Together they make at most \( 2n \) steps, so one pass replaces a slow double loop.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -60,10 +60,10 @@
         <li><code>r = 5</code>: the 1 comes in, sum 8. Remove the 2: <code>l = 2</code>, sum 6.</li>
         <li><span class="tr" data-ar="يدخل 5 فيصبح المجموع 11. نُخرج 1 ثم 3. تحرّك r سبع مرات و l أربع مرات.">The 5 comes in, sum 11: remove the 1, then the 3. In total <code>r</code> moved 7 times and <code>l</code> 4 times.</span></li>
       </ol>
-      <figcaption>11 moves for \( n = 7 \). Each pointer moves at most \( n \) times, so never more than \( 2n \) moves.</figcaption>
+      <figcaption>11 moves for \( n = 7 \). <span class="tr" data-ar="كل مؤشّر يتحرّك n مرة على الأكثر، لذلك لا يزيد مجموع الحركات على 2n أبدًا.">Each pointer moves at most \( n \) times, so never more than \( 2n \) moves.</span></figcaption>
     </figure>
     <p><b>Why is it fast?</b> The inner <code>while</code> looks like a second loop. But <code>l</code> never goes back, and it stops at the end. <span class="tr" data-ar="لذلك يتحرّك l على الأكثر n مرة في البرنامج كلّه، وليس n مرة لكل r.">So <code>l</code> moves at most \( n \) times in the whole run, not \( n \) times for each <code>r</code>.</span> Total: at most \( 2n \) moves, \( O(n) \).</p>
-    <p><b>When does it work?</b> <span class="tr" data-ar="يعمل فقط إذا كانت النافذة تسوء دائمًا عندما تكبر.">Only when a window always gets worse when it grows.</span> With numbers that are not negative, a bigger window never has a smaller sum. So a window that is "too much" stays too much when it grows. Negative numbers break this:</p>
+    <p><b>When does it work?</b> <span class="tr" data-ar="يعمل فقط إذا كانت النافذة التي تجاوزت الحدّ تبقى متجاوزة له عندما تكبر.">Only when a window that is "too much" stays too much when it grows.</span> With numbers that are not negative, a bigger window never has a smaller sum. That is why <code>l</code> never has to go back. Negative numbers break this:</p>
     <figure class="viz" data-viz="array" aria-label="The array 3 5 -6 2 with the whole array framed as the true answer for sum at most 4.">
       <script type="application/json">
 { "label": "a", "values": [3, 5, -6, 2], "bracket": [0, 3], "states": { "2": "bad" }, "legend": { "bad": "a negative number: the sum goes down" } }
@@ -189,11 +189,11 @@ int main() {
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="النافذة المنزلقة تعمل مع أي مصفوفة.">The sliding window works on any array.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="تعمل فقط إذا كانت النافذة الأكبر ليست أفضل أبدًا. مع الأعداد السالبة قد تعطي جوابًا خاطئًا.">Only if a bigger window is never better. With negative numbers it can give a wrong answer.</span> See the 3 5 −6 2 picture.</p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="تعمل فقط إذا كانت النافذة التي تجاوزت الحدّ تبقى متجاوزة له عندما تكبر. مع الأعداد السالبة قد تعطي جوابًا خاطئًا.">Only if a window that is too much stays too much when it grows. With negative numbers it can give a wrong answer.</span> See the 3 5 −6 2 picture.</p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="طريقة الطرفين تعمل على أي مصفوفة.">The two-ends form works on any array.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="تحتاج مصفوفة مرتّبة. بدون ترتيب، تحريك الطرف لا يعني مجموعًا أكبر أو أصغر.">It needs a sorted array. Without sorting, moving an end does not make the sum bigger or smaller.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="تحتاج مصفوفة مرتّبة. بدون ترتيب لا تعرف هل تحريك الطرف يكبّر المجموع أم يصغّره.">It needs a sorted array. Without sorting, moving an end does not make the sum bigger or smaller.</span></p>
     </li>
   </ul>
 </section>

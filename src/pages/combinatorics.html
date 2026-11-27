@@ -14,7 +14,7 @@
   <ul>
     <li>"How many ways…", "count the number of…", and the answer is huge.</li>
     <li>"Print the answer <span class="term" data-t="modulo">modulo</span> \( 10^9 + 7 \)" (or 998244353).</li>
-    <li>You choose some items from many, and the order of the chosen items does not matter.</li>
+    <li><span class="tr" data-ar="تختار بعض العناصر من عناصر كثيرة، وترتيب العناصر المختارة لا يهمّ.">You choose some items from many, and the order of the chosen items does not matter.</span></li>
     <li>You count pairs, <span class="term" data-t="subset">subsets</span>, orders, or paths in a grid.</li>
   </ul>
 </section>
@@ -32,7 +32,7 @@
     </table>
     <p>Six start with A, six with B, six with C, six with D. So there are \( 4 \cdot 6 = 24 \) orders. There are 4 choices for the first place, then 3, then 2, then 1.</p>
     \[ 4! = 4 \cdot 3 \cdot 2 \cdot 1 = 24 \]
-    <p>This is a <span class="term" data-t="factorial">factorial</span>. \( n! \) is \( 1 \cdot 2 \cdot \dots \cdot n \), and \( 0! = 1 \).</p>
+    <p>This is a <span class="term" data-t="factorial">factorial</span>. \( n! \) is \( 1 \cdot 2 \cdot \dots \cdot n \), and \( 0! = 1 \). <button type="button" class="why" data-why="factorial">why?</button></p>
     <p><b>Choose 2 of 4.</b> A pizza has 2 of 4 toppings: Cheese, Olives, Mushrooms, Tomato. CO is the same pizza as OC. All choices:</p>
     <table>
       <tr><td>CO</td><td>CM</td><td>CT</td><td>OM</td><td>OT</td><td>MT</td></tr>
@@ -97,9 +97,9 @@
       </ol>
       <figcaption>Why a sum? Look at the last item. Take it, and choose \( r - 1 \) more from the other \( n - 1 \). Or leave it, and choose all r from the other \( n - 1 \). "Or" → add.</figcaption>
     </figure>
-    <p>The same table in code, for n up to 2000. It needs no division:</p>
+    <p>The same table in code, for n up to 2000. It needs no division. Make <code>C</code> global: a global array starts as all zeros, a local one does not. It is also too big for <code>main</code>.</p>
 <pre data-part="main"><code class="cpp">
-// before main:  const int MOD = 1e9 + 7;  long long C[2001][2001];
+// before main:  const long long MOD = 1000000007;  long long C[2001][2001];
 for (int n = 0; n &lt;= 2000; n++) {
     C[n][0] = C[n][n] = 1;
     for (int r = 1; r &lt; n; r++)
@@ -114,26 +114,27 @@ for (int n = 0; n &lt;= 2000; n++) {
     <ul>
       <li>\( 5! = 120 \), and \( 120 \bmod 7 = 1 \).</li>
       <li>\( 2! \cdot 3! = 12 \), and \( 12 \bmod 7 = 5 \).</li>
-      <li>Now <code>1 / 5</code> in C++ is 0. <span class="tr" data-ar="النتيجة 0 وليست 3. القسمة بعد أخذ باقي القسمة تعطي رقمًا خاطئًا.">We get 0, not 3. Dividing after taking the mod gives a wrong number.</span></li>
+      <li>Now <code>1 / 5</code> in C++ is 0. <span class="tr" data-ar="النتيجة 0 وليست 3. القسمة بعد أخذ باقي القسمة تعطي عددًا خاطئًا.">We get 0, not 3. Dividing after taking the mod gives a wrong number.</span></li>
     </ul>
     <p>The fix: never divide. Multiply by the <span class="term" data-t="modular-inverse">modular inverse</span>. The inverse of 5 mod 7 is a number x with \( 5 \cdot x \bmod 7 = 1 \). Here \( x = 3 \), because \( 15 \bmod 7 = 1 \). Now \( 1 \cdot 3 \bmod 7 = 3 \). Correct.</p>
-    <p class="tip-box"><b>The recipe (<span class="term" data-t="fermat">Fermat</span>).</b> <span class="tr" data-ar="إذا كان p عددًا أوليًّا و a ليس من مضاعفات p، فإن معكوس a هو a^(p-2) mod p.">If p is a prime and a is not a multiple of p, the inverse of a is \( a^{p-2} \bmod p \).</span> Check: \( 5^{5} = 3125 \), and \( 3125 \bmod 7 = 3 \). This is a rule you may use without the proof for now. Both \( 10^9 + 7 \) and 998244353 are primes.</p>
+    <p class="tip-box"><b>The recipe (<span class="term" data-t="fermat">Fermat</span>).</b> <span class="tr" data-ar="إذا كان p عددًا أوليًّا و a ليس من مضاعفات p، فإن معكوس a هو a^(p-2) mod p.">If p is a prime and a is not a multiple of p, the inverse of a is \( a^{p-2} \bmod p \).</span> Check: \( 5^{5} = 3125 \), and \( 3125 \bmod 7 = 3 \). <span class="tr" data-ar="هذه قاعدة يمكنك استخدامها الآن دون برهان.">This is a rule you may use without the proof for now.</span> Both \( 10^9 + 7 \) and 998244353 are primes.</p>
+    <p>Here is <code>power(a, b, m)</code> from <a href="#modular">Mod and fast power</a>. The inverse calls it with <code>m = MOD</code>.</p>
 <pre data-part="global"><code class="cpp">
-const long long MOD = 1e9 + 7;              // a prime
+const long long MOD = 1000000007;           // a prime
 
-long long power(long long a, long long b) { // a^b mod MOD, fast
-    long long res = 1;
-    a %= MOD;
+long long power(long long a, long long b, long long m) {   // a^b % m
+    long long result = 1 % m;
+    a %= m;
     while (b &gt; 0) {
-        if (b % 2 == 1) res = res * a % MOD;
-        a = a * a % MOD;
+        if (b % 2 == 1) result = result * a % m;
+        a = a * a % m;
         b /= 2;
     }
-    return res;
+    return result;
 }
 
 long long inverse(long long a) {            // works only because MOD is prime
-    return power(a, MOD - 2);
+    return power(a, MOD - 2, MOD);
 }
 </code></pre>
     <p>So \( C(n, r) \) = <code>fact[n] * inverse(fact[r] * fact[n-r] % MOD) % MOD</code>. The program in "Solve one together" makes this fast.</p>
@@ -156,7 +157,7 @@ long long inverse(long long a) {            // works only because MOD is prime
 <pre data-part="main"><code class="cpp">
 long long P = fact[n] * invfact[n - r] % MOD;   // was: C(n, r)
 </code></pre>
-  <p>Subsets and repeated letters use <code>power(2, n)</code> and <code>power(n, r)</code>. The last row is a rule you may use now. Its proof is in "Not now".</p>
+  <p>Subsets and repeated letters use <code>power(2, n, MOD)</code> and <code>power(n, r, MOD)</code>. The last row is a rule you may use now. Its proof is in "Not now".</p>
   <p><b>Paths in a grid.</b> You walk from the bottom-left corner to the top-right one. You move only right or up. With 3 right moves and 2 up moves, a path is a word like RRURU.</p>
   <figure class="viz" data-viz="plane" aria-label="A grid from 0 to 3 to the right and 0 to 2 up. One path goes right, right, up, right, up from the corner 0, 0 to the corner 3, 2.">
     <script type="application/json">
@@ -182,6 +183,7 @@ long long paths = C(right + up, up);   // C(5, 2) = 10
     <li><b>A small example by hand.</b> "5 2" → \( \frac{120}{2 \cdot 6} = 10 \). "10 3" → \( \frac{3628800}{6 \cdot 5040} = 120 \). Small numbers can be divided. Big ones are taken mod, so we must multiply by inverses.</li>
     <li><b>The idea.</b> Compute <code>fact[i]</code> \( = i! \bmod p \) once, for every i. Compute <code>invfact[i]</code>, the inverse of \( i! \). Only one inverse comes from Fermat. The others come by going back with multiplication.
       \[ \frac{1}{(i-1)!} = \frac{1}{i!} \cdot i \]
+      <p>Check with small numbers: \( \frac{1}{3!} \cdot 3 = \frac{3}{6} = \frac{1}{2} = \frac{1}{2!} \).</p>
       <p>Then each answer is <code>fact[n] * invfact[r] % MOD * invfact[n - r] % MOD</code>.</p>
     </li>
     <li><b>Why is it fast enough?</b> The tables take \( 10^6 \) steps each. Fermat takes about 30 steps. Each question takes 2 multiplications.
@@ -193,19 +195,19 @@ long long paths = C(right + up, up);   // C(5, 2) = 10
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-const long long MOD = 1e9 + 7;              // a prime
+const long long MOD = 1000000007;           // a prime
 const int MAXN = 1000000;                   // the biggest n you need
 long long fact[MAXN + 1], invfact[MAXN + 1];
 
-long long power(long long a, long long b) { // a^b mod MOD, fast
-    long long res = 1;
-    a %= MOD;
+long long power(long long a, long long b, long long m) {   // a^b % m
+    long long result = 1 % m;
+    a %= m;
     while (b &gt; 0) {
-        if (b % 2 == 1) res = res * a % MOD;
-        a = a * a % MOD;
+        if (b % 2 == 1) result = result * a % m;
+        a = a * a % m;
         b /= 2;
     }
-    return res;
+    return result;
 }
 
 long long C(int n, int r) {                 // ways to choose r from n
@@ -216,7 +218,7 @@ long long C(int n, int r) {                 // ways to choose r from n
 int main() {
     fact[0] = 1;
     for (int i = 1; i &lt;= MAXN; i++) fact[i] = fact[i - 1] * i % MOD;
-    invfact[MAXN] = power(fact[MAXN], MOD - 2);          // one inverse by Fermat
+    invfact[MAXN] = power(fact[MAXN], MOD - 2, MOD);     // one inverse by Fermat
     for (int i = MAXN; i &gt;= 1; i--)                      // 1/(i-1)! = 1/i! * i
         invfact[i - 1] = invfact[i] * i % MOD;
 
@@ -238,7 +240,7 @@ int main() {
   <ul>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="أستطيع أن آخذ باقي القسمة أولًا ثم أقسم.">I can take the mod first and divide after.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="هذا يعطي رقمًا خاطئًا، كما في مثال C(5, 2) مع 7. اضرب في المعكوس بدل القسمة.">That gives a wrong number, as in the example \( C(5, 2) \) mod 7. Multiply by the inverse instead.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="هذا يعطي عددًا خاطئًا، كما في مثال C(5, 2) mod 7. اضرب في المعكوس بدل القسمة.">That gives a wrong number, as in the example \( C(5, 2) \) mod 7. Multiply by the inverse instead.</span></p>
     </li>
     <li>
       <p class="think"><b>You may think:</b> <span class="tr" data-ar="C(n, r) يعدّ AB و BA كاختيارين مختلفين.">\( C(n, r) \) counts AB and BA as two different choices.</span></p>
@@ -254,7 +256,7 @@ int main() {
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>No <code>% MOD</code> after <b>each</b> multiplication. Three numbers below \( 10^9 \) multiplied together <span class="term" data-t="overflow">overflow</span> <code>long long</code>.</li>
+    <li>No <code>% MOD</code> after <b>each</b> multiplication. Three numbers below \( 10^9 \) multiplied together <span class="term" data-t="overflow">overflow</span> <code>long long</code>. <button type="button" class="why" data-why="mod-1e9-7">why?</button></li>
     <li>No check for <code>r &lt; 0</code> or <code>r &gt; n</code>. Then you read outside the array.</li>
     <li>Pairs as <code>n * (n - 1) / 2</code> in <code>int</code>. For \( n = 2 \cdot 10^5 \) the result is about \( 2 \cdot 10^{10} \): use <code>long long</code>.</li>
   </ul>
@@ -276,7 +278,7 @@ int main() {
       <details><summary>Answer</summary><p>\( C(5, 3) = \frac{120}{6 \cdot 2} = 10 \). It is also row 5, column 3 of Pascal's triangle.</p></details></li>
     <li><span class="tr" data-ar="لديك 4 قمصان و 3 قبعات. تلبس قميصًا واحدًا وقبعة واحدة. كم طريقة؟">You have 4 shirts and 3 hats. You wear one shirt and one hat. How many ways?</span>
       <details><summary>Answer</summary><p>"And" → multiply: \( 4 \cdot 3 = 12 \).</p></details></li>
-    <li><span class="tr" data-ar="ما معكوس 3 بباقي القسمة على 7؟ تحقّق بالضرب.">What is the inverse of 3 mod 7? Check it with a multiplication.</span>
+    <li><span class="tr" data-ar="ما المعكوس الضربي للعدد 3 بالمقياس 7؟ تحقّق منه بعملية ضرب.">What is the inverse of 3 mod 7? Check it with a multiplication.</span>
       <details><summary>Answer</summary><p>5, because \( 3 \cdot 5 = 15 \) and \( 15 \bmod 7 = 1 \). Fermat gives the same: \( 3^{5} = 243 \), and \( 243 \bmod 7 = 5 \).</p></details></li>
   </ol>
 </section>
@@ -294,6 +296,7 @@ int main() {
     <li><a class="cf" data-p="300C">Beautiful Numbers</a><span class="r">1800</span></li>
     <li><a href="https://cses.fi/problemset/task/1079">CSES: Binomial Coefficients</a><span class="r">CSES</span> — the problem of "Solve one together". Submit the program there.</li>
   </ol>
+  <p class="note">Beautiful Numbers (1800) is above this guide's goal. Keep it for after 1600.</p>
 </section>
 
 <section class="more">
