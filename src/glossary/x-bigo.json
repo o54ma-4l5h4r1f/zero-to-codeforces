@@ -1,0 +1,6 @@
+{
+  "cost": { "en": "cost", "ar": "التكلفة (عدد الخطوات التي ينفّذها الكود)", "note": "how many steps the code does" },
+  "logarithm": { "en": "logarithm", "ar": "اللوغاريتم", "note": "log n: how many times you halve n to reach 1; log 8 = 3" },
+  "byte": { "en": "byte", "ar": "بايت (وحدة قياس الذاكرة)", "note": "the unit of memory; an int takes 4 bytes" },
+  "worst-case": { "en": "worst case", "ar": "أسوأ حالة", "note": "the input that makes your code do the most steps" }
+}

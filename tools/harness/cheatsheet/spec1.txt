@@ -1,0 +1,376 @@
+== start | s0 | Limits and types
+-- complexity | About 10^8 simple steps run in 1 second. Read n from the limits, then pick the speed you need.
+|! $$: n \le$$ | speed
+|| $$: 10$$ | $$: O(n!)$$
+|| $$: 20$$ | $$: O(2^n)$$
+|| $$: 500$$ | $$: O(n^3)$$
+|| $$: 5000$$ | $$: O(n^2)$$
+|| $$: 2 \cdot 10^5$$ – $$: 10^6$$ | $$: O(n \log n)$$, $$: O(n)$$
+|| $$: 10^{12}$$ | $$: O(\sqrt{n})$$
+|| $$: 10^{18}$$ | $$: O(\log n)$$, $$: O(1)$$
+-- overflow | How big a number each type can hold. If a sum or product can pass 2·10^9, use long long.
+{{: int}} $$lim_int: \approx \pm 2 \cdot 10^9$$ · $$lim_int2: (2^{31} - 1)$$
+{{: long long}} $$lim_ll: \approx \pm 9 \cdot 10^{18}$$ · $$lim_ll2: (2^{63} - 1)$$
+1 second $$: \approx 10^8$$ steps
+256 MB $$mem_ints: \approx 6 \cdot 10^7$$ ints
+-- overflow | Multiply two ints safely: start with 1LL so the whole product is computed as long long.
+>>> main mul1ll
+long long p = 1LL * a * b;
+long long big = 1e18;
+const int MOD = 1e9 + 7;
+<<<
+-- cpp-template span2 | The start of every solution: fast input and output, and a loop over the test cases.
+>>> full template
+#include <bits/stdc++.h>
+using namespace std;
+
+void solve() {
+    int n; cin >> n;
+    vector<long long> a(n);
+    for (auto &x : a) cin >> x;
+    cout << (n > 0 ? "YES" : "NO") << "\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false); cin.tie(nullptr);
+    int t; cin >> t;
+    while (t--) solve();
+}
+<<<
+-- debugging | Check these first when you get Wrong Answer.
+$$: n = 1$$ · all equal · max values
+overflow? · index out of range?
+reset between test cases?
+output format · YES/NO
+
+== parity | s1 | Even and odd
+-- basic-math | Test if x is even or odd. Never write x % 2 == 1: for a negative odd x the remainder is -1, so the test fails.
+even: {{even: x % 2 == 0}}
+odd: {{odd: x % 2 != 0}}
+1 if odd, 0 if even: {{oddbit: x & 1}}
+{{negmod2: -7 % 2}} is {{: -1}}, not {{: 1}}
+-- basic-math | Parity rules: is the result even or odd when you add, subtract or multiply. Use them to answer without computing the real value.
+$$par_add1: \text{even} \pm \text{even} = \text{even}$$
+$$par_add2: \text{odd} \pm \text{odd} = \text{even}$$
+$$par_add3: \text{even} \pm \text{odd} = \text{odd}$$
+$$par_mul1: \text{even} \cdot \text{any} = \text{even}$$
+$$par_mul2: \text{odd} \cdot \text{odd} = \text{odd}$$
+-- basic-math | Same parity means both even or both odd. Do not write a % 2 == b % 2: it fails when one of them is negative. A sum is odd when it has an odd count of odd numbers.
+same parity: {{samepar: (a - b) % 2 == 0}}
+different parity: {{diffpar: (a - b) % 2 != 0}}
+sum of all is odd: {{sumodd: cntOdd % 2 != 0}}
+product of all is odd: {{prododd: cntEven == 0}}
+-- basic-math | Count the even or odd numbers in a range without a loop. Needs n >= 0 and 1 <= l <= r.
+even in $$: [1, n]$$: {{ev1n: n / 2}}
+odd in $$: [1, n]$$: {{od1n: (n + 1) / 2}}
+even in $$: [l, r]$$: {{evlr: r / 2 - (l - 1) / 2}}
+odd in $$: [l, r]$$: {{odlr: (r + 1) / 2 - l / 2}}
+-- basic-math | Move x to the nearest even or odd number, going up or going down. Works for negative x too.
+first even $$: \ge x$$: {{nexteven: x + (x & 1)}}
+first odd $$: \ge x$$: {{nextodd: x | 1}}
+last even $$: \le x$$: {{preveven: x - (x & 1)}}
+last odd $$: \le x$$: {{prevodd: (x - 1) | 1}}
+-- basic-math | The k-th even and the k-th odd positive number (k starts at 1), and the way back from the number to k.
+k-th even: {{ktheven: 2 * k}}
+k-th odd: {{kthodd: 2 * k - 1}}
+which even is x: {{poseven: x / 2}}
+which odd is x: {{posodd: (x + 1) / 2}}
+-- basic-math | Cut n into two halves that differ by at most 1. For n >= 0. The big half is n / 2 rounded up.
+small half: {{halfdown: n / 2}}
+big half: {{halfup: (n + 1) / 2}}
+also the big half: {{halfup2: n - n / 2}}
+-- simulation | Do one thing on even indexes and another thing on odd indexes. Index 0 is even, so it is the 1st element.
+>>> main alt_index
+for (int i = 0; i < n; i++) {
+    if (i % 2 == 0) first.push_back(a[i]);
+    else            second.push_back(a[i]);
+}
+// first: a[0], a[2]..  second: a[1], a[3]..
+<<<
+-- simulation | Small tools for patterns that alternate: flip a 0/1 value, alternate the sign, count the even and the odd indexes among 0 .. n-1.
+flip 0 and 1: {{flip01: b = 1 - b}}
+sign + - + -: {{altsign: (i % 2 == 0 ? 1 : -1)}}
+take turns x, y, x, y: {{altval: (i % 2 == 0 ? x : y)}}
+even indexes in {{: 0..n-1}}: {{evenidx: (n + 1) / 2}}
+odd indexes in {{: 0..n-1}}: {{oddidx: n / 2}}
+
+== division | s2 | Division and rounding
+-- basic-math | Division of two integers cuts the fraction: it rounds toward zero. The remainder has the sign of the left number. Never divide by 0.
+{{d1: 7 / 2}} is {{: 3}} · {{d2: -7 / 2}} is {{: -3}}
+{{d3: 7 % 2}} is {{: 1}} · {{d4: -7 % 2}} is {{: -1}}
+always true: {{dident: a == (a / b) * b + a % b}}
+-- basic-math | Round a / b down, up, or to the nearest integer. Only for a >= 0 and b > 0. A half rounds up.
+down: $$: \lfloor a / b \rfloor$$ = {{floorpos: a / b}}
+up: $$: \lceil a / b \rceil$$ = {{ceilpos: (a + b - 1) / b}}
+up, no overflow: {{ceilpos2: a / b + (a % b != 0)}}
+nearest: {{roundpos: (a + b / 2) / b}}
+-- basic-math | Round down and round up when a or b can be negative. C++ rounds toward zero, so one step of repair is needed. b must not be 0.
+>>> global floorceil
+long long floorDiv(long long a, long long b) {
+    long long q = a / b;
+    if (a % b != 0 && (a < 0) != (b < 0)) q--;
+    return q;
+}
+long long ceilDiv(long long a, long long b) {
+    long long q = a / b;
+    if (a % b != 0 && (a < 0) == (b < 0)) q++;
+    return q;
+}
+<<<
+-- basic-math | Get a real (not cut) result from two integers: make one side a double first. The average of an array needs this too.
+real division: {{realdiv: 1.0 * a / b}}
+same: {{realdiv2: (double)a / b}}
+average: {{average: 1.0 * sum / n}}
+wrong, cut first: {{realbad: (double)(a / b)}}
+-- basic-math | Round a real number x to an integer. Do not write ceil(a / b) with two integers: a / b is already cut.
+cut the fraction: {{rd_cut: (long long)x}}
+down: {{rd_floor: floor(x)}} · up: {{rd_ceil: ceil(x)}}
+nearest: {{rd_round: llround(x)}}
+-- basic-math | Is x a multiple of k, and the nearest multiples of k around x. The rounding rows need x >= 0 and k > 0.
+k divides x: {{divis: x % k == 0}}
+last multiple $$: \le x$$: {{multdown: x / k * k}}
+first multiple $$: \ge x$$: {{multup: (x + k - 1) / k * k}}
+first multiple $$: > x$$: {{multnext: (x / k + 1) * k}}
+-- basic-math | Put n items into boxes of k items each. How many boxes are full, how many items are left, how many boxes hold everything. For n >= 0, k > 0.
+full boxes: {{boxes_full: n / k}}
+left over: {{boxes_left: n % k}}
+boxes needed: {{boxes_need: (n + k - 1) / k}}
+-- basic-math | Divisible by both a and b, or by at least one of them. Divisible by both is the same as divisible by lcm(a, b).
+by both: {{divboth: x % a == 0 && x % b == 0}}
+by one or both: {{diveither: x % a == 0 || x % b == 0}}
+by both, one test: {{divlcm: x % lcm(a, b) == 0}}
+
+== wrap | s3 | Remainder and wrap around
+-- modular | In C++ a % m is negative when a is negative. This form always gives a value from 0 to m - 1. Needs m > 0.
+always 0 .. m-1: {{modfix: ((a % m) + m) % m}}
+{{mf1: -7 % 3}} is {{: -1}}
+{{mf2: ((-7 % 3) + 3) % 3}} is {{: 2}}
+-- simulation | Walk around a circle of n places with indexes 0 .. n-1. Going back, add n before the %, or the index becomes negative.
+next: {{wnext: (i + 1) % n}}
+previous: {{wprev: (i - 1 + n) % n}}
+k steps forward: {{wfwd: (i + k) % n}}
+k steps back: {{wback: ((i - k) % n + n) % n}}
+-- simulation | The same circle with indexes 1 .. n. Go to 0-indexed, move, then add 1 again.
+next: {{w1next: i % n + 1}}
+previous: {{w1prev: (i + n - 2) % n + 1}}
+k steps forward: {{w1fwd: (i - 1 + k) % n + 1}}
+k steps back: {{w1back: ((i - 1 - k) % n + n) % n + 1}}
+-- simulation | Steps between places i and j on a circle of n places (indexes 0 .. n-1). First row: going forward only. Second row: the shorter of the two ways.
+forward from i to j: {{cfwd: (j - i + n) % n}}
+shorter way: {{cdist: min(abs(i - j), n - abs(i - j))}}
+-- simulation | Item number p when the items fill rows of k items each. The first two rows count from 0, the last two count from 1.
+from 0: row {{rowof0: p / k}} · column {{colof0: p % k}}
+from 1: row {{rowof1: (p - 1) / k + 1}}
+from 1: column {{colof1: (p - 1) % k + 1}}
+-- simulation | A pattern that repeats forever: the element at position k (from 0) of the string s written again and again.
+char at position k: {{repchar: s[k % s.size()]}}
+full copies in k chars: {{repfull: k / s.size()}}
+-- modular | Remainder of a big sum or product: take % after every step, the result is the same. For values >= 0, and m up to about 3·10^9.
+sum: {{modsum: (a % m + b % m) % m}}
+product: {{modprod: (a % m) * (b % m) % m}}
+
+== digits | s4 | Digits
+-- basic-math | Cut digits off the end of x with % and /. For x >= 0. If x can be negative, use abs(x) first.
+last digit: {{lastdig: x % 10}}
+without the last digit: {{droplast: x / 10}}
+last two digits: {{last2: x % 100}}
+without the last two: {{drop2: x / 100}}
+tens digit: {{tens: x / 10 % 10}}
+-- basic-math | Build p = 10^k with a loop, then cut x at any place: the last k digits, and the rest. For x >= 0 and k from 0 to 18.
+>>> main pow10
+long long p = 1;
+for (int i = 0; i < k; i++) p *= 10;
+<<<
+last k digits: {{lastk: x % p}}
+without the last k: {{dropk: x / p}}
+-- basic-math | Walk over the digits of x from the last digit to the first. Reverse the list to get the first digit first. x = 0 gives an empty list.
+>>> main digits_loop
+vector<int> digits;
+while (x > 0) {
+    digits.push_back(x % 10);  // last digit
+    x /= 10;                   // remove it
+}
+reverse(digits.begin(), digits.end());
+<<<
+-- basic-math | Number of digits of x, for x >= 0. It answers 1 for x = 0.
+>>> global countDigits
+int countDigits(long long x) {
+    int c = 1;
+    while (x >= 10) { x /= 10; c++; }
+    return c;
+}
+<<<
+-- basic-math | Sum of the digits of x, for x >= 0.
+>>> global digitSum
+int digitSum(long long x) {
+    int s = 0;
+    for (; x > 0; x /= 10) s += x % 10;
+    return s;
+}
+<<<
+-- basic-math | Write the digits of x in reverse order: 1230 becomes 321. Then x is a palindrome when it equals its reverse. For 0 <= x < 10^18.
+>>> global reverseNumber
+long long reverseNumber(long long x) {
+    long long r = 0;
+    while (x > 0) {
+        r = r * 10 + x % 10;
+        x /= 10;
+    }
+    return r;
+}
+<<<
+palindrome: {{palnum: x == reverseNumber(x)}}
+-- basic-math | Build one number from its digits, first digit first. At most 18 digits fit in a long long.
+>>> main fromdigits
+long long x = 0;
+for (int d : digits) x = x * 10 + d;
+<<<
+-- basic-math | The first (leftmost) digit of x, for x >= 0: remove last digits while more than one is left.
+>>> main firstdigit
+while (x >= 10) x /= 10;
+// now x is the first digit
+<<<
+-- arrays-strings | Change between a digit character like '7' and the number 7. Printing '0' + d without char( ) prints a number like 55.
+char to digit: {{c2d: c - '0'}}
+digit to char: {{d2c: char('0' + d)}}
+is a digit: {{isdigc: '0' <= c && c <= '9'}}
+-- arrays-strings | Change between a number and its text. stoi is for int, stoll is for long long. The text must hold a number that fits. In the last row k counts from 0.
+number to text: {{tostr: to_string(x)}}
+text to number: {{stollx: stoll(s)}} · {{stoix: stoi(s)}}
+digit count: {{ndigstr: to_string(x).size()}}
+digit k from the left: {{kthdig: to_string(x)[k] - '0'}}
+-- modular | A number too long for long long (up to 10^5 digits): read it as text. This gives its remainder when divided by m.
+>>> main bigmod
+string s; cin >> s;
+long long r = 0;
+for (char c : s)
+    r = (r * 10 + (c - '0')) % m;
+// r is the big number % m
+<<<
+-- number-theory | Divisibility from the digits: x and its digit sum leave the same remainder for 3 and for 9. For 4, only the last two digits matter. For x >= 0.
+$$dr_last: 2, 5, 10$$: look at the last digit
+$$dr_4: 4$$: look at the last two digits
+$$dr_39: 3, 9$$: look at the sum of digits
+always true: {{dr3: x % 3 == digitSum(x) % 3}}
+always true: {{dr9: x % 9 == digitSum(x) % 9}}
+-- basic-math | Numbers with exactly k digits go from 10^(k-1) to 10^k - 1, so there are 9 · 10^(k-1) of them.
+$$kdig_range: k \text{ digits}: 10^{k-1} \dots 10^k - 1$$
+$$kdig_count: \text{how many}: 9 \cdot 10^{k-1}$$
+
+== compare | s0 | Compare and bound
+-- stl-basics | Smallest and biggest of two or more values. Both sides must have the same type: write max(x, 0LL) when x is long long.
+of two: {{min2: min(a, b)}} · {{max2: max(a, b)}}
+of three: {{min3: min({a, b, c})}}
+of four: {{max4: max({a, b, c, d})}}
+with zero: {{max0: max(x, 0LL)}}
+-- stl-basics | Keep the best value seen so far in a loop. Start the max at a very small value and the min at a very big value.
+>>> main runmax
+long long mx = LLONG_MIN, mn = LLONG_MAX;
+for (long long x : a) {
+    mx = max(mx, x);
+    mn = min(mn, x);
+}
+<<<
+-- stl-basics | Force x to stay inside [lo, hi]: values below lo become lo, values above hi become hi. Needs lo <= hi.
+into [lo, hi]: {{clamp1: max(lo, min(x, hi))}}
+same: {{clamp2: clamp(x, lo, hi)}}
+never below 0: {{clamp0: max(0LL, x)}}
+-- basic-math | How far is x from the range [lo, hi]: 0 when x is inside, else the distance to the nearer end.
+distance to [lo, hi]: {{dist_range: max({0LL, lo - x, x - hi})}}
+-- basic-math | Size of x without its sign, and how far apart a and b are. The difference a - b must fit in the type.
+without the sign: {{abs1: abs(x)}}
+distance: {{dist1: abs(a - b)}}
+same: {{dist2: max(a, b) - min(a, b)}}
+-- basic-math | Is x inside the range from l to r? Never write l <= x <= r: it compiles but it does not mean that.
+inside $$: [l, r]$$: {{inrange: l <= x && x <= r}}
+outside: {{outrange: x < l || x > r}}
+inside $$: [l, r)$$: {{inhalf: l <= x && x < r}}
+-- basic-math | Two ranges [a, b] and [c, d] on a line: do they share a point, and what is the shared part.
+they touch: {{ovl_test: max(a, c) <= min(b, d)}}
+shared part: from {{ovl_lo: max(a, c)}} to {{ovl_hi: min(b, d)}}
+no common point: {{ovl_none: b < c || d < a}}
+[a, b] inside [c, d]: {{ovl_inside: c <= a && b <= d}}
+-- basic-math | Size of the shared part of [a, b] and [c, d]. The first row counts integers, the second row measures length. Both are 0 when the ranges are apart.
+shared integers: {{ovl_cnt: max(0LL, min(b, d) - max(a, c) + 1)}}
+shared length: {{ovl_len: max(0LL, min(b, d) - max(a, c))}}
+-- basic-math | How many integers are covered by [a, b] or by [c, d]: add both sizes, then remove the shared part once.
+covered integers: {{union_cnt: (b - a + 1) + (d - c + 1) - max(0LL, min(b, d) - max(a, c) + 1)}}
+-- sorting | Put three values in order with three swaps. After it, a <= b <= c.
+>>> main sort3
+if (a > b) swap(a, b);
+if (b > c) swap(b, c);
+if (a > b) swap(a, b);
+<<<
+-- sorting | Order two values, and the middle one of three values, without sorting.
+exchange two values: {{swap2: swap(a, b)}}
+make a the smaller: {{order2: if (a > b) swap(a, b)}}
+middle of three: {{mid3: a + b + c - min({a, b, c}) - max({a, b, c})}}
+-- basic-math | Tests on three values. Never write a == b == c: it compiles but it is wrong.
+all equal: {{alleq3: a == b && b == c}}
+all different: {{alldiff3: a != b && b != c && a != c}}
+at least two equal: {{twoeq3: a == b || b == c || a == c}}
+-- basic-math | The sign of x as -1, 0 or 1, and a test that two numbers have different signs. Here 0 counts as positive. Do not test a * b < 0: the product can overflow.
+sign: {{sign: (x > 0) - (x < 0)}}
+different signs: {{diffsign: (a < 0) != (b < 0)}}
+-- basic-math | Compare two fractions a/b and c/d without dividing: multiply across. Needs b > 0 and d > 0, and the products must fit in long long.
+$$: \frac{a}{b} < \frac{c}{d}$$: {{frac_lt: a * d < c * b}}
+$$: \frac{a}{b} = \frac{c}{d}$$: {{frac_eq: a * d == c * b}}
+-- basic-math | Real numbers (double) are not exact. Do not compare them with ==. Two values are equal when they are closer than a tiny number.
+equal: {{feq: abs(x - y) < 1e-9}}
+x is smaller: {{flt: x < y - 1e-9}}
+
+== counting | s1 | Counting without a loop
+-- basic-math | How many integers are in a range, for l <= r (strictly between needs l < r). The usual mistake is to forget the + 1.
+in $$cnt_lr: [l, r]$$: {{cntlr: r - l + 1}}
+in $$: [l, r)$$: {{cnthalf: r - l}}
+strictly between $$: l$$ and $$: r$$: {{cntopen: r - l - 1}}
+gaps between $$: n$$ points: {{gaps: n - 1}}
+-- basic-math | How many multiples of k are in a range. Needs k > 0 and 1 <= l <= r, because C++ division rounds toward zero.
+in $$: [1, n]$$: $$mult_1n: \lfloor n / k \rfloor$$ = {{mult1n: n / k}}
+in $$: [l, r]$$: {{multlr: r / k - (l - 1) / k}}
+first in $$: [l, r]$$: {{multfirst: (l + k - 1) / k * k}}
+last in $$: [l, r]$$: {{multlast: r / k * k}}
+-- number-theory | Numbers from 1 to n divisible by a or by b. Numbers divisible by both are counted twice, so remove them once.
+by both: {{cntboth: n / lcm(a, b)}}
+by one or both: {{cnteither: n / a + n / b - n / lcm(a, b)}}
+by none: {{cntnone: n - n / a - n / b + n / lcm(a, b)}}
+-- combinatorics | How many pairs you can pick from n things. Use long long: n = 10^5 already gives 5·10^9.
+pairs $$pairs_f: \frac{n(n-1)}{2}$$ = {{pairs: n * (n - 1) / 2}}
+ordered pairs $$opairs_f: n(n-1)$$ = {{opairs: n * (n - 1)}}
+pairs with $$: i \le j$$: {{pairsle: n * (n + 1) / 2}}
+one from each group: {{pairsnm: n * m}}
+-- combinatorics | More counts of the same kind: triples, handshakes, edges of a full graph, subarrays, subsets. The triple row fits in long long for n up to 2·10^6.
+triples $$triples_f: \frac{n(n-1)(n-2)}{6}$$
+= {{triples: n * (n - 1) * (n - 2) / 6}}
+handshakes, edges: {{handshakes: n * (n - 1) / 2}}
+subarrays: {{subarrays: n * (n + 1) / 2}}
+subsets: $$subsets_f: 2^n$$ = {{subsets: 1LL << n}}
+-- two-pointers | How many windows of length k fit in n elements in a row. How many k by k squares fit in an n by m grid. Needs k <= n and k <= m.
+windows of length k: {{windows: n - k + 1}}
+k by k squares: {{ksquares: (n - k + 1) * (m - k + 1)}}
+last window starts at: {{lastwin: n - k}}
+-- basic-math | Sums you should know by heart. Use long long.
+$$sum_1n: 1 + 2 + \dots + n = \frac{n(n+1)}{2}$$
+$$sum_lr: l + (l+1) + \dots + r = \frac{(l + r)(r - l + 1)}{2}$$
+$$sum_odd: 1 + 3 + \dots + (2n - 1) = n^2$$
+$$sum_even: 2 + 4 + \dots + 2n = n(n+1)$$
+$$sum_sq: 1^2 + 2^2 + \dots + n^2 = \frac{n(n+1)(2n+1)}{6}$$
+$$sum_cube: 1^3 + 2^3 + \dots + n^3 = \frac{n^2 (n+1)^2}{4}$$
+-- basic-math | The same sums in C++. All variables are long long. Multiply first, divide last, or the division cuts too early.
+{{: 1..n}}: {{csum1n: n * (n + 1) / 2}}
+{{: l..r}}: {{csumlr: (l + r) * (r - l + 1) / 2}}
+squares: {{csumsq: n * (n + 1) * (2 * n + 1) / 6}}
+-- basic-math | Arithmetic progression: every term is the one before plus d. Its sum is the number of terms times the average of the first and the last term.
+$$ap_kth: k\text{-th term}: a + (k - 1) \cdot d$$
+$$ap_cnt: \text{terms}: \frac{\text{last} - \text{first}}{d} + 1$$
+$$ap_sum: \text{sum}: \frac{\text{terms} \cdot (\text{first} + \text{last})}{2}$$
+in C++: {{apsum: cnt * (first + last) / 2}}
+-- basic-math | Powers of 2 and geometric sums: every term is the one before times r. The sum of all powers of 2 below 2^(k+1) is one less than 2^(k+1). The C++ row works for k up to 61.
+$$geo_2: 1 + 2 + 4 + \dots + 2^k = 2^{k+1} - 1$$
+$$geo_r: 1 + r + r^2 + \dots + r^k = \frac{r^{k+1} - 1}{r - 1}$$
+in C++: {{geo2c: (1LL << (k + 1)) - 1}}
+-- counting | Count how many times something is true: a comparison is 1 when true and 0 when false, so you can add it.
+>>> main cntif
+int cnt = 0;
+for (long long x : a) cnt += (x % 2 == 0);
+<<<

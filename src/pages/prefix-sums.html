@@ -1,12 +1,21 @@
-<p class="idea">Add the numbers once and save every running sum. After that, the sum of any part of the array is one subtraction.</p>
+<p class="idea"><span class="tr" data-ar="اجمع الأعداد مرة واحدة واحفظ كل مجموع جارٍ. بعد ذلك، مجموع أي جزء من المصفوفة هو عملية طرح واحدة.">Add the numbers once and save every running sum. After that, the sum of any part of the array is one subtraction.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can fill and read an array in a loop → <a href="#arrays-strings">Arrays and strings</a></li>
+    <li>You know when sums need <code>long long</code> → <a href="#overflow">int or long long?</a></li>
+    <li>You can count the steps of a loop → <a href="#complexity">Limits → speed</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>Many <span class="term" data-t="query">queries</span>: "what is the sum from position l to position r?"</li>
-    <li>"How many good positions are there between l and r?" Put 1 on good positions, 0 on others. Now it is a sum.</li>
+    <li>Many <span class="term" data-t="query">queries</span>: "what is the sum from position \( l \) to position \( r \)?"</li>
+    <li>"How many good positions are between \( l \) and \( r \)?" Put 1 on good positions and 0 on the others. Now it is a sum.</li>
     <li>The array does not change between the queries.</li>
-    <li>n and the number of queries are both up to 200 000. A loop for every query is too slow.</li>
+    <li>\( n \) and the number of queries are both up to \( 2 \cdot 10^5 \). A loop for every query is too slow.</li>
   </ul>
 </section>
 
@@ -15,27 +24,70 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — the bank balance</h3>
-    <p>Every day you get or spend some money. The bank writes your balance after each day. This is a <span class="term" data-t="running-sum">running sum</span>.</p>
-    <p>How much did you get from Monday to Friday? You do not add five days again. You take the balance after Friday minus the balance before Monday.</p>
+    <p>On days 1 to 5 you get 3, 1, 4, 1 and 5 dollars. The bank writes your balance after each day: 3, 4, 8, 9, 14. This is a <span class="term" data-t="running-sum">running sum</span>.</p>
+    <p>How much did you get on days 2 to 4? Do not add the three days again. Take the balance after day 4, 9, minus the balance after day 1, 3. That is 6.</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — pre[i] = sum of the first i elements</h3>
-    <p>The array <code>a</code> has indexes 0 … n−1. The array <code>pre</code> has one more box. <code>pre[0] = 0</code> because the sum of zero elements is 0.</p>
-    <table>
-      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
-      <tr><th>a[i]</th><td>3</td><td class="hi">1</td><td class="hi">4</td><td class="hi">1</td><td>5</td><td>–</td></tr>
-      <tr><th>pre[i]</th><td>0</td><td class="hi">3</td><td>4</td><td>8</td><td class="hi">9</td><td>14</td></tr>
-    </table>
-    <p>Each box is the box before it plus one element: <code>pre[i + 1] = pre[i] + a[i]</code>.</p>
-    <p><b>One query:</b> the sum of <code>a[1..3]</code> = 1 + 4 + 1 = 6.</p>
-    <table>
-      <tr><th>what</th><th>value</th><th>meaning</th></tr>
-      <tr><td>pre[r + 1] = pre[4]</td><td>9</td><td>sum of a[0..3]</td></tr>
-      <tr><td>pre[l] = pre[1]</td><td>3</td><td>sum of a[0..0], the part we do not want</td></tr>
-      <tr><td>pre[4] − pre[1]</td><td class="hi">6</td><td>sum of a[1..3]</td></tr>
-    </table>
-    <p class="note">The rule: sum of <code>a[l..r]</code> = <code>pre[r + 1] − pre[l]</code>. Take everything up to r, then remove everything before l.</p>
+    <h3><b>2 · Picture</b> — one row more: <code>pre</code></h3>
+    <p>On this page, positions count from 1, as in the story. <span class="tr" data-ar="pre[i] هو مجموع العناصر من a[1] إلى a[i]. و pre[0] = 0 لأن مجموع لا شيء يساوي 0.">The box <code>pre[i]</code> is the sum <code>a[1] + … + a[i]</code>. And <code>pre[0] = 0</code>: the sum of nothing is 0.</span></p>
+    <figure class="viz" data-viz="stepper" data-gen="pre-build" aria-label="Step by step: the row pre is filled under the array a = 3 1 4 1 5. Each box pre[i] is the box to its left plus a[i].">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"a","label":"a","start":1,"values":[3,1,4,1,5],"rows":[{"label":"pre","start":0,"values":["","","","","",""]}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"pre[i]: written now","read":"the two boxes it adds"},
+  "code": ["pre[0] = 0;","for (int i = 1; i <= n; i++)","    pre[i] = pre[i - 1] + a[i];"],
+  "steps": [
+    {"line":1,"a":{"states":{},"pointers":{"i":null},"rows":[{"label":"pre","start":0,"values":[0,"","","","",""],"states":{"0":"active"}}]},"v":{"items":[["pre[i - 1]",""],["a[i]",""],["pre[i]",""]]}},
+    {"line":[2,3],"a":{"states":{"1":"read"},"pointers":{"i":1},"rows":[{"label":"pre","start":0,"values":[0,3,"","","",""],"states":{"0":"read","1":"active"}}]},"v":{"items":[["pre[i - 1]",0],["a[i]",3],["pre[i]",3]]}},
+    {"line":[2,3],"a":{"states":{"2":"read"},"pointers":{"i":2},"rows":[{"label":"pre","start":0,"values":[0,3,4,"","",""],"states":{"1":"read","2":"active"}}]},"v":{"items":[["pre[i - 1]",3],["a[i]",1],["pre[i]",4]]}},
+    {"line":[2,3],"a":{"states":{"3":"read"},"pointers":{"i":3},"rows":[{"label":"pre","start":0,"values":[0,3,4,8,"",""],"states":{"2":"read","3":"active"}}]},"v":{"items":[["pre[i - 1]",4],["a[i]",4],["pre[i]",8]]}},
+    {"line":[2,3],"a":{"states":{"4":"read"},"pointers":{"i":4},"rows":[{"label":"pre","start":0,"values":[0,3,4,8,9,""],"states":{"3":"read","4":"active"}}]},"v":{"items":[["pre[i - 1]",8],["a[i]",1],["pre[i]",9]]}},
+    {"line":[2,3],"a":{"states":{"5":"read"},"pointers":{"i":5},"rows":[{"label":"pre","start":0,"values":[0,3,4,8,9,14],"states":{"4":"read","5":"active"}}]},"v":{"items":[["pre[i - 1]",9],["a[i]",5],["pre[i]",14]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start: <code>pre[0] = 0</code>. It stands one step before <code>a[1]</code>.</li>
+        <li><code>pre[1] = pre[0] + a[1] = 0 + 3 = 3</code>.</li>
+        <li><code>pre[2] = 3 + 1 = 4</code>. Each new box needs only one addition.</li>
+        <li><code>pre[3] = 4 + 4 = 8</code>.</li>
+        <li><code>pre[4] = 8 + 1 = 9</code>.</li>
+        <li>Finally <code>pre[5] = 9 + 5 = 14</code>, the sum of the whole array. Building took \( n = 5 \) steps.</li>
+      </ol>
+      <figcaption>Each <code>pre[i]</code> stands under <code>a[i]</code>. It is the sum of <code>a[i]</code> and everything to its left.</figcaption>
+    </figure>
+    <p><b>One query.</b> The sum of <code>a[2..4]</code> is \( 1 + 4 + 1 = 6 \). <span class="tr" data-ar="خذ كل شيء حتى r، ثم أزل كل شيء قبل l.">Take everything up to <code>r</code>, then remove everything before <code>l</code>.</span></p>
+    <figure class="viz" data-viz="array" data-gen="pre-query" aria-label="The array a = 3 1 4 1 5 from index 1 with the row pre = 0 3 4 8 9 14 from index 0. The part a[2..4] is framed. The boxes pre[4] = 9 and pre[1] = 3 are marked.">
+      <script type="application/json">
+{
+  "label": "a",
+  "start": 1,
+  "values": [3,1,4,1,5],
+  "states": {"1":"dim","2":"active","3":"active","4":"active"},
+  "bracket": [2,4],
+  "pointers": {"l":2,"r":4},
+  "rows": [{"label":"pre","start":0,"values":[0,3,4,8,9,14],"states":{"1":"read","4":"read"}}],
+  "legend": {"active":"a[2..4]: the part we want","dim":"a[1]: the part we remove","read":"the two boxes we use"}
+}
+</script>
+      <figcaption><code>pre[4] = 9</code> covers <code>a[1..4]</code>. <code>pre[1] = 3</code> covers <code>a[1]</code>, the part we do not want. So the sum is \( 9 - 3 = 6 \).</figcaption>
+    </figure>
+    \[ \text{sum of } a_l \dots a_r = pre_r - pre_{l-1} \]
+    <p>A chart of <code>pre</code> shows the same thing. The sum of <code>a[2..4]</code> is how much the line climbs from \( i = 1 \) to \( i = 4 \).</p>
+    <figure class="viz" data-viz="chart" data-gen="pre-chart" aria-label="Chart of the running total pre[i] for i from 0 to 5: 0, 3, 4, 8, 9, 14.">
+      <script type="application/json">
+{
+  "x": {"label":"i","name":"i","min":0,"max":5},
+  "y": {"label":"pre[i] = a[1] + ... + a[i]","min":0,"max":15},
+  "series": [{"name":"pre[i]","data":[[0,0],[1,3],[2,4],[3,8],[4,9],[5,14]]}]
+}
+</script>
+      <figcaption>How to read this chart: \( i \) goes to the right, <code>pre[i]</code> goes up. The line climbs by <code>a[i]</code> at each step. From \( i = 1 \) to \( i = 4 \) it climbs from 3 to 9, by 6.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
@@ -47,36 +99,58 @@ using namespace std;
 int main() {
     int n, q;
     cin &gt;&gt; n &gt;&gt; q;
-    vector&lt;long long&gt; a(n), pre(n + 1, 0);       // sums get big -&gt; long long
-    for (int i = 0; i &lt; n; i++) {
+    vector&lt;long long&gt; a(n + 1), pre(n + 1, 0);   // positions 1..n, sums can be big
+    for (int i = 1; i &lt;= n; i++) {
         cin &gt;&gt; a[i];
-        pre[i + 1] = pre[i] + a[i];              // sum of the first i + 1 elements
+        pre[i] = pre[i - 1] + a[i];              // pre[i] = a[1] + ... + a[i]
     }
     while (q--) {
         int l, r;
-        cin &gt;&gt; l &gt;&gt; r;                           // the input counts from 1
-        l--; r--;                                // now they are indexes from 0
-        cout &lt;&lt; pre[r + 1] - pre[l] &lt;&lt; "\n";     // sum of a[l..r]
+        cin &gt;&gt; l &gt;&gt; r;                           // positions from 1, as in the input
+        cout &lt;&lt; pre[r] - pre[l - 1] &lt;&lt; "\n";     // sum of a[l..r]
     }
 }
 </code></pre>
-    <p class="tip-box">It also works for counting. "How many <code>i</code> in [l, r] have <code>s[i] == s[i + 1]</code>?" Make <code>a[i] = 1</code> when this is true, else 0. Then ask for a sum.</p>
-    <p class="note"><b>A grid (2D).</b> <code>pre[i][j]</code> = sum of the first i rows and first j columns: <code>pre[i][j] = a[i−1][j−1] + pre[i−1][j] + pre[i][j−1] − pre[i−1][j−1]</code>. Sum of rows r1..r2 and columns c1..c2 = <code>pre[r2+1][c2+1] − pre[r1][c2+1] − pre[r2+1][c1] + pre[r1][c1]</code>.</p>
+    <p class="tip-box"><b>One rule for every problem.</b> Positions from 1, <code>pre[0] = 0</code>, answer <code>pre[r] - pre[l - 1]</code>. Most inputs count from 1 too, so you never convert.</p>
   </div>
 </section>
 
 <section>
-  <h2>Difference array</h2>
-  <p>This is the same idea, but backwards. Now the task says: "add <code>v</code> to every element from l to r", many times. At the end you print the array.</p>
-  <div class="way">
-    <h3><b>Example</b> — 5 zeros, add 2 to [1, 3], then add 3 to [2, 4]</h3>
-    <p>Do not touch every element of the <span class="term" data-t="range">range</span>. Write only two marks in a <span class="term" data-t="difference-array">difference array</span> <code>d</code>: "the change starts here" (<code>d[l] += v</code>) and "the change stops here" (<code>d[r + 1] −= v</code>).</p>
-    <table>
-      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
-      <tr><th>d after "add 2 to [1, 3]"</th><td>0</td><td class="hi">+2</td><td>0</td><td>0</td><td class="hi">−2</td><td>0</td></tr>
-      <tr><th>d after "add 3 to [2, 4]"</th><td>0</td><td>+2</td><td class="hi">+3</td><td>0</td><td>−2</td><td class="hi">−3</td></tr>
-      <tr><th>running sum of d = the array</th><td>0</td><td>2</td><td>5</td><td>5</td><td>3</td><td>–</td></tr>
-    </table>
+  <h2>Change it to fit</h2>
+  <p><b>The problem changes:</b> "add \( v \) to every element from \( l \) to \( r \)", many times. Then print the array. <b>You change:</b> the direction of the idea. Do not touch every element of the <span class="term" data-t="range">range</span>. <span class="tr" data-ar="اكتب علامتين فقط: «التغيير يبدأ هنا» عند l، و«التغيير يتوقّف هنا» عند r + 1.">Write only two marks: "the change starts here" at <code>l</code>, and "the change stops here" at <code>r + 1</code>.</span> The marks live in a <span class="term" data-t="difference-array">difference array</span> <code>d</code>. At the end, one running sum of <code>d</code> gives the array.</p>
+  <figure class="viz" data-viz="stepper" data-gen="diff-array" aria-label="Step by step: on 5 zeros, add 2 to positions 1 to 3 and add 3 to positions 2 to 4 with two marks each in d. Then one running sum of d gives the array a.">
+    <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"d","label":"d","start":1,"values":[0,0,0,0,0,0],"rows":[{"label":"a","start":1,"values":["","","","",""]}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"changed now","read":"cur adds this box","done":"finished"},
+  "code": ["d[l] += v;","d[r + 1] -= v;","for (int i = 1; i <= n; i++) {","    cur += d[i];","    a[i] = cur;","}"],
+  "steps": [
+    {"d":{"values":[0,0,0,0,0,0],"states":{},"rows":[{"label":"a","start":1,"values":["","","","",""],"states":{}}]},"v":{"items":[["doing","start: all zero"],["cur",""]]}},
+    {"line":[1,2],"d":{"values":[2,0,0,-2,0,0],"states":{"1":"active","4":"active"},"rows":[{"label":"a","start":1,"values":["","","","",""],"states":{}}]},"v":{"items":[["doing","add 2 to [1, 3]"],["cur",""]]}},
+    {"line":[1,2],"d":{"values":[2,3,0,-2,-3,0],"states":{"2":"active","5":"active"},"rows":[{"label":"a","start":1,"values":["","","","",""],"states":{}}]},"v":{"items":[["doing","add 3 to [2, 4]"],["cur",""]]}},
+    {"line":[3,4,5],"d":{"values":[2,3,0,-2,-3,0],"states":{"1":"read"},"rows":[{"label":"a","start":1,"values":[2,"","","",""],"states":{"1":"active"}}]},"v":{"items":[["doing","cur += d[1]"],["cur",2]]}},
+    {"line":[3,4,5],"d":{"values":[2,3,0,-2,-3,0],"states":{"2":"read"},"rows":[{"label":"a","start":1,"values":[2,5,"","",""],"states":{"1":"done","2":"active"}}]},"v":{"items":[["doing","cur += d[2]"],["cur",5]]}},
+    {"line":[3,4,5],"d":{"values":[2,3,0,-2,-3,0],"states":{"3":"read"},"rows":[{"label":"a","start":1,"values":[2,5,5,"",""],"states":{"1":"done","2":"done","3":"active"}}]},"v":{"items":[["doing","cur += d[3]"],["cur",5]]}},
+    {"line":[3,4,5],"d":{"values":[2,3,0,-2,-3,0],"states":{"4":"read"},"rows":[{"label":"a","start":1,"values":[2,5,5,3,""],"states":{"1":"done","2":"done","3":"done","4":"active"}}]},"v":{"items":[["doing","cur += d[4]"],["cur",3]]}},
+    {"line":[3,4,5],"d":{"values":[2,3,0,-2,-3,0],"states":{"5":"read"},"rows":[{"label":"a","start":1,"values":[2,5,5,3,0],"states":{"1":"done","2":"done","3":"done","4":"done","5":"active"}}]},"v":{"items":[["doing","cur += d[5]"],["cur",0]]}}
+  ]
+}
+</script>
+    <ol class="viz-steps">
+      <li>Start: 5 zeros. <code>d</code> has one more box, <code>d[6]</code>, for a change that stops after position 5.</li>
+      <li>Add 2 to positions 1 to 3: <code>d[1] += 2</code> and <code>d[4] -= 2</code>.</li>
+      <li>Add 3 to positions 2 to 4: <code>d[2] += 3</code> and <code>d[5] -= 3</code>.</li>
+      <li>Now the running sum. <code>cur = 2</code>, so <code>a[1] = 2</code>.</li>
+      <li><code>cur = 2 + 3 = 5</code>. Both changes are on now.</li>
+      <li><code>cur</code> stays 5, because <code>d[3] = 0</code>.</li>
+      <li>The −2 in <code>d[4]</code> switches the first change off: <code>cur = 3</code>.</li>
+      <li>The −3 in <code>d[5]</code> switches the second one off: <code>a[5] = 0</code>.</li>
+    </ol>
+    <figcaption>Each change costs 2 steps, not \( r - l + 1 \). The final running sum costs \( n \) steps once.</figcaption>
+  </figure>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -84,35 +158,119 @@ using namespace std;
 int main() {
     int n, q;
     cin &gt;&gt; n &gt;&gt; q;                               // the array starts with n zeros
-    vector&lt;long long&gt; d(n + 1, 0);               // one extra box for d[r + 1]
+    vector&lt;long long&gt; d(n + 2, 0);               // positions 1..n, plus d[n + 1]
     while (q--) {
         int l, r;
         long long v;
-        cin &gt;&gt; l &gt;&gt; r &gt;&gt; v;                      // indexes from 0, add v to a[l..r]
+        cin &gt;&gt; l &gt;&gt; r &gt;&gt; v;                      // add v to a[l..r], positions from 1
         d[l] += v;                               // the change starts at l
         d[r + 1] -= v;                           // the change stops after r
     }
     long long cur = 0;
-    for (int i = 0; i &lt; n; i++) {
+    for (int i = 1; i &lt;= n; i++) {
         cur += d[i];                             // running sum of d
         cout &lt;&lt; cur &lt;&lt; " ";                      // this is a[i]
     }
     cout &lt;&lt; "\n";
 }
 </code></pre>
-  </div>
+  <p>Three smaller changes. Each changes one line of the build loop.</p>
+  <ul>
+    <li><b>Count, not sum:</b> for example, the even numbers. <code>cnt[i] = cnt[i - 1] + (a[i] % 2 == 0 ? 1 : 0)</code>. The count in <code>[l, r]</code> is <code>cnt[r] - cnt[l - 1]</code>.</li>
+    <li><b>Biggest so far:</b> <code>mx[i] = max(mx[i - 1], a[i])</code>. <span class="tr" data-ar="هذا يعطي أكبر قيمة في a[1..i] فقط. لا يمكن طرح الأكبر، فلا يعمل مع [l, r].">This gives the max of <code>a[1..i]</code> only. A max cannot be subtracted, so it does not work for any <code>[l, r]</code>.</span></li>
+    <li><b>A grid:</b> the sum of the rectangle from \( (1, 1) \) to \( (i, j) \) is \( P_{i,j} = a_{i,j} + P_{i-1,j} + P_{i,j-1} - P_{i-1,j-1} \).</li>
+  </ul>
 </section>
 
-<p class="complexity">Speed: O(n) to build, then O(1) for each query. Difference array: O(1) for each change, O(n) once at the end.</p>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> A string \( s \) of '.' and '#' has length \( n \). There are \( m \) queries. Each gives \( l &lt; r \), positions from 1. Count the positions \( i \) with \( l \le i &lt; r \) where \( s_i = s_{i+1} \). Limits: \( 2 \le n \le 10^5 \) and \( 1 \le m \le 10^5 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> For each query: how many neighbours inside \( [l, r] \) are equal.</li>
+    <li><b>A small example by hand.</b> Take <code>s = #..###</code>. Mark position \( i \) with 1 when \( s_i = s_{i+1} \).
+      <table>
+        <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+        <tr><th>s[i]</th><td></td><td>#</td><td>.</td><td>.</td><td>#</td><td>#</td><td>#</td></tr>
+        <tr><th>good[i]</th><td></td><td>0</td><td class="hi">1</td><td>0</td><td class="hi">1</td><td>1</td><td></td></tr>
+        <tr><th>pre[i]</th><td>0</td><td>0</td><td>1</td><td>1</td><td class="hi">2</td><td>3</td><td></td></tr>
+      </table>
+      <p>Query \( l = 2, r = 5 \): positions 2, 3, 4 have <code>good</code> 1, 0, 1. The answer is 2.</p>
+    </li>
+    <li><b>The idea.</b> <span class="tr" data-ar="العدّ هو مجموع من الآحاد والأصفار. لذلك نبني pre على المصفوفة good.">A count is a sum of 1s and 0s. So build <code>pre</code> on the row <code>good</code>.</span> The positions go from \( l \) to \( r - 1 \). So the answer is <code>pre[r - 1] - pre[l - 1]</code>. Check: <code>pre[4] - pre[1] = 2 - 0 = 2</code>.</li>
+    <li><b>Why is it fast enough?</b> Building costs \( n \) steps. Each query costs 1 step. Total \( 10^5 + 10^5 \) steps. A loop per query would cost up to \( 10^5 \cdot 10^5 = 10^{10} \).</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    string s;
+    cin &gt;&gt; s;
+    int n = s.size();
+    vector&lt;int&gt; pre(n + 1, 0);                   // pre[i] = good[1] + ... + good[i]
+    for (int i = 1; i &lt; n; i++) {
+        int good = (s[i - 1] == s[i]) ? 1 : 0;   // position i matches position i + 1
+        pre[i] = pre[i - 1] + good;              // (the string itself counts from 0)
+    }
+    int m;
+    cin &gt;&gt; m;
+    while (m--) {
+        int l, r;
+        cin &gt;&gt; l &gt;&gt; r;
+        cout &lt;&lt; pre[r - 1] - pre[l - 1] &lt;&lt; "\n";
+    }
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: \( O(n) \) to build, then \( O(1) \) per query. Difference array: \( O(1) \) per change, \( O(n) \) once at the end.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="حلقة واحدة من l إلى r لكل استعلام ليست بطيئة.">One loop from <code>l</code> to <code>r</code> per query is not slow.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الاستعلامات كثيرة. 2*10^5 استعلام في 2*10^5 خطوة تساوي 4*10^10 خطوة.">There are many queries. \( 2 \cdot 10^5 \) queries of \( 2 \cdot 10^5 \) steps make \( 4 \cdot 10^{10} \) steps.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="مجموع a[l..r] هو pre[r] - pre[l].">The sum of <code>a[l..r]</code> is <code>pre[r] - pre[l]</code>.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="هذا يُسقط a[l]. الصحيح هو pre[r] - pre[l - 1].">That drops <code>a[l]</code>. The right one is <code>pre[r] - pre[l - 1]</code>.</span> Check with the picture: <code>pre[4] - pre[2]</code> is 5, not 6.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="بعد تغيير عنصر واحد، تبقى pre صحيحة.">After one element changes, <code>pre</code> is still right.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="كل صندوق بعد هذا العنصر أصبح خاطئًا. إعادة البناء تكلّف n خطوة في كل مرة.">Every box after that element is now wrong. Building again costs \( n \) steps each time.</span></p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>Off by one. Choose one rule and never mix: here <code>pre</code> has n + 1 boxes and the answer is <code>pre[r + 1] − pre[l]</code>.</li>
-    <li>The sums in an <code>int</code>. 200 000 numbers of 10<sup>9</sup> give 2·10<sup>14</sup>. Use <code>long long</code>.</li>
-    <li>The input counts positions from 1 and your array counts from 0. Subtract 1 from l and r first.</li>
-    <li>The array changes between queries. Then prefix sums are not enough. (You need a stronger tool, see <a href="#what-next">After 1600</a>.)</li>
+    <li>The sums in an <code>int</code>. \( 2 \cdot 10^5 \) numbers of \( 10^9 \) give \( 2 \cdot 10^{14} \). Use <code>long long</code>.</li>
+    <li>Mixing positions from 0 and from 1. Keep this page's rule: positions from 1, <code>pre[0] = 0</code>.</li>
+    <li>The difference array with only \( n + 1 \) boxes. A change that ends at \( r = n \) writes <code>d[n + 1]</code>. Make \( n + 2 \) boxes.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>The array changes between queries.</b> That needs a Fenwick tree or a segment tree. Not needed below 1600: <a href="#what-next">After 1600</a>.</li>
+    <li><b>The max or min of any range \( [l, r] \)</b> without a loop (a "sparse table"): <a href="#what-next">After 1600</a>.</li>
+    <li><b>Prefix XOR.</b> The same trick with XOR instead of plus: <a href="#bits">Bits</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="المصفوفة a = 2 7 1 8 من الموضع 1. ما قيم pre[0] إلى pre[4]؟">The array is <code>a = 2 7 1 8</code>, positions from 1. What are <code>pre[0]</code> to <code>pre[4]</code>?</span>
+      <details><summary>Answer</summary><p>0, 2, 9, 10, 18. Each box is the box before it plus one element.</p></details></li>
+    <li><span class="tr" data-ar="بنفس pre، ما مجموع a[2..3]؟">With the same <code>pre</code>, what is the sum of <code>a[2..3]</code>?</span>
+      <details><summary>Answer</summary><p><code>pre[3] - pre[1]</code> \( = 10 - 2 = 8 \). Check: \( 7 + 1 = 8 \).</p></details></li>
+    <li><span class="tr" data-ar="لديك 4 أصفار وتضيف 5 إلى المواضع 2 إلى 3. أيّ صندوقين في d يتغيّران؟">You have 4 zeros and add 5 to positions 2 to 3. Which two boxes of <code>d</code> change?</span>
+      <details><summary>Answer</summary><p><code>d[2] += 5</code> and <code>d[4] -= 5</code>. The running sum then gives 0 5 5 0.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -135,6 +293,6 @@ int main() {
     <li><a href="https://cses.fi/problemset/task/1646">CSES: Static Range Sum Queries</a> — exactly the first program on this page. Submit it there.</li>
     <li><a href="https://usaco.guide/silver/prefix-sums">USACO Guide: Prefix Sums</a> — clear text, with the 2D picture.</li>
     <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — search the channel for "prefix sum" (lessons by Mostafa Saad).</li>
-    <li><a href="https://codeforces.com/blog/entry/88474">Codeforces blog: prefix sums and difference array</a> — a well-liked video lesson on both ideas.</li>
+    <li><a href="https://codeforces.com/blog/entry/88474">Video about prefix sums, difference array and the power of half-closed intervals</a> — a well-liked video lesson on both ideas. It counts positions from 0; the idea is the same.</li>
   </ul>
 </section>

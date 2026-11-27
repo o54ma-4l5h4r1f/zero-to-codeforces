@@ -1,4 +1,4 @@
-<p class="idea"><span class="tr" data-ar="اقسم منطقة البحث إلى نصفين مرة بعد مرة. حوالي 30 خطوة تكفي للبحث بين مليار رقم.">Cut the search area in half again and again. About 30 steps are enough for a billion numbers.</span></p>
+<p class="idea"><span class="tr" data-ar="اقسم منطقة البحث إلى نصفين مرة بعد مرة. حوالي 30 خطوة تكفي للبحث بين مليار رقم.">Cut the search area in half again and again. About 30 steps are enough for a billion numbers.</span> <button type="button" class="why" data-why="halving-log">why?</button></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
@@ -39,13 +39,39 @@
     </table>
     <p><span class="tr" data-ar="في المصفوفة المرتّبة تأتي كل إجابات «لا» أولًا، ثم كل إجابات «نعم». نحن نبحث عن أول «نعم».">In a sorted array all the "no" answers come first, then all the "yes" answers. We look for the <b>first yes</b>.</span></p>
     <p>Keep two positions. <code>lo</code> always stands on a "no". <code>hi</code> always stands on a "yes". Look at the middle and move one of them.</p>
-    <table>
-      <tr><th>step</th><th>lo (a "no")</th><th>hi (a "yes")</th><th>mid</th><th>a[mid] &gt;= 7 ?</th><th>what we do</th></tr>
-      <tr><td>1</td><td>-1</td><td>7</td><td>3</td><td>yes</td><td>hi = 3</td></tr>
-      <tr><td>2</td><td>-1</td><td>3</td><td>1</td><td>no</td><td>lo = 1</td></tr>
-      <tr><td>3</td><td>1</td><td>3</td><td>2</td><td>no</td><td>lo = 2</td></tr>
-      <tr><td>end</td><td>2</td><td class="hi">3</td><td colspan="3">lo and hi are neighbours → the answer is hi = 3</td></tr>
-    </table>
+    <figure class="viz" data-viz="stepper" data-gen="bs-first-yes" aria-label="Step by step: binary search for the first number that is 7 or more in the array 1 3 4 7 8 9 12, with the pointers lo, hi and mid.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"a","label":"a","values":[1,3,4,7,8,9,12]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"no":"a \"no\"","yes":"a \"yes\"","active":"mid: we ask here"},
+  "code": ["int lo = -1, hi = 7;","while (hi - lo > 1) {","    int mid = lo + (hi - lo) / 2;","    if (a[mid] >= 7) hi = mid;","    else lo = mid;","}","// the answer is hi"],
+  "steps": [
+    {"line":1,"a":{"states":{},"pointers":{"lo":-1,"hi":7,"mid":null}},"v":{"items":[["mid",""],["a[mid]",""],["a[mid] >= 7 ?",""]]}},
+    {"line":3,"a":{"states":{"3":"active"},"pointers":{"lo":-1,"hi":7,"mid":3}},"v":{"items":[["mid",3],["a[mid]",7],["a[mid] >= 7 ?","yes"]]}},
+    {"line":4,"a":{"states":{"3":"yes","4":"yes","5":"yes","6":"yes"},"pointers":{"lo":-1,"hi":3,"mid":null}},"v":{"items":[["mid",""],["a[mid]",""],["a[mid] >= 7 ?",""]]}},
+    {"line":3,"a":{"states":{"1":"active","3":"yes","4":"yes","5":"yes","6":"yes"},"pointers":{"lo":-1,"hi":3,"mid":1}},"v":{"items":[["mid",1],["a[mid]",3],["a[mid] >= 7 ?","no"]]}},
+    {"line":5,"a":{"states":{"0":"no","1":"no","3":"yes","4":"yes","5":"yes","6":"yes"},"pointers":{"lo":1,"hi":3,"mid":null}},"v":{"items":[["mid",""],["a[mid]",""],["a[mid] >= 7 ?",""]]}},
+    {"line":3,"a":{"states":{"0":"no","1":"no","2":"active","3":"yes","4":"yes","5":"yes","6":"yes"},"pointers":{"lo":1,"hi":3,"mid":2}},"v":{"items":[["mid",2],["a[mid]",4],["a[mid] >= 7 ?","no"]]}},
+    {"line":5,"a":{"states":{"0":"no","1":"no","2":"no","3":"yes","4":"yes","5":"yes","6":"yes"},"pointers":{"lo":2,"hi":3,"mid":null}},"v":{"items":[["mid",""],["a[mid]",""],["a[mid] >= 7 ?",""]]}},
+    {"line":7,"a":{"states":{"0":"no","1":"no","2":"no","3":"yes","4":"yes","5":"yes","6":"yes"},"pointers":{"lo":2,"hi":3,"mid":null}},"v":{"items":[["mid",""],["a[mid]",""],["a[mid] >= 7 ?",""]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li><span class="tr" data-ar="البداية: lo = -1 و hi = 7 يقفان خارج المصفوفة بخطوة واحدة من كل جهة.">Start. <code>lo = -1</code> and <code>hi = 7</code> stand one step outside the array.</span></li>
+        <li>The middle is index 3. <code>a[3]</code> is 7, so the answer here is "yes".</li>
+        <li><span class="tr" data-ar="الإجابة «نعم»، فننقل hi إلى 3. كل ما على يمينه «نعم» أيضًا.">A "yes": move <code>hi</code> to 3. Everything to its right is also a "yes".</span></li>
+        <li>The middle of -1 and 3 is index 1. <code>a[1]</code> is 3, so the answer is "no".</li>
+        <li><span class="tr" data-ar="الإجابة «لا»، فننقل lo إلى 1. كل ما على يساره «لا» أيضًا.">A "no": move <code>lo</code> to 1. Everything to its left is also a "no".</span></li>
+        <li>The middle of 1 and 3 is index 2. <code>a[2]</code> is 4: "no" again.</li>
+        <li>Move <code>lo</code> to 2. Only one step is left between <code>lo</code> and <code>hi</code>.</li>
+        <li><span class="tr" data-ar="lo و hi متجاوران الآن، فنتوقّف. أول «نعم» موجودة عند hi = 3.">Now <code>lo</code> and <code>hi</code> are neighbours, so we stop. The first "yes" is at <code>hi = 3</code>.</span></li>
+      </ol>
+      <figcaption>Press <b>Next</b>. Three questions were enough for 7 numbers.</figcaption>
+    </figure>
     <p class="note">Why start at -1 and 7? They are one step outside the array. We <b>pretend</b> that -1 is a "no" and 7 is a "yes". The code never reads <code>a[-1]</code> or <code>a[7]</code>, because <code>mid</code> is always between them.</p>
   </div>
 
@@ -99,6 +125,39 @@ int j = upper_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i
     <li><b>The idea.</b> <span class="tr" data-ar="زيادة الوقت لا تُنقص عدد القطع أبدًا. لذلك تكون الإجابات: لا لا لا نعم نعم نعم.">More time never makes fewer items. So the answers are no no no yes yes yes.</span> We search for the first yes. <code>ok(T)</code> adds the items of all machines and checks:
       \[ \lfloor T / t_1 \rfloor + \lfloor T / t_2 \rfloor + \dots + \lfloor T / t_n \rfloor \ge k \]
       <p>Start: <code>lo = 0</code> is a "no", because 0 seconds make 0 items. For <code>hi</code>, let the fastest machine work alone. It needs \( k \cdot \min(t_i) \) seconds. That is a "yes".</p>
+      <p>Watch the search on the small example: times 3, 2, 5 and \( k = 7 \). Here <code>hi</code> starts at \( 7 \cdot 2 = 14 \).</p>
+      <figure class="viz" data-viz="stepper" data-gen="bs-answer" aria-label="Step by step: binary search on a number line of times from 0 to 14 seconds. It finds the smallest time in which machines with times 3, 2 and 5 make 7 items.">
+        <script type="application/json">
+{
+  "scenes": [
+    {"type":"numberline","id":"T","min":0,"max":14,"step":1},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"no":"not enough time","yes":"enough time","active":"mid: we test this time"},
+  "steps": [
+    {"T":{"states":{"0":"no","14":"yes"},"range":[0,14],"pointers":{"lo":0,"hi":14,"mid":null},"notes":{"0":"no","14":"yes"}},"v":{"items":[["T",""],["items made",""],["at least 7 ?",""]]}},
+    {"T":{"states":{"0":"no","7":"active","14":"yes"},"range":[0,14],"pointers":{"lo":0,"hi":14,"mid":7},"notes":{"0":"no","14":"yes"}},"v":{"items":[["T",7],["items made","2 + 3 + 1 = 6"],["at least 7 ?","no"]]}},
+    {"T":{"states":{"0":"no","1":"no","2":"no","3":"no","4":"no","5":"no","6":"no","7":"no","14":"yes"},"range":[7,14],"pointers":{"lo":7,"hi":14,"mid":null},"notes":{"0":"no","7":"no","14":"yes"}},"v":{"items":[["T",""],["items made",""],["at least 7 ?",""]]}},
+    {"T":{"states":{"0":"no","1":"no","2":"no","3":"no","4":"no","5":"no","6":"no","7":"no","10":"active","14":"yes"},"range":[7,14],"pointers":{"lo":7,"hi":14,"mid":10},"notes":{"0":"no","7":"no","14":"yes"}},"v":{"items":[["T",10],["items made","3 + 5 + 2 = 10"],["at least 7 ?","yes"]]}},
+    {"T":{"states":{"0":"no","1":"no","2":"no","3":"no","4":"no","5":"no","6":"no","7":"no","10":"yes","11":"yes","12":"yes","13":"yes","14":"yes"},"range":[7,10],"pointers":{"lo":7,"hi":10,"mid":null},"notes":{"0":"no","7":"no","10":"yes","14":"yes"}},"v":{"items":[["T",""],["items made",""],["at least 7 ?",""]]}},
+    {"T":{"states":{"0":"no","1":"no","2":"no","3":"no","4":"no","5":"no","6":"no","7":"no","8":"active","10":"yes","11":"yes","12":"yes","13":"yes","14":"yes"},"range":[7,10],"pointers":{"lo":7,"hi":10,"mid":8},"notes":{"0":"no","7":"no","10":"yes","14":"yes"}},"v":{"items":[["T",8],["items made","2 + 4 + 1 = 7"],["at least 7 ?","yes"]]}},
+    {"T":{"states":{"0":"no","1":"no","2":"no","3":"no","4":"no","5":"no","6":"no","7":"no","8":"yes","9":"yes","10":"yes","11":"yes","12":"yes","13":"yes","14":"yes"},"range":[7,8],"pointers":{"lo":7,"hi":8,"mid":null},"notes":{"0":"no","7":"no","8":"yes","10":"yes","14":"yes"}},"v":{"items":[["T",""],["items made",""],["at least 7 ?",""]]}},
+    {"T":{"states":{"0":"no","1":"no","2":"no","3":"no","4":"no","5":"no","6":"no","7":"no","8":"yes","9":"yes","10":"yes","11":"yes","12":"yes","13":"yes","14":"yes"},"range":[7,8],"pointers":{"lo":7,"hi":8,"mid":null},"notes":{"0":"no","7":"no","8":"yes","10":"yes","14":"yes"}},"v":{"items":[["T",""],["items made",""],["at least 7 ?",""]]}}
+  ]
+}
+</script>
+        <ol class="viz-steps">
+          <li>At the start, 0 seconds is a "no". 14 seconds is a "yes": the fastest machine alone makes 7 items.</li>
+          <li>Test the middle, \( T = 7 \). The machines make \( 2 + 3 + 1 = 6 \) items: not enough.</li>
+          <li><span class="tr" data-ar="7 ثوانٍ لا تكفي، فننقل lo إلى 7. كل وقت أصغر من 7 لا يكفي أيضًا.">7 is a "no": move <code>lo</code> to 7. Every smaller time is also a "no".</span></li>
+          <li>Test \( T = 10 \). The machines make \( 3 + 5 + 2 = 10 \) items: enough.</li>
+          <li><span class="tr" data-ar="10 ثوانٍ تكفي، فننقل hi إلى 10. كل وقت أكبر من 10 يكفي أيضًا.">10 is a "yes": move <code>hi</code> to 10. Every bigger time is also a "yes".</span></li>
+          <li>Test \( T = 8 \). The machines make \( 2 + 4 + 1 = 7 \) items: enough.</li>
+          <li>8 is a "yes": move <code>hi</code> to 8.</li>
+          <li><span class="tr" data-ar="lo = 7 و hi = 8 متجاوران، فنتوقّف. أصغر وقت يكفي هو 8 ثوانٍ.">Now <code>lo = 7</code> and <code>hi = 8</code> are neighbours, so we stop. The smallest time that works is 8.</span></li>
+        </ol>
+        <figcaption>We tested only 3 times out of 15. With \( 10^{18} \) possible times, about 60 tests are enough.</figcaption>
+      </figure>
     </li>
     <li><b>Why is it fast enough?</b> The biggest <code>hi</code> is \( 10^9 \cdot 10^9 = 10^{18} \). It fits in <code>long long</code>. Cutting \( 10^{18} \) in half takes about 60 steps. Each step runs <code>ok</code>, which is one loop over \( n \) machines.
       \[ 60 \cdot 2 \cdot 10^5 = 1.2 \cdot 10^7 \text{ steps} \]
@@ -160,7 +219,7 @@ int main() {
   <h2>Common mistakes</h2>
   <ul>
     <li>Wrong start. <code>lo</code> must really be a "no" and <code>hi</code> must really be a "yes". Not sure? Make <code>hi</code> bigger.</li>
-    <li><code>(lo + hi) / 2</code> can <span class="term" data-t="overflow">overflow</span> when both are big. Write <code>lo + (hi - lo) / 2</code> and use <code>long long</code>.</li>
+    <li><code>(lo + hi) / 2</code> can <span class="term" data-t="overflow">overflow</span> when both are big. <button type="button" class="why" data-why="mid-overflow">why?</button> Write <code>lo + (hi - lo) / 2</code> and use <code>long long</code>.</li>
     <li>You return the wrong end. For the first yes return <code>hi</code>. For the last yes return <code>lo</code>.</li>
   </ul>
 </section>

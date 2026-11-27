@@ -1,0 +1,241 @@
+<p class="idea"><span class="tr" data-ar="لا تبدأ بالكود. اقرأ الحدود، ثم اسأل: ماذا يُطلب؟ ثم اختر الأداة التي تناسب الاثنين.">Do not start with code. Read the limits, ask what is wanted, then choose the tool.</span></p>
+
+<p>Come back to this page before every problem, and when you are stuck. It is a <span class="term" data-t="checklist">checklist</span>, not a lesson.</p>
+<p class="note"><span class="tr" data-ar="كل سطر في الجداول يحمل رقم مرحلة. إذا كنت في المرحلة 1، تجاهل الأسطر ذات الأرقام الأكبر.">Every table row has a stage number. In Stage 1? Skip the rows with a bigger number.</span> Stage 0 is "Start here", Stage 3 is the last stage of tools.</p>
+
+<section class="worked">
+  <h2>The thinking routine</h2>
+  <p>Run these 7 steps on every problem, in this order. Write the answer of each step on paper.</p>
+  <ol class="steps">
+    <li><b>Read the limits first.</b> Ask: how big is \( n \)? How big are the values? Write: "\( n \le 2 \cdot 10^5 \), so \( O(n \log n) \) at most". The table is in <a href="#complexity">Limits → speed</a>.</li>
+    <li><b>Say the task in one sentence.</b> Ask: what do I get, and what do I print? Write that sentence in your own words. Help: <a href="#read-a-problem">How to read a problem</a>.</li>
+    <li><b>Do the samples by hand.</b> Ask: do I get the same output as the statement? If not, you misread something. Read again.</li>
+    <li><b>Name the kind of answer.</b> Is it yes / no? A number: a count, a minimum or a maximum? Something you must build? Answers to many queries? Write the kind.</li>
+    <li><b>Try the slowest correct idea first.</b> This is <span class="term" data-t="brute-force">brute force</span>. Count its steps for the biggest test. <span class="tr" data-ar="إذا كان عدد الخطوات أقل من حوالي 10^8، توقّف واكتبه. لا تحتاج أداة أخرى.">Below about \( 10^8 \) steps? Stop and code it. You need nothing more.</span></li>
+    <li><b>Too slow? Find what is repeated.</b> <span class="tr" data-ar="ابحث عن العمل الذي يعيده الحل البطيء مرة بعد مرة. ثم اختر الأداة التي تزيل هذا التكرار.">Ask: which work does the slow idea do again and again?</span> Pick the tool that removes it. The same range sum again → prefix sums. The same search in one array again → sort, then binary search. The same smaller problem again → DP. Write: "I repeat X, so I use Y".</li>
+    <li><b>Before you submit.</b> Test the edge cases: \( n = 1 \), all values equal, the biggest values. Ask: can a sum or a product pass \( 2 \cdot 10^9 \)? Then use <code>long long</code> (<a href="#overflow">int or long long?</a>).</li>
+  </ol>
+</section>
+
+<section>
+  <h2>1 · The limits give the allowed cost</h2>
+  <p>A computer does about \( 10^8 \) simple steps in one second. This is <span class="tr" data-ar="هذا تقدير آمن، وليس قانونًا دقيقًا.">a safe estimate, not an exact law.</span> So the biggest \( n \) tells you how slow your idea may be.</p>
+  <table>
+    <tr><th>Stage</th><th>You see</th><th>Allowed cost</th><th>Likely tool</th><th>Check this first</th></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>\( n \le 10 \)</td><td>\( n! \), all orders: \( 10! \approx 3.6 \cdot 10^6 \)</td><td>Try every order: <a href="#recursion">recursion</a> (Stage 3)</td><td>The order of the items matters.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>\( n \le 20 \)</td><td>\( 2^n \), all subsets: \( 2^{20} \approx 10^6 \)</td><td>Every subset with a mask: <a href="#bits">bits</a></td><td>Each item is "take it or not". Steps \( 2^n \cdot n \) stay under \( 10^8 \).</td></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>\( n \le 500 \)</td><td>\( n^3 \): \( 1.25 \cdot 10^8 \)</td><td>Three nested loops: <a href="#brute-force">brute force</a>; later DP</td><td>The inner loop does only a few simple steps.</td></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>\( n \le 5000 \)</td><td>\( n^2 \): \( 2.5 \cdot 10^7 \)</td><td>All pairs: <a href="#brute-force">brute force</a>; later DP</td><td>Each pair costs \( O(1) \) to check.</td></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>\( n \le 2 \cdot 10^5 \)</td><td>\( n \) or \( n \log n \): about \( 4 \cdot 10^6 \)</td><td>One loop, <a href="#greedy">greedy</a>; in Stage 2: sort, counting, prefix sums, two pointers, binary search</td><td>No loop inside a loop over all \( n \).</td></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>Values up to \( 10^9 \) or \( 10^{18} \), and you cannot loop to them</td><td>\( O(1) \), \( O(\log n) \) or \( O(\sqrt{n}) \)</td><td>A formula: <a href="#basic-math">basic math</a>; in Stage 2: \( \sqrt{n} \) loop, binary search on the answer, fast power</td><td>Products above \( 2 \cdot 10^9 \) need <code>long long</code>.</td></tr>
+    <tr><td><span class="eyebrow s0">0</span></td><td>"The sum of \( n \) over all test cases is at most \( 2 \cdot 10^5 \)"</td><td>Same as one big test with \( n = 2 \cdot 10^5 \)</td><td>Count the cost per test: <a href="#complexity">Limits → speed</a></td><td><span class="tr" data-ar="لا تمسح مصفوفة بحجمها الأقصى في كل اختبار. امسح فقط أول n خانة.">Never clear a full-size array in each test. Clear only the first \( n \) cells.</span></td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Small values: letters a–z, or \( a_i \le 10^6 \)</td><td>An array indexed by the value</td><td><a href="#counting">Counting</a> array; many "is it prime?" → sieve (<a href="#number-theory">number theory</a>)</td><td>Values are \( \ge 0 \) and fit in an array.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>\( k \le 30 \), or values below \( 2^{30} \), with AND / OR / XOR</td><td>\( 30 \cdot n \)</td><td>Look at each bit alone: <a href="#bits">bits</a></td><td>The bits do not affect each other in the operation.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>2 · Signal → tool</h2>
+  <p>A <span class="term" data-t="signal">signal</span> is a word or a shape in the statement that points to a tool. <span class="tr" data-ar="العلامة تقترح أداة فقط. تأكّد دائمًا من الشرط في العمود الأخير قبل أن تستخدمها.">A signal only suggests a tool. Always test the condition in the last column first.</span></p>
+  <table>
+    <tr><th>Stage</th><th>You see</th><th>Likely tool</th><th>Check this first</th></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>"First do this, then this, repeat until…"; small limits</td><td><a href="#simulation">Simulation</a></td><td>Total steps of the process stay under \( 10^8 \).</td></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>You can list every possibility: every element, pair or answer value</td><td><a href="#brute-force">Brute force</a></td><td>Number of possibilities \( \times \) cost of one check \( \le 10^8 \).</td></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>Even / odd, divisible, digits, "at least how many boxes"</td><td><a href="#basic-math">Basic math</a>: parity, rounding up</td><td>Try the formula on every sample.</td></tr>
+    <tr><td><span class="eyebrow s1">1</span></td><td>Min or max number of items; "take the biggest / smallest first" looks right</td><td><a href="#greedy">Greedy</a></td><td><span class="tr" data-ar="حاول أن تكسر الفكرة بمثال صغير. إذا وجدت مثالًا مضادًا، فالأداة ليست الجشع.">Try to break it on a tiny example. A counterexample means: not greedy.</span></td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>"Did I see this before?", "how many distinct values?"</td><td><code>set</code>: <a href="#stl-containers">map, set, stack, queue</a></td><td>Values arrive one by one, and you ask between them.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Brackets, "undo", "the last thing still open"</td><td><code>stack</code>: <a href="#stl-containers">map, set, stack, queue</a></td><td>You always need the newest item first.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>"How many times…", "the most common…", "appears once"</td><td><a href="#counting">Counting</a>: <code>cnt</code> array or <code>map</code></td><td>Only how often a value appears matters, not where.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Choose a group, pairs or "any k elements"; smallest difference</td><td><a href="#sorting">Sorting</a> first</td><td>The answer does not depend on the original positions.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Many queries "sum from \( l \) to \( r \)"</td><td><a href="#prefix-sums">Prefix sums</a></td><td>The array does not change between queries.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Many updates "add \( d \) to all of \( l..r \)", read once at the end</td><td>Difference array: <a href="#prefix-sums">prefix sums</a></td><td>All updates come before all reads.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Longest / shortest subarray with sum \( \le S \), or at most \( k \) distinct</td><td><a href="#two-pointers">Two pointers</a></td><td><span class="tr" data-ar="عندما تكبر النافذة، يصبح الشرط أصعب فقط، ولا يعود صحيحًا. مثلًا: كل القيم ليست سالبة.">When the window grows, the condition can only break, never come back. For sums: no negative values.</span></td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>A sorted array; "find \( x \)" or "how many are \( \le x \)"</td><td><a href="#binary-search">Binary search</a>: <code>lower_bound</code>, <code>upper_bound</code></td><td>The array is sorted.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>"The minimum (maximum) value that still works"; the answer can be \( 10^9 \)</td><td><a href="#binary-search">Binary search on the answer</a></td><td><span class="tr" data-ar="إذا نجحت القيمة x، فكل قيمة أكبر منها تنجح أيضًا.">If \( x \) works, every bigger value also works.</span></td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Divisor, multiple, prime, GCD, LCM</td><td><a href="#number-theory">Number theory</a>: <code>gcd</code>, divisors up to \( \sqrt{n} \), sieve</td><td>Many numbers up to \( 10^7 \) → sieve. One big number → \( \sqrt{n} \) loop.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>"Print the answer modulo \( 10^9+7 \)"; \( a^b \) with a huge \( b \)</td><td><a href="#modular">Modular arithmetic</a>, fast power</td><td>Take the mod after every <code>+</code> and <code>*</code>.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>AND, OR, XOR; powers of two; choose a subset with \( n \le 20 \)</td><td><a href="#bits">Bits</a></td><td>See the limit rows above.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>"Print any of them", "build an array such that…", "or print −1"</td><td><a href="#constructive">Constructive</a></td><td>Solve \( n = 1 \) to \( 6 \) by hand first. Find when it is impossible.</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>"Print all…", "try all…" and tiny \( n \); a choice for every item</td><td><a href="#recursion">Recursion</a>, backtracking</td><td>The number of cases fits (see the limit rows).</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>Count the ways, or min / max over many choices; greedy fails</td><td><a href="#dp">DP</a></td><td>States \( \times \) moves per state \( \le 10^8 \).</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>Cities and roads, friends, "can I reach?", "how many groups?", a grid with walls</td><td><a href="#graphs-bfs-dfs">BFS / DFS</a></td><td>"Fewest moves" needs BFS, and every move must cost the same.</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>Roads with a length or price; "the cheapest path"</td><td><a href="#dijkstra">Dijkstra</a></td><td>No edge weight is negative.</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>\( n \) vertices and \( n - 1 \) edges, connected; "parent of \( i \)", subtree, root, leaf</td><td><a href="#trees">Trees</a></td><td>There is exactly one path between two vertices.</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>Groups join step by step; "are \( a \) and \( b \) together now?"</td><td><a href="#dsu">DSU</a></td><td>Nothing is ever removed or split.</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>"\( a \) must be done before \( b \)"; print an order or say none exists</td><td><a href="#toposort">Topological sort</a></td><td>The edges are arrows (directed).</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>Choose \( k \) of \( n \), the order does not matter; "how many ways"</td><td>C(n, k): <a href="#combinatorics">combinatorics</a></td><td>Big \( n \) → precompute factorials modulo \( 10^9+7 \).</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>"This is an interactive problem"; "at most 20 queries"</td><td><a href="#interactive">Interactive</a>, often binary search</td><td>Flush after every query. Count: \( 2^{20} \approx 10^6 \) values fit in 20 halvings.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>3 · Pairs people mix up</h2>
+  <p>Two tools look alike? Ask the deciding question.</p>
+  <table>
+    <tr><th>Stage</th><th>Pair</th><th>Ask yourself</th><th>Yes →</th><th>No →</th></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>Greedy or DP</td><td>Can a good choice now block a better answer later? Search a tiny counterexample.</td><td>DP</td><td>Greedy</td></tr>
+    <tr><td><span class="eyebrow s3">3</span></td><td>BFS or Dijkstra</td><td>Does every move cost the same?</td><td>BFS</td><td>Dijkstra (weights \( \ge 0 \))</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Two pointers or binary search</td><td>Do you look for one best window, where both ends only move right?</td><td>Two pointers</td><td>Binary search: one answer per query, or a yes/no that flips once</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Prefix sums or two pointers</td><td>Does the statement give you \( l \) and \( r \)?</td><td>Prefix sums</td><td>You must find \( l \) and \( r \): two pointers</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td>Sort or keep the order</td><td>Does the answer change when you shuffle the input?</td><td>Do not sort. Or sort pairs (value, index).</td><td>Sort freely.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td><code>set</code> or sort once</td><td>Do new values arrive while you answer questions?</td><td><code>set</code></td><td>Sort once. It is faster and simpler.</td></tr>
+    <tr><td><span class="eyebrow s2">2</span></td><td><code>map</code> or array</td><td>Are all values small (up to about \( 10^6 \)) and \( \ge 0 \)?</td><td>Array <code>cnt</code></td><td><code>map</code> (big values, negatives, strings)</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>4 · The flowchart</h2>
+  <p><span class="tr" data-ar="هذا المخطط يضيّق الاختيار إلى أداتين أو ثلاث. لا يعطيك جوابًا واحدًا مضمونًا.">The chart narrows your choice to 2 or 3 tools. It does not promise one answer.</span></p>
+  <div class="tablewrap">
+<svg viewBox="0 0 360 676" width="360" role="img" aria-label="Flowchart. Step 1: read the limits. n up to 20 means try all; n up to 500 means three loops; n up to 5000 means two loops; n up to 2 times 10^5 means n log n; values up to 10^18 mean log n, square root or a formula. Step 2: what is asked. Yes or no: math rule, brute force, simulation. Min or max: greedy, DP, binary search on the answer. Count the ways: DP, nCr, counting. Build an answer: constructive, greedy, sort. Many queries: prefix sums, sort and binary search. Roads, groups, grid: BFS or DFS, Dijkstra, DSU. Step 3: keep the 2 or 3 tools that fit both, and test them on the samples.">
+<rect x="8" y="10" width="344" height="32" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+<text x="180" y="31" text-anchor="middle" font-weight="700">1 · What are the limits?</text><rect x="44" y="54" width="308" height="28" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="73" font-size="12.5">n ≤ 20  →  try all (2^n or n!)</text><rect x="44" y="90" width="308" height="28" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="109" font-size="12.5">n ≤ 500  →  three loops, n³</text><rect x="44" y="126" width="308" height="28" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="145" font-size="12.5">n ≤ 5000  →  two loops, n²</text><rect x="44" y="162" width="308" height="28" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="181" font-size="12.5">n ≤ 2·10^5  →  n or n·log n</text><rect x="44" y="198" width="308" height="28" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="217" font-size="12.5">values to 10^18  →  formula, log n, √n</text><path d="M24 42 V212" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 68 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 104 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 140 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 176 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 212 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M180 230 V248" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M174 244 L180 252 L186 244" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<rect x="8" y="256" width="344" height="32" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+<text x="180" y="277" text-anchor="middle" font-weight="700">2 · What is asked?</text><rect x="44" y="300" width="308" height="42" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="317" font-weight="700" font-size="12.5">Yes / no, or one number</text><text x="54" y="334" font-size="12" fill="var(--muted)">math rule · brute force · simulation</text><rect x="44" y="350" width="308" height="42" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="367" font-weight="700" font-size="12.5">The min or max of something</text><text x="54" y="384" font-size="12" fill="var(--muted)">greedy · DP · binary search on answer</text><rect x="44" y="400" width="308" height="42" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="417" font-weight="700" font-size="12.5">Count the ways (often mod)</text><text x="54" y="434" font-size="12" fill="var(--muted)">DP · nCr · counting</text><rect x="44" y="450" width="308" height="42" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="467" font-weight="700" font-size="12.5">Build any valid answer</text><text x="54" y="484" font-size="12" fill="var(--muted)">constructive · greedy · sort first</text><rect x="44" y="500" width="308" height="42" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="517" font-weight="700" font-size="12.5">Many queries on one array</text><text x="54" y="534" font-size="12" fill="var(--muted)">prefix sums · sort + binary search</text><rect x="44" y="550" width="308" height="42" rx="6" fill="var(--surface)" stroke="var(--line)"/>
+<text x="54" y="567" font-weight="700" font-size="12.5">Roads, groups, a grid</text><text x="54" y="584" font-size="12" fill="var(--muted)">BFS / DFS · Dijkstra · DSU</text><path d="M24 288 V571" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 321 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 371 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 421 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 471 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 521 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M24 571 H44" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M180 596 V614" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<path d="M174 610 L180 618 L186 610" fill="none" stroke="currentColor" stroke-width="1.5"/>
+<rect x="8" y="622" width="344" height="46" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+<text x="180" y="641" text-anchor="middle" font-weight="700">3 · Keep the 2–3 tools that fit both</text><text x="180" y="659" text-anchor="middle" font-size="12">Test each one on the samples by hand.</text>
+</svg>
+
+  </div>
+  <p class="note">Each box in step 1 says how many steps are allowed. Each box in step 2 lists the usual tools for that kind of question.</p>
+</section>
+
+<section>
+  <h2>5 · When your first idea fails</h2>
+  <p>Stuck? Try these moves one by one. Each has a small example.</p>
+  <ul>
+    <li><b>Sort it.</b> The smallest difference between two numbers? After sorting, check only neighbours.</li>
+    <li><b>Think backwards.</b> Make \( x \) from 1 with "\( \times 2 \)" and "\( +1 \)"? Go back from \( x \): even → divide by 2, odd → subtract 1.</li>
+    <li><b>Fix one thing and loop over it.</b> Count triples \( i &lt; j &lt; k \)? Fix the middle \( j \). Count good \( i \) on its left and good \( k \) on its right.</li>
+    <li><b>Solve tiny cases by hand.</b> For \( n = 1, 2, 3, 4, 5 \) you get 1, 3, 6, 10, 15. The pattern is \( \frac{n(n+1)}{2} \).</li>
+    <li><b>Look for what never changes.</b> <span class="tr" data-ar="إذا كانت كل عملية تضيف 2 إلى عنصر، فزوجية المجموع لا تتغير أبدًا.">Each move adds 2 to one element? Then the parity of the sum never changes.</span> An odd sum can never reach 0. This is an <span class="term" data-t="invariant">invariant</span>.</li>
+    <li><b>Turn "find the best" into "can I do X?"</b> "The least time to finish" becomes "can I finish in time \( T \)?" If yes for \( T \), yes for every bigger \( T \): binary search on the answer.</li>
+    <li><b>Count the <span class="term" data-t="complement">complement</span>.</b> Pairs with different values = all pairs − pairs with equal values. All pairs: \( \frac{n(n-1)}{2} \).</li>
+    <li><b>Think about one element's <span class="term" data-t="contribution">contribution</span>.</b> The sum over all subarrays of [4, 5, 6]? The middle 5 is in 4 subarrays: [5], [4, 5], [5, 6], [4, 5, 6]. So it adds \( 4 \cdot 5 = 20 \).</li>
+    <li><b>Swap the order of the loops.</b> "For each number, find its divisors" is slow. "For each \( d \), visit its multiples \( d, 2d, 3d, \dots \)" costs about \( n \log n \).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6 · Then change the tool to fit</h2>
+  <p><span class="tr" data-ar="الشكل الذي تتعلمه في الدرس هو نقطة بداية. في المسألة الحقيقية تغيّر سطرًا أو فكرة واحدة.">The form in the lesson is a starting point. In a real problem you change one line or one idea.</span> Examples:</p>
+  <ul>
+    <li>Binary search finds the <b>first</b> \( x \) that works. The problem wants the <b>last</b> one? Flip the yes/no test.</li>
+    <li>BFS starts from one cell. The problem has many fires at the start? Put all of them in the queue first.</li>
+    <li>Prefix sums add values. The problem asks "how many good positions"? Write 1 on a good position, 0 on the others.</li>
+  </ul>
+  <p>Many tool lessons have a section "Change it to fit", right after "Three ways". It shows such changes, with the changed line of code. See <a href="#binary-search">Binary search</a>, <a href="#prefix-sums">Prefix sums</a>, <a href="#two-pointers">Two pointers</a>, <a href="#graphs-bfs-dfs">BFS / DFS</a> and <a href="#dp">DP</a>.</p>
+</section>
+
+<section class="check">
+  <h2>Which tool? Drills</h2>
+  <p><span class="tr" data-ar="لكل مسألة: اقرأها، وقرّر الأداة، واكتب السبب. بعد ذلك فقط افتح الجواب.">For each problem: read it, decide the tool, and write why. Only then open the answer.</span> You do not need to solve it now. The order is mixed on purpose.</p>
+  <ol>
+    <li><span class="practice"><a class="cf" data-p="263A">Beautiful Matrix</a> <span class="r">800</span></span><br>A \( 5 \times 5 \) table has one 1. You may swap two neighbour rows or columns. Fewest moves to bring the 1 to the centre?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#simulation">simulation</a> with a small formula. <b>Signal:</b> a tiny fixed table and one thing to find. <b>Idea:</b> find the 1 at row \( r \), column \( c \); the answer is \( |r-3| + |c-3| \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1201C">Maximum Median</a> <span class="r">1400</span></span><br>\( n \) is odd. You may add 1 to any element, \( k \) times in total. Make the median as big as possible.
+      <details><summary>Answer</summary><p><b>Tool:</b> sort, then <a href="#binary-search">binary search on the answer</a>. <b>Signal:</b> "as big as possible", and a smaller median is always reachable too. <b>Idea:</b> for a guess \( x \), the cost is what the upper half needs to reach \( x \); check cost \( \le k \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1335C">Two Teams Composing</a> <span class="r">1100</span></span><br>Students have skills. Team 1: all skills different. Team 2: all skills equal. Both teams have the same size. Biggest size?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#counting">counting</a>. <b>Signal:</b> only how many times each skill appears matters. <b>Idea:</b> with \( d \) distinct skills and top frequency \( f \), the answer is \( \max(\min(d-1, f), \min(d, f-1)) \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1829E">The Lakes</a> <span class="r">1100</span></span><br>A grid of depths. Cells with depth above 0 that touch by a side form one lake. Find the biggest total depth of a lake.
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#graphs-bfs-dfs">DFS / BFS on a grid</a>. <b>Signal:</b> a grid, "touch by a side", groups of cells. <b>Idea:</b> from each unvisited water cell, run DFS and add up the depths.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1097B">Petr and a Combination Lock</a> <span class="r">1200</span></span><br>A lock gets \( n \le 15 \) turns. Each turn goes left or right. Can the pointer end at zero?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#bits">bits</a>: try every subset with a mask. <b>Signal:</b> \( n \le 15 \) and two choices per item: \( 2^{15} = 32768 \) cases. <b>Idea:</b> for each mask add or subtract each angle; check the total modulo 360.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="455A">Boredom</a> <span class="r">1500</span></span><br>Pick a number \( x \) and get \( x \) points. Then every \( x-1 \) and \( x+1 \) is deleted. Most points?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#counting">counting</a> + <a href="#dp">DP</a>. <b>Signal:</b> a maximum, and one choice blocks its neighbours; "take the biggest" fails. <b>Idea:</b> for each value \( v \): skip it, or take all copies and skip \( v-1 \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1328A">Divisibility Problem</a> <span class="r">800</span></span><br>Add 1 to \( a \) again and again until \( b \) divides it. How many moves? \( a, b \le 10^9 \).
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#basic-math">basic math</a> with mod. <b>Signal:</b> values up to \( 10^9 \) and many tests; a loop can run \( 10^9 \) times. <b>Idea:</b> 0 if \( a \bmod b = 0 \), else \( b - a \bmod b \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="279B">Books</a> <span class="r">1400</span></span><br>Books in a row, each needs \( a_i \) minutes. Start at any book and read the next ones in order. Most books in \( t \) minutes?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#two-pointers">two pointers</a>. <b>Signal:</b> the longest block of neighbours with sum \( \le t \); times are positive. <b>Idea:</b> move <code>r</code> right; while the sum is above \( t \), move <code>l</code> right.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="510C">Fox And Names</a> <span class="r">1600</span></span><br>Find an order of the 26 letters so that a given list of names is sorted. Or say "Impossible".
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#toposort">topological sort</a>. <b>Signal:</b> rules "letter a comes before letter b"; print an order or say none exists. <b>Idea:</b> two neighbour names give one rule at their first different letter.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="160A">Twins</a> <span class="r">900</span></span><br>Coins with values. Take the fewest coins so that your sum is strictly bigger than the sum you leave.
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#sorting">sorting</a> + <a href="#greedy">greedy</a>. <b>Signal:</b> "fewest", and the order of the coins does not matter. <b>Idea:</b> sort from the biggest; take coins until your sum is bigger than the rest.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="433B">Kuriyama Mirai's Stones</a> <span class="r">1200</span></span><br>An array and many questions: the sum from \( l \) to \( r \) of the array, or of the sorted array.
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#prefix-sums">prefix sums</a>. <b>Signal:</b> many range-sum queries; the array never changes. <b>Idea:</b> one prefix array for the array, one for a sorted copy; use <code>long long</code>.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="679A">Bear and Prime 100</a> <span class="r">1400</span></span><br>A hidden number from 2 to 100. Ask at most 20 times "is \( d \) a divisor?". Then say prime or composite.
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#interactive">interactive</a> + divisors. <b>Signal:</b> a hidden number and a query limit. <b>Idea:</b> ask the 15 primes up to 47 and also 4, 9, 25, 49; two "yes" answers mean composite.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1343B">Balanced Array</a> <span class="r">800</span></span><br>\( n \) is even. Build \( n \) different positive numbers: first half even, second half odd, equal sums. Or say NO.
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#constructive">constructive</a>. <b>Signal:</b> "build an array", any answer, or NO. <b>Idea:</b> if \( n/2 \) is odd, the odd half has an odd sum: NO. Else write 2, 4, 6, … and 1, 3, 5, …, then fix the last odd number.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="520B">Two Buttons</a> <span class="r">1400</span></span><br>A screen shows \( n \). Red button: double it. Blue button: subtract 1. Fewest clicks to reach \( m \)? \( n, m \le 10^4 \).
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#graphs-bfs-dfs">BFS</a> on numbers. <b>Signal:</b> "fewest clicks", every click costs 1, few possible values. <b>Idea:</b> each number is a vertex; BFS from \( n \). Thinking backwards from \( m \) also works.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="230B">T-primes</a> <span class="r">1300</span></span><br>A number is "T-prime" if it has exactly three divisors. Check up to \( 10^5 \) numbers, each up to \( 10^{12} \).
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#number-theory">sieve</a>. <b>Signal:</b> divisors, primes, and many numbers. <b>Idea:</b> only \( p^2 \) with a prime \( p \) has three divisors; sieve up to \( 10^6 \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="158B">Taxi</a> <span class="r">1100</span></span><br>Groups of 1 to 4 children. A taxi takes at most 4 children, and a group rides together. Fewest taxis?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#greedy">greedy</a> with counts. <b>Signal:</b> "fewest", and the best match is clear. <b>Idea:</b> count groups by size; a 4 alone, a 3 with a 1, two 2s together, then the 1s.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1167C">News Distribution</a> <span class="r">1400</span></span><br>Users are in groups. News spreads between users who share a group. For each user: how many users get the news if this user starts?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#dsu">DSU</a> (DFS on components also works). <b>Signal:</b> groups join and never split; the question is the size of a group. <b>Idea:</b> join every member of a group to its first member; print the size of each user's set.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="476B">Dreamoon and WiFi</a> <span class="r">1300</span></span><br>Commands + and − move you left and right. Some were lost; each lost one is + or − with chance 1/2. Chance to end at the right place?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#brute-force">brute force</a>, or <a href="#recursion">recursion</a>: try every case. <b>Signal:</b> at most 10 lost commands, so at most \( 2^{10} = 1024 \) cases. <b>Idea:</b> count the cases that end right, then divide by the number of cases.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="706B">Interesting drink</a> <span class="r">1100</span></span><br>Shops sell a drink, each at its own price. On each of many days you have \( m \) coins. In how many shops can you buy?
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#sorting">sort</a>, then <a href="#binary-search">binary search</a>. <b>Signal:</b> many queries "how many are \( \le m \)", and the shop order does not matter. <b>Idea:</b> sort the prices; the answer is <code>upper_bound</code> of \( m \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="580C">Kefa and Park</a> <span class="r">1500</span></span><br>A tree with root 1. Some vertices have cats. Count the leaves whose path from the root never has more than \( m \) cats in a row.
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#trees">trees</a>: DFS from the root. <b>Signal:</b> root, leaves, a path from the root. <b>Idea:</b> the DFS carries the current run of cats; stop when it is above \( m \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="131C">The World is a Theatre</a> <span class="r">1400</span></span><br>\( n \) boys and \( m \) girls, both at most 30. Count the groups of exactly \( t \) people with at least 4 boys and at least 1 girl.
+      <details><summary>Answer</summary><p><b>Tool:</b> C(n, k), <a href="#combinatorics">combinatorics</a>. <b>Signal:</b> "count the groups", and the order inside a group does not matter. <b>Idea:</b> for each number of boys \( b \ge 4 \), add C(n, b) · C(m, t − b) with \( t - b \ge 1 \).</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="295A">Greg and Array</a> <span class="r">1400</span></span><br>\( m \) operations "add \( d \) to positions \( l..r \)". Then \( k \) queries "apply operations \( x..y \)". Print the final array.
+      <details><summary>Answer</summary><p><b>Tool:</b> difference array, twice (<a href="#prefix-sums">prefix sums</a>). <b>Signal:</b> many range additions; you read the array only at the end. <b>Idea:</b> one difference array counts how often each operation runs; a second one applies the operations.</p></details></li>
+    <li><span class="practice"><a class="cf" data-p="1514B">AND 0, Sum Big</a> <span class="r">1200</span></span><br>Count arrays of \( n \) numbers from 0 to \( 2^k - 1 \): AND of all is 0, sum is as big as possible. Print it modulo \( 10^9+7 \).
+      <details><summary>Answer</summary><p><b>Tool:</b> <a href="#bits">bits</a> + <a href="#modular">modular arithmetic</a>. <b>Signal:</b> AND, \( 2^k \) and "modulo". <b>Idea:</b> each bit is 0 in exactly one element: \( n \) choices per bit, so \( n^k \bmod (10^9+7) \).</p></details></li>
+  </ol>
+</section>
+
+<section>
+  <h2>Pocket version</h2>
+  <p class="note">The short form of this page. Copy it on one card and keep it next to you.</p>
+  <div class="way">
+    <h3><b>Routine</b> — every problem</h3>
+    <ol>
+      <li>Limits → allowed cost (\( 10^8 \) steps per second).</li>
+      <li>The task in one sentence.</li>
+      <li>Samples by hand.</li>
+      <li>Kind of answer: yes/no, count, min/max, build, queries.</li>
+      <li>Brute force and its cost. Fits? Code it.</li>
+      <li>Too slow? What is repeated? Remove it with a tool.</li>
+      <li>Edge cases and <code>long long</code>, then submit.</li>
+    </ol>
+  </div>
+  <div class="way">
+    <h3><b>12 strong signals</b></h3>
+    <ul>
+      <li>\( n \le 20 \) → try all subsets (mask).</li>
+      <li>\( n \le 5000 \) → \( O(n^2) \) is fine.</li>
+      <li>\( n \le 2 \cdot 10^5 \) → sort, one loop, \( O(n \log n) \).</li>
+      <li>Values up to \( 10^{18} \) → formula, \( \log \), \( \sqrt{n} \); <code>long long</code>.</li>
+      <li>Many "sum \( l..r \)" queries → prefix sums.</li>
+      <li>Longest window with sum \( \le S \) → two pointers.</li>
+      <li>"Min value that works", monotonic → binary search on the answer.</li>
+      <li>Only frequencies matter → counting.</li>
+      <li>Order does not matter → sort first.</li>
+      <li>"Modulo \( 10^9+7 \)", count ways → DP or C(n, k).</li>
+      <li>Fewest moves, equal cost → BFS; weights → Dijkstra.</li>
+      <li>"Print any" → constructive: solve tiny \( n \) by hand.</li>
+    </ul>
+  </div>
+</section>

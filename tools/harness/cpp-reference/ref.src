@@ -1,0 +1,1524 @@
+=== Program skeleton
+--- to=cpp-template | Every program has this shape: the include line loads the standard library, and the computer starts at main.
+[full]
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int a, b;
+    cin >> a >> b;            // input: 3 4
+    cout << a + b << "\n";    // 7
+    return 0;
+}
+--- to=cpp-template | Each include adds one part of the library; bits/stdc++.h adds all of them and works with g++ on Codeforces.
+[global]
+#include <iostream>     // cin, cout
+#include <vector>       // vector
+#include <string>       // string
+#include <algorithm>    // sort, min, max
+#include <bits/stdc++.h>    // everything
+--- to=cpp-template | Library names live in a group called std; this line lets you write cout in place of std::cout.
+[main]
+// without "using namespace std;"
+std::cout << "hi\n";
+// with it
+cout << "hi\n";
+--- | A comment is a note for people; the compiler skips it.
+[main]
+// a comment on one line
+/* a comment over
+   many lines */
+int x = 5;   // a comment after code
+--- | Every statement ends with a semicolon, and curly brackets group statements into one block.
+[main]
+int x = 5;            // statement: ends with ;
+if (x > 0) {          // block: { ... }
+    x = x - 1;
+    cout << x;        // 4
+}
+--- to=cpp-template | Compile your file with g++ in a terminal, then run it; the same compiler runs on Codeforces.
+[skip]
+g++ -std=c++17 -O2 -Wall main.cpp -o main
+./main                  # Linux, macOS
+main.exe                # Windows
+./main < input.txt      # input from a file
+
+=== Variables and types
+--- to=overflow | The six types you use every day; choose long long when a number can pass 2·10^9.
+[main]
+int n = 5;                  // whole number
+long long big = 10000000000LL;   // big whole
+double d = 3.5;             // real number
+char c = 'a';               // one character
+bool ok = true;             // true or false
+string s = "hello";         // text
+--- to=overflow | The biggest and smallest value of each type; past them the number silently becomes wrong (overflow).
+[main]
+cout << INT_MAX;      // 2147483647
+cout << INT_MIN;      // -2147483648
+cout << LLONG_MAX;    // 9223372036854775807
+// int:       about 2 * 10^9
+// long long: about 9 * 10^18
+// double:    about 15 correct digits
+--- | const makes a value that can never change; auto lets the compiler pick the type from the value on the right.
+[main]
+const int MOD = 1000000007;   // fixed forever
+// WRONG: MOD = 5;   does not compile
+auto x = 5;           // int
+auto y = 5LL;         // long long
+auto z = 2.5;         // double
+auto w = string("ali");   // string
+--- to=overflow | How to write values in code: LL makes a long long, 1e9 is a double, single quotes make a char, double quotes make text.
+[main]
+int a = 1000000;        // int
+long long b = 1LL;      // long long
+long long c = 1e18;     // 1e18 is a double
+double d = 1e9;         // 10^9 as a double
+char ch = 'a';          // one char: ' '
+string s = "a";         // text: " "
+--- to=basic-math | Dividing two ints throws away the fraction; make one side a double first to keep it.
+[main]
+int a = 7, b = 2;
+cout << a / b;            // 3
+cout << a % b;            // 1
+cout << 1.0 * a / b;      // 3.5
+cout << (double)a / b;    // 3.5
+// WRONG: int / int is done first
+double w = a / b;         // 3
+--- to=overflow | A cast changes the type of one value; cast to long long before you multiply two big ints.
+[main]
+int a = 100000, b = 100000;
+// WRONG: long long p = a * b;   overflow
+long long p = 1LL * a * b;       // 10000000000
+long long q = (long long)a * b;  // 10000000000
+int t = (int)3.99;               // 3
+int code = 'a';                  // 97
+char c = (char)('a' + 1);        // 'b'
+--- to=debugging | A variable lives only inside its curly brackets; a local one starts with garbage, a global one starts at 0.
+[global]
+int total;            // global: starts at 0
+
+int main() {
+    int x;            // local: garbage!
+    int y = 0;        // RIGHT: give a value
+    for (int i = 0; i < 3; i++) {
+        int twice = 2 * i;   // lives in the loop
+        y += twice;
+    }
+    // i and twice do not exist here
+    cout << total << " " << y;   // 0 6
+}
+--- | You can declare several variables of one type in one line, and = copies the right side into the left side.
+[main]
+int a = 1, b = 2, c;      // c has no value yet
+c = a + b;                // 3
+a = b;                    // 2
+int x = a;
+x = x + 1;                // 3
+
+=== Input / output
+--- to=cpp-template | cin reads the next value into a variable and cout prints; text goes in double quotes.
+[main]
+int n;
+cin >> n;                    // input: 5
+cout << n << "\n";           // 5
+cout << "n = " << n << "\n";   // n = 5
+--- to=read-a-problem | One cin can read many values of different types; it skips spaces and new lines between them.
+[main]
+int a; long long b; double c; char d; string s;
+cin >> a >> b >> c;      // input: 1 2 3.5
+cin >> d >> s;           // input: x hi
+cout << a << " " << s << "\n";  // 1 hi
+cout << c + b << d << "\n";     // 5.5x
+--- to=arrays-strings | Read n first, make a vector of that size, then read each element.
+[main]
+int n;
+cin >> n;                      // input: 3
+vector<int> a(n);
+for (int i = 0; i < n; i++)
+    cin >> a[i];               // input: 4 5 6
+for (int x : a) cout << x << " ";   // 4 5 6
+--- to=arrays-strings | cin reads one word of text; getline reads a whole line with its spaces.
+[main]
+string word, line;
+cin >> word;             // input: one two three
+getline(cin, line);      // the rest of the line
+cout << word;            // one
+cout << line;            //  two three
+--- to=debugging | After cin, the end of the line is still waiting, so getline reads an empty line unless you skip it first.
+[main]
+int n; string line;
+cin >> n;              // input: 2
+cin.ignore();          // skip the '\n' after 2
+getline(cin, line);    // input: two words
+cout << line;          // two words
+// WRONG: without cin.ignore() line is ""
+--- to=read-a-problem | When the input does not tell you how many values come, read in the loop condition until the input ends.
+[main]
+int x; long long sum = 0;
+while (cin >> x) sum += x;      // input: 1 2 3
+cout << sum;                    // 6
+// whole lines:
+// while (getline(cin, line)) { ... }
+--- to=cpp-template | Both end the line, but endl also forces the output out each time and makes big outputs slow.
+[main]
+// RIGHT: "\n" is fast
+cout << 1 << "\n";
+cout << 2 << ' ' << 3 << '\n';
+// SLOW: endl in a loop
+cout << 4 << endl;
+--- to=basic-math | fixed and setprecision choose how many digits come after the point, and they stay active for later prints.
+[main]
+double x = 3.14159265;
+cout << fixed << setprecision(2) << x;   // 3.14
+cout << setprecision(6) << x;     // 3.141593
+cout << 2.0;                      // 2.000000
+--- to=basic-math | A big double prints in a strange short form unless you use fixed or convert it to long long.
+[main]
+double big = 1e9;
+// TRAP: prints 1e+09
+cout << big;                  // 1e+09
+cout << (long long)big;       // 1000000000
+cout << fixed << setprecision(0);
+cout << big;                  // 1000000000
+--- to=cpp-template | These two lines make cin and cout fast; put them first in main and then never mix in scanf or printf.
+[global]
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int n;
+    cin >> n;
+    cout << n << "\n";
+}
+--- to=how-codeforces-works | Put a ternary in brackets when you print it, because << is done before ? and the line will not compile without them.
+[main]
+bool ok = true;
+cout << (ok ? "YES" : "NO") << "\n";   // YES
+// WRONG: cout << ok ? "YES" : "NO";
+cout << ok << "\n";                    // 1
+--- to=cpp-template | Many problems give t test cases; read t and repeat the whole solution t times.
+[main]
+int t;
+cin >> t;                   // input: 2
+while (t--) {
+    int n;
+    cin >> n;               // input: 10 20
+    cout << n + 1 << "\n";  // 11 21
+}
+
+=== Operators
+--- to=basic-math | The five arithmetic operators; / on ints drops the fraction and % gives the remainder, and -7 % 2 is -1, not 1.
+[main]
+int a = 17, b = 5;
+cout << a + b;     // 22
+cout << a - b;     // 12
+cout << a * b;     // 85
+cout << a / b;     // 3
+cout << a % b;     // 2
+cout << -7 / 2;    // -3
+cout << -7 % 2;    // -1
+--- | Short forms that change a variable in place: x += 5 means x = x + 5.
+[main]
+int x = 10;
+x += 5;      // 15
+x -= 3;      // 12
+x *= 2;      // 24
+x /= 5;      // 4
+x %= 3;      // 1
+--- | Both add 1; i++ gives the old value to the expression and ++i gives the new one.
+[main]
+int i = 5;
+i++;              // 6
+++i;              // 7
+i--;              // 6
+int a = i++;      // 6  (old value, then i is 7)
+int b = ++i;      // 8  (i grows first)
+--- | Comparisons give true or false; == tests equality, while one = stores a value.
+[main]
+int a = 3, b = 5;
+bool r1 = (a == b);    // false
+bool r2 = (a != b);    // true
+bool r3 = (a < b);     // true
+bool r4 = (a <= b);    // true
+bool r5 = (a >= b);    // false
+--- | && is and, || is or, ! is not; the right side is not even computed when the left side already decides the answer.
+[main]
+int x = 5;
+bool both = (x > 0 && x < 10);    // true
+bool any = (x < 0 || x == 5);     // true
+bool no = !(x == 5);              // false
+vector<int> v = {1, 2, 3};
+int i = 7;
+// left side first: v[7] is never read
+if (i < 3 && v[i] == 2) cout << "found";
+--- | A short if-else that gives a value: condition ? value if true : value if false.
+[main]
+int a = 3, b = 8;
+int big = (a > b) ? a : b;       // 8
+string s = (a % 2 == 0) ? "even" : "odd";
+cout << s;                       // odd
+--- to=bits | Operators on the binary digits of a number; always put them in brackets, and use 1LL for shifts past 30.
+[main]
+int a = 6, b = 3;        // 110 and 011
+cout << (a & b);         // 2
+cout << (a | b);         // 7
+cout << (a ^ b);         // 5
+cout << (a << 1);        // 12
+cout << (a >> 1);        // 3
+cout << (1LL << 40);     // 1099511627776
+--- to=debugging | Three lines that compile but do not mean what you wanted; add brackets and use == to compare.
+[main]
+int x = 5, m = 6;
+// WRONG: if (x = 5)       stores 5, always true
+if (x == 5) cout << "five";          // five
+// WRONG: if (m & 1 == 0)  is m & (1 == 0)
+if ((m & 1) == 0) cout << "even";    // even
+// WRONG: x + m >> 1       is (x + m) >> 1
+cout << x + (m >> 1);                // 8
+
+=== Conditions
+--- | Only the first true branch runs; else catches everything that is left.
+[main]
+int x = 7;
+if (x > 10) {
+    cout << "big";
+} else if (x > 5) {
+    cout << "medium";      // medium
+} else {
+    cout << "small";
+}
+--- | Without curly brackets only one statement belongs to the if, so use brackets when you have two or more.
+[main]
+int x = 7;
+if (x > 0) cout << "yes";      // yes
+if (x > 100) {                 // RIGHT: { }
+    cout << "big";
+    cout << "number";
+}
+// WRONG: without { } the second cout
+// always runs
+--- | An int works as a condition: 0 is false and every other number is true.
+[main]
+int n = 3;
+vector<int> v;
+if (n) cout << "not zero";         // not zero
+if (!n) cout << "zero";
+if (v.empty()) cout << "empty";    // empty
+if (n % 2) cout << "odd";          // odd
+--- | switch picks one case by the value of an int or a char; every case needs break or the next case runs too.
+[main]
+int day = 2;
+switch (day) {
+    case 1: cout << "Sat"; break;
+    case 2: cout << "Sun"; break;
+    default: cout << "other";
+}
+// prints Sun
+// WRONG: no break -> next case runs too
+--- to=debugging | The four classic slips in a condition; each one compiles and then gives a wrong answer.
+[main]
+int x = 5;
+// WRONG: if (x == 5);      ';' ends the if
+// WRONG: if (x = 1)        '=' stores
+// WRONG: if (x == 1 || 2)  always true
+if (x == 1 || x == 2) cout << "small";
+// WRONG: if (1 < x < 3)    always true
+if (1 < x && x < 9) cout << "inside";   // inside
+
+=== Loops
+--- to=complexity | A for loop has three parts: start, condition to continue, step after each round.
+[main]
+for (int i = 0; i < 5; i++)
+    cout << i << " ";        // 0 1 2 3 4
+for (int i = 1; i <= 5; i++)
+    cout << i << " ";        // 1 2 3 4 5
+for (int i = 0; i < 10; i += 3)
+    cout << i << " ";        // 0 3 6 9
+--- to=simulation | A while loop repeats as long as its condition is true; use it when you do not know the number of rounds.
+[main]
+int n = 1234, digits = 0;
+while (n > 0) {
+    n /= 10;
+    digits++;
+}
+cout << digits;       // 4
+--- | A do-while loop checks the condition after the body, so the body always runs at least once.
+[main]
+int x = 10;
+do {
+    x++;              // runs at least once
+} while (x < 3);
+cout << x;            // 11
+--- | break leaves the loop now; continue jumps to the next round of the loop.
+[main]
+for (int i = 1; i <= 10; i++) {
+    if (i % 2 == 0) continue;   // skip this i
+    if (i > 7) break;           // leave the loop
+    cout << i << " ";           // 1 3 5 7
+}
+--- to=simulation | Use while (true) with break when the stop test sits in the middle of the body.
+[main]
+int x = 1;
+while (true) {
+    x *= 2;
+    if (x > 50) break;
+}
+cout << x;      // 64
+--- to=complexity | A loop inside a loop runs the inner body rows times columns; break leaves only the inner loop.
+[main]
+for (int i = 1; i <= 2; i++) {
+    for (int j = 1; j <= 3; j++)
+        cout << i * j << " ";
+    cout << "\n";
+}
+// 1 2 3
+// 2 4 6
+--- to=stl-basics | The range-based for visits every element; a plain variable is a copy, and with & it is the real element.
+[main]
+vector<int> v = {1, 2, 3};
+for (int x : v) cout << x << " ";   // 1 2 3
+for (int &x : v) x *= 2;      // & changes v
+for (int x : v) cout << x << " ";   // 2 4 6
+for (int x : v) x = 0;        // copy: v stays
+for (int x : v) cout << x << " ";   // 2 4 6
+--- to=stl-basics | Use const auto & for big elements such as strings or vectors: no copy is made and you cannot change them by mistake.
+[main]
+vector<string> names = {"ali", "omar"};
+for (const string &s : names)   // no copy
+    cout << s << " ";           // ali omar
+for (const auto &s : names)     // same, shorter
+    cout << s.size() << " ";    // 3 4
+for (auto &s : names) s += "!";
+cout << names[0];               // ali!
+--- to=debugging | To go backwards use an int index; size() is unsigned, so size() - 1 on an empty vector is a huge number, not -1.
+[main]
+vector<int> v = {1, 2, 3};
+int n = v.size();
+for (int i = n - 1; i >= 0; i--)
+    cout << v[i] << " ";         // 3 2 1
+// WRONG: for (size_t i = n - 1; i >= 0; i--)
+//   unsigned i is never below 0: no end
+// WRONG: v.size() - 1 when v is empty
+--- to=debugging | The usual reasons a loop never ends or runs one time too many.
+[main]
+int n = 3;
+// WRONG: i--  where you wanted i++
+// WRONG: i <= n  gives n + 1 rounds
+// WRONG: for (...);  the ; is an empty body
+// WRONG: while (n > 0) { }  n never changes
+for (int i = 0; i < n; i++) cout << i;  // 012
+
+=== Functions
+--- | A function has a return type, a name and parameters; return sends the answer back to the caller.
+[global]
+int add(int a, int b) {      // returns an int
+    return a + b;
+}
+[main]
+cout << add(2, 3);           // 5
+int s = add(10, add(1, 2));  // 13
+--- | A void function does a job and returns nothing; return; alone leaves it early.
+[global]
+void printLine(int n) {      // returns nothing
+    if (n <= 0) return;      // leave early
+    for (int i = 0; i < n; i++) cout << "-";
+    cout << "\n";
+}
+[main]
+printLine(3);
+// prints ---
+--- | A bool function answers yes or no, so you can call it inside an if.
+[global]
+bool isEven(int x) {
+    return x % 2 == 0;
+}
+[main]
+if (isEven(4)) cout << "even";    // even
+if (!isEven(7)) cout << "odd";    // odd
+--- span2 | A normal parameter is a copy, so the caller's variable does not change; with & the function works on the caller's own variable.
+[global]
+void byValue(int x) { x = 99; }    // x is a copy
+void byRef(int &x)  { x = 99; }    // x is the caller's variable
+[main]
+int a = 1, b = 1;
+byValue(a);
+cout << a;       // 1
+byRef(b);
+cout << b;       // 99
+--- span2 to=complexity | Pass strings and vectors by reference so they are not copied on every call; add const when the function only reads.
+[global]
+int countA(const string &s) {      // const &: no copy, read only
+    int c = 0;
+    for (char ch : s) if (ch == 'a') c++;
+    return c;
+}
+void addOne(vector<int> &v) {      // &: changes the caller's vector
+    for (int &x : v) x++;
+}
+// SLOW: int countA(string s)      copies s on every call
+[main]
+vector<int> v = {1, 2};
+addOne(v);                         // v = 2 3
+cout << countA("banana");          // 3
+--- | A parameter with a default value can be left out in the call; defaults must be the last parameters.
+[global]
+int power(int base, int exp = 2) {
+    int r = 1;
+    for (int i = 0; i < exp; i++) r *= base;
+    return r;
+}
+[main]
+cout << power(5);         // 25
+cout << power(2, 10);     // 1024
+--- to=recursion | A recursive function calls itself on a smaller input; it needs a base case that stops, or it crashes.
+[global]
+long long fact(int n) {
+    if (n <= 1) return 1;       // base case
+    return n * fact(n - 1);     // smaller input
+}
+[main]
+cout << fact(5);     // 120
+cout << fact(20);    // 2432902008176640000
+--- to=sorting | A lambda is a small function written inside another function; [&] lets it use and change the variables around it.
+[main]
+int k = 10;
+auto addK = [&](int x) { return x + k; };
+cout << addK(5);              // 15
+auto isBig = [](int x) { return x > 100; };
+cout << isBig(7);             // 0
+auto bump = [&]() { k++; };   // changes k
+bump();
+cout << k;                    // 11
+--- to=recursion | A lambda that calls itself must be stored in a function variable, because auto does not know its own type yet.
+[main]
+vector<int> seen(4, 0);
+function<void(int)> go = [&](int i) {
+    if (i == 4) return;
+    seen[i] = 1;
+    go(i + 1);
+};
+go(0);                // seen = 1 1 1 1
+--- | A function must be declared above the place that calls it; a prototype declares it now and the body can come later.
+[global]
+int twice(int x);            // prototype
+
+int main() {
+    cout << twice(4);        // 8
+}
+
+int twice(int x) {           // body
+    return 2 * x;
+}
+--- to=cpp-template | A global variable is declared outside all functions, every function can use it, and it starts at 0.
+[global]
+const int N = 200005;
+int n;                  // global: starts at 0
+long long a[N];         // big arrays live here
+
+void readInput() {
+    cin >> n;
+    for (int i = 0; i < n; i++) cin >> a[i];
+}
+long long total() {
+    long long sum = 0;
+    for (int i = 0; i < n; i++) sum += a[i];
+    return sum;
+}
+--- to=debugging | A function with a return type must return on every path; a missing return is undefined behaviour and the compiler only warns.
+[global]
+// WRONG: nothing returned when x <= 0
+// int sign(int x) { if (x > 0) return 1; }
+int sign(int x) {
+    if (x > 0) return 1;
+    if (x < 0) return -1;
+    return 0;              // RIGHT: every path
+}
+[main]
+cout << sign(-8);          // -1
+--- | A function can return a vector, a string or a pair; this is fast because the result is moved out, not copied.
+[global]
+vector<int> firstN(int n) {
+    vector<int> v;
+    for (int i = 1; i <= n; i++) v.push_back(i);
+    return v;
+}
+[main]
+vector<int> v = firstN(3);     // 1 2 3
+
+=== Arrays
+--- to=arrays-strings | A C array is a fixed row of boxes of one type; indexes go from 0 to size - 1, and a local array starts with garbage.
+[main]
+int a[5];                 // local: garbage
+int b[5] = {1, 2, 3};     // rest is 0
+int c[5] = {};            // all 0
+b[0] = 10;
+for (int x : b) cout << x << " ";   // 10 2 3 0 0
+cout << c[4];             // 0
+--- to=arrays-strings | Declare big arrays globally with a constant size a little above the maximum n; global arrays start at 0.
+[global]
+const int N = 200005;     // max n + 5
+int a[N];                 // global: all 0
+long long pre[N];
+
+int main() {
+    int n;
+    cin >> n;
+    for (int i = 0; i < n; i++) cin >> a[i];
+}
+--- to=arrays-strings | A 2D array is a grid: the first index is the row and the second is the column.
+[main]
+int g[2][3] = {{1, 2, 3}, {4, 5, 6}};
+g[1][2] = 9;              // row 1, column 2
+for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 3; j++)
+        cout << g[i][j] << " ";
+    cout << "\n";
+}
+// 1 2 3
+// 4 5 9
+--- to=arrays-strings | Three ways to set every element; memset works only for 0 and -1.
+[main]
+int a[5];
+fill(a, a + 5, 7);             // all 7
+cout << a[4];                  // 7
+long long d[3][3];
+memset(d, -1, sizeof(d));      // only 0 or -1
+cout << d[2][2];               // -1
+int cnt[26] = {};              // all 0
+--- to=complexity | A big array inside a function can crash the program, because local memory (the stack) is small on most computers; make it global or use a vector.
+[global]
+// WRONG: inside main: int a[5000000];
+//   may crash: local memory is small
+int a[5000000];            // RIGHT: global, 20 MB
+
+int main() {
+    vector<int> b(5000000);    // RIGHT: vector
+    // 256 MB holds about 6 * 10^7 ints
+}
+--- to=debugging | C++ does not check indexes: reading or writing outside the array gives no message, only wrong answers or a crash.
+[main]
+int a[5] = {};
+// WRONG: a[5] = 1;     5 is outside 0..4
+// WRONG: a[-1] = 1;
+// no error message: undefined behaviour
+a[4] = 1;               // RIGHT: last index
+cout << a[4];           // 1
+--- to=stl-basics | Library functions take an array as two ends: a is the start and a + n is one past the last element.
+[main]
+int a[5] = {5, 3, 1, 4, 2};
+int n = 5;
+sort(a, a + n);
+for (int x : a) cout << x << " ";   // 1 2 3 4 5
+cout << *max_element(a, a + n);     // 5
+reverse(a, a + n);
+cout << a[0];                       // 5
+
+=== Strings
+--- to=arrays-strings | A string is a row of chars that can grow; size() gives its length and indexes start at 0.
+[main]
+string s = "hello";
+cout << s.size();       // 5
+cout << s[0];           // h
+cout << s.back();       // o
+s[0] = 'J';             // s = Jello
+string t(3, 'x');       // "xxx"
+string e;               // empty: ""
+cout << e.empty();      // 1
+--- to=arrays-strings | Glue strings with + and add to the end with +=; use += in loops, because s = s + x copies the whole string each time.
+[main]
+string a = "ab", b = "cd";
+string c = a + b;       // "abcd"
+c += "ef";              // "abcdef"
+c += 'g';               // "abcdefg"
+c.push_back('h');       // c = abcdefgh
+c.pop_back();           // c = abcdefg
+// WRONG: "ab" + "cd"   two plain texts
+// SLOW:  c = c + 'x';  use c += 'x'
+--- to=arrays-strings | substr cuts a piece (start, length); find gives the first position of a text, or string::npos when it is absent.
+[main]
+string s = "codeforces";
+string a = s.substr(4);        // "forces"
+string b = s.substr(0, 4);     // "code"
+size_t pos = s.find("for");    // 4
+if (s.find("xyz") == string::npos)
+    cout << "not found";       // not found
+// substr(start, length), not (start, end)
+--- to=sorting | Strings compare letter by letter like in a dictionary, so "10" comes before "9".
+[main]
+string a = "apple", b = "banana";
+bool same = (a == b);       // false
+bool first = (a < b);       // true
+// dictionary order, not number order:
+bool trap = (string("10") < string("9"));  // true
+// WRONG: "abc" == "abc" on plain texts
+--- to=basic-math | Convert between numbers and strings; stoi stops the program with an error if the text is not a number.
+[main]
+string s = to_string(123);       // "123"
+int x = stoi("42");              // 42
+long long y = stoll("9000000000");   // 9000000000
+double d = stod("2.5");          // 2.5
+int digit = '7' - '0';           // 7
+char ch = '0' + 5;               // '5'
+--- to=arrays-strings | A char is a small number, so you can subtract 'a' to get the index of a letter from 0 to 25.
+[main]
+char c = 'd';
+int idx = c - 'a';               // 3
+char up = c - 'a' + 'A';         // 'D'
+char nxt = c + 1;                // 'e'
+bool low = (c >= 'a' && c <= 'z');   // true
+char big = toupper(c);           // 'D'
+bool dig = isdigit('7');         // true
+--- to=counting | Visit every char with a range-based for, or with an index when you need the position.
+[main]
+string s = "banana";
+int cnt[26] = {};
+for (char c : s) cnt[c - 'a']++;
+cout << cnt[0];                    // 3
+for (int i = 0; i < (int)s.size(); i++)
+    if (s[i] == 'n') cout << i << " ";   // 2 4
+for (char &c : s) c = toupper(c);  // s = BANANA
+--- to=sorting | sort and reverse work on a string in the same way as on a vector.
+[main]
+string s = "hello";
+sort(s.begin(), s.end());          // s = ehllo
+reverse(s.begin(), s.end());       // s = ollhe
+string t = "abc";
+string r(t.rbegin(), t.rend());    // "cba"
+bool pal = (t == r);               // false
+--- to=complexity | erase and insert change the middle of a string; each one moves the tail, so they cost O(n).
+[main]
+string s = "abcdef";
+s.erase(1, 2);            // s = adef
+s.insert(1, "XY");        // s = aXYdef
+s.clear();                // s =
+cout << s.size();         // 0
+// erase(start, count): O(n) each time
+
+=== References and pointers
+--- | A reference is a second name for a variable that already exists: changing one changes the other, because they are the same box.
+[main]
+int x = 5;
+int &r = x;       // r is another name for x
+r = 9;
+cout << x;        // 9
+x++;
+cout << r;        // 10
+// WRONG: int &r2;   needs a variable at once
+--- | A pointer is a variable that stores the address of another variable; *p means the variable at that address.
+[main]
+int x = 5;
+int *p = &x;      // p holds the address of x
+cout << *p;       // 5
+*p = 9;           // change x through p
+cout << x;        // 9
+cout << (p == &x);    // 1
+--- | The same two symbols mean different things in a declaration and in an expression.
+[main]
+int x = 6;
+int &r = x;       // & in a type: reference
+int *p = &x;      // * in a type: pointer
+                  // & before a name: address of
+int y = *p;       // * before a pointer: its value
+int z = x * 2;    // * between values: multiply
+int w = x & 1;    // & between values: bit AND
+--- | A pointer can move to another variable or point to nothing (nullptr); using *p on nullptr crashes the program.
+[main]
+int a = 1, b = 2;
+int *p = &a;
+p = &b;               // now p points to b
+cout << *p;           // 2
+p = nullptr;          // p points to nothing
+// RIGHT: test before you use *p
+if (p != nullptr) cout << *p;
+// WRONG: *p when p is nullptr -> crash
+--- span2 | Use a reference when you want another name for a variable; a pointer is needed only when it must be able to change target or be empty.
+[html]
+    <table>
+      <tr><th></th><th>reference</th><th>pointer</th></tr>
+      <tr><td>declare</td><td><code>int &amp;r = x;</code></td><td><code>int *p = &amp;x;</code></td></tr>
+      <tr><td>read the value</td><td><code>r</code></td><td><code>*p</code></td></tr>
+      <tr><td>change the value</td><td><code>r = 9;</code></td><td><code>*p = 9;</code></td></tr>
+      <tr><td>a field</td><td><code>r.first</code></td><td><code>p-&gt;first</code></td></tr>
+      <tr><td>can be empty</td><td>no</td><td>yes: <code>nullptr</code></td></tr>
+      <tr><td>can change target</td><td>no</td><td>yes: <code>p = &amp;y;</code></td></tr>
+      <tr><td>must get a value at once</td><td>yes</td><td>no</td></tr>
+    </table>
+--- to=arrays-strings | The name of an array works as a pointer to its first element, so a + i points to a[i]; this is why sort(a, a + n) works.
+[main]
+int a[4] = {10, 20, 30, 40};
+int *p = a;               // same as &a[0]
+cout << *p;               // 10
+cout << *(p + 2);         // 30
+cout << p[2];             // 30
+cout << (a + 4) - a;      // 4
+// a + 4 is one past the end: do not read it
+--- | With a pointer to a pair or a struct, p->first is a short form of (*p).first.
+[main]
+pair<int, int> pr = {3, 4};
+pair<int, int> *p = &pr;
+cout << (*p).first;       // 3
+cout << p->first;         // 3
+p->second = 8;
+cout << pr.second;        // 8
+--- to=stl-basics | new asks for memory by hand and delete gives it back; in contests you almost never need this, so use a vector.
+[main]
+int *one = new int(5);       // one int
+cout << *one;                // 5
+delete one;
+int *many = new int[100];    // an array
+delete[] many;
+// in contests: almost never needed
+vector<int> v(100);          // RIGHT: vector
+--- span2 | The place where you use these ideas every day: a & parameter lets a function change the caller's variable; the pointer form is the old C style.
+[global]
+void addOne(int &x) { x++; }          // reference: call it as addOne(a)
+void addOnePtr(int *x) { (*x)++; }    // pointer:   call it as addOnePtr(&a)
+[main]
+int a = 5;
+addOne(a);
+addOnePtr(&a);
+cout << a;       // 7
+--- | With & on both parameters, the function changes the two variables of the caller.
+[global]
+void mySwap(int &a, int &b) {
+    int t = a;
+    a = b;
+    b = t;
+}
+[main]
+int x = 1, y = 2;
+mySwap(x, y);
+cout << x << " " << y;     // 2 1
+--- to=stl-basics | An iterator works like a pointer into a container: *it is the element and ++it moves to the next one.
+[main]
+vector<int> v = {4, 9, 2};
+auto it = v.begin();       // points to v[0]
+cout << *it;               // 4
+++it;
+cout << *it;               // 9
+*it = 1;                   // v = 4 1 2
+--- to=stl-basics | Many library functions return an iterator, not a value, so put * in front to get the element.
+[main]
+vector<int> v = {4, 9, 2};
+cout << *max_element(v.begin(), v.end());   // 9
+cout << *min_element(v.begin(), v.end());   // 2
+set<int> s = {5, 1, 7};
+cout << *s.begin();        // 1
+cout << *s.rbegin();       // 7
+// WRONG: *s.begin() when s is empty
+--- to=stl-containers | An iterator of a map points to a pair, so use it->first for the key and it->second for the value.
+[main]
+map<string, int> age = {{"ali", 20}, {"omar", 25}};
+auto it = age.find("omar");
+if (it != age.end())
+    cout << it->first << it->second;   // omar25
+// WRONG: it->first when it == age.end()
+--- to=debugging | A reference, pointer or iterator into a vector becomes dead when the vector grows, because the elements may move.
+[main]
+vector<int> v = {1, 2, 3};
+int &first = v[0];
+v.push_back(4);        // v may move in memory
+// WRONG: using first now (old memory)
+cout << v[0];          // 1
+// RIGHT: keep the index, not a reference
+--- to=debugging | A local variable dies when its function ends, so never return a reference or a pointer to it; return the value.
+[global]
+// WRONG: x is dead after the return
+// int &bad() { int x = 5; return x; }
+int good() {           // RIGHT: returns a copy
+    int x = 5;
+    return x;
+}
+
+=== struct
+--- | A struct groups several named values into one new type; the definition ends with a semicolon.
+[global]
+struct Student {
+    string name;
+    int score;
+};                     // do not forget this ;
+[main]
+Student a = {"ali", 90};       // fields in order
+Student b;
+b.name = "omar";
+b.score = 75;
+cout << a.name << " " << b.score;   // ali 75
+--- | Give the fields start values inside the struct, so a new one never holds garbage.
+[global]
+struct Point {
+    int x = 0, y = 0;      // start values
+};
+[main]
+Point p;
+cout << p.x << p.y;        // 00
+Point q = {3, 4};
+q.x += 10;
+cout << q.x << q.y;        // 134
+--- to=graphs-bfs-dfs | A vector of structs keeps a list of records; push_back({...}) builds one in place.
+[global]
+struct Edge {
+    int from, to;
+    long long cost;
+};
+[main]
+vector<Edge> edges;
+edges.push_back({1, 2, 5});
+edges.push_back({2, 3, 7});
+for (const Edge &e : edges)
+    cout << e.cost << " ";      // 5 7
+cout << edges[0].to;            // 2
+--- span2 to=sorting | Sort structs with a lambda that says when a must come before b; use < or > inside it and never <=.
+[global]
+struct Student {
+    string name;
+    int score;
+};
+[main]
+vector<Student> v = {{"ali", 70}, {"omar", 90}, {"sara", 80}};
+sort(v.begin(), v.end(), [](const Student &a, const Student &b) {
+    return a.score > b.score;      // true: a comes first
+});
+cout << v[0].name << " " << v[2].name;    // omar ali
+--- to=sorting | To sort by two fields, compare the first field and use the second only when the first ones are equal.
+[global]
+struct Student {
+    string name;
+    int score;
+};
+bool better(const Student &a, const Student &b) {
+    if (a.score != b.score)
+        return a.score > b.score;
+    return a.name < b.name;        // tie: by name
+}
+[main]
+vector<Student> v = {{"omar", 9}, {"ali", 9}};
+sort(v.begin(), v.end(), better);
+cout << v[0].name;                 // ali
+--- | A struct has no == and no < until you write them, so compare the fields yourself.
+[global]
+struct Point {
+    int x, y;
+};
+[main]
+Point a = {1, 2}, b = {1, 2};
+// WRONG: a == b   does not compile
+bool same = (a.x == b.x && a.y == b.y);   // true
+Point c = a;          // = copies all fields
+c.x = 5;
+cout << a.x;          // 1
+--- | Pass a struct to a function by const reference, and return a new one with curly brackets.
+[global]
+struct Point {
+    int x, y;
+};
+Point middle(const Point &a, const Point &b) {
+    return {(a.x + b.x) / 2, (a.y + b.y) / 2};
+}
+[main]
+Point m = middle({0, 0}, {4, 6});
+cout << m.x << m.y;        // 23
+
+=== pair and tuple
+--- to=stl-basics | A pair holds two values, named first and second; it is a ready-made struct for two things.
+[main]
+pair<int, string> p = {1, "one"};
+cout << p.first << p.second;     // 1one
+p.first = 2;
+auto q = make_pair(3, 4);        // pair<int, int>
+pair<int, int> z;                // 0 0
+cout << q.first + z.second;      // 3
+--- to=stl-basics | auto [a, b] unpacks a pair into two new variables; with & they are names for the fields of the pair.
+[main]
+pair<int, int> p = {3, 4};
+auto [a, b] = p;           // two copies
+cout << a + b;             // 7
+auto &[x, y] = p;          // names for p's fields
+x = 10;
+cout << p.first;           // 10
+--- to=stl-basics | Structured bindings make loops over pairs and maps easy to read.
+[main]
+vector<pair<int, int>> v = {{1, 2}, {3, 4}};
+for (auto [l, r] : v)
+    cout << l + r << " ";        // 3 7
+for (auto &[l, r] : v) r = 0;    // changes v
+cout << v[1].second;             // 0
+--- to=sorting | Pairs compare by first, and by second only when the first values are equal; sort, min, max and set use this order.
+[main]
+pair<int, int> a = {1, 9}, b = {2, 0}, c = {1, 5};
+cout << (a < b);        // 1
+cout << (c < a);        // 1
+cout << (a == c);       // 0
+vector<pair<int, int>> v = {a, b, c};
+sort(v.begin(), v.end());
+for (auto [x, y] : v)
+    cout << x << y << " ";   // 15 19 20
+--- to=stl-basics | A tuple holds three or more values; read one with get or unpack all with auto [..].
+[main]
+tuple<int, string, double> t = {1, "ali", 2.5};
+cout << get<0>(t);            // 1
+get<0>(t) = 7;
+auto [id, name, avg] = t;
+cout << id << name << avg;    // 7ali2.5
+auto u = make_tuple(1, 2, 3);
+cout << (u < make_tuple(1, 3, 0));   // 1
+--- | Return a pair to give back two answers from one function.
+[global]
+pair<int, int> minMax(const vector<int> &v) {
+    int lo = v[0], hi = v[0];
+    for (int x : v) {
+        lo = min(lo, x);
+        hi = max(hi, x);
+    }
+    return {lo, hi};
+}
+[main]
+auto [lo, hi] = minMax({3, 1, 2});
+cout << lo << hi;        // 13
+
+=== vector
+--- to=stl-basics | A vector is an array that knows its size and can grow; round brackets give a size, curly brackets give the elements.
+[main]
+vector<int> a;                // empty
+vector<int> b(5);             // 0 0 0 0 0
+vector<int> c(5, 7);          // 7 7 7 7 7
+vector<int> d = {1, 2, 3};    // 1 2 3
+vector<long long> e(3, -1);   // -1 -1 -1
+vector<string> names(2, "x");
+// TRAP: vector<int> t{5};  one element: 5
+--- to=stl-basics | push_back adds at the end and pop_back removes the last element; back() and pop_back() on an empty vector are undefined.
+[main]
+vector<int> v;
+v.push_back(4);
+v.push_back(8);           // v = 4 8
+cout << v.size();         // 2
+cout << v.front();        // 4
+cout << v.back();         // 8
+v.pop_back();             // v = 4
+cout << v.empty();        // 0
+--- to=stl-basics | Use v[i] like an array; C++ does not check the index, so an index outside 0 .. size-1 is undefined.
+[main]
+vector<int> v = {5, 6, 7};
+v[0] = 50;                       // v = 50 6 7
+for (int i = 0; i < (int)v.size(); i++)
+    cout << v[i] << " ";         // 50 6 7
+for (int x : v) cout << x << " ";   // 50 6 7
+// WRONG: v[3]   outside, no error message
+--- to=debugging | size() is unsigned, so store it in an int before you subtract; size() - 1 on an empty vector is a huge number.
+[main]
+vector<int> v;
+// WRONG: v.size() - 1   huge when v is empty
+int n = v.size();         // RIGHT: an int
+cout << n - 1;            // -1
+// (int)v.size() also works
+--- to=stl-basics | resize changes the size and keeps the old elements, assign replaces everything, clear makes the vector empty.
+[main]
+vector<int> v = {1, 2, 3};
+v.resize(5);            // v = 1 2 3 0 0
+v.resize(2);            // v = 1 2
+v.assign(3, 9);         // v = 9 9 9
+v.clear();              // v =
+cout << v.size();       // 0
+--- span2 to=graphs-bfs-dfs | A 2D vector is a vector of rows; g[i][j] is row i, column j, and the rows may have different lengths.
+[main]
+int n = 3, m = 4;
+vector<vector<int>> g(n, vector<int>(m, 0));    // n rows, m columns, all 0
+g[1][2] = 5;
+cout << g.size() << " " << g[0].size();         // 3 4
+vector<vector<int>> adj(n);                     // n empty rows
+adj[0].push_back(2);
+adj[0].push_back(1);
+cout << adj[0].size() << adj[1].size();         // 20
+--- to=sorting | A vector of pairs keeps two values together, for example a value and its index, and sorts by first.
+[main]
+vector<pair<int, int>> v;
+v.push_back({3, 1});
+v.emplace_back(1, 2);          // same job
+sort(v.begin(), v.end());
+for (auto [a, b] : v)
+    cout << a << b << " ";     // 12 31
+cout << v[0].second;           // 2
+--- to=complexity | insert and erase in the middle move every element after that place, so each call costs O(n).
+[main]
+vector<int> v = {1, 2, 3, 4};
+v.insert(v.begin() + 1, 9);    // v = 1 9 2 3 4
+v.erase(v.begin());            // v = 9 2 3 4
+v.erase(v.begin() + 1, v.begin() + 3);   // v = 9 4
+// O(n) each: slow inside a big loop
+// fast: push_back, pop_back  O(1)
+--- span2 to=complexity | Pass a vector with & so it is not copied on every call; add const when the function only reads it.
+[global]
+void fillOnes(vector<int> &v) {          // &: changes the caller's vector
+    for (int &x : v) x = 1;
+}
+int sumAll(const vector<int> &v) {       // const &: reads, no copy
+    int sum = 0;
+    for (int x : v) sum += x;
+    return sum;
+}
+[main]
+vector<int> v(4);
+fillOnes(v);
+cout << sumAll(v);        // 4
+--- to=stl-basics | = makes a full copy of a vector in O(n); == and < compare two vectors element by element.
+[main]
+vector<int> a = {1, 2, 3};
+vector<int> b = a;        // full copy, O(n)
+b[0] = 9;
+cout << a[0];             // 1
+cout << (a == b);         // 0
+cout << (a < b);          // 1
+swap(a, b);               // O(1)
+cout << a[0];             // 9
+
+=== Other containers
+--- to=stl-containers | A set keeps unique values in sorted order; insert, erase, count and lower_bound each cost O(log n).
+[main]
+set<int> s;                  // sorted, no repeats
+s.insert(5); s.insert(1); s.insert(5);
+cout << s.size();            // 2
+cout << s.count(5);          // 1
+s.erase(5);
+cout << *s.begin();          // 1
+auto it = s.lower_bound(0);  // first >= 0
+cout << (it == s.end());     // 0
+for (int x : s) cout << x;   // 1
+--- to=stl-containers | A multiset is a sorted set that keeps repeats; erase(value) removes all copies, erase(find(value)) removes one.
+[main]
+multiset<int> ms = {3, 1, 3};   // sorted, repeats
+cout << ms.count(3);            // 2
+ms.erase(ms.find(3));           // removes ONE 3
+cout << ms.size();              // 2
+ms.insert(3);
+ms.erase(3);                    // removes ALL 3
+cout << ms.size();              // 1
+cout << *ms.rbegin();           // 1
+--- to=stl-containers | A map stores key and value pairs sorted by key in O(log n) per step; reading m[key] creates the key with value 0.
+[main]
+map<string, int> cnt;          // key -> value
+cnt["ali"] = 5;
+cnt["omar"]++;                 // starts at 0
+cout << cnt["omar"];           // 1
+cout << cnt.count("sara");     // 0
+for (auto [name, c] : cnt)
+    cout << name << c << " ";  // ali5 omar1
+cnt.erase("ali");
+cout << cnt.size();            // 1
+--- to=stl-containers | Test a key with count or find, because m[key] adds the key to the map when it is missing.
+[main]
+map<int, int> m = {{1, 10}};
+// TRAP: m[7] creates key 7
+if (m[7] == 0) cout << m.size();     // 2
+// RIGHT: count() and find() add nothing
+if (m.count(8)) cout << "has 8";
+auto it = m.find(1);
+if (it != m.end()) cout << it->second;   // 10
+cout << m.size();                    // 2
+--- to=stl-containers | unordered_map is a map with no order and O(1) average speed, but special tests can make it very slow, so prefer map on Codeforces.
+[main]
+unordered_map<int, int> cnt;   // no order
+cnt[7]++;
+cnt[7]++;
+cout << cnt[7];                // 2
+cout << cnt.count(3);          // 0
+// TRAP: bad tests make each step O(n): TLE
+// RIGHT on Codeforces: map, or sort
+--- to=stl-containers | A stack gives back the newest element first; push, pop and top cost O(1), and top or pop on an empty stack is undefined.
+[main]
+stack<int> st;               // last in, first out
+st.push(1); st.push(2);
+cout << st.top();            // 2
+st.pop();                    // returns nothing
+cout << st.top();            // 1
+cout << st.size();           // 1
+cout << st.empty();          // 0
+// WRONG: top() or pop() when empty
+--- to=stl-containers | A queue gives back the oldest element first; push, pop and front cost O(1), and it is the container of BFS.
+[main]
+queue<int> q;                // first in, first out
+q.push(1); q.push(2);
+cout << q.front();           // 1
+cout << q.back();            // 2
+q.pop();                     // removes the 1
+cout << q.front();           // 2
+while (!q.empty()) q.pop();
+cout << q.size();            // 0
+--- to=stl-containers | A deque adds and removes at both ends in O(1) and also has indexes like a vector.
+[main]
+deque<int> d = {2, 3};
+d.push_front(1);             // d = 1 2 3
+d.push_back(4);              // d = 1 2 3 4
+d.pop_front();               // d = 2 3 4
+d.pop_back();                // d = 2 3
+cout << d.front() << d.back() << d[0];   // 232
+--- span2 to=stl-containers | A priority_queue always has the biggest element on top; push and pop cost O(log n), and the long form puts the smallest on top.
+[main]
+priority_queue<int> pq;                // biggest on top
+pq.push(3); pq.push(9); pq.push(5);
+cout << pq.top();                      // 9
+pq.pop();                              // removes the 9
+cout << pq.top();                      // 5
+priority_queue<int, vector<int>, greater<int>> minq;    // smallest on top
+minq.push(3); minq.push(9); minq.push(1);
+cout << minq.top();                    // 1
+--- to=bits | A bitset is a fixed row of bits with a size written in the code; it prints with the highest bit first.
+[main]
+bitset<8> b;                 // 8 bits, all 0
+b[1] = 1;
+b.set(3);
+cout << b;                   // 00001010
+cout << b.count();           // 2
+cout << b.test(3);           // 1
+b.flip();
+cout << b.count();           // 6
+--- to=stl-containers | Containers can hold other containers: a map from a key to a list, or a set of pairs.
+[main]
+map<int, vector<int>> where;   // value -> positions
+where[5].push_back(0);
+where[5].push_back(3);
+cout << where[5].size();       // 2
+set<pair<int, int>> seen;
+seen.insert({1, 2});
+cout << seen.count({1, 2});    // 1
+
+=== Iterators
+--- to=stl-basics | begin() points to the first element and end() points one place after the last, so never read *end().
+[main]
+vector<int> v = {4, 5, 6};
+for (auto it = v.begin(); it != v.end(); ++it)
+    cout << *it << " ";          // 4 5 6
+cout << *(v.end() - 1);          // 6
+// WRONG: *v.end()   one PAST the last
+--- to=stl-basics | rbegin() and rend() walk a container from the last element to the first; they also sort from big to small.
+[main]
+vector<int> v = {4, 6, 5};
+for (auto it = v.rbegin(); it != v.rend(); ++it)
+    cout << *it << " ";          // 5 6 4
+cout << *v.rbegin();             // 5
+sort(v.rbegin(), v.rend());      // v = 6 5 4
+--- to=stl-containers | In a map each iterator points to a pair of key and value; the keys come in sorted order.
+[main]
+map<string, int> m = {{"b", 2}, {"a", 1}};
+for (auto it = m.begin(); it != m.end(); ++it)
+    cout << it->first << it->second;   // a1b2
+cout << m.begin()->first;        // a
+cout << m.rbegin()->first;       // b
+--- to=stl-containers | next and prev give the neighbour iterator without changing it; do not step before begin() or read end().
+[main]
+set<int> s = {10, 20, 30};
+auto it = s.find(20);
+cout << *next(it);        // 30
+cout << *prev(it);        // 10
+++it;                     // now at 30
+--it;                     // back at 20
+cout << *prev(s.end());   // 30
+// WRONG: prev(s.begin()) and *s.end()
+--- to=stl-containers | find and lower_bound return end() when nothing fits, so compare with end() before you use the iterator.
+[main]
+set<int> s = {10, 20, 30};
+auto it = s.find(25);
+if (it == s.end()) cout << "no";     // no
+it = s.lower_bound(25);              // first >= 25
+if (it != s.end()) cout << *it;      // 30
+it = s.lower_bound(99);
+cout << (it == s.end());             // 1
+--- to=binary-search | In a vector, subtract begin() from an iterator to get its index.
+[main]
+vector<int> v = {10, 20, 30, 40};
+auto it = lower_bound(v.begin(), v.end(), 25);
+int idx = it - v.begin();        // 2
+cout << v.end() - it;            // 2
+cout << *(v.begin() + 3);        // 40
+--- to=stl-containers | Set and map iterators can only step with ++ and --, so there is no fast index; use the set's own lower_bound, not the global one.
+[main]
+set<int> s = {10, 20, 30};
+auto it = s.lower_bound(25);     // RIGHT: O(log n)
+// WRONG: it - s.begin()   does not compile
+// WRONG: s.begin() + 2    does not compile
+int idx = distance(s.begin(), it);   // 2
+// distance walks step by step: O(n)
+// SLOW: lower_bound(s.begin(), s.end(), 25)
+--- to=debugging | erase kills the iterator you gave it; take the next one from its return value and do not also do ++it.
+[main]
+set<int> s = {1, 2, 3, 4};
+// WRONG: s.erase(it); then ++it   it is dead
+for (auto it = s.begin(); it != s.end(); ) {
+    if (*it % 2 == 0) it = s.erase(it);
+    else ++it;
+}
+for (int x : s) cout << x << " ";    // 1 3
+--- to=debugging | Do not add to or erase from a vector inside a range-based for over it; loop with an index.
+[main]
+vector<int> v = {1, 2, 3};
+// WRONG: for (int x : v) v.push_back(x);
+//   the loop's hidden iterator dies
+int n = v.size();
+for (int i = 0; i < n; i++)      // RIGHT: index
+    v.push_back(v[i]);
+cout << v.size();                // 6
+
+=== <algorithm> and friends
+--- to=sorting | sort puts a range in increasing order in O(n log n); add greater or use rbegin, rend for decreasing order.
+[main]
+vector<int> v = {3, 1, 2};
+sort(v.begin(), v.end());        // v = 1 2 3
+sort(v.rbegin(), v.rend());      // v = 3 2 1
+sort(v.begin(), v.begin() + 2);  // v = 2 3 1
+sort(v.begin(), v.end(), greater<int>());
+cout << v[0] << v[1] << v[2];    // 321
+--- to=sorting | A lambda as third argument gives your own order: return true when a must come before b; never use <= in it.
+[main]
+vector<int> v = {-5, 2, -1, 4};
+sort(v.begin(), v.end(), [](int a, int b) {
+    return abs(a) < abs(b);      // a comes first
+});                              // v = -1 2 4 -5
+// WRONG: <= here is undefined: may crash
+--- to=stl-basics | Small tools that change a range or two variables in one line.
+[main]
+vector<int> v = {1, 2, 3};
+reverse(v.begin(), v.end());     // v = 3 2 1
+swap(v[0], v[2]);                // v = 1 2 3
+fill(v.begin(), v.end(), 7);     // v = 7 7 7
+iota(v.begin(), v.end(), 1);     // v = 1 2 3
+int a = 1, b = 2;
+swap(a, b);                      // a = 2
+--- to=overflow | min and max need two values of the same type; cast one side when you mix int and long long.
+[main]
+int a = 3, b = 8;
+long long big = 5;
+cout << min(a, b);                 // 3
+cout << max(a, b);                 // 8
+cout << max({a, b, 10});           // 10
+// WRONG: max(a, big)   int with long long
+cout << max((long long)a, big);    // 5
+auto [lo, hi] = minmax(a, b);
+cout << lo << hi;                  // 38
+--- span2 to=stl-basics | max_element and min_element return an iterator: put * in front for the value, subtract begin() for the index.
+[main]
+vector<int> v = {4, 9, 2};
+cout << *max_element(v.begin(), v.end());                // 9
+cout << *min_element(v.begin(), v.end());                // 2
+int pos = max_element(v.begin(), v.end()) - v.begin();   // 1
+// WRONG: * on the result when v is empty
+--- span2 to=overflow | accumulate adds a range and the type of the start value is the type of the sum, so write 0LL; count and find scan in O(n).
+[main]
+vector<int> v = {1, 2, 2, 3};
+long long sum = accumulate(v.begin(), v.end(), 0LL);    // 8
+// WRONG: accumulate(v.begin(), v.end(), 0)   the sum is an int: overflow
+cout << count(v.begin(), v.end(), 2);                   // 2
+auto it = find(v.begin(), v.end(), 3);                  // v.end() if absent
+if (it != v.end()) cout << it - v.begin();              // 3
+--- span2 to=binary-search | On a sorted vector, lower_bound gives the first place with value >= x and upper_bound the first with value > x, in O(log n).
+[main]
+vector<int> v = {1, 3, 3, 7};                             // must be sorted
+int i = lower_bound(v.begin(), v.end(), 3) - v.begin();   // 1
+int j = upper_bound(v.begin(), v.end(), 3) - v.begin();   // 3
+cout << j - i;                                            // 2
+int k = lower_bound(v.begin(), v.end(), 9) - v.begin();   // 4
+cout << binary_search(v.begin(), v.end(), 7);             // 1
+--- to=sorting | Sort first, then unique moves the repeats to the end and erase cuts them off.
+[main]
+vector<int> v = {3, 1, 3, 2, 1};
+sort(v.begin(), v.end());
+v.erase(unique(v.begin(), v.end()), v.end());
+cout << v.size();                   // 3
+for (int x : v) cout << x << " ";   // 1 2 3
+--- to=brute-force | next_permutation changes the range to the next order and returns false after the last one; start from a sorted range to see all.
+[main]
+vector<int> p = {1, 2, 3};       // start sorted
+do {
+    for (int x : p) cout << x;
+    cout << " ";
+} while (next_permutation(p.begin(), p.end()));
+// 123 132 213 231 312 321
+--- to=number-theory | Ready-made math functions; sqrt and pow work with doubles, so they are not exact for big numbers.
+[main]
+cout << gcd(12, 18);            // 6
+cout << lcm(4, 6);              // 12
+cout << abs(-5);                // 5
+cout << abs(-5000000000LL);     // 5000000000
+cout << sqrt(16.0);             // 4
+cout << pow(2, 10);             // 1024
+// TRAP: sqrt, pow give a double
+--- to=stl-basics | The _if tools take a lambda that tests one element.
+[main]
+vector<int> v = {1, 2, 3, 4};
+auto even = [](int x) { return x % 2 == 0; };
+cout << count_if(v.begin(), v.end(), even);   // 2
+cout << all_of(v.begin(), v.end(), even);     // 0
+cout << any_of(v.begin(), v.end(), even);     // 1
+
+=== Reading errors
+--- to=debugging | The compiler does not know this name: it is misspelled, declared further down, or declared inside another pair of curly brackets.
+[html]
+    <div class="fx"><code>error: 'totl' was not declared in this scope</code></div>
+[main]
+int total = 0;
+// WRONG: cout << totl;      spelling
+// WRONG: using x before the line  int x;
+// WRONG: using i after its for loop
+cout << total;
+--- to=debugging | A semicolon is missing; the compiler notices it one line later, so look at the end of the line above the one it names.
+[html]
+    <div class="fx"><code>error: expected ';' before 'cout'</code></div>
+[main]
+int x;
+// WRONG: x = 5         no ; here
+//        cout << x;    error shown here
+x = 5;
+cout << x;
+--- to=debugging | A curly bracket was opened and never closed; count your brackets and keep the code indented.
+[html]
+    <div class="fx"><code>error: expected '}' at end of input</code></div>
+[main]
+int x = 1;
+// WRONG: if (x) { cout << x;     no }
+if (x) {
+    cout << x;
+}                // every { needs its }
+--- to=debugging | cout cannot print this type; a vector, pair or struct must be printed element by element.
+[html]
+    <div class="fx"><code>error: no match for 'operator&lt;&lt;' (operand types are 'std::ostream' and 'std::vector&lt;int&gt;')</code></div>
+[main]
+vector<int> v = {1, 2};
+pair<int, int> p = {3, 4};
+// WRONG: cout << v;    cout << p;
+for (int x : v) cout << x << " ";
+cout << p.first << " " << p.second;
+--- to=debugging | You used square brackets on something that is not an array, most often a plain int with the same name as the array you wanted.
+[html]
+    <div class="fx"><code>error: invalid types 'int[int]' for array subscript</code></div>
+[main]
+int n = 3;
+vector<int> a(n);
+// WRONG: n[0] = 1;     n is one int
+// WRONG: int a; ... a[0]
+a[0] = 1;
+--- to=overflow | No function fits these argument types; with min and max both sides must have the same type.
+[html]
+    <div class="fx"><code>error: no matching function for call to 'max(int&amp;, long long int&amp;)'</code></div>
+[main]
+int a = 1;
+long long b = 2;
+// WRONG: max(a, b)
+cout << max((long long)a, b);
+--- to=debugging | Some path through a function with a return type reaches the end without a return; the result is then undefined.
+[html]
+    <div class="fx"><code>warning: control reaches end of non-void function</code></div>
+[global]
+// WRONG: no return when x <= 0
+// bool ok(int x) { if (x > 0) return true; }
+bool ok(int x) {
+    if (x > 0) return true;
+    return false;       // RIGHT: always return
+}
+--- to=debugging | The same name is declared twice in one block; delete the second type word to reuse the variable.
+[html]
+    <div class="fx"><code>error: redeclaration of 'int x'</code></div>
+[main]
+int x = 1;
+// WRONG: int x = 2;    declared again
+x = 2;                  // RIGHT: no type word
+--- to=debugging | Double quotes make text and single quotes make one char; they are different types.
+[html]
+    <div class="fx"><code>error: invalid conversion from 'const char*' to 'char'</code></div>
+[main]
+// WRONG: char c = "a";
+char c = 'a';           // one char: ' '
+string s = "a";         // text: " "
+// WRONG: if (s[0] == "a")
+if (s[0] == 'a') cout << c;
+--- to=debugging | The left side of = must be a variable; usually you wrote = where you wanted ==.
+[html]
+    <div class="fx"><code>error: lvalue required as left operand of assignment</code></div>
+[main]
+int a = 1, b = 2;
+// WRONG: if (a + 1 = b)
+if (a + 1 == b) cout << "equal";
+--- to=debugging | Your global name is also a name in the standard library, such as count, next, prev, max, min or data; rename your variable.
+[html]
+    <div class="fx"><code>error: reference to 'count' is ambiguous</code></div>
+[global]
+// WRONG as global names:
+// int count;   int next[100];
+int cnt;                // RIGHT: another name
+int nxt[100];
+--- to=debugging | You wrote .something on a variable that is not a struct or a container, most often a plain int.
+[html]
+    <div class="fx"><code>error: request for member 'size' in 'x', which is of non-class type 'int'</code></div>
+[main]
+int x = 3;
+vector<int> v(x);
+// WRONG: x.size()      x is an int
+cout << v.size();
+--- to=debugging | A function with a & parameter needs a variable, not a plain number or a temporary result.
+[html]
+    <div class="fx"><code>error: cannot bind non-const lvalue reference of type 'int&amp;' to an rvalue of type 'int'</code></div>
+[global]
+void addOne(int &x) { x++; }
+void show(const int &x) { cout << x; }
+
+int main() {
+    int a = 5;
+    // WRONG: addOne(5);    5 is not a variable
+    addOne(a);
+    show(5);             // const & accepts it
+}
+--- to=debugging | You compare an int with size(), which is unsigned; it is only a warning, but it hides the size() - 1 trap.
+[html]
+    <div class="fx"><code>warning: comparison of integer expressions of different signedness</code></div>
+[main]
+vector<int> v(3);
+// warns: for (int i = 0; i < v.size(); i++)
+int n = v.size();
+for (int i = 0; i < n; i++) cout << v[i];
+--- to=debugging | A local variable is read before it gets a value, so it holds garbage; you see this warning only when you compile with -Wall.
+[html]
+    <div class="fx"><code>warning: 'sum' is used uninitialized</code></div>
+[main]
+// WRONG: int sum;   then  sum += x;
+int sum = 0;            // RIGHT
+sum += 5;
+cout << sum;
+--- to=debugging | The program touched memory that is not its own; Codeforces shows it as Runtime error.
+[html]
+    <div class="fx"><code>Segmentation fault</code> &nbsp;(exit code 139, on Windows -1073741819)</div>
+[skip]
+// index outside the array or vector
+// very big array inside a function
+// recursion that never stops
+// top(), back(), pop() on an empty container
+// *it when it == end(), *p when p is nullptr
+--- to=debugging | A library function refused a bad argument and stopped the program; the message names the function.
+[html]
+    <div class="fx"><code>terminate called after throwing an instance of 'std::out_of_range'</code></div>
+[skip]
+// v.at(i) or s.at(i): i outside the size
+// s.substr(pos): pos bigger than s.size()
+// 'std::invalid_argument': stoi("abc")
+// 'std::length_error' or 'std::bad_alloc':
+//   a negative or huge size, for example
+//   vector<int> v(n - 1) when n is 0
+--- to=debugging | You divided an integer by zero or took % by zero; test the divisor first.
+[html]
+    <div class="fx"><code>Floating point exception</code> &nbsp;(exit code 136)</div>
+[main]
+int a = 5, b = 0;
+// WRONG: a / b  or  a % b  when b == 0
+if (b != 0) cout << a / b;
+--- to=complexity | No message and no output: the program never stops or is too slow, which Codeforces shows as Time limit exceeded.
+[html]
+    <div class="fx">no output, program does not stop &nbsp;(Time limit exceeded)</div>
+[skip]
+// loop condition never becomes false
+// i-- written where you wanted i++
+// unsigned i with i >= 0
+// waiting for input you did not type
+// too many steps: count them (10^8 per second)
+--- to=debugging | A function was declared with a prototype but its body is missing or its parameters differ.
+[html]
+    <div class="fx"><code>undefined reference to 'f(int)'</code></div>
+[global]
+int f(int x);             // prototype
+// WRONG: no body anywhere
+// WRONG: body is  int f(long long x)
+int f(int x) { return x + 1; }   // RIGHT

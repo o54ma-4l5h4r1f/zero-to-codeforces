@@ -1,0 +1,86 @@
+<h2>Names and history</h2>
+
+<article data-key="bug">
+<h3>Why "bug" and "debugging"?</h3>
+<p>Engineers called a hidden fault a "bug" long before computers. Thomas Edison used the word in his letters in the 1870s.</p>
+<p><span class="tr" data-ar="في 1947 وجد فريق حاسوب Harvard Mark II فراشة عالقة داخل أحد أجزاء الجهاز.">In 1947, the team of the Harvard Mark II computer found a moth stuck inside one of its parts.</span>
+They taped it into their logbook with the note "First actual case of bug being found".</p>
+<p><span class="tr" data-ar="النكتة أن الكلمة كانت معروفة أصلًا، وهذه المرة كانت حشرة حقيقية.">The joke was that the word was already common, and this time it was a real insect.</span>
+The page is now in a museum in Washington.</p>
+<p>"Debugging" means taking the bugs out.</p>
+<p class="why-means"><b>What this means for you:</b> bugs are normal for everyone. Finding them fast is a skill you can learn.</p>
+</article>
+
+<article data-key="greedy-name">
+<h3>Why is it called "greedy"?</h3>
+<p>A greedy person takes the biggest piece now and does not think about later.</p>
+<p><span class="tr" data-ar="الخوارزمية الجشعة تفعل الشيء نفسه: في كل خطوة تأخذ الخيار الذي يبدو الأفضل الآن، ولا ترجع أبدًا.">A greedy algorithm does the same: at each step it takes the choice that looks best now, and never goes back.</span></p>
+<p>Sometimes this is right. Sometimes it is not. Coins 1, 3 and 4, and you must pay 6: greedy takes \( 4 + 1 + 1 \), three coins. The best is \( 3 + 3 \), two coins.</p>
+<p>Jack Edmonds used the name in the title of a well-known paper in 1971.</p>
+<p><span class="tr" data-ar="لا تثق بالفكرة الجشعة قبل أن تجرّبها على أمثلة صغيرة.">Do not trust a greedy idea before you test it on small examples.</span></p>
+<p class="why-means"><b>What this means for you:</b> greedy is fast and short. Check it against brute force on small cases before you submit.</p>
+</article>
+
+<article data-key="dp-name">
+<h3>Why is it called "dynamic programming"?</h3>
+<p>Richard Bellman developed the method in the 1950s, at the RAND Corporation in the USA.</p>
+<p><span class="tr" data-ar="في ذلك الوقت كانت كلمة programming تعني التخطيط ووضع الجداول، وليس كتابة الكود.">At that time, "programming" meant planning and making schedules, not writing code.</span></p>
+<p>In his autobiography (1984), Bellman says he picked "dynamic" because it sounded good and hid the mathematics. An important man in the government, he wrote, disliked the word "research".</p>
+<p><span class="tr" data-ar="هذه روايته هو، وقد شكّك بعض المؤرخين في بعض تفاصيل التواريخ.">This is his own account. Some historians question details of the dates.</span></p>
+<p><span class="tr" data-ar="المهم: الاسم لا يخبرك بشيء عن الطريقة.">What matters: the name tells you nothing about the method.</span></p>
+<p class="why-means"><b>What this means for you:</b> think of DP as "fill a table of answers to smaller questions". Ignore the name.</p>
+</article>
+
+<article data-key="dijkstra">
+<h3>Who was Dijkstra?</h3>
+<p>Edsger W. Dijkstra (1930–2002) was a Dutch computer scientist. The name sounds like "DIKE-stra".</p>
+<p>He designed his shortest-path algorithm in 1956 and published it in 1959.</p>
+<p><span class="tr" data-ar="في مقابلة بعد سنوات طويلة قال إنه صمّمها في حوالي عشرين دقيقة في مقهى في أمستردام، من دون ورقة وقلم.">In an interview many years later, he told how it happened. He designed it in about twenty minutes at a café in Amsterdam, without pen and paper.</span></p>
+<p>He wanted a problem that people without computer knowledge could understand: the shortest road between two Dutch cities.</p>
+<p><span class="tr" data-ar="حصل على جائزة تورنغ عام 1972، وهي أهم جائزة في علوم الحاسوب.">He received the Turing Award in 1972, the top prize in computer science.</span></p>
+<p class="why-means"><b>What this means for you:</b> a great idea can be small. Dijkstra's algorithm is a short loop with a priority queue.</p>
+</article>
+
+<article data-key="stack-queue">
+<h3>Why "stack" and "queue"?</h3>
+<p><span class="tr" data-ar="المكدّس مثل كومة صحون: تضع الصحن في الأعلى وتأخذ من الأعلى.">A stack is like a pile of plates: you put a plate on top, and you take from the top.</span>
+The last one in is the first one out.</p>
+<p><span class="tr" data-ar="الطابور مثل صفّ الناس في متجر: من يأتي أولًا يُخدَم أولًا.">A queue is like a line of people at a shop: first come, first served.</span></p>
+<figure class="viz" data-viz="vars" aria-label="A stack and a queue that both received 1, then 2, then 3.">
+<script type="application/json">
+{ "items": [ ["stack, top at the end", [1, 2, 3]], ["queue, front first", [1, 2, 3]] ] }
+</script>
+<figcaption>Both got 1, then 2, then 3. The stack gives back 3 first. The queue gives back 1 first.</figcaption>
+</figure>
+<p class="why-means"><b>What this means for you:</b> ask "who must come out next: the newest or the oldest?" Newest: stack. Oldest: queue.</p>
+</article>
+
+<article data-key="euler-graph">
+<h3>Where do graphs come from?</h3>
+<p>In 1736, Leonhard Euler looked at the city of Königsberg. A river split it into four land areas, joined by seven bridges.</p>
+<p><span class="tr" data-ar="السؤال: هل تستطيع أن تمشي في المدينة وتعبر كل جسر مرة واحدة بالضبط؟">The question: can you walk through the city and cross every bridge exactly once?</span></p>
+<p>Euler drew each land area as a point and each bridge as a line. Only "what is connected to what" was left.</p>
+<p><span class="tr" data-ar="ثم أثبت أن ذلك مستحيل، لأن كل منطقة من الأربع لها عدد فردي من الجسور.">Then he showed it is impossible, because each of the four areas has an odd number of bridges.</span>
+This is often called the start of graph theory.</p>
+<p class="why-means"><b>What this means for you:</b> to use a graph, keep only the points and the links. Throw away the rest of the story.</p>
+</article>
+
+<article data-key="mid-overflow">
+<h3>Which binary search bug hid for years?</h3>
+<p>Many binary searches compute the middle as <code>(lo + hi) / 2</code>.</p>
+<p><span class="tr" data-ar="إذا كان lo و hi كبيرين فإن lo + hi يتجاوز حدّ int.">If <code>lo</code> and <code>hi</code> are big, <code>lo + hi</code> passes the <code>int</code> limit.</span>
+For <code>lo</code> = 2 000 000 000 and <code>hi</code> = 2 100 000 000, the sum is \( 4.1 \cdot 10^9 \).</p>
+<p>In 2006, Joshua Bloch of Google wrote that Java's own binary search had this bug for about nine years. Many books had the same line.</p>
+<p><span class="tr" data-ar="لم يلاحظه أحد لأنه يظهر فقط مع مصفوفات ضخمة جدًا أو قيم كبيرة جدًا.">Nobody noticed, because it shows only with huge arrays or huge values.</span></p>
+<p>The safe line <code>lo + (hi - lo) / 2</code> gives 2 050 000 000, the right middle.</p>
+<p class="why-means"><b>What this means for you:</b> write <code>lo + (hi - lo) / 2</code>, and use <code>long long</code> when the range is big.</p>
+</article>
+
+<article data-key="bits-stdc">
+<h3>What is <code>bits/stdc++.h</code>?</h3>
+<p>It is a file that comes with the g++ compiler. It includes the whole C++ standard library at once.</p>
+<p><span class="tr" data-ar="هو ليس جزءًا من معيار C++، لذلك بعض المترجمات مثل MSVC من Microsoft لا تحتوي عليه.">It is not part of the C++ standard. Some compilers, like Microsoft's MSVC, do not have it.</span></p>
+<p>Compiling takes a bit longer, because the compiler reads the whole library. In a contest, nobody cares.</p>
+<p><span class="tr" data-ar="مترجمات G++ على Codeforces تحتوي عليه.">The G++ compilers on Codeforces have it.</span></p>
+<p class="why-means"><b>What this means for you:</b> in contests, choose a G++ compiler and use this one line. In big projects, people include only what they need.</p>
+</article>

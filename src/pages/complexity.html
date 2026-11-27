@@ -1,11 +1,10 @@
-<p class="idea"><span class="tr" data-ar="الحَكَم ينفّذ حوالي 10^8 خطوة بسيطة في الثانية الواحدة. عُدَّ خطوات فكرتك قبل أن تكتب الكود.">The judge does about \( 10^8 \) simple steps in one second. Count the steps of your idea before you write code.</span></p>
+<p class="idea"><span class="tr" data-ar="اقرأ أكبر قيمة لـ n في الحدود أولًا. هي تخبرك بالسرعة O(…) التي تحتاجها فكرتك قبل أن تكتب الكود.">Read the biggest \( n \) in the limits first. It tells you which \( O(\dots) \) your idea needs, before you write code.</span></p>
 
 <aside class="before">
   <h2>Before this lesson</h2>
   <ul>
-    <li>You know the verdict "Time limit exceeded" → <a href="#how-codeforces-works">How Codeforces works</a></li>
+    <li>You can find the cost of your code, like \( O(n) \) or \( O(n^2) \) → <a href="#big-o">How much does my code cost?</a></li>
     <li>You can find the limits of \( n \) in a statement → <a href="#read-a-problem">How to read a problem</a></li>
-    <li>You can read a loop over an array → <a href="#cpp-template">Your C++ template</a></li>
   </ul>
 </aside>
 
@@ -13,33 +12,19 @@
   <h2>Use it on every problem</h2>
   <ol>
     <li>Find the biggest \( n \) in the <span class="term" data-t="constraints">constraints</span>.</li>
-    <li>Count the steps of your idea for that \( n \).</li>
-    <li><span class="tr" data-ar="إذا كان العدد حوالي 10^8 أو أقل فالحل سريع كفاية. إذا كان 10^9 أو أكثر فهو بطيء جدًا، وعليك أن تجد فكرة أفضل.">About \( 10^8 \) or less: fast enough. \( 10^9 \) or more: too slow, so find a better idea.</span></li>
+    <li>Look it up in the key table below. It gives the \( O(\dots) \) that fits.</li>
+    <li><span class="tr" data-ar="ابحث عن فكرة بهذه السرعة أو أسرع، ثم احسب تكلفة الكود قبل أن ترسله.">Look for an idea with that speed or faster. Then cost your code before you submit.</span></li>
   </ol>
-  <p class="note">A "simple step" is one small action: add two numbers, compare two numbers, read one array cell. The number \( 10^8 \) is a safe estimate, not an exact law.</p>
+  <p class="note">You already know the rule: about \( 10^8 \) simple steps per second. This lesson turns it around: from the limits to the speed.</p>
 </section>
 
 <section>
-  <h2>Count with numbers first</h2>
-  <p>Take an array of \( n = 1000 \) numbers.</p>
-  <ul>
-    <li>One loop over the array does 1000 steps.</li>
-    <li>A loop inside a loop does \( 1000 \cdot 1000 = 10^6 \) steps.</li>
-  </ul>
-  <p>For any \( n \) these are \( n \) steps and \( n \cdot n = n^2 \) steps. We write them as \( O(n) \) and \( O(n^2) \).</p>
-  <p><span class="tr" data-ar="الرمز O(…) يعني: &quot;حوالي هذا العدد من الخطوات&quot;. يهمّنا الحجم التقريبي فقط، لا العدد الدقيق.">\( O(\dots) \) means "about this many steps". Only the rough size matters, not the exact count.</span> So \( n^2 / 2 \) steps and \( 3 n^2 \) steps are both written \( O(n^2) \). This rough size is called the <span class="term" data-t="complexity">complexity</span>.</p>
-  <p>Four more symbols appear in this lesson:</p>
-  <table>
-    <tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr>
-    <tr><td>\( \log n \)</td><td>How many times you cut \( n \) in half to reach 1.</td><td>\( \log 8 = 3 \), because 8 → 4 → 2 → 1</td></tr>
-    <tr><td>\( \sqrt{n} \)</td><td>The number that gives \( n \) when multiplied by itself.</td><td>\( \sqrt{100} = 10 \)</td></tr>
-    <tr><td>\( 2^n \)</td><td>The number 2 multiplied \( n \) times.</td><td>\( 2^{10} = 1024 \)</td></tr>
-    <tr><td>\( n! \)</td><td>\( 1 \cdot 2 \cdot 3 \cdot \dots \cdot n \)</td><td>\( 4! = 24 \)</td></tr>
-  </table>
+  <h2>One new symbol</h2>
+  <p>\( n! \) means \( 1 \cdot 2 \cdot 3 \cdot \dots \cdot n \). Example: \( 4! = 24 \). It is the number of ways to put \( n \) things in a row. \( \log n \), \( \sqrt{n} \) and \( 2^n \) you know from the last lesson.</p>
 </section>
 
 <section>
-  <h2>Three ways to understand it</h2>
+  <h2>Two ways to see it</h2>
 
   <div class="way">
     <h3><b>1 · Story</b> — walk or fly</h3>
@@ -56,31 +41,26 @@
       <tr><td>\( 10^5 \)</td><td>about 17</td><td>about \( 1.7 \cdot 10^6 \)</td><td class="hi">\( 10^{10} \): about 100 seconds</td></tr>
     </table>
     <p class="note">For small \( n \) every idea is fast. For \( n = 10^5 \) the \( n^2 \) idea gets "Time limit exceeded".</p>
+    <p>The same numbers as a chart. Each line is one kind of idea.</p>
+    <figure class="viz" data-viz="chart" aria-label="Chart of the number of steps for four kinds of ideas, when n grows from 1 to one million: n, n log n, n squared and 2 to the power n. A dashed line marks 10^8 steps, about one second.">
+      <script type="application/json">
+{
+  "x": { "label": "n = size of the input", "name": "n", "min": 1, "max": 1000000, "log": true },
+  "y": { "label": "steps", "min": 1, "max": 1000000000000, "log": true },
+  "series": [
+    { "name": "n", "fn": "n" },
+    { "name": "n log n", "fn": "n log n" },
+    { "name": "n^2", "fn": "n^2" },
+    { "name": "2^n", "fn": "2^n" }
+  ],
+  "ref": { "y": 100000000, "label": "10^8 steps = about 1 second", "over": "too slow" }
+}
+      </script>
+      <figcaption><b>How to read this chart.</b> <span class="tr" data-ar="إلى اليمين تكبر n، وإلى الأعلى يزيد عدد الخطوات. كل خط في الشبكة يساوي 10 أضعاف الخط الذي قبله.">To the right, \( n \) grows. Up, the steps grow. Each grid line is 10 times the line before it.</span> <span class="tr" data-ar="الجزء من المنحنى الذي يقع فوق الخط المتقطّع بطيء جدًا لثانية واحدة.">The part of a line above the dashed line is too slow for one second.</span> Find where \( n^2 \) crosses it: near \( n = 10^4 \).</figcaption>
+    </figure>
+    <p class="note">\( 2^n \) leaves the chart before \( n = 50 \). That is why \( O(2^n) \) works only for \( n \le 20 \).</p>
   </div>
 
-  <div class="way">
-    <h3><b>3 · Code</b> — count the loops</h3>
-    <p>\( O(n) \): one loop.</p>
-<pre data-part="main"><code class="cpp">
-long long sum = 0;
-for (int i = 0; i &lt; n; i++) sum += a[i];          // n steps
-</code></pre>
-    <p>\( O(n^2) \): a loop inside a loop. This is a <span class="term" data-t="nested-loop">nested loop</span>.</p>
-<pre data-part="main"><code class="cpp">
-int pairs = 0;
-for (int i = 0; i &lt; n; i++)
-    for (int j = i + 1; j &lt; n; j++)               // about n * n / 2 steps
-        if (a[i] == a[j]) pairs++;
-</code></pre>
-    <p>\( O(\log n) \): the number is cut in half each time.</p>
-<pre data-part="main"><code class="cpp">
-int steps = 0;
-while (n &gt; 1) {                                   // 10^9 -&gt; 1 in about 30 steps
-    n /= 2;
-    steps++;
-}
-</code></pre>
-  </div>
 </section>
 
 <section>
@@ -96,7 +76,7 @@ while (n &gt; 1) {                                   // 10^9 -&gt; 1 in about 30
     <tr><td>\( n \le 10^{12} \)</td><td>\( O(\sqrt{n}) \)</td><td>\( 10^6 \)</td><td>A loop while \( i \cdot i \le n \).</td></tr>
     <tr><td>\( n \le 10^{18} \)</td><td>\( O(\log n) \) or \( O(1) \)</td><td>about 60</td><td>A formula, or cutting in half.</td></tr>
   </table>
-  <p class="tip-box">The row \( n \le 2 \cdot 10^5 \) is the most common one. <b>It means: two nested loops over \( n \) are too slow.</b></p>
+  <p class="tip-box">The row \( n \le 2 \cdot 10^5 \) is the most common one. <b>It means: two nested loops over \( n \) are too slow.</b> <button type="button" class="why" data-why="limits-2e5">why?</button></p>
   <p class="note">\( O(1) \) means the number of steps does not grow with \( n \).</p>
 </section>
 
@@ -134,14 +114,7 @@ int main() {
 
 <p class="complexity">Rule: put the biggest \( n \) into your \( O(\dots) \). Result \( \le 10^8 \) → OK for 1 second.</p>
 
-<section>
-  <h2>With t test cases</h2>
-  <p>Many problems have \( t \) test cases in one input. Look for one line in the statement.</p>
-  <ul>
-    <li><span class="tr" data-ar="إذا قالت المسألة «مجموع n على كل حالات الاختبار لا يتجاوز 2·10^5» فاستخدم هذا المجموع كأنه n.">The statement says "the sum of \( n \) over all test cases is at most \( 2 \cdot 10^5 \)": use that <b>sum</b> as your \( n \).</span> An \( O(n) \) solution for each test is fine.</li>
-    <li><span class="tr" data-ar="إذا لم تقل المسألة ذلك فاضرب: عدد الخطوات = t × (خطوات حالة اختبار واحدة).">The statement does not say it: multiply. Steps = \( t \times \) (steps for one test).</span> Example: \( t = 10^4 \) tests with \( n = 2 \cdot 10^5 \) each give \( 2 \cdot 10^9 \) steps.</li>
-  </ul>
-</section>
+<p class="note">Many test cases? Use the sum of \( n \) from the statement as your \( n \). See <a href="#big-o">How much does my code cost?</a></p>
 
 <section class="myths">
   <h2>Wrong ideas people get</h2>
@@ -155,8 +128,8 @@ int main() {
       <p class="truth"><b>The truth:</b> <span class="tr" data-ar="عندما تكون n ≤ 5000 فهو مقبول. الحدود الصغيرة تعني أن الطريقة البسيطة تكفي.">For \( n \le 5000 \) it is fine. Small limits mean: the simple way is enough.</span> Do not write a hard, fast solution when \( n \le 100 \).</p>
     </li>
     <li>
-      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الرمز O(n) يعني n خطوة بالضبط.">\( O(n) \) means exactly \( n \) steps.</span></p>
-      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يعني «حوالي n»: قد تكون n/2 أو 5n. لذلك نقارن مع 10^8 بشكل تقريبي فقط.">It means "about \( n \)": maybe \( n / 2 \), maybe \( 5 n \). So you compare with \( 10^8 \) only roughly.</span></p>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="أكبر رقم في الحدود هو n.">The biggest number in the limits is my \( n \).</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="n هو عدد العناصر التي تمرّ عليها الحلقات، لا حجم القيم. عشرة أرقام كل منها حتى 10^9 مدخلات صغيرة جدًا.">\( n \) is how many items your loops go over, not how big the values are.</span> Ten numbers up to \( 10^9 \) each are a tiny input.</p>
     </li>
   </ul>
 </section>
@@ -165,8 +138,7 @@ int main() {
   <h2>Common mistakes</h2>
   <ul>
     <li>You write two nested loops for \( n = 2 \cdot 10^5 \). That is \( 4 \cdot 10^{10} \) steps.</li>
-    <li>You call a function inside a loop. If the function has its own loop, you have a nested loop.</li>
-    <li>You clear an array of size \( 10^6 \) in <b>every</b> test case. With \( t = 10^4 \) that is \( 10^{10} \) steps.</li>
+    <li>You look only at \( n \) and forget the second size, like \( m \) or the number of questions \( q \).</li>
   </ul>
 </section>
 
@@ -174,7 +146,6 @@ int main() {
   <h2>Not now</h2>
   <ul>
     <li><b>The tools behind \( O(n \log n) \)</b>: sorting, <code>map</code>, <code>set</code>, binary search. For now only remember the table. You learn them in <a href="#sorting">Sorting</a>, <a href="#stl-containers">map, set, stack, queue</a> and <a href="#binary-search">Binary search</a>.</li>
-    <li><b>Library functions with a hidden loop</b>, like <code>count</code> or <code>erase</code>. You meet them in <a href="#stl-basics">STL basics</a>.</li>
     <li><b>The exact math definition of \( O \).</b> You do not need it to reach 1600. If you are curious, look after the guide: <a href="#what-next">After 1600</a>.</li>
   </ul>
 </aside>
@@ -186,8 +157,8 @@ int main() {
       <details><summary>Answer</summary><p>No. It does about \( 4 \cdot 10^{10} \) steps. You need \( O(n \log n) \) or \( O(n) \).</p></details></li>
     <li><span class="tr" data-ar="n ≤ 1000 وفكرتك فيها ثلاث حلقات متداخلة على n. هل هي سريعة كفاية؟">\( n \le 1000 \) and your idea has three nested loops over \( n \). Is it fast enough?</span>
       <details><summary>Answer</summary><p>No. \( 1000^3 = 10^9 \) steps. That is too slow. Two loops would be fine: \( 10^6 \) steps.</p></details></li>
-    <li><span class="tr" data-ar="عدد حالات الاختبار t ≤ 10^4، ومجموع n على كل حالات الاختبار لا يتجاوز 2·10^5. حلّك يعمل بسرعة O(n) لكل حالة اختبار. كم خطوة تقريبًا في المجموع؟">There are \( t \le 10^4 \) tests. The sum of \( n \) over all tests is at most \( 2 \cdot 10^5 \). Your solution is \( O(n) \) for each test. About how many steps in total?</span>
-      <details><summary>Answer</summary><p>About \( 2 \cdot 10^5 \) steps. You use the sum as \( n \). You do not multiply by \( t \).</p></details></li>
+    <li><span class="tr" data-ar="n ≤ 10^12. أي سرعة تناسب، وكيف يبدو الكود؟">\( n \le 10^{12} \). Which speed fits, and how does the code look?</span>
+      <details><summary>Answer</summary><p>\( O(\sqrt{n}) \) or faster: a loop while <code>i * i &lt;= n</code>, about \( 10^6 \) rounds. A loop up to \( n \) does \( 10^{12} \) steps: too slow.</p></details></li>
   </ol>
 </section>
 

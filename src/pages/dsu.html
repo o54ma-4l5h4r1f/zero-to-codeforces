@@ -1,12 +1,22 @@
-<p class="idea">Keep items in groups. Two fast operations: "which group is x in?" and "join these two groups into one".</p>
+<p class="idea"><span class="tr" data-ar="ضع العناصر في مجموعات، ولكل مجموعة قائد واحد. سؤالان سريعان: من قائد x؟ وادمج هاتين المجموعتين.">Keep items in groups. Each group has one leader. Two fast operations: "who is the leader of x?" and "join these two groups".</span></p>
+
+<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="لا تحتاج DSU قبل التقييم 1600. اقرأ الدرس عندما تحتاجه مسألة. تخطّيه الآن لا يمنعك من فهم الدروس التي بعده.">You do not need DSU below 1600. Read it when a problem needs it. Skipping it now will not block the lessons after it.</span> To count groups, DFS from <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> is enough.</p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know vertices, edges and connected components → <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a></li>
+    <li>You can read a function that calls itself → <a href="#recursion">Recursion and backtracking</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>Things are joined step by step: roads are built, friends are added, groups <span class="term" data-t="merge">merge</span>. Nothing is ever removed.</li>
+    <li>Things are joined step by step: roads are built, friends are added. Nothing is ever removed.</li>
     <li>The question is "are a and b in the same group?" or "how many groups are there now?"</li>
-    <li>You must count the <span class="term" data-t="connected-component">connected components</span> of a graph, or find the size of each one.</li>
-    <li>You must know if a new <span class="term" data-t="edge">edge</span> makes a <span class="term" data-t="cycle">cycle</span>.</li>
+    <li>You must print the number of groups, or the biggest group, <b>after every new edge</b>.</li>
+    <li>You must know if a new <span class="term" data-t="edge">edge</span> closes a <span class="term" data-t="cycle">cycle</span>.</li>
   </ul>
 </section>
 
@@ -14,30 +24,83 @@
   <h2>Three ways to understand it</h2>
 
   <div class="way">
-    <h3><b>1 · Story</b> — companies and bosses</h3>
-    <p>There are n small companies. Each company has one person, and this person is the boss. Sometimes two companies join. Then the boss of the smaller company gets a new boss: the boss of the bigger company.</p>
-    <p>"Are Ali and Sara in the same company?" Ask Ali: "who is your boss?" Then ask that boss, and go up until you reach the top boss. Do the same for Sara. Same top boss → same company. The top boss is the <span class="term" data-t="leader">leader</span> of the group.</p>
-    <p><code>find(x)</code> = the top boss of x. <code>unite(a, b)</code> = join the two companies.</p>
+    <h3><b>1 · Story</b> — teams with one leader</h3>
+    <p>Each person has one boss. The top boss of a team is its <span class="term" data-t="leader">leader</span>. A leader is his own boss.</p>
+    <p>"Are Ali and Sara in the same team?" Ask Ali "who is your boss?", then ask that boss, and go up. Do the same for Sara. <span class="tr" data-ar="إذا وصلتما إلى القائد نفسه، فأنتما في الفريق نفسه.">If you reach the same leader, they are in the same team.</span></p>
+    <p>Two teams join: the leader of the smaller team gets a boss, the leader of the bigger team.</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — the parent array for 5 items</h3>
-    <p><code>parent[x]</code> is the boss of x. A leader is its own boss: <code>parent[x] == x</code>. At the start everybody is alone.</p>
-    <table>
-      <tr><th>operation</th><th>parent[1]</th><th>parent[2]</th><th>parent[3]</th><th>parent[4]</th><th>parent[5]</th><th>groups</th></tr>
-      <tr><td>start</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>{1} {2} {3} {4} {5}</td></tr>
-      <tr><td>unite(1, 2)</td><td>1</td><td class="hi">1</td><td>3</td><td>4</td><td>5</td><td>{1,2} {3} {4} {5}</td></tr>
-      <tr><td>unite(3, 4)</td><td>1</td><td>1</td><td>3</td><td class="hi">3</td><td>5</td><td>{1,2} {3,4} {5}</td></tr>
-      <tr><td>unite(2, 4)</td><td>1</td><td>1</td><td class="hi">1</td><td>3</td><td>5</td><td>{1,2,3,4} {5}</td></tr>
-      <tr><td>find(4)</td><td>1</td><td>1</td><td>1</td><td class="hi">1</td><td>5</td><td>answer 1</td></tr>
-      <tr><td>unite(1, 4)</td><td>1</td><td>1</td><td>1</td><td>1</td><td>5</td><td>same leader → nothing to do</td></tr>
-    </table>
-    <p><code>unite(2, 4)</code> does not join 2 and 4. It joins their leaders: 1 and 3. So leader 3 gets the boss 1.</p>
-    <p class="note"><span class="term" data-t="path-compression">Path compression</span>: <code>find(4)</code> walks 4 → 3 → 1. On the way back it sets <code>parent[4] = 1</code>. Next time the walk is one step. This small trick makes DSU very fast.</p>
+    <h3><b>2 · Picture</b> — arrows to the boss</h3>
+    <p>The array <code>parent[x]</code> holds the boss of <code>x</code>. In the picture it is an arrow from <code>x</code> to its boss. Only a leader has no arrow, and it shows the size of its group. <code>find(x)</code> follows the arrows up to the leader. <code>unite(a, b)</code> joins two groups.</p>
+    <figure class="viz" data-viz="stepper" data-gen="dsu-union" aria-label="Step by step: six items, each alone at the start. Five unite calls join them into one group. Each arrow goes from an item to its parent, and the parent array is shown under the picture.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":80,"directed":true,"nodes":[{"id":1,"x":1.5,"y":0,"at":"above"},{"id":2,"x":0,"y":1,"at":"above"},{"id":3,"x":1.5,"y":1,"at":"above"},{"id":4,"x":1.5,"y":2,"at":"below"},{"id":5,"x":3,"y":1,"at":"above"},{"id":6,"x":3,"y":2,"at":"below"}],"edges":[]},
+    {"type":"array","id":"p","label":"parent","start":1,"values":[1,1,1,3,1,5]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"changes now"},
+  "code": ["int find(int x) {","    if (parent[x] == x) return x;","    return parent[x] = find(parent[x]);","}","bool unite(int a, int b) {","    a = find(a);  b = find(b);","    if (a == b) return false;","    if (sz[a] < sz[b]) swap(a, b);","    parent[b] = a;  sz[a] += sz[b];","    return true;","}"],
+  "steps": [
+    {"g":{"states":{"1":"","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 1","2":"size 1","3":"size 1","4":"size 1","5":"size 1","6":"size 1"},"edges":[],"edgeStates":{}},"p":{"values":[1,2,3,4,5,6],"states":{}},"v":{"items":[["call",""],["groups",6]]}},
+    {"line":[6,8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 1","4":"size 1","5":"size 1","6":"size 1"},"edges":[{"from":2,"to":1}],"edgeStates":{"2-1":"active"}},"p":{"values":[1,1,3,4,5,6],"states":{"1":"active"}},"v":{"items":[["call","unite(1, 2)"],["groups",5]]}},
+    {"line":[6,8,9],"g":{"states":{"1":"","2":"","3":"active","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 1","6":"size 1"},"edges":[{"from":2,"to":1},{"from":4,"to":3}],"edgeStates":{"4-3":"active"}},"p":{"values":[1,1,3,3,5,6],"states":{"3":"active"}},"v":{"items":[["call","unite(3, 4)"],["groups",4]]}},
+    {"line":[6,8,9],"g":{"states":{"1":"","2":"","3":"","4":"","5":"active","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 2"},"edges":[{"from":2,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{"6-5":"active"}},"p":{"values":[1,1,3,3,5,5],"states":{"5":"active"}},"v":{"items":[["call","unite(5, 6)"],["groups",3]]}},
+    {"line":6,"g":{"states":{"1":"active","2":"","3":"active","4":"","5":"","6":""},"notes":{"1":"size 2","3":"size 2","5":"size 2"},"edges":[{"from":2,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{}},"p":{"values":[1,1,3,3,5,5],"states":{}},"v":{"items":[["call","unite(2, 4)"],["groups",3]]}},
+    {"line":[8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 4","5":"size 2"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{"3-1":"active"}},"p":{"values":[1,1,1,3,5,5],"states":{"2":"active"}},"v":{"items":[["call","unite(2, 4)"],["groups",2]]}},
+    {"line":6,"g":{"states":{"1":"active","2":"","3":"","4":"","5":"active","6":""},"notes":{"1":"size 4","5":"size 2"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":6,"to":5}],"edgeStates":{}},"p":{"values":[1,1,1,3,5,5],"states":{}},"v":{"items":[["call","unite(2, 6)"],["groups",2]]}},
+    {"line":[8,9],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 6"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":5,"to":1},{"from":6,"to":5}],"edgeStates":{"5-1":"active"}},"p":{"values":[1,1,1,3,1,5],"states":{"4":"active"}},"v":{"items":[["call","unite(2, 6)"],["groups",1]]}},
+    {"line":[6,7],"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"size 6"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":3},{"from":5,"to":1},{"from":6,"to":5}],"edgeStates":{}},"p":{"values":[1,1,1,3,1,5],"states":{}},"v":{"items":[["call","unite(1, 3)"],["groups",1]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>At the start, each of the six items is alone and is its own leader: <code>parent[x] = x</code>.</li>
+        <li><code>unite(1, 2)</code>: both groups have size 1. Item 2 goes under item 1: <code>parent[2] = 1</code>.</li>
+        <li><code>unite(3, 4)</code>: item 4 goes under item 3. Now there are 4 groups.</li>
+        <li><code>unite(5, 6)</code>: item 6 goes under item 5. Three groups of size 2.</li>
+        <li><span class="tr" data-ar="الدالة unite(2, 4) تبحث أولًا عن القائدين: 1 و 3. إنها تربط القائدين، وليس 2 و 4.">First <code>unite(2, 4)</code> finds the leaders: 1 and 3. It joins the leaders, not 2 and 4.</span></li>
+        <li>The sizes are equal, so leader 3 goes under leader 1. Now <code>parent[3] = 1</code>.</li>
+        <li><code>unite(2, 6)</code>: the leaders are 1 (size 4) and 5 (size 2).</li>
+        <li>The smaller group goes under the bigger one: <code>parent[5] = 1</code>. One group is left.</li>
+        <li><code>unite(1, 3)</code>: both leaders are 1. So it returns <code>false</code> and changes nothing.</li>
+      </ol>
+      <figcaption>Look at the <code>parent</code> row: \( 1, 1, 1, 3, 1, 5 \). <code>parent[4]</code> is 3, but the leader of 4 is 1. The parent is not always the leader.</figcaption>
+    </figure>
+    <p><span class="term" data-t="path-compression">Path compression</span> keeps the arrows short. Without the size rule, a long chain can appear. Watch one <code>find</code> make it flat.</p>
+    <figure class="viz" data-viz="stepper" data-gen="dsu-compress" aria-label="Step by step: a chain 5 to 4 to 3 to 2 to 1. One call find(5) walks up to the leader 1, and on the way back every item on the path points straight to 1.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":80,"directed":true,"nodes":[{"id":1,"x":0,"y":0},{"id":2,"x":1.3,"y":0.15},{"id":3,"x":2.4,"y":0.7},{"id":4,"x":3.1,"y":1.6},{"id":5,"x":3.3,"y":2.7}],"edges":[]},
+    {"type":"array","id":"p","label":"parent","start":1,"values":[1,1,1,1,1]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"changes now","read":"on the walk"},
+  "code": ["int find(int x) {","    if (parent[x] == x) return x;","    return parent[x] = find(parent[x]);","}"],
+  "steps": [
+    {"g":{"states":{"1":"","2":"","3":"","4":"","5":"active"},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":2},{"from":4,"to":3},{"from":5,"to":4}],"edgeStates":{}},"p":{"values":[1,1,2,3,4],"states":{}},"v":{"items":[["path",[5]]]}},
+    {"line":2,"g":{"states":{"1":"active","2":"read","3":"read","4":"read","5":"read"},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":2},{"from":4,"to":3},{"from":5,"to":4}],"edgeStates":{}},"p":{"values":[1,1,2,3,4],"states":{}},"v":{"items":[["path",[5,4,3,2,1]]]}},
+    {"line":3,"g":{"states":{"1":"","2":"","3":"","4":"","5":""},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":1},{"from":5,"to":1}],"edgeStates":{"3-1":"active","4-1":"active","5-1":"active"}},"p":{"values":[1,1,1,1,1],"states":{"2":"active","3":"active","4":"active"}},"v":{"items":[["path",[]]]}},
+    {"line":2,"g":{"states":{"1":"active","2":"","3":"","4":"","5":"read"},"notes":{"1":"leader"},"edges":[{"from":2,"to":1},{"from":3,"to":1},{"from":4,"to":1},{"from":5,"to":1}],"edgeStates":{}},"p":{"values":[1,1,1,1,1],"states":{}},"v":{"items":[["path",[5,1]]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>A chain of 5 items. We call <code>find(5)</code>.</li>
+        <li>The calls walk up 5 → 4 → 3 → 2 → 1. Item 1 is the leader.</li>
+        <li>On the way back, each item on the path gets <code>parent = 1</code>. That is line 3.</li>
+        <li>The next <code>find(5)</code> needs only one step.</li>
+      </ol>
+      <figcaption>One walk made the chain flat. Every later <code>find</code> on these items is fast.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — a small struct you can reuse</h3>
+    <p>Items are numbered 1 to <code>n</code>. <code>sz[x]</code> is the size of the group, and it is correct only when <code>x</code> is a leader.</p>
 <pre data-part="global"><code class="cpp">
 struct DSU {
     vector&lt;int&gt; parent, sz;                 // sz[leader] = size of its group
@@ -58,7 +121,52 @@ struct DSU {
     }
 };
 </code></pre>
-    <p>A full program. Input: n cities, m roads, then q questions "can you go from a to b?".</p>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p>The struct above is the DEFAULT. Never change it. Each problem changes only the few lines in <code>main</code>. Here <code>d</code> is a <code>DSU d(n);</code>.</p>
+  <ul>
+    <li><b>Count the groups.</b> Start with <code>groups = n</code>. <span class="tr" data-ar="كل استدعاء لـ unite يعيد true يقلّل عدد المجموعات بواحد.">Every <code>unite</code> that returns <code>true</code> makes one group less.</span>
+<pre data-part="main"><code class="cpp">
+if (d.unite(a, b)) groups--;
+</code></pre></li>
+    <li><b>The size of the group of x.</b> Read the size at the leader only.
+<pre data-part="main"><code class="cpp">
+int size = d.sz[d.find(x)];
+</code></pre></li>
+    <li><b>Does the new edge close a cycle?</b> <span class="tr" data-ar="إذا أعادت unite القيمة false، فقد كان a و b متصلين من قبل. إذن الحافة الجديدة تصنع دورة.">If <code>unite</code> returns <code>false</code>, a and b were already connected. So the new edge closes a cycle.</span>
+<pre data-part="main"><code class="cpp">
+if (!d.unite(a, b)) cycle = true;
+</code></pre></li>
+    <li><b>"Are a and b connected?"</b> Compare the leaders.
+<pre data-part="main"><code class="cpp">
+cout &lt;&lt; (d.find(a) == d.find(b) ? "YES" : "NO") &lt;&lt; "\n";
+</code></pre></li>
+  </ul>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> There are \( n \) cities and no roads. Then \( m \) roads are built, one by one. After each road, print two numbers: the number of groups of connected cities, and the size of the biggest group. Limits: \( 1 \le n \le 10^5 \) and \( 1 \le m \le 2 \cdot 10^5 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> Two numbers after <b>every</b> road. Roads are only added, never removed. That is the signal for DSU.</li>
+    <li><b>A small example by hand.</b> Take \( n = 5 \) and the roads 1-2, 1-3, 4-5, 2-3.
+      <table>
+        <tr><th>road</th><th>groups</th><th>groups after</th><th>biggest</th></tr>
+        <tr><td>1-2</td><td>{1,2} {3} {4} {5}</td><td>4</td><td>2</td></tr>
+        <tr><td>1-3</td><td>{1,2,3} {4} {5}</td><td>3</td><td>3</td></tr>
+        <tr><td>4-5</td><td>{1,2,3} {4,5}</td><td>2</td><td>3</td></tr>
+        <tr><td>2-3</td><td>nothing changes: a cycle</td><td>2</td><td>3</td></tr>
+      </table>
+    </li>
+    <li><b>The idea.</b> Keep <code>groups</code>, starting at \( n \). When <code>unite</code> returns <code>true</code>, do <code>groups--</code>. Groups only grow, they never shrink. So the biggest size never goes down. After a real join, compare the new size with <code>best</code>.</li>
+    <li><b>Why is it fast enough?</b> Each road is one <code>unite</code>, which is almost one step. So the work is about
+      \[ n + m = 3 \cdot 10^5 \text{ steps} \]
+      <p>That is far below \( 10^8 \). Running BFS again after every road would cost \( m \cdot (n + m) \approx 6 \cdot 10^{10} \) steps: too slow.</p>
+    </li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -68,12 +176,16 @@ struct DSU {                                // the same struct as above
     DSU(int n) : parent(n + 1), sz(n + 1, 1) {
         for (int i = 0; i &lt;= n; i++) parent[i] = i;
     }
-    int find(int x) { return parent[x] == x ? x : parent[x] = find(parent[x]); }
+    int find(int x) {
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]);
+    }
     bool unite(int a, int b) {
         a = find(a); b = find(b);
         if (a == b) return false;
         if (sz[a] &lt; sz[b]) swap(a, b);
-        parent[b] = a; sz[a] += sz[b];
+        parent[b] = a;
+        sz[a] += sz[b];
         return true;
     }
 };
@@ -82,36 +194,67 @@ int main() {
     int n, m;
     cin &gt;&gt; n &gt;&gt; m;
     DSU d(n);
-    int groups = n;                         // n cities, all alone
+    int groups = n, best = 1;               // n cities, all alone
     for (int i = 0; i &lt; m; i++) {
         int a, b;
         cin &gt;&gt; a &gt;&gt; b;
-        if (d.unite(a, b)) groups--;        // a real merge: one group less
-    }
-    cout &lt;&lt; groups &lt;&lt; "\n";                 // number of connected components
-    int q;
-    cin &gt;&gt; q;
-    while (q--) {
-        int a, b;
-        cin &gt;&gt; a &gt;&gt; b;
-        cout &lt;&lt; (d.find(a) == d.find(b) ? "YES" : "NO") &lt;&lt; "\n";
+        if (d.unite(a, b)) {                // a real join: one group less
+            groups--;
+            best = max(best, d.sz[d.find(a)]);
+        }
+        cout &lt;&lt; groups &lt;&lt; " " &lt;&lt; best &lt;&lt; "\n";
     }
 }
 </code></pre>
-    <p class="tip-box">Cycle check: if <code>unite(a, b)</code> returns <code>false</code>, then a and b were already connected. So the new edge a–b closes a cycle. The size of the group of x is <code>d.sz[d.find(x)]</code>.</p>
-  </div>
 </section>
 
-<p class="complexity">Speed: almost O(1) for each find and unite. 10<sup>6</sup> operations are no problem.</p>
+<p class="complexity">Speed: almost \( O(1) \) for each <code>find</code> and <code>unite</code>, on average over many calls. This is a safe estimate, not an exact law. The true cost grows, but so slowly that you can treat it as a small constant.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="parent[x] هو قائد مجموعة x.">The value <code>parent[x]</code> is the leader of x.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="ليس دائمًا. في الصورة parent[4] = 3 لكن القائد هو 1.">Not always. In the picture <code>parent[4]</code> is 3, but the leader is 1.</span> Always compare <code>find(a) == find(b)</code>.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يستطيع DSU أن يحذف حافة أو يقسم مجموعة إلى قسمين.">DSU can remove an edge, or split a group in two.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يستطيع. بعد الدمج تبقى المجموعتان مندمجتين إلى الأبد.">It cannot. After a join, the two groups stay joined for ever.</span> If the problem removes edges, plain DSU does not fit (see "Not now").</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="قاعدة الحجم وضغط المسار أشياء إضافية، والكود سريع بدونهما.">The size rule and path compression are extras. The code is fast without them.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="بدونهما قد تظهر سلسلة طولها n، وعندها يمشي find واحد n خطوة.">Without them a chain of length n can appear. Then one <code>find</code> walks n steps.</span> Keep both. They cost two lines.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>Comparing <code>parent[a] == parent[b]</code>. The parent is not always the leader. Compare <code>find(a) == find(b)</code>.</li>
-    <li>Writing <code>parent[a] = b</code> in unite. You must join the leaders: <code>parent[find(b)] = find(a)</code>.</li>
+    <li>Writing <code>parent[a] = b</code> in <code>unite</code>. Join the leaders: first <code>a = find(a); b = find(b);</code>.</li>
     <li>Reading <code>sz[x]</code> for any x. The size is correct only at the leader: <code>sz[find(x)]</code>.</li>
-    <li>Edges are removed in the problem. DSU cannot split a group. Try to read the operations from the end, so each removal becomes an add.</li>
+    <li>Items 1 to n but <code>DSU d(n - 1)</code>, or a reused DSU in many test cases. Make a new <code>DSU d(n);</code> for each test.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>The cheapest roads that connect all cities</b> (Kruskal, minimum spanning tree). It is sorting plus this DSU. It is rare below 1600: <a href="#what-next">After 1600</a>.</li>
+    <li><b>Removing edges</b> (reading the operations from the end, or "DSU with rollback"). These are harder tricks: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="المصفوفة parent للعناصر 1 إلى 4 هي 1 1 2 3. ما قيمة find(4)؟ وكيف تصبح parent بعده؟">The <code>parent</code> values of items 1 to 4 are 1, 1, 2, 3. What is <code>find(4)</code>? What is <code>parent</code> after it?</span>
+      <details><summary>Answer</summary><p><code>find(4)</code> walks 4 → 3 → 2 → 1, so it returns 1. Path compression makes <code>parent</code> = 1, 1, 1, 1.</p></details></li>
+    <li><span class="tr" data-ar="تضيف الحواف 1-2 ثم 2-3 ثم 3-1. أي حافة تصنع دورة؟ وماذا تعيد unite لها؟">You add the edges 1-2, then 2-3, then 3-1. Which edge closes a cycle? What does <code>unite</code> return for it?</span>
+      <details><summary>Answer</summary><p>The edge 3-1. Items 3 and 1 already have the same leader, so <code>unite</code> returns <code>false</code>.</p></details></li>
+    <li><span class="tr" data-ar="لديك 10 عناصر، و 4 استدعاءات لـ unite أعادت true. كم مجموعة الآن؟">You have 10 items. Four <code>unite</code> calls returned <code>true</code>. How many groups are there now?</span>
+      <details><summary>Answer</summary><p>\( 10 - 4 = 6 \). Each real join makes one group less.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -125,7 +268,7 @@ int main() {
     <li><a class="cf" data-p="977E">Cyclic Components</a><span class="r">1500</span></li>
     <li><a class="cf" data-p="722C">Destroying Array</a><span class="r">1600</span></li>
     <li><a class="cf" data-p="25D">Roads not only in Berland</a><span class="r">1900</span></li>
-    <li><a href="https://cses.fi/problemset/task/1676">CSES: Road Construction</a><span class="r">CSES</span> — after each new road print the number of groups and the biggest size.</li>
+    <li><a href="https://cses.fi/problemset/task/1676">CSES: Road Construction</a><span class="r">CSES</span> — the problem of "Solve one together". Submit the program there.</li>
   </ol>
 </section>
 
@@ -133,9 +276,8 @@ int main() {
   <h2>Learn more</h2>
   <ul>
     <li><a href="https://codeforces.com/edu/course/2">Codeforces EDU</a> — free course, open "Disjoint Sets Union". Video, text and problems.</li>
-    <li><a href="https://usaco.guide/gold/dsu">USACO Guide: Disjoint Set Union</a> — Clear text with pictures.</li>
-    <li><a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> — another way to count components when all edges are known at the start.</li>
-    <li><a href="#what-next">After 1600</a> — DSU is the heart of Kruskal's algorithm (the cheapest set of roads that connects all cities).</li>
-    <li><a href="https://codeforces.com/blog/entry/120381">Codeforces blog: Introduction to DSU</a> — a beginner text with pictures.</li>
+    <li><a href="https://usaco.guide/gold/dsu">USACO Guide: Disjoint Set Union</a> — clear text with pictures.</li>
+    <li><a href="https://codeforces.com/blog/entry/120381">Introduction to Disjoint Set Data Structure | DSU</a> — a Codeforces blog for beginners, with pictures.</li>
+    <li><a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> — the other way to count groups, when all edges are known at the start.</li>
   </ul>
 </section>

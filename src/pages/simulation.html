@@ -1,11 +1,19 @@
-<p class="idea">No trick, no formula. Read the rules, then make your program follow them step by step.</p>
+<p class="idea"><span class="tr" data-ar="لا حيلة ولا قانون. اقرأ القواعد، ثم اجعل برنامجك ينفّذها خطوة بخطوة.">No trick, no formula. Read the rules, then make your program follow them step by step.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can read numbers with <code>cin</code> and write a <code>for</code> loop → <a href="#cpp-template">Your C++ template</a></li>
+    <li>You can count the steps of a loop, like \( O(n) \) → <a href="#big-o">How much does my code cost?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
     <li>The <span class="term" data-t="statement">statement</span> describes a process: "first…, then…, after each step…".</li>
-    <li>The limits are small (n ≤ 100 or n ≤ 1000), so doing every step is fast enough.</li>
-    <li>You understand <b>what</b> to do after one reading. The only work is to write it carefully.</li>
+    <li>The limits are small, like \( n \le 100 \) or \( n \le 1000 \). Doing every step is fast enough.</li>
+    <li>After one reading you know <b>what</b> to do. The only work is to write it carefully.</li>
     <li>Codeforces puts the tag <b>implementation</b> on these problems. Another name is <span class="term" data-t="simulation">simulation</span>.</li>
   </ul>
 </section>
@@ -21,22 +29,55 @@
 
   <div class="way">
     <h3><b>2 · Picture</b> — the tram</h3>
-    <p>A tram is empty at the start. At each stop <code>a</code> people exit, then <code>b</code> people enter. How many seats does the tram need? You need the biggest number of people inside at any moment.</p>
-    <p>Write the variables in a table and change them by hand. This is called a <span class="term" data-t="trace">trace</span>.</p>
-    <table>
-      <tr><th>stop</th><th>a (exit)</th><th>b (enter)</th><th>inside</th><th>best</th></tr>
-      <tr><td>start</td><td>–</td><td>–</td><td>0</td><td>0</td></tr>
-      <tr><td>1</td><td>0</td><td>3</td><td>0 − 0 + 3 = 3</td><td>3</td></tr>
-      <tr><td>2</td><td>2</td><td>5</td><td>3 − 2 + 5 = 6</td><td class="hi">6</td></tr>
-      <tr><td>3</td><td>4</td><td>2</td><td>6 − 4 + 2 = 4</td><td>6</td></tr>
-      <tr><td>4</td><td>4</td><td>0</td><td>4 − 4 + 0 = 0</td><td>6</td></tr>
-    </table>
-    <p class="note">The answer is 6. If you can fill this table by hand, you can write the code: one row = one turn of the loop.</p>
+    <p>A tram is empty at the start. There are 4 stops. At each stop <code>a</code> people exit, then <code>b</code> people enter. How many seats does the tram need?</p>
+    <p><span class="tr" data-ar="نحتاج أكبر عدد من الناس داخل الترام في أي لحظة.">We need the biggest number of people inside at any moment.</span> The stops are (0, 3), (2, 5), (4, 2) and (4, 0). Press <b>Next</b> and watch the variables.</p>
+    <figure class="viz" data-viz="stepper" data-gen="sim-tram" aria-label="Step by step: the tram program runs on 4 stops. The strip shows the variables i, a, b, inside and best after each line.">
+      <script type="application/json">
+{
+  "scenes": [{"type":"vars","id":"v","items":[]}],
+  "code": ["int inside = 0, best = 0;","for (int i = 0; i < n; i++) {","    cin >> a >> b;","    inside -= a;","    inside += b;","    best = max(best, inside);","}","cout << best;"],
+  "steps": [
+    {"line":1,"v":{"items":[["i",""],["a (exit)",""],["b (enter)",""],["inside",0],["best",0]]}},
+    {"line":[3,4,5],"v":{"items":[["i",0],["a (exit)",0],["b (enter)",3],["inside",3],["best",0]]}},
+    {"line":6,"v":{"items":[["i",0],["a (exit)",0],["b (enter)",3],["inside",3],["best",3]]}},
+    {"line":[3,4,5],"v":{"items":[["i",1],["a (exit)",2],["b (enter)",5],["inside",6],["best",3]]}},
+    {"line":6,"v":{"items":[["i",1],["a (exit)",2],["b (enter)",5],["inside",6],["best",6]]}},
+    {"line":[3,4,5],"v":{"items":[["i",2],["a (exit)",4],["b (enter)",2],["inside",4],["best",6]]}},
+    {"line":6,"v":{"items":[["i",2],["a (exit)",4],["b (enter)",2],["inside",4],["best",6]]}},
+    {"line":[3,4,5],"v":{"items":[["i",3],["a (exit)",4],["b (enter)",0],["inside",0],["best",6]]}},
+    {"line":6,"v":{"items":[["i",3],["a (exit)",4],["b (enter)",0],["inside",0],["best",6]]}},
+    {"line":8,"v":{"items":[["i",""],["a (exit)",""],["b (enter)",""],["inside",0],["best",6]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start. The tram is empty: <code>inside = 0</code> and <code>best = 0</code>.</li>
+        <li>Stop 0: 0 people exit and 3 enter. Now <code>inside</code> is 3.</li>
+        <li><code>best</code> becomes the bigger of 0 and 3, so 3.</li>
+        <li>Stop 1: 2 exit and 5 enter. \( 3 - 2 + 5 = 6 \).</li>
+        <li><code>best</code> becomes 6.</li>
+        <li>Stop 2: 4 exit and 2 enter. \( 6 - 4 + 2 = 4 \).</li>
+        <li>4 is smaller than 6, so <code>best</code> does not change.</li>
+        <li>Stop 3: 4 exit and nobody enters. The tram is empty again.</li>
+        <li><code>best</code> stays 6.</li>
+        <li>The loop is over. The program prints 6.</li>
+      </ol>
+      <figcaption>A framed value changed in this step. One turn of the loop = one stop of the tram.</figcaption>
+    </figure>
+    <h4>The skill: trace by hand</h4>
+    <p>The stepper did a <span class="term" data-t="trace">trace</span>: it wrote every variable after every line. You can do the same on paper.</p>
+    <ol>
+      <li>Draw one column for each variable.</li>
+      <li>Write one row for each turn of the loop.</li>
+      <li>Read your code line by line. Change only what the line changes.</li>
+      <li><span class="tr" data-ar="قارن السطر الأخير بالمخرجات المتوقعة. أوّل اختلاف يدلّك على الخطأ.">Compare the last row with the expected output. The first difference shows you the bug.</span></li>
+    </ol>
+    <p class="note">Trace the code you wrote, not the code you wanted to write.</p>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — the table becomes a loop</h3>
-    <p>Use the same names as the statement (<code>n</code>, <code>a</code>, <code>b</code>). Then you can compare your code with the text line by line.</p>
+    <h3><b>3 · Code</b> — the trace becomes a loop</h3>
+    <p>Use the same names as the statement: <code>n</code>, <code>a</code>, <code>b</code>. Then you can compare your code with the text line by line.</p>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -82,18 +123,91 @@ int main() {
   </div>
 </section>
 
-<p class="complexity">Speed: you do every step once, so O(number of steps). Check that this number is below about 10^8.</p>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem</b> (266B, Queue at the School). \( n \) children stand in a queue. The string <code>s</code> shows them: <code>B</code> is a boy, <code>G</code> is a girl. Each second, every boy who stands right before a girl swaps places with her. All swaps of one second happen at the same time. Print the queue after \( t \) seconds. Limits: \( 1 \le n, t \le 50 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The string after \( t \) seconds. Nothing is counted, so no clever idea is needed.</li>
+    <li><b>A small example by hand.</b> <code>s = BGGBG</code> and \( t = 2 \). Look at each pair of neighbours from the left.
+      <table>
+        <tr><th>second</th><th>what happens</th><th>queue after</th></tr>
+        <tr><td>0</td><td>–</td><td><code>BGGBG</code></td></tr>
+        <tr><td>1</td><td>positions 0, 1 swap; positions 3, 4 swap</td><td><code>GBGGB</code></td></tr>
+        <tr><td>2</td><td>positions 1, 2 swap</td><td class="hi"><code>GGBGB</code></td></tr>
+      </table>
+    </li>
+    <li><b>The trap.</b> After a swap at positions 0, 1 the boy stands at position 1. If the loop now checks positions 1, 2, it swaps him again. <span class="tr" data-ar="عندها يتحرّك الولد خطوتين في ثانية واحدة، وهذا ممنوع.">Then the boy moves two places in one second, and that is not allowed.</span> A trace of this wrong code gives <code>GGBGB</code> after second 1, not <code>GBGGB</code>. The trace shows the bug before you submit.</li>
+    <li><b>The idea.</b> Repeat \( t \) times: walk over the string. <span class="tr" data-ar="إذا وجدت BG فبدّلهما، ثم تخطَّ الموضع التالي.">If you find <code>BG</code>, swap them and skip the next position.</span></li>
+    <li><b>Why is it fast enough?</b> Each second looks at about \( n \) pairs. In total \( t \cdot n = 50 \cdot 50 = 2500 \) steps. That is far below \( 10^8 \).</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
 
-<p class="tip-box">Before you submit: run <b>every</b> sample from the statement. Compare your output with the expected output letter by letter.</p>
+int main() {
+    int n, t;
+    string s;
+    cin &gt;&gt; n &gt;&gt; t &gt;&gt; s;
+    for (int sec = 0; sec &lt; t; sec++) {
+        for (int i = 0; i + 1 &lt; n; i++) {
+            if (s[i] == 'B' &amp;&amp; s[i + 1] == 'G') {
+                swap(s[i], s[i + 1]);
+                i++;                  // skip: this boy already moved this second
+            }
+        }
+    }
+    cout &lt;&lt; s &lt;&lt; "\n";
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: \( O(\text{number of steps}) \). Here \( O(t \cdot n) \). Before you write, check that the steps stay below about \( 10^8 \).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="لا بدّ أن في المسألة حيلة ذكية، فالمحاكاة سهلة أكثر من اللازم.">There must be a clever trick. Simulation is too easy to be the answer.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="كثير من مسائل A و B هي محاكاة دقيقة فقط. إذا كانت الحدود صغيرة فنفّذ الخطوات.">Many A and B problems are only careful simulation. If the limits are small, do the steps.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="إذا نجحت الأمثلة فالكود صحيح.">If the samples pass, my code is correct.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الأمثلة قليلة وصغيرة. تتبّع باليد حالة صغيرة أخرى، مثل n = 1.">The samples are few and small. Trace one more small case by hand, like \( n = 1 \).</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="ترتيب الخطوات داخل الدورة الواحدة لا يهمّ.">The order of the steps inside one turn does not matter.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الترتيب يغيّر الإجابة غالبًا. اتبع ترتيب نص المسألة تمامًا.">The order often changes the answer. Follow the order of the statement exactly.</span> In the tram, people exit before others enter.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
     <li>Wrong output format. <code>YES</code> is not <code>Yes</code> when the statement asks for exact letters. Do not print extra text like "Answer:".</li>
-    <li>Wrong order of steps. In the tram, people exit <b>before</b> others enter. Follow the order in the statement.</li>
     <li>A variable keeps its old value in the next test case. Create it inside <code>solve()</code>.</li>
-    <li>You forget the smallest input, the <span class="term" data-t="edge-case">edge case</span>. Try n = 1 or n = 2 by hand.</li>
+    <li>You forget the smallest input, the <span class="term" data-t="edge-case">edge case</span>. Try \( n = 1 \) by hand.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Too many steps.</b> Sometimes the process runs \( 10^{18} \) times. Then you cannot do every step; you need a formula. Start with <a href="#basic-math">Basic math</a>.</li>
+    <li><b>A real queue of people</b>, where the first one leaves and new ones join at the end. C++ has a tool for it: <a href="#stl-containers">Stack, queue, map, set</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="محطات الترام هي (0, 4) ثم (3, 1) ثم (2, 6). ماذا يطبع البرنامج؟">The tram stops are (0, 4), (3, 1), (2, 6). What does the program print?</span>
+      <details><summary>Answer</summary><p>6. Inside: 4, then \( 4 - 3 + 1 = 2 \), then \( 2 - 2 + 6 = 6 \). The biggest is 6.</p></details></li>
+    <li><span class="tr" data-ar="في مسألة الطابور، لماذا نكتب i++ بعد التبديل؟">In Queue at the School, why do we write <code>i++</code> after a swap?</span>
+      <details><summary>Answer</summary><p>The boy now stands at <code>i + 1</code>. Without the skip he can swap again in the same second.</p></details></li>
+    <li><span class="tr" data-ar="لديك t ≤ 100 ثانية و n ≤ 1000 طفل. هل تكفي المحاكاة الكاملة؟">You have \( t \le 100 \) seconds and \( n \le 1000 \) children. Is a full simulation fast enough?</span>
+      <details><summary>Answer</summary><p>Yes. \( 100 \cdot 1000 = 10^5 \) steps, far below \( 10^8 \).</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -116,5 +230,6 @@ int main() {
     <li><a href="https://usaco.guide/bronze/simulation">USACO Guide: Simulation</a> — short text and more problems of this kind.</li>
     <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — hundreds of very easy problems, sorted by topic.</li>
     <li><a href="https://cses.fi/problemset/task/1068">CSES: Weird Algorithm</a> — a classic first simulation. Be careful with <code>long long</code>.</li>
+    <li><a href="https://codeforces.com/blog/entry/111217">[Tutorial] Common Mistakes in Competitive Programming and How to Avoid Them</a> — a long list of slips. Read the first part now.</li>
   </ul>
 </section>

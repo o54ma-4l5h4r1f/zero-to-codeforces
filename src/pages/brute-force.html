@@ -1,12 +1,20 @@
-<p class="idea">When the limits are small, do not look for a clever idea. Try every possibility and check each one.</p>
+<p class="idea"><span class="tr" data-ar="عندما تكون الحدود صغيرة، لا تبحث عن فكرة ذكية. جرّب كل الاحتمالات وافحص كل واحد منها.">When the limits are small, do not look for a clever idea. Try every possibility and check each one.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can count the steps of two nested loops: \( O(n^2) \) → <a href="#big-o">How much does my code cost?</a></li>
+    <li>You can loop over an array and compare boxes → <a href="#arrays-strings">Arrays and strings</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>The limits are small: n ≤ 100, n ≤ 1000, or the answer is at most a few thousand.</li>
+    <li>The limits are small: \( n \le 100 \), \( n \le 1000 \), or the answer is at most a few thousand.</li>
     <li>You can list every <span class="term" data-t="possibility">possibility</span>: every element, every <span class="term" data-t="pair">pair</span>, every value of the answer.</li>
     <li>Checking one possibility is easy: one <code>if</code> or one short loop.</li>
-    <li>The number of possibilities × the cost of one check is below about 10<sup>8</sup>.</li>
+    <li>The number of possibilities times the cost of one check is below about \( 10^8 \).</li>
   </ul>
 </section>
 
@@ -20,24 +28,60 @@
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — all pairs for n = 4</h3>
-    <p>Task: how many pairs of positions <code>i &lt; j</code> have <code>a[i] + a[j] = 7</code>? Here <code>a = [2, 5, 3, 4]</code>.</p>
-    <table>
-      <tr><th>i</th><th>j</th><th>a[i] + a[j]</th><th>= 7 ?</th><th>count</th></tr>
-      <tr><td>0</td><td>1</td><td>2 + 5 = 7</td><td class="hi">yes</td><td>1</td></tr>
-      <tr><td>0</td><td>2</td><td>2 + 3 = 5</td><td>no</td><td>1</td></tr>
-      <tr><td>0</td><td>3</td><td>2 + 4 = 6</td><td>no</td><td>1</td></tr>
-      <tr><td>1</td><td>2</td><td>5 + 3 = 8</td><td>no</td><td>1</td></tr>
-      <tr><td>1</td><td>3</td><td>5 + 4 = 9</td><td>no</td><td>1</td></tr>
-      <tr><td>2</td><td>3</td><td>3 + 4 = 7</td><td class="hi">yes</td><td>2</td></tr>
-    </table>
-    <p class="note">4 elements give 6 pairs. In general n elements give n × (n − 1) / 2 pairs. <code>j</code> starts at <code>i + 1</code>, so each pair is seen once and no element is paired with itself.</p>
+    <h3><b>2 · Picture</b> — all pairs for \( n = 5 \)</h3>
+    <p>Task: how many pairs of positions \( i &lt; j \) have <code>a[i] + a[j] == 7</code>? Here <code>a = {2, 5, 3, 4, 1}</code>.</p>
+    <p>First, which pairs do we check? Draw every \( (i, j) \) as a grid: row \( i \), column \( j \).</p>
+    <figure class="viz" data-viz="table" aria-label="A 5 by 5 grid of all pairs i, j for n = 5. The 10 cells above the diagonal, where i is less than j, are checked. The 5 diagonal cells are the same element twice. The 10 cells below the diagonal repeat pairs seen before.">
+      <script type="application/json">
+{"corner":"i \\ j","colLabels":[0,1,2,3,4],"rowLabels":["0","1","2","3","4"],"rows":[["0,0","0,1","0,2","0,3","0,4"],["1,0","1,1","1,2","1,3","1,4"],["2,0","2,1","2,2","2,3","2,4"],["3,0","3,1","3,2","3,3","3,4"],["4,0","4,1","4,2","4,3","4,4"]],"states":{"0,0":"bad","0,1":"done","0,2":"done","0,3":"done","0,4":"done","1,0":"dim","1,1":"bad","1,2":"done","1,3":"done","1,4":"done","2,0":"dim","2,1":"dim","2,2":"bad","2,3":"done","2,4":"done","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"bad","3,4":"done","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"bad"},"legend":{"done":"checked: i < j","bad":"i = j: the same element","dim":"j < i: this pair was seen before"}}
+</script>
+      <figcaption>25 cells. Take away the 5 on the diagonal: 20. Half of them are repeats: 10 pairs to check.</figcaption>
+    </figure>
+    <p><span class="tr" data-ar="مع n عنصرًا يوجد n · (n − 1) / 2 زوجًا. مع n = 5 يكون ذلك 10.">With \( n \) elements there are \( \frac{n (n - 1)}{2} \) pairs. For \( n = 5 \): \( \frac{5 \cdot 4}{2} = 10 \).</span> Starting <code>j</code> at <code>i + 1</code> visits exactly the checked half. Now watch the loops walk over it.</p>
+    <figure class="viz" data-viz="stepper" data-gen="bf-pairs" aria-label="Step by step: two loops visit the 10 pairs i less than j of the array 2 5 3 4 1. Each cell gets the sum a[i] + a[j]. Two sums are 7.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"a","label":"a","values":[2,5,3,4,1]},
+    {"type":"table","id":"t","corner":"i \\ j","colLabels":[0,1,2,3,4],"rowLabels":["0","1","2","3","4"],"rows":[["","","","",""],["","","","",""],["","","","",""],["","","","",""],["","","","",""]]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"the pair (i, j) we check now","yes":"sum is 7","read":"checked, not 7","dim":"j <= i: never checked"},
+  "code": ["int count = 0;","for (int i = 0; i < n; i++)","    for (int j = i + 1; j < n; j++)","        if (a[i] + a[j] == 7) count++;"],
+  "steps": [
+    {"line":[3,4],"a":{"pointers":{"i":0,"j":1}},"t":{"rows":[["",7,"","",""],["","","","",""],["","","","",""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"active","1,0":"dim","1,1":"dim","2,0":"dim","2,1":"dim","2,2":"dim","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","2 + 5 = 7"],["count",1]]}},
+    {"line":3,"a":{"pointers":{"i":0,"j":2}},"t":{"rows":[["",7,5,"",""],["","","","",""],["","","","",""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"active","1,0":"dim","1,1":"dim","2,0":"dim","2,1":"dim","2,2":"dim","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","2 + 3 = 5"],["count",1]]}},
+    {"line":3,"a":{"pointers":{"i":0,"j":3}},"t":{"rows":[["",7,5,6,""],["","","","",""],["","","","",""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"active","1,0":"dim","1,1":"dim","2,0":"dim","2,1":"dim","2,2":"dim","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","2 + 4 = 6"],["count",1]]}},
+    {"line":3,"a":{"pointers":{"i":0,"j":4}},"t":{"rows":[["",7,5,6,3],["","","","",""],["","","","",""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"active","1,0":"dim","1,1":"dim","2,0":"dim","2,1":"dim","2,2":"dim","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","2 + 1 = 3"],["count",1]]}},
+    {"line":3,"a":{"pointers":{"i":1,"j":2}},"t":{"rows":[["",7,5,6,3],["","",8,"",""],["","","","",""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"read","1,0":"dim","1,1":"dim","1,2":"active","2,0":"dim","2,1":"dim","2,2":"dim","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","5 + 3 = 8"],["count",1]]}},
+    {"line":3,"a":{"pointers":{"i":1,"j":3}},"t":{"rows":[["",7,5,6,3],["","",8,9,""],["","","","",""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"read","1,0":"dim","1,1":"dim","1,2":"read","1,3":"active","2,0":"dim","2,1":"dim","2,2":"dim","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","5 + 4 = 9"],["count",1]]}},
+    {"line":3,"a":{"pointers":{"i":1,"j":4}},"t":{"rows":[["",7,5,6,3],["","",8,9,6],["","","","",""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"read","1,0":"dim","1,1":"dim","1,2":"read","1,3":"read","1,4":"active","2,0":"dim","2,1":"dim","2,2":"dim","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","5 + 1 = 6"],["count",1]]}},
+    {"line":[3,4],"a":{"pointers":{"i":2,"j":3}},"t":{"rows":[["",7,5,6,3],["","",8,9,6],["","","",7,""],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"read","1,0":"dim","1,1":"dim","1,2":"read","1,3":"read","1,4":"read","2,0":"dim","2,1":"dim","2,2":"dim","2,3":"active","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","3 + 4 = 7"],["count",2]]}},
+    {"line":3,"a":{"pointers":{"i":2,"j":4}},"t":{"rows":[["",7,5,6,3],["","",8,9,6],["","","",7,4],["","","","",""],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"read","1,0":"dim","1,1":"dim","1,2":"read","1,3":"read","1,4":"read","2,0":"dim","2,1":"dim","2,2":"dim","2,3":"yes","2,4":"active","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","3 + 1 = 4"],["count",2]]}},
+    {"line":3,"a":{"pointers":{"i":3,"j":4}},"t":{"rows":[["",7,5,6,3],["","",8,9,6],["","","",7,4],["","","","",5],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"read","1,0":"dim","1,1":"dim","1,2":"read","1,3":"read","1,4":"read","2,0":"dim","2,1":"dim","2,2":"dim","2,3":"yes","2,4":"read","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","3,4":"active","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]","4 + 1 = 5"],["count",2]]}},
+    {"line":2,"a":{"pointers":{"i":null,"j":null}},"t":{"rows":[["",7,5,6,3],["","",8,9,6],["","","",7,4],["","","","",5],["","","","",""]],"states":{"0,0":"dim","0,1":"yes","0,2":"read","0,3":"read","0,4":"read","1,0":"dim","1,1":"dim","1,2":"read","1,3":"read","1,4":"read","2,0":"dim","2,1":"dim","2,2":"dim","2,3":"yes","2,4":"read","3,0":"dim","3,1":"dim","3,2":"dim","3,3":"dim","3,4":"read","4,0":"dim","4,1":"dim","4,2":"dim","4,3":"dim","4,4":"dim"}},"v":{"items":[["a[i] + a[j]",""],["count",2]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>\( i = 0 \), \( j = 1 \): \( 2 + 5 = 7 \). A hit, so <code>count</code> is 1.</li>
+        <li>\( j = 2 \): \( 2 + 3 = 5 \). Not 7.</li>
+        <li>\( j = 3 \): \( 2 + 4 = 6 \). Not 7.</li>
+        <li>\( j = 4 \): \( 2 + 1 = 3 \). Row 0 is finished.</li>
+        <li><span class="tr" data-ar="الآن i = 1، وتبدأ j من 2 وليس من 0.">Now \( i = 1 \), and <code>j</code> starts at 2, not at 0.</span> \( 5 + 3 = 8 \).</li>
+        <li>\( j = 3 \): \( 5 + 4 = 9 \).</li>
+        <li>\( j = 4 \): \( 5 + 1 = 6 \). Row 1 is finished.</li>
+        <li>\( i = 2 \), \( j = 3 \): \( 3 + 4 = 7 \). A hit, so <code>count</code> is 2.</li>
+        <li>\( j = 4 \): \( 3 + 1 = 4 \).</li>
+        <li>\( i = 3 \), \( j = 4 \): \( 4 + 1 = 5 \). This is the last pair.</li>
+        <li>All 10 pairs are checked. The answer is 2.</li>
+      </ol>
+      <figcaption>The grey half is never visited. Each pair is checked exactly once.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — the three shapes</h3>
-    <p><b>Shape 1: one loop.</b> Look at every element and count or keep the best. You know this from the earlier pages.</p>
-    <p><b>Shape 2: two loops over all pairs.</b> This is the table above.</p>
+    <h3><b>3 · Code</b> — two loops over all pairs</h3>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -46,7 +90,7 @@ int main() {
     int n, target;
     cin &gt;&gt; n &gt;&gt; target;
     vector&lt;int&gt; a(n);
-    for (int &amp;x : a) cin &gt;&gt; x;
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
 
     int count = 0;
     for (int i = 0; i &lt; n; i++)
@@ -55,8 +99,38 @@ int main() {
     cout &lt;&lt; count &lt;&lt; "\n";
 }
 </code></pre>
-    <p><b>Shape 3: try every answer.</b> Loop over each <span class="term" data-t="candidate">candidate</span> answer from small to big. Stop at the first one that works.</p>
-    <p>Example (problem 732A): one shovel costs <code>k</code>. You have many 10-coins and one coin of value <code>r</code>. Find the smallest number of shovels you can pay for with no change. The total must end in 0 or in <code>r</code>.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p>The same tool fits many problems. <span class="tr" data-ar="غيّر ما تجرّبه فقط، ثم احسب الكلفة وقارنها بـ 10^8.">Change only <b>what</b> you try. Then count the cost and compare it with \( 10^8 \).</span> The DEFAULT is the pairs loop above.</p>
+  <table>
+    <tr><th>The problem needs…</th><th>Change the loops to</th><th>Cost</th><th>Fast enough up to about</th></tr>
+    <tr><td>all pairs (DEFAULT)</td><td><code>for i</code>, <code>for (j = i + 1 …)</code></td><td>\( \frac{n^2}{2} \), so \( O(n^2) \)</td><td>\( n = 10^4 \): \( 5 \cdot 10^7 \)</td></tr>
+    <tr><td>all triples</td><td>add <code>for (int k = j + 1; k &lt; n; k++)</code></td><td>\( \frac{n^3}{6} \), so \( O(n^3) \)</td><td>\( n = 500 \): \( 2 \cdot 10^7 \)</td></tr>
+    <tr><td>every value of the answer</td><td><code>for (int x = 1; x &lt;= limit; x++)</code>, then <code>if (ok(x))</code></td><td>limit \( \times \) (cost of one check)</td><td>limit \( \cdot \) check \( \le 10^8 \)</td></tr>
+  </table>
+  <p>For "every value of the answer", go from small to big. <span class="tr" data-ar="أول قيمة تنجح هي أصغر إجابة، فتوقّف عندها بـ break.">The first value that works is the smallest answer, so stop there with <code>break</code>.</span> The next part solves one problem this way.</p>
+  <p class="note">A fourth form, "all subsets", tries every group of elements. It needs a new tool; see "Not now" below.</p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem</b> (732A, Buy a Shovel). One shovel costs \( k \). You have many 10-coins and one coin of value \( r \), with \( 1 \le r \le 9 \). Buy the fewest shovels (at least one) so that you pay with no change. Limits: \( 1 \le k \le 1000 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The smallest number of shovels. You can pay when the total ends in 0 (only 10-coins) or ends in \( r \) (10-coins and the \( r \)-coin).</li>
+    <li><b>A small example by hand.</b> \( k = 117 \), \( r = 3 \). Only the last digit of the total matters.
+      <table>
+        <tr><th>shovels</th><td>1</td><td>2</td><td>3</td><td>…</td><td>8</td><td>9</td></tr>
+        <tr><th>total</th><td>117</td><td>234</td><td>351</td><td>…</td><td>936</td><td>1053</td></tr>
+        <tr><th>last digit</th><td>7</td><td>4</td><td>1</td><td>…</td><td>6</td><td class="hi">3</td></tr>
+      </table>
+      <p>The answer is 9.</p>
+    </li>
+    <li><b>The idea.</b> Try every number of shovels from 1 upward. <span class="tr" data-ar="10 مجارف تنجح دائمًا، لأن 10 · k ينتهي بالصفر. لذلك يكفي أن نجرّب حتى 10.">10 shovels always work, because \( 10 \cdot k \) ends in 0. So trying up to 10 is enough.</span></li>
+    <li><b>Why is it fast enough?</b> At most 10 tries, each one is a multiplication. That is \( O(1) \) in practice.</li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -73,22 +147,57 @@ int main() {
     }
 }
 </code></pre>
-    <p class="note">Input <code>117 3</code> → output <code>9</code>, because 9 × 117 = 1053 ends in 3.</p>
-  </div>
 </section>
 
-<p class="complexity">Speed: (number of possibilities) × (cost of one check). One loop is O(n), all pairs are O(n^2). Keep it below about 10^8.</p>
+<p class="complexity">Speed: (number of possibilities) \( \times \) (cost of one check). One loop is \( O(n) \), all pairs \( O(n^2) \), all triples \( O(n^3) \). Keep it below about \( 10^8 \).</p>
 
 <p class="tip-box">Brute force has a second job. When you write a faster solution, a slow brute force tells you if it is correct. See "stress testing" in <a href="#debugging">How to find your bug</a>.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="القوة الغاشمة حيلة للمبتدئين، والحل الحقيقي دائمًا أذكى.">Brute force is a beginner's trick. The real solution is always more clever.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا كان عدد الخطوات أقل من 10^8 فهي أفضل إجابة: سريعة الكتابة وصعبة الخطأ.">If the steps stay below \( 10^8 \), it is the best answer. It is fast to write and hard to get wrong.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="حلقتان متداخلتان سريعتان، لأن كل خطوة صغيرة جدًا.">Two nested loops are fine, because each step is tiny.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="مع n = 2 · 10^5 يكون عدد الأزواج حوالي 2 · 10^10، أي حوالي 200 ثانية.">With \( n = 2 \cdot 10^5 \) there are about \( 2 \cdot 10^{10} \) pairs: about 200 seconds.</span> Count before you write.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الحدود الصغيرة تعني أن هناك صيغة مخفية يجب أن أجدها.">Small limits mean there is a hidden formula I must find.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الحدود الصغيرة رسالة من الكاتب: مسموح لك أن تجرّب كل شيء.">Small limits are a message from the author: you may try everything.</span></p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>You do not count the steps first. Two loops with n = 2·10<sup>5</sup> are 2·10<sup>10</sup> steps: Time limit exceeded.</li>
     <li>The inner loop starts at <code>j = 0</code>. Then you count each pair twice, and also pair an element with itself.</li>
     <li>The loop over answers stops too early. Be sure of the biggest answer that can happen, or make the limit bigger.</li>
-    <li>You look for a formula for 30 minutes when n ≤ 100. Small limits are a gift: use them.</li>
+    <li>The count of pairs is stored in <code>int</code>. For \( n = 10^5 \) there are about \( 5 \cdot 10^9 \) pairs: use <code>long long</code>.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>All subsets</b> ("choose any group of items"). With \( n \le 20 \) there are \( 2^{20} \approx 10^6 \) groups. You list them with bits in <a href="#bits">Bits</a>.</li>
+    <li><b>All orders and all ways to build something</b> step by step. You learn it in <a href="#recursion">Recursion and backtracking</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="كم زوجًا i &lt; j يوجد عندما n = 6؟">How many pairs \( i &lt; j \) are there for \( n = 6 \)?</span>
+      <details><summary>Answer</summary><p>\( \frac{6 \cdot 5}{2} = 15 \).</p></details></li>
+    <li><span class="tr" data-ar="n ≤ 3000 وتريد فحص كل الأزواج. هل هذا سريع كفاية؟ وماذا لو n ≤ 10^5؟">\( n \le 3000 \) and you check all pairs. Is it fast enough? And for \( n \le 10^5 \)?</span>
+      <details><summary>Answer</summary><p>For 3000: about \( 4.5 \cdot 10^6 \) pairs, fast. For \( 10^5 \): about \( 5 \cdot 10^9 \), too slow.</p></details></li>
+    <li><span class="tr" data-ar="n ≤ 100 وتحتاج كل الثلاثيات. هل تكفي ثلاث حلقات؟">\( n \le 100 \) and you need all triples. Are three loops fast enough?</span>
+      <details><summary>Answer</summary><p>Yes. About \( \frac{100^3}{6} \approx 1.7 \cdot 10^5 \) triples, far below \( 10^8 \).</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -113,5 +222,6 @@ int main() {
     <li><a href="https://usaco.guide/bronze/intro-complete">USACO Guide: Complete Search</a> — the same idea with more solved examples.</li>
     <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 5 "Complete search". Read it again after the recursion page.</li>
     <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — many very easy problems on loops. Good practice for "try everything".</li>
+    <li><a href="https://codeforces.com/blog/entry/81841">Stress Testing Tutorial</a> — how to use a brute force to check a faster solution.</li>
   </ul>
 </section>

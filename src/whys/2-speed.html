@@ -1,0 +1,120 @@
+<h2>Speed, memory and limits</h2>
+
+<article data-key="ten-to-eight">
+<h3>Why about \( 10^8 \) steps per second?</h3>
+<p>A computer chip runs at a few GHz: a few \( 10^9 \) clock ticks per second.</p>
+<p><span class="tr" data-ar="الخطوة البسيطة في الكود، مثل الجمع أو المقارنة أو قراءة الخانة التالية، تأخذ دقة ساعة واحدة أو بضع دقات.">A simple step of your code (add, compare, read the next cell) takes one tick or a few.</span>
+The judge is shared and often older. Your loop also has extra work around each step.</p>
+<p><span class="tr" data-ar="لذلك 10^8 تقدير آمن، وليس قانونًا دقيقًا.">So \( 10^8 \) is a safe estimate, not an exact law.</span></p>
+<p>Some steps cost much more. Tests on one laptop:</p>
+<table>
+<tr><th>what</th><th>time</th></tr>
+<tr><td>\( 10^8 \) multiply-and-add</td><td>0.08 s</td></tr>
+<tr><td>\( 10^8 \) remainders <code>%</code></td><td>0.21 s</td></tr>
+<tr><td>\( 2 \cdot 10^7 \) random jumps in a 128 MB array</td><td>2.4 s</td></tr>
+</table>
+<p><span class="tr" data-ar="القفز العشوائي في ذاكرة كبيرة بطيء، لأن المعالج ينتظر الذاكرة.">Random jumps in big memory are slow, because the chip waits for the memory.</span></p>
+<p class="why-means"><b>What this means for you:</b> under \( 10^8 \) simple steps, relax. Near \( 10^9 \), look for a faster idea.</p>
+</article>
+
+<article data-key="limits-2e5">
+<h3>Why are limits like \( 2 \cdot 10^5 \) so common?</h3>
+<p>Take \( n = 2 \cdot 10^5 \) and count the steps of two ideas.</p>
+<ul>
+<li>\( n \log_2 n \approx 3.5 \cdot 10^6 \) steps: far below \( 10^8 \). Fast.</li>
+<li>\( n^2 = 4 \cdot 10^{10} \) steps: about 400 times too many. Too slow.</li>
+</ul>
+<p><span class="tr" data-ar="يختار واضعو المسائل الحدّ بحيث تنجح الفكرة السريعة وتفشل البطيئة.">Problem setters pick the limit so that the fast idea passes and the slow one fails.</span>
+\( 10^5 \) and \( 2 \cdot 10^5 \) do this very clearly.</p>
+<p><span class="tr" data-ar="والحدود الأخرى ترسل إشارات مشابهة: n ≤ 5000 تسمح بـ n^2، و n ≤ 20 تسمح بـ 2^n.">Other limits send similar signals: \( n \le 5000 \) allows \( n^2 \), and \( n \le 20 \) allows \( 2^n \).</span></p>
+<p class="why-means"><b>What this means for you:</b> read the biggest \( n \) first. It tells you the speed your idea needs.</p>
+</article>
+
+<article data-key="halving-log">
+<h3>Why does halving give \( \log n \)?</h3>
+<p>Play "guess my number" from 1 to 1000. Each yes/no question can cut the options in half.</p>
+<p>1000, 500, 250, 125, … After 10 questions, one number is left.</p>
+<p><span class="tr" data-ar="عدد مرات القسمة على 2 حتى نصل إلى 1 هو log n بالأساس 2.">The number of halvings to get down to 1 is \( \log_2 n \).</span></p>
+<table>
+<tr><th>n</th><th>halvings</th></tr>
+<tr><td>\( 10^3 \)</td><td>10</td></tr>
+<tr><td>\( 10^6 \)</td><td>20</td></tr>
+<tr><td>\( 10^9 \)</td><td>30</td></tr>
+<tr><td>\( 10^{18} \)</td><td>60</td></tr>
+</table>
+<p><span class="tr" data-ar="العدد يكبر ألف مرة، لكن عدد الأسئلة يزيد 10 فقط.">The number grows 1000 times, but the questions grow by only 10.</span></p>
+<p class="why-means"><b>What this means for you:</b> whenever you can throw away half each step, the cost is tiny: about 30 steps for \( 10^9 \).</p>
+</article>
+
+<article data-key="sort-nlogn">
+<h3>Why can sorting not beat \( n \log n \) by comparing?</h3>
+<p>10 items can stand in \( 10! = 3\,628\,800 \) different orders.</p>
+<p><span class="tr" data-ar="كل مقارنة جوابها نعم أو لا، فهي في أحسن حال تقسم الاحتمالات إلى نصفين.">Each comparison gives a yes or a no. At best, it cuts the possible orders in half.</span>
+To get from 3 628 800 orders down to 1 takes at least 22 halvings.</p>
+<p><span class="tr" data-ar="ومع n عنصرًا يصبح هذا حوالي n log n مقارنة.">For \( n \) items this becomes about \( n \log_2 n \) comparisons.</span>
+<code>sort</code> already reaches this speed.</p>
+<p>Counting can be faster, because it does not compare. It works only when the values are small.</p>
+<p class="why-means"><b>What this means for you:</b> do not hunt for a faster general sort. <code>sort</code> is as fast as comparing can be.</p>
+</article>
+
+<article data-key="memory-256">
+<h3>Why 256 MB, and how many <code>int</code>s is that?</h3>
+<p>256 MB is the most common memory limit on Codeforces. 256 is \( 2^8 \), a round number for a computer.</p>
+<p>256 MB is \( 256 \cdot 2^{20} = 268\,435\,456 \) bytes.</p>
+<p><span class="tr" data-ar="العدد int يأخذ 4 بايت، فتتّسع الذاكرة لحوالي 67 مليون int.">An <code>int</code> takes 4 bytes. So 256 MB holds 67 108 864 <code>int</code>s, about \( 6.7 \cdot 10^7 \).</span>
+A <code>long long</code> takes 8 bytes: half as many.</p>
+<p><span class="tr" data-ar="برنامجك نفسه يحتاج بعض الذاكرة أيضًا، فلا تستعمل الحدّ كله.">Your program needs some memory for itself too. Do not plan to use all of it.</span></p>
+<p class="why-means"><b>What this means for you:</b> an array of \( 10^7 \) <code>int</code>s (40 MB) is fine. \( 10^8 \) <code>int</code>s (400 MB) is too much.</p>
+</article>
+
+<article data-key="stack-overflow">
+<h3>Why does very deep recursion crash?</h3>
+<p>Each call of a function gets a small piece of memory on the "stack". It keeps the call's local variables.</p>
+<p><span class="tr" data-ar="هذه القطع تتراكم فوق بعضها حتى ترجع الاستدعاءات.">These pieces pile up until the calls return.</span>
+On many Linux computers the stack is only 8 MB.</p>
+<p>A test with a tiny recursive function and an 8 MB stack: depth \( 10^5 \) worked, depth \( 10^6 \) crashed.</p>
+<p><span class="tr" data-ar="خوادم Codeforces تعطي البرامج مكدّسًا أكبر بكثير، لذلك قد يعمل الكود هناك ويتعطّل على حاسوبك.">Codeforces gives programs a much bigger stack. So code can work there and crash on your computer.</span></p>
+<p class="why-means"><b>What this means for you:</b> a depth up to about \( 10^5 \) is usually fine. If your computer crashes on a deep test, the stack may be the reason, not your idea.</p>
+</article>
+
+<article data-key="endl">
+<h3>Why is <code>endl</code> slow?</h3>
+<p><code>cout</code> does not send each character out at once. It collects text in a "buffer" and sends a big piece at a time.</p>
+<p><span class="tr" data-ar="endl يكتب سطرًا جديدًا ثم يُجبر cout على إرسال كل شيء فورًا.">The word <code>endl</code> writes a new line and then forces <code>cout</code> to send everything now.</span>
+Sending is the slow part.</p>
+<p>Test: printing \( 10^6 \) lines into a file on Linux. With <code>endl</code>: 0.82 s. With <code>'\n'</code>: 0.03 s.</p>
+<p><span class="tr" data-ar="مع 10^6 سطر يكفي هذا الفرق وحده ليُسبّب تجاوز الوقت.">With \( 10^6 \) lines, this difference alone can cause "Time limit exceeded".</span></p>
+<p class="why-means"><b>What this means for you:</b> end lines with <code>'\n'</code>. Never use <code>endl</code> in a loop.</p>
+</article>
+
+<article data-key="sync-stdio">
+<h3>Why does <code>ios::sync_with_stdio(false)</code> make <code>cin</code> fast?</h3>
+<p>C++ has two sets of input tools: <code>cin</code>/<code>cout</code>, and the older <code>scanf</code>/<code>printf</code> from C.</p>
+<p><span class="tr" data-ar="افتراضيًا يعمل cin بالتنسيق مع أدوات C حتى يبقى الترتيب صحيحًا إذا خلطت بينهما.">By default, <code>cin</code> works in step with the C tools, so the order stays right if you mix them.</span>
+That costs time.</p>
+<p><code>ios::sync_with_stdio(false);</code> turns this off. <code>cin.tie(nullptr);</code> stops <code>cin</code> from flushing <code>cout</code> before each read.</p>
+<p>Reading \( 10^6 \) numbers on Linux took 0.10 s normally and 0.027 s with the two lines.</p>
+<p><span class="tr" data-ar="بعد هذين السطرين لا تخلط cin مع scanf ولا cout مع printf.">After these two lines, do not mix <code>cin</code> with <code>scanf</code> or <code>cout</code> with <code>printf</code>.</span></p>
+<p class="why-means"><b>What this means for you:</b> put the two lines at the top of <code>main</code> and use only <code>cin</code>/<code>cout</code>.</p>
+</article>
+
+<article data-key="hash-attack">
+<h3>Why can <code>unordered_map</code> be attacked on Codeforces?</h3>
+<p><code>unordered_map</code> puts each key into a "bucket" that a hash function picks.</p>
+<p><span class="tr" data-ar="عادةً تتوزّع المفاتيح على صناديق كثيرة، فتكون كل عملية سريعة.">Usually the keys spread over many buckets, and each operation is fast.</span>
+But for whole numbers, the g++ hash is the number itself. The bucket is that number modulo the bucket count.</p>
+<p><span class="tr" data-ar="من يعرف هذا يستطيع أن يختار مفاتيح تقع كلها في صندوق واحد.">Someone who knows this can choose keys that all land in one bucket.</span>
+Then every operation walks a long list.</p>
+<p>With \( 2 \cdot 10^5 \) keys, normal keys took 0.006 s and colliding keys took 7.3 s.</p>
+<p><span class="tr" data-ar="في Codeforces يستطيع المشاركون الآخرون إرسال اختبار كهذا ضد حلّك.">On Codeforces, other people can send such a test against your solution.</span></p>
+<p class="why-means"><b>What this means for you:</b> use <code>map</code> by default. It is always \( O(\log n) \) per operation.</p>
+</article>
+
+<article data-key="big-o-name">
+<h3>Why is it called "Big O"?</h3>
+<p>The O stands for "order": the order of growth of a function.</p>
+<p>The sign is older than computers. Paul Bachmann used it in a book on number theory in 1894. Edmund Landau made it popular soon after.</p>
+<p><span class="tr" data-ar="لاحقًا استعارها علماء الحاسوب ليصفوا سرعة نموّ عدد الخطوات.">Later, computer scientists borrowed it to describe how fast the number of steps grows.</span></p>
+<p><span class="tr" data-ar="O(n^2) تعني: الخطوات تنمو مثل n^2، ونحن نهمل الثوابت.">\( O(n^2) \) means: the steps grow like \( n^2 \). We ignore constant factors.</span></p>
+<p class="why-means"><b>What this means for you:</b> read \( O(\dots) \) as "grows like". It is a size class, not an exact count.</p>
+</article>

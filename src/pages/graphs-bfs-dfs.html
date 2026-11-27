@@ -1,11 +1,20 @@
-<p class="idea">A graph is points joined by lines. DFS and BFS are two ways to walk over it and visit every point once.</p>
+<p class="idea"><span class="tr" data-ar="المخطّط نقاط تصل بينها خطوط. DFS و BFS طريقتان للمشي عليه وزيارة كل نقطة مرة واحدة.">A graph is points joined by lines. DFS and BFS are two ways to walk over it and visit every point once.</span> <button type="button" class="why" data-why="euler-graph">why?</button></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can write a function that calls itself → <a href="#recursion">Recursion and backtracking</a></li>
+    <li>You know <code>queue</code> and <code>pair</code> → <a href="#stl-containers">map, set, stack, queue</a></li>
+    <li>You can count steps and compare with \( 10^8 \) → <a href="#complexity">Limits → speed</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
     <li>The statement has cities and roads, friends, or computers and cables: things and <b>links between pairs</b>.</li>
     <li>"Can you reach B from A?" or "How many groups are there?" → DFS or BFS.</li>
-    <li>"The <b>minimum number of moves</b>" and every move costs the same → BFS.</li>
+    <li><span class="tr" data-ar="«أقلّ عدد من الحركات» وكل حركة لها التكلفة نفسها ← استخدم BFS.">"The <b>minimum number of moves</b>" and every move costs the same → BFS.</span></li>
     <li>A <span class="term" data-t="grid">grid</span> (maze) with walls where you move up, down, left, right. A grid is also a graph.</li>
   </ul>
 </section>
@@ -16,44 +25,80 @@
   <div class="way">
     <h3><b>1 · Story</b> — a maze and a rumour</h3>
     <p>A <span class="term" data-t="graph">graph</span> has <span class="term" data-t="vertex">vertices</span> (the points) and <span class="term" data-t="edge">edges</span> (the lines). Two vertices joined by an edge are <span class="term" data-t="neighbour">neighbours</span>.</p>
-    <p><b>DFS</b> is one person in a maze. You walk forward as far as you can. You mark every room you enter. At a dead end you go back one room and try another door.</p>
-    <p><b>BFS</b> is a rumour. Today you know it. Tomorrow all your friends know it. The next day their friends know it. It moves <b>level by level</b>, so it reaches each person by the shortest way.</p>
+    <p><b>DFS</b> is one person in a maze. You walk forward as far as you can. You mark every room you enter. <span class="tr" data-ar="عند طريق مسدود ترجع غرفة واحدة إلى الخلف وتجرّب بابًا آخر.">At a dead end you go back one room and try another door.</span></p>
+    <p><b>BFS</b> is a rumour. Today you know it. Tomorrow all your friends know it. The next day their friends know it. <span class="tr" data-ar="ينتشر الخبر مستوى بعد مستوى، لذلك يصل إلى كل شخص بأقصر طريق.">It moves <b>level by level</b>, so it reaches each person by the shortest way.</span></p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — BFS from vertex 1</h3>
-    <svg viewBox="0 0 480 180" width="480" role="img" aria-label="Graph with 6 vertices and edges 1-2, 1-3, 2-4, 3-5, 4-5, 5-6. Distances from vertex 1 are 0, 1, 1, 2, 2, 3.">
-      <g stroke="var(--line)" stroke-width="2">
-        <line x1="60" y1="90" x2="180" y2="40"/><line x1="60" y1="90" x2="180" y2="140"/>
-        <line x1="180" y1="40" x2="300" y2="40"/><line x1="180" y1="140" x2="300" y2="140"/>
-        <line x1="300" y1="40" x2="300" y2="140"/><line x1="300" y1="140" x2="420" y2="140"/>
-      </g>
-      <g fill="var(--surface)" stroke="currentColor" stroke-width="1.5">
-        <circle cx="60" cy="90" r="16" stroke="var(--accent)" stroke-width="3"/>
-        <circle cx="180" cy="40" r="16"/><circle cx="180" cy="140" r="16"/>
-        <circle cx="300" cy="40" r="16"/><circle cx="300" cy="140" r="16"/><circle cx="420" cy="140" r="16"/>
-      </g>
-      <g fill="currentColor" font-size="14" font-weight="bold" text-anchor="middle">
-        <text x="60" y="95">1</text><text x="180" y="45">2</text><text x="180" y="145">3</text>
-        <text x="300" y="45">4</text><text x="300" y="145">5</text><text x="420" y="145">6</text>
-      </g>
-      <g fill="var(--muted)" font-size="12" text-anchor="middle">
-        <text x="60" y="126">dist 0</text><text x="180" y="16">dist 1</text><text x="180" y="174">dist 1</text>
-        <text x="300" y="16">dist 2</text><text x="300" y="174">dist 2</text><text x="420" y="174">dist 3</text>
-      </g>
-    </svg>
+    <h3><b>2 · Picture</b> — BFS, then DFS, on the same graph</h3>
     <p>BFS keeps a <span class="term" data-t="queue">queue</span>. Take the front vertex. Every neighbour with no distance yet gets <code>dist + 1</code> and goes to the back of the queue.</p>
-    <table>
-      <tr><th>take</th><th>new neighbours</th><th>queue after</th><th>dist[1..6]</th></tr>
-      <tr><td>start</td><td>—</td><td>1</td><td>0 · · · · ·</td></tr>
-      <tr><td>1</td><td>2, 3</td><td>2 3</td><td>0 1 1 · · ·</td></tr>
-      <tr><td>2</td><td>4</td><td>3 4</td><td>0 1 1 2 · ·</td></tr>
-      <tr><td>3</td><td>5</td><td>4 5</td><td>0 1 1 2 2 ·</td></tr>
-      <tr><td>4</td><td>none (2 and 5 are seen)</td><td>5</td><td>0 1 1 2 2 ·</td></tr>
-      <tr><td>5</td><td>6</td><td>6</td><td>0 1 1 2 2 3</td></tr>
-      <tr><td>6</td><td>none</td><td>empty → stop</td><td class="hi">0 1 1 2 2 3</td></tr>
-    </table>
-    <p class="note"><code>dist[v]</code> = the smallest number of edges from the start to v. DFS from 1 visits in a different order: 1 → 2 → 4 → 5 → 3, back to 5, then 6.</p>
+    <figure class="viz" data-viz="stepper" data-gen="bfs" aria-label="Step by step: BFS from vertex 1 on a graph with 6 vertices and the edges 1-2, 1-3, 2-4, 3-5, 4-5, 5-6. It shows the queue and the distance of every vertex.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":88,"nodes":[{"id":1,"x":0,"y":0.65},{"id":2,"x":1,"y":0},{"id":3,"x":1,"y":1.3},{"id":4,"x":2,"y":0},{"id":5,"x":2,"y":1.3},{"id":6,"x":3,"y":1.3}],"edges":[{"from":1,"to":2},{"from":1,"to":3},{"from":2,"to":4},{"from":3,"to":5},{"from":4,"to":5},{"from":5,"to":6}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"v: taken from the queue","queued":"in the queue","done":"finished"},
+  "code": ["dist[1] = 0;  q.push(1);","while (!q.empty()) {","    int v = q.front();  q.pop();","    for (int to : g[v]) {","        if (dist[to] != -1) continue;","        dist[to] = dist[v] + 1;","        q.push(to);","    }","}"],
+  "steps": [
+    {"line":1,"g":{"states":{"1":"queued","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"dist 0"},"edgeStates":{}},"v":{"items":[["v",""],["queue",[1]]]}},
+    {"line":[3,6,7],"g":{"states":{"1":"active","2":"queued","3":"queued","4":"","5":"","6":""},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1"},"edgeStates":{"1-2":"active","1-3":"active"}},"v":{"items":[["v",1],["queue",[2,3]]]}},
+    {"line":[3,6,7],"g":{"states":{"1":"done","2":"active","3":"queued","4":"queued","5":"","6":""},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1","4":"dist 2"},"edgeStates":{"1-2":"done","1-3":"done","2-4":"active"}},"v":{"items":[["v",2],["queue",[3,4]]]}},
+    {"line":[3,6,7],"g":{"states":{"1":"done","2":"done","3":"active","4":"queued","5":"queued","6":""},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1","4":"dist 2","5":"dist 2"},"edgeStates":{"1-2":"done","1-3":"done","2-4":"done","3-5":"active"}},"v":{"items":[["v",3],["queue",[4,5]]]}},
+    {"line":[3,5],"g":{"states":{"1":"done","2":"done","3":"done","4":"active","5":"queued","6":""},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1","4":"dist 2","5":"dist 2"},"edgeStates":{"1-2":"done","1-3":"done","2-4":"done","3-5":"done"}},"v":{"items":[["v",4],["queue",[5]]]}},
+    {"line":[3,6,7],"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"active","6":"queued"},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1","4":"dist 2","5":"dist 2","6":"dist 3"},"edgeStates":{"1-2":"done","1-3":"done","2-4":"done","3-5":"done","5-6":"active"}},"v":{"items":[["v",5],["queue",[6]]]}},
+    {"line":[3,5],"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"done","6":"active"},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1","4":"dist 2","5":"dist 2","6":"dist 3"},"edgeStates":{"1-2":"done","1-3":"done","2-4":"done","3-5":"done","5-6":"done"}},"v":{"items":[["v",6],["queue",[]]]}},
+    {"line":2,"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"done","6":"done"},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1","4":"dist 2","5":"dist 2","6":"dist 3"},"edgeStates":{"1-2":"done","1-3":"done","2-4":"done","3-5":"done","5-6":"done"}},"v":{"items":[["v",""],["queue",[]]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start. Vertex 1 gets <code>dist 0</code> and goes into the queue.</li>
+        <li><span class="tr" data-ar="نأخذ 1 من الطابور. جاراه 2 و 3 جديدان: يأخذان المسافة 1 ويدخلان الطابور.">Take 1 from the queue. Its neighbours 2 and 3 are new: they get <code>dist 1</code> and join the queue.</span></li>
+        <li>Take 2. Its only new neighbour is 4, which gets \( 1 + 1 = 2 \).</li>
+        <li>Take 3. Its only new neighbour is 5, which also gets <code>dist 2</code>.</li>
+        <li><span class="tr" data-ar="نأخذ 4. جاراه 2 و 5 لهما مسافة من قبل، فلا نضيف شيئًا.">Take 4. Its neighbours 2 and 5 already have a distance, so nothing is added.</span></li>
+        <li>Take 5. Its only new neighbour is 6, which gets <code>dist 3</code>.</li>
+        <li>Take 6. It has no new neighbour.</li>
+        <li><span class="tr" data-ar="الطابور فارغ، فيتوقّف BFS. كل رأس معه الآن أقصر مسافة من الرأس 1.">The queue is empty, so BFS stops. Every vertex now has its shortest distance from vertex 1.</span></li>
+      </ol>
+      <figcaption><code>dist[v]</code> = the smallest number of edges from the start to v. The vertices leave the queue in the order of their distance: 0, 1, 1, 2, 2, 3.</figcaption>
+    </figure>
+    <p>DFS on the same graph. It goes deep first and comes back only at a dead end.</p>
+    <figure class="viz" data-viz="stepper" data-gen="dfs" aria-label="Step by step: DFS from vertex 1 on the same graph with 6 vertices. It shows the path of calls and the order of the visits: 1, 2, 4, 5, 3, 6.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":88,"nodes":[{"id":1,"x":0,"y":0.65},{"id":2,"x":1,"y":0},{"id":3,"x":1,"y":1.3},{"id":4,"x":2,"y":0},{"id":5,"x":2,"y":1.3},{"id":6,"x":3,"y":1.3}],"edges":[{"from":1,"to":2},{"from":1,"to":3},{"from":2,"to":4},{"from":3,"to":5},{"from":4,"to":5},{"from":5,"to":6}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"you are here","queued":"on the path, waiting","done":"finished"},
+  "code": ["void dfs(int v) {","    visited[v] = true;","    for (int to : g[v])","        if (!visited[to]) dfs(to);","}"],
+  "steps": [
+    {"line":2,"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":""},"notes":{"1":"visit 1"},"edgeStates":{}},"v":{"items":[["path",[1]],["visit order","1"]]}},
+    {"line":2,"g":{"states":{"1":"queued","2":"active","3":"","4":"","5":"","6":""},"notes":{"1":"visit 1","2":"visit 2"},"edgeStates":{"1-2":"active"}},"v":{"items":[["path",[1,2]],["visit order","1 2"]]}},
+    {"line":2,"g":{"states":{"1":"queued","2":"queued","3":"","4":"active","5":"","6":""},"notes":{"1":"visit 1","2":"visit 2","4":"visit 3"},"edgeStates":{"1-2":"done","2-4":"active"}},"v":{"items":[["path",[1,2,4]],["visit order","1 2 4"]]}},
+    {"line":2,"g":{"states":{"1":"queued","2":"queued","3":"","4":"queued","5":"active","6":""},"notes":{"1":"visit 1","2":"visit 2","4":"visit 3","5":"visit 4"},"edgeStates":{"1-2":"done","2-4":"done","4-5":"active"}},"v":{"items":[["path",[1,2,4,5]],["visit order","1 2 4 5"]]}},
+    {"line":2,"g":{"states":{"1":"queued","2":"queued","3":"active","4":"queued","5":"queued","6":""},"notes":{"1":"visit 1","2":"visit 2","3":"visit 5","4":"visit 3","5":"visit 4"},"edgeStates":{"1-2":"done","2-4":"done","4-5":"done","5-3":"active"}},"v":{"items":[["path",[1,2,4,5,3]],["visit order","1 2 4 5 3"]]}},
+    {"line":5,"g":{"states":{"1":"queued","2":"queued","3":"done","4":"queued","5":"active","6":""},"notes":{"1":"visit 1","2":"visit 2","3":"visit 5","4":"visit 3","5":"visit 4"},"edgeStates":{"1-2":"done","2-4":"done","4-5":"done","5-3":"done"}},"v":{"items":[["path",[1,2,4,5]],["visit order","1 2 4 5 3"]]}},
+    {"line":2,"g":{"states":{"1":"queued","2":"queued","3":"done","4":"queued","5":"queued","6":"active"},"notes":{"1":"visit 1","2":"visit 2","3":"visit 5","4":"visit 3","5":"visit 4","6":"visit 6"},"edgeStates":{"1-2":"done","2-4":"done","4-5":"done","5-3":"done","5-6":"active"}},"v":{"items":[["path",[1,2,4,5,6]],["visit order","1 2 4 5 3 6"]]}},
+    {"line":5,"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"done","6":"done"},"notes":{"1":"visit 1","2":"visit 2","3":"visit 5","4":"visit 3","5":"visit 4","6":"visit 6"},"edgeStates":{"1-2":"done","2-4":"done","4-5":"done","5-3":"done","5-6":"done"}},"v":{"items":[["path",[]],["visit order","1 2 4 5 3 6"]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start at vertex 1 and mark it as visited.</li>
+        <li>Go to 2. It is the first neighbour of 1 that is not visited.</li>
+        <li>From 2 go deeper to 4.</li>
+        <li>From 4 go deeper to 5.</li>
+        <li>From 5 go to 3. It is the first neighbour of 5 that is not visited.</li>
+        <li><span class="tr" data-ar="الرأس 3 طريق مسدود: جاراه 1 و 5 تمّت زيارتهما. نرجع إلى 5.">Vertex 3 is a dead end: its neighbours 1 and 5 are visited. Go back to 5.</span></li>
+        <li>From 5 try the next neighbour. Vertex 6 is not visited, so go to 6.</li>
+        <li><span class="tr" data-ar="لم يبقَ أي جار غير مزور. تنتهي الاستدعاءات واحدًا بعد الآخر حتى نرجع إلى 1.">No unvisited neighbour is left. The calls end one after another, back to vertex 1.</span></li>
+      </ol>
+      <figcaption>DFS visited 1, 2, 4, 5, 3, 6. The order is different from BFS. DFS does not give distances.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
@@ -113,12 +158,30 @@ int main() {
 }
 </code></pre>
     <p class="note">This is an <span class="term" data-t="undirected">undirected</span> graph. If the statement says <span class="term" data-t="directed">directed</span> (one-way roads), write only <code>g[a].push_back(b)</code>.</p>
+    <p class="note">A DFS on a chain of \( 10^6 \) vertices goes \( 10^6 \) calls deep. On some judges this crashes. <button type="button" class="why" data-why="stack-overflow">why?</button> If you see a strange runtime error, use BFS.</p>
   </div>
 </section>
 
 <section>
   <h2>A grid is also a graph</h2>
-  <p>Each free cell is a vertex. Its neighbours are the 4 cells next to it. Do not build <code>g</code>. Use two small arrays for the 4 directions. Inside the BFS loop, for the cell <code>(x, y)</code> you took from the queue:</p>
+  <p>Each free cell is a vertex. Its neighbours are the 4 cells next to it. <span class="tr" data-ar="في الشبكة، x هو رقم الصف ويكبر إلى الأسفل، و y هو رقم العمود ويكبر إلى اليمين.">In a grid, <code>x</code> is the row and grows down. <code>y</code> is the column and grows to the right.</span></p>
+  <figure class="viz" data-viz="plane" aria-label="A grid with 3 rows and 5 columns. The cell x, y is in the middle. Its four neighbours are x-1, y above it, x+1, y below it, x, y-1 on its left and x, y+1 on its right.">
+    <script type="application/json">
+{
+  "orient": "grid", "rows": 3, "cols": 5, "unit": 60, "rowLabel": "row x", "colLabel": "column y",
+  "legend": { "active": "the cell (x, y)", "read": "its 4 neighbours" },
+  "cells": [
+    { "at": [1, 2], "text": "x,y", "state": "active" },
+    { "at": [0, 2], "text": "x-1,y", "state": "read" },
+    { "at": [2, 2], "text": "x+1,y", "state": "read" },
+    { "at": [1, 1], "text": "x,y-1", "state": "read" },
+    { "at": [1, 3], "text": "x,y+1", "state": "read" }
+  ]
+}
+    </script>
+    <figcaption>Here \( x = 1 \) and \( y = 2 \). Going up makes <code>x</code> smaller. This is not like a math drawing, where up is bigger.</figcaption>
+  </figure>
+  <p>Do not build <code>g</code>. Use two small arrays for the 4 directions. Inside the BFS loop, for the cell <code>(x, y)</code> you took from the queue:</p>
 <pre data-part="main"><code class="cpp">
 int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
 for (int d = 0; d &lt; 4; d++) {
@@ -131,7 +194,105 @@ for (int d = 0; d &lt; 4; d++) {
 </code></pre>
 </section>
 
-<p class="complexity">Speed: O(n + m) for both DFS and BFS. Each vertex and each edge is used once. A grid: O(rows × columns).</p>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> A maze is a grid with \( n \) rows and \( m \) columns. A dot is a free cell and <code>#</code> is a wall. You start in the top-left cell. You want to reach the bottom-right cell. One move goes up, down, left or right to a free cell. Print the smallest number of moves, or -1 if you cannot get there. Limits: \( 1 \le n, m \le 1000 \). Both corner cells are free.</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The minimum number of moves. Every move costs the same. That is the signal for BFS.</li>
+    <li><b>A small example by hand.</b> Take a maze with 4 rows and 5 columns. Write 0 in the start cell. Write 1 in its free neighbours, then 2 in their new neighbours, and so on.
+      <figure class="viz" data-viz="plane" data-gen="grid-bfs" aria-label="A maze with 4 rows and 5 columns and 5 walls. Each free cell holds its number of moves from the top-left cell. The bottom-right cell holds 7.">
+        <script type="application/json">
+{
+  "orient": "grid",
+  "rows": 4,
+  "cols": 5,
+  "unit": 46,
+  "rowLabel": "row x",
+  "colLabel": "column y",
+  "legend": {"active":"start","done":"goal"},
+  "cells": [
+    {"at":[0,0],"text":0,"state":"active"},
+    {"at":[0,1],"text":1},
+    {"at":[0,2],"text":2},
+    {"at":[0,3],"text":"#","wall":true},
+    {"at":[0,4],"text":6},
+    {"at":[1,0],"text":1},
+    {"at":[1,1],"text":"#","wall":true},
+    {"at":[1,2],"text":3},
+    {"at":[1,3],"text":4},
+    {"at":[1,4],"text":5},
+    {"at":[2,0],"text":2},
+    {"at":[2,1],"text":"#","wall":true},
+    {"at":[2,2],"text":4},
+    {"at":[2,3],"text":"#","wall":true},
+    {"at":[2,4],"text":6},
+    {"at":[3,0],"text":3},
+    {"at":[3,1],"text":4},
+    {"at":[3,2],"text":5},
+    {"at":[3,3],"text":"#","wall":true},
+    {"at":[3,4],"text":7,"state":"done"}
+  ]
+}
+</script>
+        <figcaption>The number in a cell is its distance from the start. The goal cell gets 7, so the answer is 7.</figcaption>
+      </figure>
+    </li>
+    <li><b>The idea.</b> Run BFS from the start cell. <span class="tr" data-ar="dist[x][y] هو عدد الحركات للوصول إلى الخانة. القيمة -1 تعني أننا لم نصل إليها بعد.">Keep <code>dist[x][y]</code>, the number of moves to reach the cell. The value -1 means "not reached yet".</span> So <code>dist</code> is also the visited mark. The answer is <code>dist[n-1][m-1]</code>.</li>
+    <li><b>Why is it fast enough?</b> The biggest grid has \( 1000 \cdot 1000 = 10^6 \) cells. Each cell enters the queue once and looks at 4 neighbours.
+      \[ 4 \cdot 10^6 \text{ steps} \]
+      <p>That is far below \( 10^8 \).</p>
+    </li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+    vector&lt;string&gt; grid(n);
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; grid[i];
+
+    vector&lt;vector&lt;int&gt;&gt; dist(n, vector&lt;int&gt;(m, -1));   // -1 = not reached yet
+    queue&lt;pair&lt;int, int&gt;&gt; q;
+    dist[0][0] = 0;
+    q.push({0, 0});
+    int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
+    while (!q.empty()) {
+        int x = q.front().first, y = q.front().second;
+        q.pop();
+        for (int d = 0; d &lt; 4; d++) {
+            int nx = x + dx[d], ny = y + dy[d];
+            if (nx &lt; 0 || nx &gt;= n || ny &lt; 0 || ny &gt;= m) continue;      // outside the grid
+            if (grid[nx][ny] == '#' || dist[nx][ny] != -1) continue;  // wall, or seen
+            dist[nx][ny] = dist[x][y] + 1;
+            q.push({nx, ny});
+        }
+    }
+    cout &lt;&lt; dist[n - 1][m - 1] &lt;&lt; "\n";              // still -1 if we never reached it
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: \( O(n + m) \) for both DFS and BFS, with \( n \) vertices and \( m \) edges. A grid: \( O(\text{rows} \cdot \text{columns}) \).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="DFS يعطي أيضًا أقصر طريق.">DFS also gives the shortest path.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="DFS يجد طريقًا ما، وليس الأقصر. لأقلّ عدد من الحركات استخدم BFS.">DFS finds some path, not the shortest one. For the minimum number of moves use BFS.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="BFS يعطي أقصر طريق في أي مخطّط.">BFS gives the shortest path in any graph.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="فقط إذا كانت كل الحواف لها التكلفة نفسها. إذا اختلفت أطوال الطرق فإجابة BFS خاطئة.">Only if every edge costs the same. If the roads have different lengths, the BFS answer is wrong.</span> The tool for that case comes later (see "Not now").</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="أضع علامة الزيارة على الرأس عندما أُخرجه من الطابور.">I mark a vertex as visited when I take it out of the queue.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="ضع العلامة عند إدخاله إلى الطابور. وإلا دخل الرأس نفسه إلى الطابور مرات كثيرة.">Mark it when you push it. If not, the same vertex enters the queue many times.</span> In the code, <code>dist[to]</code> is set before <code>q.push(to)</code>.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
@@ -139,8 +300,28 @@ for (int d = 0; d &lt; 4; d++) {
     <li>No <span class="term" data-t="visited">visited</span> mark. In a graph with a <span class="term" data-t="cycle">cycle</span> you then walk in a circle forever.</li>
     <li>You add the edge in one direction only, or the size is <code>g(n)</code> while vertices are 1..n. Use <code>n + 1</code>.</li>
     <li>Many <span class="term" data-t="test-case">test cases</span>: you forget to clear <code>g</code> and <code>visited</code> before each one.</li>
-    <li>Very deep recursion: a DFS on a chain of 10<sup>6</sup> vertices can crash on some judges. If you see a strange runtime error, use BFS.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Roads with different lengths.</b> BFS counts edges, not lengths. You learn the right tool in <a href="#dijkstra">Shortest path (Dijkstra)</a>.</li>
+    <li><b>Trees.</b> A tree is a connected graph with no cycle. It has its own tricks. You learn them in <a href="#trees">Trees</a>.</li>
+    <li><b>An order where some tasks must come first.</b> That is a question on a directed graph. You learn it in <a href="#toposort">Topological sort</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="مخطّط فيه 5 رؤوس والحواف 1-2 و 2-3 و 4-5. كم مكوّنًا متصلًا فيه؟">A graph has 5 vertices and the edges 1-2, 2-3 and 4-5. How many connected components does it have?</span>
+      <details><summary>Answer</summary><p>Two. One group is 1, 2, 3. The other group is 4, 5.</p></details></li>
+    <li><span class="tr" data-ar="تريد أقلّ عدد من الحركات في متاهة. هل تستخدم DFS أم BFS؟ ولماذا؟">You need the minimum number of moves in a maze. Do you use DFS or BFS? Why?</span>
+      <details><summary>Answer</summary><p>BFS. It moves level by level, so the first time it reaches a cell is the shortest way.</p></details></li>
+    <li><span class="tr" data-ar="في المخطّط 10^5 رأس و 2·10^5 حافة. كم خطوة تقريبًا يحتاج BFS؟">A graph has \( 10^5 \) vertices and \( 2 \cdot 10^5 \) edges. About how many steps does BFS need?</span>
+      <details><summary>Answer</summary><p>About \( n + m = 3 \cdot 10^5 \) steps. Each vertex and each edge is used once.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">

@@ -5,8 +5,9 @@ Goal: reach Codeforces ~1600 by following the lessons **in order**, without gett
 Each page is SHORT: about 3 screens. No proofs, no university-style text.
 
 **Reference pages. Read them first and copy their structure, tone and length:**
-- `src/pages/binary-search.html` — an algorithm lesson (stages 1–3).
-- `src/pages/complexity.html` — an advice lesson (stage 0).
+- `src/pages/binary-search.html` — an algorithm lesson (stages 1–3), with two steppers.
+- `src/pages/graphs-bfs-dfs.html` — an algorithm lesson with graph steppers and grid figures.
+- `src/pages/complexity.html` — an advice lesson (stage 0), with a chart.
 - `src/pages/cheatsheet.html` — formulas in LaTeX, code in code.
 
 A page is "upgraded" when it follows this file. The checker knows an upgraded page by `class="before"`.
@@ -14,6 +15,7 @@ A page is "upgraded" when it follows this file. The checker knows an upgraded pa
 ## 1. Files and checks
 - One lesson = one HTML fragment: `src/pages/<slug>.html`. Slugs and the lesson order are in `src/topics.json`.
   No `<html>`, `<head>`, `<body>`, `<h1>`, `<style>` or `<script>`. The site adds the title.
+  The one exception: the JSON spec of a picture, `<script type="application/json">` inside `<figure class="viz">` (section 11).
 - New Arabic words go in ONE file: `src/glossary/<your-stage>.json` (for example `1.json`), same format as `00-base.json`.
   Look in all glossary files first and reuse keys. Do not edit other shared files.
 - Run all of these before you finish. All must be clean for your pages:
@@ -22,7 +24,8 @@ A page is "upgraded" when it follows this file. The checker knows an upgraded pa
 node build.js                          # 0 problems (glossary keys, links, empty translations)
 node tools/check-code.js <slug>        # your C++ compiles, 0 failed
 node tools/check-problems.js           # every practice link is real, name and rating match
-node tools/check-path.js <slug>        # structure, LaTeX, forward links, long sentences: 0 errors
+node tools/check-path.js <slug>        # structure, LaTeX, forward links, long sentences, picture limits: 0 errors
+node tools/viz-gen.js                  # generated pictures still match their generator (section 11.5)
 node tools/readability.js <slug>       # extra list of long sentences and long words
 ```
 
@@ -42,7 +45,7 @@ Algorithm lessons (stages 1–3) have ALL of these blocks, in this order. `.mist
 <section>
   <h2>Three ways to understand it</h2>
   <div class="way"><h3><b>1 · Story</b> — short name</h3> a real-life picture, 2–4 sentences </div>
-  <div class="way"><h3><b>2 · Picture</b> — short name</h3> a step-by-step trace table on a tiny example (or a small inline SVG) </div>
+  <div class="way"><h3><b>2 · Picture</b> — short name</h3> a stepper or a figure on a tiny example (section 11); a short table only if it adds something </div>
   <div class="way"><h3><b>3 · Code</b> — short name</h3> the shortest correct C++17, with comments </div>
 </section>
 
@@ -88,6 +91,11 @@ Algorithm lessons (stages 1–3) have ALL of these blocks, in this order. `.mist
 
 The headings of the five new blocks are fixed text: "Before this lesson", "Solve one together", "Wrong ideas people get", "Not now", "Check yourself".
 
+**"Change it to fit" (algorithm lessons).** Use the one allowed extra section for this: `<section>` with `<h2>Change it to fit</h2>`,
+placed where the extra section goes (after "Three ways", before "Solve one together"). It shows 2–4 small variants of the same tool,
+each as "the problem changes like this → you change this line / this idea", with the changed line of code shown.
+State which form is the DEFAULT to use. The guide `choose-a-tool` links to these sections.
+
 **Advice lessons (stage 0)** keep the same order but are freer. Required: `.idea`, `.before`, `.worked`, `.myths`, `.check`.
 Other blocks (`.spot`, `.way` boxes, `.complexity`, `.mistakes`, `.notnow`, `.practice`, `.more`) and free short sections,
 checklists and tables are used where they help. Free sections go between `.before` and `.myths`.
@@ -100,7 +108,8 @@ Stage 4 (`what-next`) needs only `.idea`, `.before`, `.check`.
 - "Before", "Not now" and "Check yourself" are a few lines each.
 
 Useful classes: `<p class="note">` small grey text · `<p class="tip-box">` highlighted tip · `<td class="hi">` highlighted cell ·
-tables scroll on their own. In SVG use `fill="none" stroke="currentColor"` or the CSS variables
+tables scroll on their own.
+Pictures are made with the visual kit (section 11). Hand-written SVG is a last resort for a shape the kit cannot draw. In it use `fill="none" stroke="currentColor"` or the CSS variables
 (`var(--accent)`, `var(--line)`, `var(--muted)`, `var(--surface)`, `var(--ok)`, `var(--warn)`); never fixed colours. Give SVG a `viewBox`, width ≤ 640.
 
 ## 3. Math is LaTeX
@@ -210,6 +219,249 @@ Keep existing, verified links when you upgrade a page.
 - `https://www.youtube.com/@ArabicCompetitiveProgramming` (Arabic video lessons by Mostafa Saad) — mention as "Arabic videos", only on core algorithm pages.
 - `https://en.cppreference.com/w/cpp/container` for STL.
 
-## 10. Cheat sheet (`src/pages/cheatsheet.html`)
+## 10. Cheat sheet (`src/pages/cheatsheet.html`) and extra pages
 - Cards only: `<div class="cc" data-to="slug" data-tip="plain-text description">`. No description text inside a card; it goes in `data-tip`.
 - Formulas are LaTeX inside `<div class="fx">`. C++ expressions are `<code>` inside `.fx`, or a `<pre>` code card. Never mix the two in one expression.
+- Extra pages (`src/extras.json`: `{slug, title, wide}`) are reference pages, not lessons. They get a quick link at the top of the sidebar,
+  the route `#slug`, the link checks and the math rules. A page listed there but not written yet is a build warning, and no link is shown.
+- `choose-a-tool` ("Which tool?") is the guide the student runs before and during every problem. It is not a lesson and has no lesson
+  blocks. Its parts, in order: the 7-step thinking routine (`.worked` box) · limits → allowed cost table · signal → tool table ·
+  confusable pairs with the deciding question · a static SVG flowchart (limits → what is asked → 2–3 candidates) · "When your first
+  idea fails" moves · "Then change the tool to fit" (links the lessons' "Change it to fit" sections) · which-tool drills
+  (`<section class="check">`, NOT `.practice`, so the site does not re-sort them; the tool is only inside `<details>`) · a pocket version.
+  Every table row carries its stage number (`<span class="eyebrow sN">N</span>`). When a lesson's "Spot it" changes, update the matching row.
+
+## 11. Pictures and animations (the visual kit, `src/viz.js`)
+A picture is a `<figure class="viz">` with a JSON spec. The site draws it as inline SVG: to scale, in the theme colours, light and dark.
+No library, no hand-drawn SVG for these shapes. `node build.js` parses and checks every spec and **fails** on a bad one.
+A bad spec in the browser shows an orange "Picture error" box that names the problem.
+
+**See them live:** `complexity` (chart), `binary-search` (array stepper + number-line stepper), `graphs-bfs-dfs` (two graph steppers, two grids).
+
+### 11.1 The markup (exact)
+```html
+<figure class="viz" data-viz="KIND" aria-label="One full sentence: what the picture shows.">
+  <script type="application/json">
+  { …the spec… }
+  </script>
+  <!-- only for data-viz="stepper": one <li> per step, in order -->
+  <ol class="viz-steps">
+    <li>Caption of step 1. It is normal lesson HTML: <code>code</code>, \( math \), <span class="tr" data-ar="…">a translated sentence</span>.</li>
+    <li>…</li>
+  </ol>
+  <figcaption>What to notice. Shown under the picture, always.</figcaption>
+</figure>
+```
+- `KIND` is `stepper`, or one static scene: `array`, `table`, `graph`, `numberline`, `clock`, `vars`, `plane`, `chart`.
+- `aria-label` (8+ characters) and a `<figcaption>` with text are required. This JSON `<script>` is the only `<script>` allowed in a page.
+- The JSON is strict: double quotes, no comments, no trailing comma. Text inside the JSON is plain text: no tags, no LaTeX.
+  Write a power as `n^2` or `10^8` in chart names and labels; the chart raises it.
+- Captions are real HTML, so math, `.term`, `.tr`, the build checks and the readability checks all work on them. Arabic stays in `data-ar`.
+- A figure may sit inside a `.way` box, a plain `<section>`, or a step of "Solve one together".
+
+### 11.2 States (the same six names in every scene)
+| State | Also accepted | Looks like | Default legend text |
+|---|---|---|---|
+| `active` | `current` | accent colour, thick border (a graph vertex also gets a ring) | current |
+| `done` | `yes`, `visited`, `good` | green, solid border, a ✓ mark | done |
+| `bad` | `no` | orange, long dashes, a × mark | no |
+| `queued` | `wait`, `queue` | purple, short dots, a … mark | waiting |
+| `read` | | accent colour, dashed border, no fill | read from |
+| `dim` | `off` | faded, dotted | not needed |
+
+Every state has a colour **and** a border style or mark, so it never depends on colour alone. A legend with the states you used is added under the picture.
+Give the legend your own words with `"legend": { "active": "mid: we ask here", "no": "a \"no\"" }` at the top of the spec. `"legend": false` hides it.
+
+### 11.3 `stepper`: the core
+```json
+{
+  "scenes": [ { "type": "array", "id": "a", "label": "a", "values": [1, 3, 4, 7] },
+              { "type": "vars", "id": "v", "items": [] } ],
+  "code": ["int lo = -1, hi = 4;", "while (hi - lo > 1) {", "    …", "}"],
+  "legend": { "active": "mid" },
+  "steps": [
+    { "line": 1,      "a": { "pointers": { "lo": -1, "hi": 4 } },                        "v": { "items": [["mid", ""]] } },
+    { "line": [2, 3], "a": { "pointers": { "lo": -1, "hi": 4, "mid": 1 }, "states": { "1": "active" } }, "v": { "items": [["mid", 1]] } }
+  ]
+}
+```
+- `scenes`: one or more scenes, drawn one under the other. Each has a `type` and the fixed part of its spec. `id` defaults to the type; give ids when two scenes share a type. A `chart` cannot be a scene.
+- `steps[i]`: for each scene id, the fields that are different in this step. A field you give **replaces** that whole field of the scene. Steps do not add up: every step is written in full, starting from the scene.
+- `line` (optional): the line or lines of `code` that run in this step, counted from 1.
+- `code` (optional): C++ lines, shown beside the scene (under it on a phone). Raw text, not HTML-escaped. Keep lines under 44 characters.
+- The number of steps must equal the number of `<li>` captions.
+- The reader gets: Restart, Back, Play / Pause, Next, a counter "3 / 8", and the keys ← → Home End when the figure has focus. Buttons are 40px high.
+  With "reduce motion" on, there is no Play button and nothing slides. On paper: the picture of the step on screen and all captions as a numbered list.
+
+### 11.4 Scenes
+All fields except the ones marked **required** are optional.
+
+**`array`**: boxes with index numbers.
+```json
+{ "label": "a", "values": [3, 1, 4, 1, 5], "states": { "1": "active", "2": "active" },
+  "pointers": { "l": 1, "r": 2 }, "bracket": [1, 2],
+  "rows": [ { "label": "pre", "values": [0, 3, 4, 8, 9, 14] } ] }
+```
+`values` **required** · `label` name at the left · `start` first index (default 0) · `index: false` hides the index numbers ·
+`states` by index (`{"3": "done"}`) or a list as long as `values` · `pointers` named arrows under the cells; `null` hides one; a pointer may stand one step outside (`-1` or `n`), the picture then shows an empty dotted cell ·
+`bracket: [from, to]` a frame around a window of cells · `rows` more rows under the first (prefix sums, a second array), each `{label, values, states, start}`.
+
+**`table`**: a 2D grid (DP table, the sieve, all pairs).
+```json
+{ "corner": "item \\ w", "colLabels": [0, 1, 2, 3], "rowLabels": ["1", "2"],
+  "rows": [[0, 0, 5, 5], [0, 4, 5, 9]], "states": { "1,3": "active", "0,3": "read", "0,2": "read" } }
+```
+`rows` **required** (same length each; `null` or `""` is an empty cell) · `states` with keys `"row,col"` from 0. Use `active` for the cell you fill and `read` for the cells it reads.
+
+**`graph`**: vertices and edges. Also for trees, call trees and DSU.
+```json
+{ "nodes": [ { "id": "A", "x": 0, "y": 0 }, { "id": "B", "x": 2, "y": 0 }, { "id": "C", "x": 2, "y": 1 } ],
+  "edges": [ { "from": "A", "to": "B", "w": 4 }, { "from": "B", "to": "C", "directed": true } ],
+  "states": { "A": "done", "B": "active" }, "notes": { "A": "dist 0", "B": "dist 4" }, "edgeStates": { "A-B": "active" } }
+```
+`nodes` **required**: `id`, `x`, `y` (your own units, `y` grows down; one unit is `unit` pixels, default 76, made smaller when the graph is wide), `label` (default: the id), `at: "above" | "below"` for the place of its note ·
+`edges`: `from`, `to`, `w` (a weight, drawn beside the line), `directed` (an arrow); `"directed": true` at the top makes every edge directed ·
+`states` by node id · `notes` a short text beside a vertex (`dist 2`, `visit 3`) · `edgeStates` with keys `"from-to"` (`active` thick accent, `done` thick green, `dim` dotted).
+
+**`numberline`**: a line of numbers (binary search on the answer, ranges, overflow, intervals).
+```json
+{ "min": 0, "max": 10, "range": [2, 7], "pointers": { "lo": 2, "hi": 7 },
+  "states": { "2": "no", "7": "yes" }, "notes": { "2": "no", "7": "yes" },
+  "intervals": [ { "from": 1, "to": 4, "label": "A", "state": "done" } ], "markers": [ { "at": 5, "label": "x" } ] }
+```
+`min`, `max` **required** · `step` between ticks (default 1, at most 60 ticks) · `labelStep` print a number every so many · `range` a thick bar on the line ·
+`pointers` as in `array` · `states` a coloured dot on a tick · `notes` a word above a tick · `intervals` bars above the line `{from, to, label, state}` · `markers` extra dots `{at, label, state}`.
+
+**`clock`**: the numbers 0 … mod-1 on a circle, for remainders.
+```json
+{ "mod": 7, "at": 3, "label": "10 mod 7 = 3", "states": { "3": "active" } }
+```
+`mod` **required** (2 to 24) · `at` where the hand points (any whole number, it is wrapped) · `label` a line under the clock.
+
+**`vars`**: a strip of "name = value".
+```json
+{ "items": [ ["sum", 12], ["queue", [2, 3]], ["best", ""] ] }
+```
+`items` **required**: pairs. A list value is drawn as boxes, front first (a queue, a stack, a path). `""` shows "—". In a stepper, a value that changed in this step gets a frame.
+
+**`plane`**: a coordinate plane. Two orientations; pick the one the lesson's code uses.
+```json
+{ "x": [0, 7], "y": [0, 5],
+  "points": [ { "at": [1, 1], "label": "A" }, { "at": [5, 4], "label": "B" } ],
+  "segments": [ { "from": [1, 1], "to": [5, 4], "label": "straight", "state": "dim" } ],
+  "paths": [ { "points": [[1, 1], [5, 1], [5, 4]], "label": "4 + 3 = 7", "state": "active", "arrow": true } ],
+  "rects": [ { "from": [2, 2], "to": [4, 5], "label": "R" } ] }
+```
+```json
+{ "orient": "grid", "rows": 3, "cols": 5, "rowLabel": "row x", "colLabel": "column y",
+  "cells": [ { "at": [1, 2], "text": "x,y", "state": "active" }, { "at": [0, 0], "text": "#", "wall": true } ] }
+```
+- Math orientation (default): `x: [min, max]` and `y: [min, max]` **required**. A pair is `[x, y]`. `y` grows **up**. Points sit on grid crossings. `xLabel`, `yLabel` name the axes.
+- Grid orientation (`"orient": "grid"`): `rows`, `cols` **required**. A pair is `[row, col]`, as in `grid[row][col]`. Rows grow **down**. A pair names a cell; points and lines go through cell centres. `rowLabel`, `colLabel` name the axes.
+- `points` `{at, label, state, labelAt: "left" | "below"}` · `segments` `{from, to, label, state, arrow, gap}` · `paths` `{points, label, state, arrow}` ·
+  `rects` `{from, to, label, state}` (two corners; in a grid: two corner cells) · `cells` `{at, text, state, wall}` one filled unit square · `unit` pixels per unit (default 46).
+
+**`chart`**: a line chart with real axes (static only).
+```json
+{ "x": { "label": "n = size of the input", "name": "n", "min": 1, "max": 1000000, "log": true },
+  "y": { "label": "steps", "min": 1, "max": 1000000000000, "log": true },
+  "series": [ { "name": "n", "fn": "n" }, { "name": "n^2", "fn": "n^2" }, { "name": "mine", "data": [[1, 2], [10, 300]] } ],
+  "ref": { "y": 100000000, "label": "10^8 steps = about 1 second", "over": "too slow" } }
+```
+`x`, `y` **required**: `min`, `max`, `label`, `log` (a log scale; `min` must be above 0); `x.name` is the short name in the readout ·
+`series` **required**, at most 5: a `name` and either `fn` (one of `1`, `log n`, `sqrt n`, `n`, `n log n`, `n^2`, `n^3`, `2^n`, `n!`) or `data` (2+ points `[x, y]`) ·
+`ref` one horizontal line with a `label`; `over` is a word the readout adds to every value above the line.
+Each line has its own colour and its own dash pattern, its name at its end, and a legend. Point at the chart, tap it, or use ← → on it: the readout under it gives the value of every line.
+**Always add a "How to read this chart" sentence** in the figcaption, most of all for a log scale ("each grid line is 10 times the line before").
+
+### 11.5 The states are computed, never typed
+Every step of a stepper, and every number in a picture that an algorithm produces, comes from **running the algorithm**.
+- Add a generator function to `tools/viz-gen.js` (see `GEN['bfs']`). It runs the algorithm, records one state per step and returns `{ spec, trace }`.
+- Put `data-gen="name"` on the figure and write `<script type="application/json">{}</script>`.
+- `node tools/viz-gen.js --write` fills in the JSON. `node tools/viz-gen.js --print name` shows a plain trace of each step: write the captions from it.
+- `node tools/viz-gen.js` (no argument) checks that every generated figure still matches its generator. Run it before you finish.
+- A picture with no algorithm in it (the 4 neighbours of a cell, a chart of built-in functions) is written by hand and has no `data-gen`.
+
+### 11.6 Which one, and when not
+| You want to show | Use |
+|---|---|
+| An algorithm that changes state step by step | `stepper` with the fitting scene, a `vars` strip, and `code` |
+| A fixed shape: a graph, a grid, a range, a window | the static scene (`graph`, `plane`, `numberline`, `array`) |
+| How fast something grows, or a comparison of numbers | `chart` |
+| Exact values the reader will look up again | a normal HTML table, not a picture |
+
+Limits (checked by `tools/check-path.js` where marked):
+- At most **2 steppers** per lesson (error). Static figures are not limited, but one idea = one picture.
+- At most **12 steps** per stepper (error). 6–9 is best. Merge boring steps (see the last step of the DFS stepper). Fewer than 3 steps: use a static picture (warning).
+- **One sentence per step.** A second short sentence is allowed, three get a warning. The caption says what changed and why.
+- Use a tiny example: 5–8 array cells, 5–7 vertices, a number line of at most 20 ticks. It must fit a phone (390px). Wide scenes scroll inside their own box.
+- A stepper replaces the long trace table. Keep a short static table only where it adds something the stepper does not show (the yes/no row in binary-search).
+- **Do not animate** advice pages (how-codeforces-works, how-to-practice, read-a-problem, debugging, what-next), reference tables, the cheat sheet, or the extra pages. A chart or a static figure is fine there when it carries the point (the growth chart in `complexity`).
+- No picture for decoration. If the text is as clear without it, leave it out.
+
+### 11.7 The visual each lesson should get
+| Lesson | Visual |
+|---|---|
+| how-codeforces-works, read-a-problem, how-to-practice, debugging, what-next | none (advice). At most one static figure. |
+| cpp-template | none |
+| complexity | `chart`: n, n log n, n^2, 2^n against the 10^8 line (done) |
+| overflow | `numberline`: the range of `int` with a marker that falls off the end; static |
+| simulation | `stepper` + `vars` (and `array` if the state is a row of things): follow the statement step by step |
+| arrays-strings | `array` stepper: one loop with a pointer `i` and a running max in `vars` |
+| stl-basics | none, or one static `array` for "sort then look" |
+| basic-math | `numberline`: a range `[l, r]` and the multiples of k in it |
+| brute-force | `table`: all pairs (i, j) as a grid, the checked half marked |
+| greedy | `numberline` stepper with `intervals`: pick the interval that ends first |
+| stl-containers | `vars` stepper: a stack and a queue as boxes, push and pop |
+| sorting | `array` stepper: the merge of two sorted halves (two pointers, a second row for the result) |
+| counting | `array` + second row `cnt`: one pass fills the frequency row |
+| prefix-sums | `array` stepper with row `pre` and a running total in `vars`; a `chart` only if it compares n·q with n + q |
+| two-pointers | `array` stepper with pointers `l`, `r` and `bracket` as the window |
+| binary-search | `array` stepper (lo, hi, mid + code) and `numberline` stepper on the answer (done) |
+| number-theory | `table` stepper: the sieve grid, multiples crossed out with `bad` |
+| modular | static `clock` for "a mod m"; `vars` stepper for fast power |
+| bits | `array` of bit boxes (index = power of two, `start` so that bit 0 is on the right side of your choice) with a second row for the mask |
+| constructive | none, or one static `array` of the built answer |
+| recursion | `graph` stepper: the call tree, `queued` = waiting calls, `done` = returned |
+| graphs-bfs-dfs | BFS and DFS `graph` steppers + grid `plane` (done) |
+| trees | `graph` stepper: DFS that fills subtree sizes or depths in `notes` |
+| dp | `table` stepper: `active` cell and the `read` cells it uses, with `code` |
+| dijkstra | `graph` stepper with weights, `notes` = dist, a `vars` priority queue |
+| dsu | `graph` stepper: union joins two trees; `notes` = leader |
+| toposort | directed `graph` stepper: `notes` = in-degree, queue in `vars` |
+| combinatorics | static `table`: Pascal's triangle, or a `plane` grid path |
+| interactive | `numberline` stepper: the judge's answers narrow the range |
+| cheatsheet, extra pages | none |
+
+## 12. "Why?" notes
+A "Why?" note is the short true story behind a fact a curious reader may question: why `int` stops at 2 147 483 647,
+why \( 10^9 + 7 \), why `endl` is slow. A small "why?" chip beside the fact opens the story in a card. The page `#why` lists every story.
+
+**Markup (exact).** Put the chip right after the fact, in the same sentence or table cell:
+```html
+… is 2 147 483 647. <button type="button" class="why" data-why="int-max">why?</button>
+```
+- At most **3 chips per page** (error). Use them only where a page states a number or rule a student would question.
+- Never inside `<pre>`, `<code>`, a `.tr` or `.term` span, a `<figure>`, a link, a heading or a `<summary>` (error). After a `.tr`, put it outside the `</span>`.
+- The site adds the accessible name ("Why? " + the story title). Do not add `aria-label` or other attributes.
+
+**Where the stories live.** One theme per file: `src/whys/<NN-theme>.html`, starting with `<h2>Theme name</h2>`. Each story:
+```html
+<article data-key="int-max">
+<h3>Why is the biggest <code>int</code> 2 147 483 647?</h3>
+<p>3–8 short sentences, numbers first. 2–4 of them inside a .tr with data-ar.</p>
+<!-- optional: one small picture (a figure.viz from section 11, or a short table) and one \[ … \] line -->
+<p class="why-means"><b>What this means for you:</b> one line the student can act on.</p>
+</article>
+```
+- The key is lower-case words joined by `-`. Reuse an existing story before you write a new one: `grep data-key src/whys/*.html`.
+- All page rules apply inside a story: LaTeX (section 3), easy language (section 4), `.tr`/`.term` (section 5), pictures (section 11, static only).
+- `node build.js` **fails** on a chip whose key has no story and **warns** on a story no page uses (it still shows on `#why`).
+  `node tools/check-path.js` checks the chips on every page; `node tools/check-path.js whys` checks only the stories (length, `.tr`, math).
+
+**Truth rules.**
+- Every number in a story is exact and checked: limits, sizes, timings, overflow results, `%` on negatives, floating-point output.
+  If code can settle it, run the code and copy the real output. Say where a timing comes from ("on one laptop", "on Linux").
+- History and names: only what is well established. A traditional story that cannot be checked is written as "the story goes…" or left out.
+  Never invent a date, a quote or an anecdote.
+- A story is **never required** to follow a lesson. A lesson must make full sense with every chip removed, and a story never teaches a tool the lesson needs.

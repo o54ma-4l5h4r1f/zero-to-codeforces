@@ -1,9 +1,17 @@
-<p class="idea">C++ gives you ready tools: sort, max, sum, pairs. Learn their names and never write them by hand again.</p>
+<p class="idea"><span class="tr" data-ar="تعطيك C++ أدوات جاهزة: الترتيب، الأكبر، المجموع، الأزواج. تعلّم أسماءها ولا تكتبها بيدك مرة أخرى.">C++ gives you ready tools: sort, max, sum, pairs. Learn their names and never write them by hand again.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know <code>vector</code> and that indexes go from 0 to \( n - 1 \) → <a href="#arrays-strings">Arrays and strings</a></li>
+    <li>You can read \( O(n \log n) \) and compare it with \( 10^8 \) → <a href="#big-o">How much does my code cost?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>You need the numbers in order, or the k biggest, or the k smallest.</li>
+    <li>You need the numbers in order, or the \( k \) biggest, or the \( k \) smallest.</li>
     <li>You need the biggest, the smallest or the sum of an array.</li>
     <li>Two values belong together, like a score and the person who has it.</li>
     <li>You are about to write 10 lines for something very common. Stop. There is a tool for it.</li>
@@ -16,16 +24,36 @@
   <div class="way">
     <h3><b>1 · Story</b> — the toolbox</h3>
     <p>A carpenter does not make a new hammer for every nail. He opens the toolbox and takes one.</p>
-    <p>The STL is the toolbox of C++. The tools are fast, correct and tested by millions of people. Your own sort will be slower and can have bugs.</p>
+    <p>The <span class="term" data-t="stl">STL</span> is the toolbox of C++. Its tools are fast and tested by millions of people. Your own sort will be slower and can have bugs.</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — "I want… → write…"</h3>
-    <p>Here <code>a</code> is a <code>vector&lt;int&gt;</code>.</p>
+    <h3><b>2 · Picture</b> — what <code>a.begin(), a.end()</code> means</h3>
+    <p>Most tools take two places in the array: where to start and where to stop. <code>a.begin()</code> is the first box. <span class="tr" data-ar="أما a.end() فليس الصندوق الأخير، بل هو الموضع الذي يلي الصندوق الأخير مباشرة.">But <code>a.end()</code> is not the last box. It is the place right <b>after</b> the last box.</span></p>
+    <figure class="viz" data-viz="array" aria-label="An array a with values 5, 2, 8, 1, 9 at indexes 0 to 4. The pointer a.begin() is at index 0. The pointer a.end() is at index 5, an empty dotted box after the last value. A frame covers indexes 0 to 4.">
+      <script type="application/json">
+{ "label": "a", "values": [5, 2, 8, 1, 9],
+  "pointers": { "a.begin()": 0, "a.end()": 5 },
+  "bracket": [0, 4] }
+</script>
+      <figcaption>The frame is the range the tool works on: from <code>a.begin()</code> up to, but not with, <code>a.end()</code>.</figcaption>
+    </figure>
+    <p>This is a <span class="term" data-t="half-open">half-open range</span>: the start is in, the stop is out. Math writes it \( [0, 5) \). Its good side: the number of boxes = stop − start. Here \( 5 - 0 = 5 \).</p>
+    <p>You can move both ends. Take <code>a = {5, 2, 8, 1, 9, 4}</code>. <code>a.begin() + 1</code> is box 1. <code>a.begin() + 4</code> is box 4. So <code>sort(a.begin() + 1, a.begin() + 4)</code> sorts boxes 1, 2, 3 only. That is \( 4 - 1 = 3 \) boxes.</p>
+    <figure class="viz" data-viz="array" aria-label="The array 5, 2, 8, 1, 9, 4 after sorting only boxes 1 to 3: 5, 1, 2, 8, 9, 4. Boxes 1, 2 and 3 are framed and marked. Box 4 is outside the frame.">
+      <script type="application/json">
+{ "label": "a", "values": [5, 1, 2, 8, 9, 4],
+  "pointers": { "a.begin() + 1": 1, "a.begin() + 4": 4 },
+  "bracket": [1, 3], "states": { "1": "done", "2": "done", "3": "done" },
+  "legend": { "done": "sorted: 2 8 1 became 1 2 8" } }
+</script>
+      <figcaption>Box 4 holds 9 and was not touched. The stop place is never part of the range.</figcaption>
+    </figure>
+    <p>Now the toolbox. Here <code>a</code> is a <code>vector&lt;int&gt;</code>.</p>
     <table>
       <tr><th>I want…</th><th>write…</th></tr>
       <tr><td>sort, small → big (<span class="term" data-t="ascending">ascending</span>)</td><td><code>sort(a.begin(), a.end());</code></td></tr>
-      <tr><td>sort, big → small (<span class="term" data-t="descending">descending</span>)</td><td><code>sort(a.rbegin(), a.rend());</code><br>or <code>sort(a.begin(), a.end(), greater&lt;int&gt;());</code></td></tr>
+      <tr><td>sort, big → small (<span class="term" data-t="descending">descending</span>)</td><td><code>sort(a.begin(), a.end(), greater&lt;int&gt;());</code></td></tr>
       <tr><td>turn the array around</td><td><code>reverse(a.begin(), a.end());</code></td></tr>
       <tr><td>smaller / bigger of two values</td><td><code>min(x, y)</code> / <code>max(x, y)</code></td></tr>
       <tr><td>exchange two values</td><td><code>swap(x, y);</code></td></tr>
@@ -37,17 +65,18 @@
       <tr><td>two values in one box</td><td><code>pair&lt;int,int&gt; p = {3, 7};</code><br><code>p.first</code> is 3, <code>p.second</code> is 7</td></tr>
       <tr><td>an array of pairs</td><td><code>vector&lt;pair&lt;int,int&gt;&gt; v;</code>   <code>v.push_back({x, y});</code></td></tr>
     </table>
-    <p class="note">The <code>*</code> is needed: <code>max_element</code> gives the <b>place</b> of the biggest value, and <code>*</code> opens it. <code>0LL</code> makes the sum a <code>long long</code>; with plain <code>0</code> a big sum can <span class="term" data-t="overflow">overflow</span>.</p>
-    <p>A <span class="term" data-t="pair">pair</span> is sorted by <code>.first</code>. If two firsts are equal, the smaller <code>.second</code> comes first.</p>
+    <p class="note">The <code>*</code> is needed: <code>max_element</code> gives the <b>place</b> of the biggest value, and <code>*</code> reads the value there. <code>0LL</code> makes the sum a <code>long long</code>. With plain <code>0</code> the sum is an <code>int</code> and can <span class="term" data-t="overflow">overflow</span>.</p>
+    <p><b>How pairs sort.</b> <span class="tr" data-ar="تُرتَّب الأزواج حسب first أولًا. إذا تساوى first، يأتي الزوج ذو second الأصغر أولًا.">A <span class="term" data-t="pair">pair</span> is sorted by <code>.first</code>. If two firsts are equal, the smaller <code>.second</code> comes first.</span></p>
     <table>
       <tr><th>before sort</th><td>{5, 1}</td><td>{2, 2}</td><td>{5, 0}</td><td>{1, 3}</td></tr>
       <tr><th>after sort</th><td>{1, 3}</td><td>{2, 2}</td><td class="hi">{5, 0}</td><td class="hi">{5, 1}</td></tr>
     </table>
+    <p class="note">So put the value you sort by in <code>.first</code>.</p>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — the tools in one program</h3>
-    <p>Read n scores. Print the smallest, the biggest and the sum. Then print the people from the best score to the worst.</p>
+    <p>Read \( n \) scores. Print the smallest, the biggest and the sum. Then print the people from the best score to the worst.</p>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -65,7 +94,7 @@ int main() {
 
     vector&lt;pair&lt;int,int&gt;&gt; people;            // {score, number of the person}
     for (int i = 0; i &lt; n; i++) people.push_back({a[i], i + 1});
-    sort(people.rbegin(), people.rend());    // biggest score first
+    sort(people.begin(), people.end(), greater&lt;pair&lt;int,int&gt;&gt;());   // best first
     for (int i = 0; i &lt; n; i++) cout &lt;&lt; people[i].second &lt;&lt; " ";
     cout &lt;&lt; "\n";
 }
@@ -74,16 +103,105 @@ int main() {
   </div>
 </section>
 
-<p class="complexity">Speed: sort is O(n log n), fine for n = 10^6. The other tools in the table are O(n) or O(1).</p>
+<section>
+  <h2>The <code>size()</code> trap</h2>
+  <p><code>a.size()</code> is <span class="term" data-t="unsigned">unsigned</span>: it can never be negative. <span class="tr" data-ar="لذلك 0 − 1 لا يعطي −1، بل يلتفّ إلى عدد ضخم.">So \( 0 - 1 \) does not give \( -1 \). It wraps around to a huge number.</span> <button type="button" class="why" data-why="unsigned">why?</button> This is real output for an empty <code>vector&lt;int&gt; a;</code>:</p>
+  <table>
+    <tr><th>this line</th><th>prints</th></tr>
+    <tr><td><code>cout &lt;&lt; a.size() - 1;</code></td><td class="hi"><code>18446744073709551615</code></td></tr>
+    <tr><td><code>cout &lt;&lt; (int)a.size() - 1;</code></td><td><code>-1</code></td></tr>
+  </table>
+  <p>Now <code>for (int i = 0; i &lt; a.size() - 1; i++)</code> on an empty array runs and reads boxes that do not exist. <span class="tr" data-ar="القاعدة: حوّل الحجم إلى int قبل أي طرح: (int)a.size() - 1.">The rule: turn the size into <code>int</code> before any minus: <code>(int)a.size() - 1</code>.</span></p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem</b> (1360B, Honest Coach). There are \( n \) athletes with strengths \( s_1, \dots, s_n \). Split them into two teams A and B. Each team needs at least one athlete. Make \( |\max(A) - \min(B)| \) as small as possible. Here \( |x| \) is \( x \) without its minus sign. Limits: \( 2 \le n \le 50 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> One number: the smallest possible difference.</li>
+    <li><b>A small example by hand.</b> Strengths 3 1 2 6 4. Sort them: 1 2 3 4 6. Now cut the sorted row in one place. The left part is A, the right part is B.
+      <table>
+        <tr><th>cut between</th><td>1 | 2</td><td>2 | 3</td><td>3 | 4</td><td>4 | 6</td></tr>
+        <tr><th>max(A), min(B)</th><td>1, 2</td><td>2, 3</td><td>3, 4</td><td>4, 6</td></tr>
+        <tr><th>difference</th><td class="hi">1</td><td>1</td><td>1</td><td>2</td></tr>
+      </table>
+      <p>The answer is 1.</p>
+    </li>
+    <li><b>The idea.</b> <span class="tr" data-ar="بعد الترتيب، كل قطع يعطي الفرق بين جارين. الإجابة هي أصغر فرق بين جارين.">After sorting, each cut gives the difference of two neighbours. The answer is the smallest neighbour difference.</span> You cannot do better than that, and a cut always reaches it.</li>
+    <li><b>Why is it fast enough?</b> Sort is \( O(n \log n) \), then one loop is \( O(n) \). For \( n = 50 \) that is a few hundred steps.</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+void solve() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; s(n);
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; s[i];
+    sort(s.begin(), s.end());                    // small -&gt; big
+    int best = s[1] - s[0];
+    for (int i = 0; i + 1 &lt; n; i++)               // every pair of neighbours
+        best = min(best, s[i + 1] - s[i]);
+    cout &lt;&lt; best &lt;&lt; "\n";
+}
+
+int main() {
+    int t;
+    cin &gt;&gt; t;
+    while (t--) solve();
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: <code>sort</code> is \( O(n \log n) \), fine for \( n = 10^6 \). <code>min_element</code>, <code>accumulate</code>, <code>count</code> and <code>reverse</code> are \( O(n) \). <code>push_back</code>, <code>back</code> and <code>pop_back</code> are \( O(1) \).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="a.end() هو العنصر الأخير في المصفوفة.">The place <code>a.end()</code> is the last element.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="a.end() هو الموضع بعد العنصر الأخير. القراءة منه خطأ. العنصر الأخير هو a.back().">It is the place after the last element. Never read from it. The last element is <code>a.back()</code>.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="إذا كانت المصفوفة فارغة فإن a.size() - 1 يساوي −1.">For an empty array, <code>a.size() - 1</code> is −1.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إنه عدد ضخم، لأن size() بلا إشارة. اكتب (int)a.size() - 1.">It is a huge number, because <code>size()</code> is unsigned. Write <code>(int)a.size() - 1</code>.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="ترتيب الأزواج ينظر إلى first فقط.">Sorting pairs looks only at <code>.first</code>.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="عند تساوي first يقارن second أيضًا.">When the firsts are equal, it compares <code>.second</code> too.</span> So {5, 0} comes before {5, 1}.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><code>a.size()</code> is <span class="term" data-t="unsigned">unsigned</span>: it cannot be negative. For an empty array <code>a.size() - 1</code> is a huge number, not −1. Write <code>(int)a.size() - 1</code>.</li>
     <li><code>accumulate(…, 0)</code> adds in <code>int</code>. Write <code>0LL</code>.</li>
     <li>You forget the <code>*</code> before <code>max_element</code>. The code does not compile, with a long error.</li>
-    <li><code>a.back()</code>, <code>a.pop_back()</code> or <code>*max_element</code> on an empty array. The program crashes. Check <code>!a.empty()</code> first.</li>
+    <li><code>a.back()</code>, <code>a.pop_back()</code> or <code>*max_element</code> on an empty array. The program may crash or print garbage. Check <code>!a.empty()</code> first.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b><code>map</code>, <code>set</code>, <code>stack</code>, <code>queue</code>.</b> More boxes from the same toolbox. They come in <a href="#stl-containers">map, set, stack, queue</a>.</li>
+    <li><b>Sorting by your own rule</b>, like "by length, then by name". You learn it in <a href="#sorting">Sorting</a>. Until then, put the key in <code>.first</code>.</li>
+    <li><b><code>lower_bound</code></b> and other searches in a sorted array. They come in <a href="#binary-search">Binary search</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="رتّب الأزواج {2, 5} و {1, 9} و {2, 3}. ما الترتيب الناتج؟">Sort the pairs {2, 5}, {1, 9}, {2, 3}. What is the order?</span>
+      <details><summary>Answer</summary><p>{1, 9}, {2, 3}, {2, 5}. First by <code>.first</code>; the two 2s are ordered by <code>.second</code>.</p></details></li>
+    <li><span class="tr" data-ar="لدينا a = {4, 7, 1, 3}. كيف تصبح بعد sort(a.begin() + 1, a.begin() + 3)؟">We have <code>a = {4, 7, 1, 3}</code>. What is it after <code>sort(a.begin() + 1, a.begin() + 3)</code>?</span>
+      <details><summary>Answer</summary><p><code>{4, 1, 7, 3}</code>. Only boxes 1 and 2 are sorted. Box 3 is the stop place, so it is out.</p></details></li>
+    <li><span class="tr" data-ar="ماذا يحدث لهذه الحلقة إذا كانت a فارغة: for (int i = 0; i &lt; a.size() - 1; i++)؟">What happens to <code>for (int i = 0; i &lt; a.size() - 1; i++)</code> when <code>a</code> is empty?</span>
+      <details><summary>Answer</summary><p><code>a.size() - 1</code> is a huge number, so the loop runs. It reads boxes that do not exist and may crash.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">

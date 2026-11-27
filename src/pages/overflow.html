@@ -1,36 +1,61 @@
-<p class="idea">An <code>int</code> holds only about 2·10<sup>9</sup>. If a value, a sum or a product can be bigger, use <code>long long</code>.</p>
+<p class="idea"><span class="tr" data-ar="المتغيّر int يتّسع لحوالي 2·10^9 فقط. إذا أمكن أن تكون قيمة أو مجموع أو حاصل ضرب أكبر من ذلك فاستخدم long long.">An <code>int</code> holds only about \( 2 \cdot 10^9 \). If a value, a sum or a product can be bigger, use <code>long long</code>.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can read limits like \( a_i \le 10^9 \) → <a href="#read-a-problem">How to read a problem</a></li>
+    <li>You know the template and its <code>long long sum</code> → <a href="#cpp-template">Your C++ template</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Ask this on every problem</h2>
   <ul>
     <li>What is the <b>biggest number</b> my program can make? Not only the input: also every sum and every <span class="term" data-t="product">product</span>.</li>
-    <li>Bigger than 2·10<sup>9</sup>? Then that variable must be <code>long long</code>.</li>
-    <li>If it does not fit, you get <span class="term" data-t="overflow">overflow</span>: no error, no warning, only a wrong number.</li>
+    <li>Bigger than \( 2 \cdot 10^9 \)? Then that variable must be <code>long long</code>.</li>
+    <li><span class="tr" data-ar="إذا لم تتّسع القيمة يحدث تجاوز: لا خطأ ولا تحذير، فقط رقم خاطئ.">If it does not fit, you get <span class="term" data-t="overflow">overflow</span>: no error, no warning, only a wrong number.</span></li>
   </ul>
 </section>
 
 <section>
-  <h2>The types and their limits</h2>
-  <p>Each <span class="term" data-t="data-type">type</span> has a biggest value. Remember the "about" column.</p>
+  <h2>Where int ends</h2>
+  <p>Each <span class="term" data-t="data-type">type</span> has a biggest value. Here is <code>int</code> on a line. One tick is one billion, \( 10^9 \).</p>
+  <figure class="viz" data-viz="numberline" aria-label="A number line from minus 3 billion to plus 3 billion. A green bar shows the values an int can hold: from about minus 2.15 billion to about plus 2.15 billion. A sum of 3.5 billion is outside the bar.">
+    <script type="application/json">
+{
+  "min": -3, "max": 4, "step": 0.5, "labelStep": 1,
+  "intervals": [ { "from": -2.147, "to": 2.147, "label": "int fits here", "state": "done" } ],
+  "markers": [
+    { "at": -2.147, "label": "min", "state": "active" },
+    { "at": 2.147, "label": "max", "state": "active" },
+    { "at": 3.5, "label": "too big", "state": "bad" }
+  ],
+  "legend": { "active": "the two ends of int", "done": "fits in int", "bad": "does not fit" }
+}
+    </script>
+    <figcaption><b>How to read it.</b> The numbers under the line are billions. <span class="tr" data-ar="الشريط الأخضر هو كل ما يتّسع له int: من حوالي -2.15 مليار إلى حوالي 2.15 مليار.">The green bar is everything an <code>int</code> can hold: from about −2.15 to about 2.15 billion.</span> A sum of 3.5 billion falls off the end.</figcaption>
+  </figure>
   <table>
     <tr><th>Type</th><th>Biggest value</th><th>About</th><th>Use it for</th></tr>
-    <tr><td><code>int</code></td><td>2 147 483 647 (2<sup>31</sup> − 1)</td><td class="hi">2·10<sup>9</sup></td><td>n, indexes, small values</td></tr>
-    <tr><td><code>long long</code></td><td>9 223 372 036 854 775 807 (2<sup>63</sup> − 1)</td><td class="hi">9·10<sup>18</sup></td><td>sums, products, big answers</td></tr>
+    <tr><td><code>int</code></td><td>2 147 483 647, that is \( 2^{31} - 1 \) <button type="button" class="why" data-why="int-max">why?</button></td><td class="hi">\( 2 \cdot 10^9 \)</td><td>\( n \), indexes, small values</td></tr>
+    <tr><td><code>long long</code></td><td>9 223 372 036 854 775 807, that is \( 2^{63} - 1 \) <button type="button" class="why" data-why="long-long">why?</button></td><td class="hi">\( 9 \cdot 10^{18} \)</td><td>sums, products, big answers</td></tr>
     <tr><td><code>double</code></td><td>very big, but not exact</td><td>15–16 correct digits</td><td>only answers with a decimal point</td></tr>
   </table>
-  <p class="note">Negative numbers have the same limits with a minus sign.</p>
+  <p class="note">The smallest values are the same with a minus sign. For <code>int</code> it is one more: −2 147 483 648.</p>
 </section>
 
 <section>
-  <h2>The classic traps</h2>
+  <h2>See the wrap with real numbers</h2>
+  <p>We ran these lines with <code>int</code> variables on a normal computer.</p>
   <table>
-    <tr><th>You compute</th><th>Limits</th><th>Biggest result</th><th>Fits in int?</th></tr>
-    <tr><td>a × b</td><td>a, b ≤ 10<sup>5</sup></td><td>10<sup>10</sup></td><td class="hi">no</td></tr>
-    <tr><td>a × b</td><td>a, b ≤ 10<sup>9</sup></td><td>10<sup>18</sup></td><td class="hi">no</td></tr>
-    <tr><td>sum of n numbers</td><td>n ≤ 2·10<sup>5</sup>, each ≤ 10<sup>9</sup></td><td>2·10<sup>14</sup></td><td class="hi">no</td></tr>
-    <tr><td>n × (n + 1) / 2</td><td>n ≤ 10<sup>5</sup></td><td>about 5·10<sup>9</sup></td><td class="hi">no</td></tr>
-    <tr><td>a + b</td><td>a, b ≤ 10<sup>9</sup></td><td>2·10<sup>9</sup></td><td>yes, but only just</td></tr>
+    <tr><th>You compute in <code>int</code></th><th>The true result</th><th>The program printed</th></tr>
+    <tr><td><code>2147483647 + 1</code></td><td>2 147 483 648</td><td class="hi">−2 147 483 648</td></tr>
+    <tr><td><code>100000 * 100000</code></td><td>10 000 000 000</td><td class="hi">1 410 065 408</td></tr>
+    <tr><td><code>46340 * 46341</code></td><td>2 147 441 940</td><td>2 147 441 940 (fits)</td></tr>
+    <tr><td><code>46341 * 46342</code></td><td>2 147 534 622</td><td class="hi">−2 147 432 674</td></tr>
   </table>
+  <p>The first row goes past the max and comes back at the min. <span class="tr" data-ar="لا تثق في الرقم الخاطئ أبدًا: لغة C++ لا تَعِد بأي نتيجة عند التجاوز.">Never trust the wrong number: C++ promises no result at all on overflow.</span> You often see the wrapped value, but not always.</p>
+  <p class="note">The last two rows show the exact edge for \( n \cdot (n + 1) \): it overflows <code>int</code> from \( n = 46341 \). So <code>n * (n + 1) / 2</code> breaks already at \( n = 46341 \), long before \( n = 10^5 \).</p>
 </section>
 
 <section>
@@ -38,17 +63,17 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — the car counter</h3>
-    <p>An old car shows its kilometres with 6 digits. After 999 999 it shows 000 000 again. The car did not break. The counter just has no more room.</p>
+    <p>An old car shows its kilometres with 6 digits. After 999 999 it shows 000 000 again. The car did not break. The counter has no more room.</p>
     <p>An <code>int</code> is the same. After 2 147 483 647 it jumps to a wrong number, often a negative one.</p>
   </div>
 
   <div class="way">
     <h3><b>2 · Picture</b> — where the product is made</h3>
-    <p>C++ computes the right side first, <b>then</b> stores it. The type of the right side comes from the numbers in it, not from the variable on the left.</p>
+    <p><span class="tr" data-ar="لغة C++ تحسب الطرف الأيمن أولًا ثم تخزّنه. نوع الطرف الأيمن يأتي من الأعداد التي فيه، لا من المتغيّر الذي على اليسار.">C++ computes the right side first, <b>then</b> stores it. The type of the right side comes from the numbers in it, not from the variable on the left.</span></p>
     <table>
-      <tr><th>Line</th><th>Right side is computed as</th><th>Result for a = b = 100000</th></tr>
-      <tr><td><code>long long c = a * b;</code></td><td>int × int → int</td><td class="hi">1410065408 (wrong)</td></tr>
-      <tr><td><code>long long c = 1LL * a * b;</code></td><td>long long × int → long long</td><td>10000000000 (right)</td></tr>
+      <tr><th>Line</th><th>Right side is computed as</th><th>Result for <code>a = b = 100000</code></th></tr>
+      <tr><td><code>long long c = a * b;</code></td><td><code>int</code> times <code>int</code> gives <code>int</code></td><td class="hi">1410065408 (wrong)</td></tr>
+      <tr><td><code>long long c = 1LL * a * b;</code></td><td><code>long long</code> times <code>int</code> gives <code>long long</code></td><td>10000000000 (right)</td></tr>
     </table>
     <p class="note"><code>1LL</code> is the number 1 as a <code>long long</code>. Put it <b>first</b>, so everything after it is computed in <code>long long</code>.</p>
   </div>
@@ -71,26 +96,58 @@ int main() {
     cout &lt;&lt; "right: " &lt;&lt; right &lt;&lt; "\n";   // 10000000000
 }
 </code></pre>
-    <p>The same fix for a sum: make the <b>sum</b> variable <code>long long</code>.</p>
-<pre data-part="main"><code class="cpp">
-long long sum = 0;                        // not int!
-for (int i = 0; i &lt; n; i++) sum += a[i];  // a[i] can stay int
-
-long long total = 1LL * n * (n + 1) / 2;  // 1 + 2 + ... + n
-</code></pre>
   </div>
 </section>
 
-<p class="tip-box">Not sure? Make it <code>long long</code>. It is almost never too slow. A wrong answer from overflow costs you much more.</p>
+<section>
+  <h2>When to switch to long long: the rules</h2>
+  <table>
+    <tr><th>Rule</th><th>Example from real limits</th><th>Biggest result</th></tr>
+    <tr><td>A <b>sum</b> of many numbers: the sum is <code>long long</code>.</td><td>\( n \le 2 \cdot 10^5 \) numbers, each \( \le 10^9 \)</td><td>\( 2 \cdot 10^{14} \)</td></tr>
+    <tr><td>A <b>product</b> of two numbers above 46 340: write <code>1LL *</code> first.</td><td>\( a, b \le 10^5 \)</td><td>\( 10^{10} \)</td></tr>
+    <tr><td>A <b>count of pairs</b>: <code>n * (n - 1) / 2</code> in <code>long long</code>.</td><td>\( n \le 2 \cdot 10^5 \)</td><td>about \( 2 \cdot 10^{10} \)</td></tr>
+    <tr><td>An <b>input</b> above \( 2 \cdot 10^9 \): read it into <code>long long</code>.</td><td>\( n \le 10^{12} \)</td><td>\( 10^{12} \)</td></tr>
+    <tr><td>Two numbers up to \( 10^9 \) <b>added</b>: <code>int</code> is still fine.</td><td>\( a, b \le 10^9 \)</td><td>\( 2 \cdot 10^9 \), only just</td></tr>
+  </table>
+  <p class="tip-box"><span class="tr" data-ar="لست متأكّدًا؟ استخدم long long. نادرًا ما يكون أبطأ بشكل ملحوظ، والإجابة الخاطئة تكلّفك أكثر بكثير.">Not sure? Use <code>long long</code>. It is almost never too slow. A wrong answer costs you much more.</span> The cost of code is in <a href="#big-o">How much does my code cost?</a></p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> You get \( n \) numbers. Print the sum of their squares: \( a_1^2 + a_2^2 + \dots + a_n^2 \). Limits: \( 1 \le n \le 2 \cdot 10^5 \) and \( 1 \le a_i \le 10^5 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> Square each number, then add all the squares.</li>
+    <li><b>A small example by hand.</b> Numbers 1, 2, 3: \( 1 + 4 + 9 = 14 \). No problem with small numbers.</li>
+    <li><b>The biggest numbers.</b> One square can be \( 10^5 \cdot 10^5 = 10^{10} \). That does not fit in <code>int</code>. <span class="tr" data-ar="إذن نكتب 1LL * a[i] * a[i] حتى يُحسَب المربع في long long.">So we write <code>1LL * a[i] * a[i]</code>, so the square is made in <code>long long</code>.</span></li>
+    <li><b>The biggest sum.</b> \( 2 \cdot 10^5 \) squares of \( 10^{10} \) give \( 2 \cdot 10^{15} \). The sum must be <code>long long</code>. It fits: \( 2 \cdot 10^{15} \) is far below \( 9 \cdot 10^{18} \).</li>
+    <li><b>Test the edge.</b> Input <code>1</code> and <code>100000</code> must print 10000000000. With plain <code>a[i] * a[i]</code> it prints 1410065408.</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n);                         // each a[i] fits in int
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    long long sum = 0;                        // up to 2 * 10^15: long long
+    for (int i = 0; i &lt; n; i++)
+        sum += 1LL * a[i] * a[i];             // the square is made in long long
+    cout &lt;&lt; sum &lt;&lt; "\n";
+}
+</code></pre>
+</section>
 
 <section>
   <h2>double is not exact</h2>
-  <p>A <span class="term" data-t="floating-point">floating-point number</span> keeps only 15–16 digits. A <code>long long</code> can have 19. So functions that work with <code>double</code> can give a slightly wrong result for big integers.</p>
+  <p>A <span class="term" data-t="floating-point">floating-point number</span> keeps only 15–16 digits. A <code>long long</code> can have 19. <span class="tr" data-ar="لذلك قد تعطي الدوال التي تعمل بـ double نتيجة خاطئة قليلًا مع الأعداد الصحيحة الكبيرة.">So functions that work with <code>double</code> can give a slightly wrong result for big integers.</span></p>
   <table>
     <tr><th>Do not write</th><th>Why</th><th>Write</th></tr>
-    <tr><td><code>pow(a, b)</code></td><td>returns a double, may be off by 1</td><td>a loop that multiplies</td></tr>
+    <tr><td><code>pow(a, b)</code></td><td>returns a <code>double</code>, may be off by 1 <button type="button" class="why" data-why="pow-double">why?</button></td><td>a loop that multiplies</td></tr>
     <tr><td><code>ceil(a / b)</code> with integers</td><td><code>a / b</code> is already rounded down</td><td><code>(a + b - 1) / b</code></td></tr>
-    <tr><td><code>sqrt(x)</code> for big x</td><td>may be off by 1</td><td>check <code>r * r</code> and fix r by ±1</td></tr>
+    <tr><td><code>sqrt(x)</code> for big <code>x</code></td><td>may be off by 1</td><td>check <code>r * r</code> and fix <code>r</code> by 1</td></tr>
     <tr><td><code>a / b == c</code> with doubles</td><td>not <span class="term" data-t="exact">exact</span></td><td><code>a == b * c</code> with integers</td></tr>
   </table>
   <p>To <span class="term" data-t="round-up">round up</span> a division of positive integers, stay in integers:</p>
@@ -103,14 +160,51 @@ cout &lt;&lt; rows * cols &lt;&lt; "\n";           // up to 10^18: needs long lo
 </code></pre>
 </section>
 
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="إذا كان المتغيّر على اليسار long long فلن يحدث تجاوز.">If the variable on the left is <code>long long</code>, nothing can overflow.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الطرف الأيمن يُحسَب أولًا بنوع int. التجاوز يحدث قبل التخزين.">The right side is computed first, in <code>int</code>. The overflow happens before it is stored.</span> Write <code>1LL * a * b</code>.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="لو حدث تجاوز لأخبرني البرنامج بخطأ.">If there was an overflow, the program would show an error.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا يوجد خطأ ولا تحذير. تحصل على رقم خاطئ بصمت، ثم على Wrong answer.">There is no error and no warning. You get a wrong number in silence, then Wrong answer.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="long long يتّسع لأي رقم.">A <code>long long</code> holds any number.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="حدّه حوالي 9·10^18. حاصل ضرب ثلاثة أعداد حتى 10^9 لا يتّسع فيه.">Its limit is about \( 9 \cdot 10^{18} \). A product of three numbers up to \( 10^9 \) does not fit.</span></p>
+    </li>
+  </ul>
+</section>
+
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><code>long long c = a * b;</code> with <code>int a, b</code>. The left side does not help. Write <code>1LL * a * b</code>.</li>
-    <li>You read a number up to 10<sup>12</sup> into an <code>int</code>. Check the limits of the <b>input</b> too.</li>
-    <li><code>for (int i = 1; i * i &lt;= n; i++)</code> with big <code>n</code>: <code>i * i</code> overflows. Make <code>i</code> a <code>long long</code>.</li>
-    <li><code>long long</code> also has a limit. 10<sup>18</sup> × 10 does not fit. Three numbers up to 10<sup>9</sup> cannot be multiplied directly.</li>
+    <li>You read a number up to \( 10^{12} \) into an <code>int</code>. Check the limits of the <b>input</b> too.</li>
+    <li><code>for (int i = 1; i * i &lt;= n; i++)</code> with <code>n</code> up to \( 10^{12} \): <code>i * i</code> overflows. Make <code>i</code> a <code>long long</code>.</li>
+    <li>You write <code>a * b * 1LL</code>. Here <code>a * b</code> is made first, in <code>int</code>. Put <code>1LL</code> first.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Answers "modulo \( 10^9 + 7 \)".</b> Some problems have answers far above \( 10^{18} \). They ask for a remainder. You learn this in <a href="#modular">Mod and fast power</a>.</li>
+    <li><b><code>unsigned</code> types and <code>__int128</code>.</b> You do not need them below 1600. <code>long long</code> is the one to use: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="n ≤ 2·10^5 وكل عدد ≤ 10^9. هل يتّسع مجموعها في int؟">\( n \le 2 \cdot 10^5 \) numbers, each \( \le 10^9 \). Does their sum fit in an <code>int</code>?</span>
+      <details><summary>Answer</summary><p>No. The sum can reach \( 2 \cdot 10^{14} \). Make the sum <code>long long</code>.</p></details></li>
+    <li><span class="tr" data-ar="a و b من نوع int وكلاهما 50000. هل السطر long long c = a * b صحيح؟">Both <code>a</code> and <code>b</code> are <code>int</code> and equal 50 000. Is <code>long long c = a * b;</code> right?</span>
+      <details><summary>Answer</summary><p>No. \( 50000 \cdot 50000 = 2.5 \cdot 10^9 \), above the <code>int</code> max. The product is made in <code>int</code>. Write <code>1LL * a * b</code>.</p></details></li>
+    <li><span class="tr" data-ar="ما أصغر n يجعل n * (n + 1) يتجاوز حدّ int؟">From which \( n \) does <code>n * (n + 1)</code> overflow an <code>int</code>?</span>
+      <details><summary>Answer</summary><p>From \( n = 46341 \). Then the product is 2 147 534 622, above 2 147 483 647.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -128,5 +222,6 @@ cout &lt;&lt; rows * cols &lt;&lt; "\n";           // up to 10^18: needs long lo
   <ul>
     <li><a href="https://usaco.guide/general/data-types">USACO Guide: Data Types</a> — the same limits, with more words on double.</li>
     <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 1, the part "Working with numbers".</li>
+    <li><a href="https://codeforces.com/blog/entry/111217">[Tutorial] Common Mistakes in Competitive Programming and How to Avoid Them</a> — a long list of real bugs. Overflow is near the top.</li>
   </ul>
 </section>

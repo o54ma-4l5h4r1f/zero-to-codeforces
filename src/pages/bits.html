@@ -1,12 +1,21 @@
-<p class="idea">Inside the computer every number is a row of 0s and 1s. You can read and change each of them with very fast operators.</p>
+<p class="idea"><span class="tr" data-ar="داخل الحاسوب كل عدد هو صفّ من الأصفار والآحاد. توجد عمليات سريعة جدًا تقرأ كل خانة منها وتغيّرها.">Inside the computer every number is a row of 0s and 1s. Very fast operators read and change each of them.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know that 13 is \( 8 + 4 + 1 \), or 1101 in binary → <a href="#modular">Modular arithmetic</a> (fast power)</li>
+    <li>You know "try every option" and its cost → <a href="#brute-force">Brute force</a></li>
+    <li>You know that an <code>int</code> overflows above about \( 2 \cdot 10^9 \) → <a href="#overflow">int or long long?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
     <li>The statement uses AND, OR, <span class="term" data-t="xor">XOR</span> (written <code>&amp;</code>, <code>|</code>, <code>^</code> or ⊕).</li>
     <li>Powers of two: 1, 2, 4, 8, … or "double it", "divide by 2".</li>
-    <li>n ≤ 20 and you must choose some of the items → try every <span class="term" data-t="subset">subset</span> with a <span class="term" data-t="mask">mask</span>.</li>
-    <li>"Every value appears twice, but one appears once" → XOR of everything.</li>
+    <li>\( n \le 20 \) and you must choose some of the items. Try every <span class="term" data-t="subset">subset</span> with a <span class="term" data-t="mask">mask</span>.</li>
+    <li>"Every value appears twice, but one value appears once." XOR everything.</li>
   </ul>
 </section>
 
@@ -15,45 +24,203 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — a row of light switches</h3>
-    <p>Think of a row of switches. Each one is on (1) or off (0). The first switch from the right is worth 1, the next 2, then 4, then 8. The number is the sum of the switches that are on.</p>
-    <p>The operators AND, OR and XOR look at each switch position alone. Nothing is carried to the next position, so they are simple and fast.</p>
+    <p>Think of a row of switches. Each one is on (1) or off (0). The switch on the right is worth 1, the next 2, then 4, then 8. The number is the sum of the switches that are on.</p>
+    <figure class="viz" data-viz="array" aria-label="The number 13 as four bit boxes worth 8, 4, 2 and 1. The boxes worth 8, 4 and 1 are on.">
+      <script type="application/json">
+{ "label": "worth", "index": false, "values": [8, 4, 2, 1], "legend": { "done": "on: counts in the sum" },
+  "rows": [ { "label": "13", "values": [1, 1, 0, 1], "states": { "0": "done", "1": "done", "3": "done" } } ] }
+</script>
+      <figcaption>\( 13 = 8 + 4 + 1 \), so 13 is 1101. Each digit is one <span class="term" data-t="bit">bit</span>. We count bits from the right, from 0: bit 0 is worth 1, bit 3 is worth 8.</figcaption>
+    </figure>
+    <p><span class="tr" data-ar="العمليات AND و OR و XOR تنظر إلى كل خانة وحدها. لا يُنقل شيء إلى الخانة التالية.">The operators AND, OR and XOR look at each position alone. Nothing is carried to the next position.</span></p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — 13 in <span class="term" data-t="binary">binary</span>, and the operators</h3>
+    <h3><b>2 · Picture</b> — AND, OR, XOR, one bit at a time</h3>
+    <p>First the rules for one bit. This is the <span class="term" data-t="truth-table">truth table</span>:</p>
     <table>
-      <tr><th>bit number k</th><td>3</td><td>2</td><td>1</td><td>0</td></tr>
-      <tr><th>worth 2<sup>k</sup></th><td>8</td><td>4</td><td>2</td><td>1</td></tr>
-      <tr><th>13</th><td class="hi">1</td><td class="hi">1</td><td>0</td><td class="hi">1</td></tr>
+      <tr><th>x</th><th>y</th><th>x &amp; y (AND)</th><th>x | y (OR)</th><th>x ^ y (XOR)</th></tr>
+      <tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td></tr>
+      <tr><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td></tr>
+      <tr><td>1</td><td>1</td><td class="hi">1</td><td>1</td><td class="hi">0</td></tr>
     </table>
-    <p class="note">13 = 8 + 4 + 1, so 13 is 1101. Each digit is one <span class="term" data-t="bit">bit</span>. Bits are counted from the right, from 0.</p>
-    <table>
-      <tr><th>operator</th><th>rule for one bit</th><th>a = 12 = 1100, b = 10 = 1010</th></tr>
-      <tr><td><code>a &amp; b</code> (AND)</td><td>1 if <b>both</b> are 1</td><td>1000 = 8</td></tr>
-      <tr><td><code>a | b</code> (OR)</td><td>1 if <b>at least one</b> is 1</td><td>1110 = 14</td></tr>
-      <tr><td><code>a ^ b</code> (XOR)</td><td>1 if they are <b>different</b></td><td>0110 = 6</td></tr>
-      <tr><td><code>~a</code> (NOT)</td><td>flips every bit</td><td>all 32 bits flip, so <code>~12</code> is −13</td></tr>
-      <tr><td><code>a &lt;&lt; 1</code></td><td>move all bits left = multiply by 2</td><td>11000 = 24</td></tr>
-      <tr><td><code>a &gt;&gt; 1</code></td><td>move all bits right = divide by 2</td><td>110 = 6</td></tr>
-    </table>
-    <p class="tip-box">XOR facts: <code>a ^ a = 0</code>, <code>a ^ 0 = a</code>, and the order does not matter. So if you XOR a list, equal values cancel in pairs.</p>
+    <p>AND is 1 only if <b>both</b> bits are 1. OR is 1 if <b>at least one</b> is 1. <span class="tr" data-ar="XOR يعطي 1 فقط عندما يكون البِتّان مختلفين.">XOR is 1 only when the two bits are <b>different</b>.</span> Now apply the rules to 12 and 10:</p>
+    <figure class="viz" data-viz="stepper" data-gen="bits-ops" aria-label="Step by step: 12 AND 10, 12 OR 10 and 12 XOR 10, computed one bit at a time from the right.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"b","label":"worth","index":false,"values":[8,4,2,1],"rows":[]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"the bit we look at now"},
+  "steps": [
+    {"b":{"rows":[{"label":"a = 12","values":[1,1,0,0],"states":{}},{"label":"b = 10","values":[1,0,1,0],"states":{}},{"label":"a & b","values":["","","",""],"states":{}},{"label":"a | b","values":["","","",""],"states":{}},{"label":"a ^ b","values":["","","",""],"states":{}}]},"v":{"items":[["a & b",""],["a | b",""],["a ^ b",""]]}},
+    {"b":{"rows":[{"label":"a = 12","values":[1,1,0,0],"states":{"3":"active"}},{"label":"b = 10","values":[1,0,1,0],"states":{"3":"active"}},{"label":"a & b","values":["","","",0],"states":{"3":"active"}},{"label":"a | b","values":["","","",0],"states":{"3":"active"}},{"label":"a ^ b","values":["","","",0],"states":{"3":"active"}}]},"v":{"items":[["a & b",""],["a | b",""],["a ^ b",""]]}},
+    {"b":{"rows":[{"label":"a = 12","values":[1,1,0,0],"states":{"2":"active"}},{"label":"b = 10","values":[1,0,1,0],"states":{"2":"active"}},{"label":"a & b","values":["","",0,0],"states":{"2":"active"}},{"label":"a | b","values":["","",1,0],"states":{"2":"active"}},{"label":"a ^ b","values":["","",1,0],"states":{"2":"active"}}]},"v":{"items":[["a & b",""],["a | b",""],["a ^ b",""]]}},
+    {"b":{"rows":[{"label":"a = 12","values":[1,1,0,0],"states":{"1":"active"}},{"label":"b = 10","values":[1,0,1,0],"states":{"1":"active"}},{"label":"a & b","values":["",0,0,0],"states":{"1":"active"}},{"label":"a | b","values":["",1,1,0],"states":{"1":"active"}},{"label":"a ^ b","values":["",1,1,0],"states":{"1":"active"}}]},"v":{"items":[["a & b",""],["a | b",""],["a ^ b",""]]}},
+    {"b":{"rows":[{"label":"a = 12","values":[1,1,0,0],"states":{"0":"active"}},{"label":"b = 10","values":[1,0,1,0],"states":{"0":"active"}},{"label":"a & b","values":[1,0,0,0],"states":{"0":"active"}},{"label":"a | b","values":[1,1,1,0],"states":{"0":"active"}},{"label":"a ^ b","values":[0,1,1,0],"states":{"0":"active"}}]},"v":{"items":[["a & b",""],["a | b",""],["a ^ b",""]]}},
+    {"b":{"rows":[{"label":"a = 12","values":[1,1,0,0],"states":{}},{"label":"b = 10","values":[1,0,1,0],"states":{}},{"label":"a & b","values":[1,0,0,0],"states":{}},{"label":"a | b","values":[1,1,1,0],"states":{}},{"label":"a ^ b","values":[0,1,1,0],"states":{}}]},"v":{"items":[["a & b",8],["a | b",14],["a ^ b",6]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>\( a = 12 \) is 1100 and \( b = 10 \) is 1010. The three result rows are empty.</li>
+        <li>Bit 0: both are 0. AND, OR and XOR all give 0.</li>
+        <li>Bit 1: \( a \) has 0, \( b \) has 1. AND gives 0, OR and XOR give 1.</li>
+        <li>Bit 2: \( a \) has 1, \( b \) has 0. Again AND gives 0, OR and XOR give 1.</li>
+        <li><span class="tr" data-ar="البِت 3: كلاهما 1. يعطي AND و OR القيمة 1، أمّا XOR فيعطي 0.">Bit 3: both are 1. AND and OR give 1, but XOR gives 0.</span></li>
+        <li>Read the rows as numbers: <code>12 &amp; 10</code> is 8, <code>12 | 10</code> is 14, <code>12 ^ 10</code> is 6.</li>
+      </ol>
+      <figcaption>Each column is done alone. That is why these operators take one step, like <code>+</code>.</figcaption>
+    </figure>
+    <p><b>XOR on numbers.</b> <code>5 ^ 5</code> is 0: every bit meets an equal bit. <code>5 ^ 0</code> is 5: nothing changes. <code>3 ^ 5 ^ 3</code> is 5: the two 3s cancel. <span class="tr" data-ar="القاعدة: x ^ x = 0 و x ^ 0 = x، والترتيب لا يهمّ. لذلك تختفي القيم المتساوية أزواجًا.">The rule: <code>x ^ x = 0</code>, <code>x ^ 0 = x</code>, and the order does not matter. So equal values cancel in pairs.</span></p>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — the tricks, then all subsets</h3>
+    <h3><b>3 · Code</b> — the operators, and a subset as a mask</h3>
 <pre data-part="main"><code class="cpp">
-int x = 13;                                // 1101
-bool on = (x &gt;&gt; 2) &amp; 1;                    // is bit 2 on?        -&gt; true
-int a = x | (1 &lt;&lt; 1);                      // set bit 1           -&gt; 1111 = 15
-int b = x &amp; ~(1 &lt;&lt; 0);                     // clear bit 0         -&gt; 1100 = 12
-int c = x ^ (1 &lt;&lt; 3);                      // flip bit 3          -&gt; 0101 = 5
-int ones = __builtin_popcount(x);          // how many 1 bits     -&gt; 3
-bool pow2 = x &gt; 0 &amp;&amp; (x &amp; (x - 1)) == 0;   // is x a power of two? -&gt; false
-long long big = 1LL &lt;&lt; 40;                 // for k &gt;= 31 you need 1LL
+int a = 12, b = 10;              // 1100 and 1010
+cout &lt;&lt; (a &amp; b) &lt;&lt; "\n";          // 8   = 1000
+cout &lt;&lt; (a | b) &lt;&lt; "\n";          // 14  = 1110
+cout &lt;&lt; (a ^ b) &lt;&lt; "\n";          // 6   = 0110
+cout &lt;&lt; (a &lt;&lt; 1) &lt;&lt; "\n";         // 24  = 11000: all bits move left = times 2
+cout &lt;&lt; (a &gt;&gt; 1) &lt;&lt; "\n";         // 6   = 110: all bits move right = divide by 2
+cout &lt;&lt; (1 &lt;&lt; 5) &lt;&lt; "\n";         // 32  = 2^5: only bit 5 is on
 </code></pre>
-    <p class="note">For a <code>long long</code> use <code>__builtin_popcountll(x)</code>.</p>
-    <p><b>A subset as a mask.</b> You have n items. A number from 0 to 2<sup>n</sup> − 1 is one choice: bit <code>i</code> is 1 → item <code>i</code> is taken. Example with n = 3: mask 5 = 101 means "take items 0 and 2".</p>
-    <p>Task: how many subsets of the array have sum exactly <code>x</code>? (n ≤ 20)</p>
+    <p><code>~x</code> flips every bit of <code>x</code>. On this page we use it only inside <code>x &amp; ~(1 &lt;&lt; k)</code> (see Change it to fit).</p>
+    <p><b>A subset as a mask.</b> You have \( n \) items, numbered from 0. <span class="tr" data-ar="العدد mask يمثّل اختيارًا واحدًا: إذا كان البِت i يساوي 1 فالعنصر i مأخوذ.">A number <code>mask</code> is one choice: if bit <code>i</code> is 1, item <code>i</code> is taken.</span> With \( n = 3 \), mask 5 is 101: take items 0 and 2. The masks 0 to 7 are all \( 2^3 = 8 \) choices. You see all 8 in "Solve one together".</p>
+<pre data-part="main"><code class="cpp">
+for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++)    // every subset, one by one
+    for (int i = 0; i &lt; n; i++)
+        if ((mask &gt;&gt; i) &amp; 1) { /* item i is in this subset */ }
+</code></pre>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p>Each trick below changes one line. In all of them \( x = 13 \), which is 1101, and \( k \) is a bit number.</p>
+  <ul>
+    <li><b>Test bit k.</b> Move bit <code>k</code> to the right end, then keep only that bit.
+      <figure class="viz" data-viz="array" data-gen="bits-test" aria-label="13 is 1101. Moving it right by 2 gives 0011. AND 1 keeps the last bit, which is 1, so bit 2 of 13 is on.">
+        <script type="application/json">
+{
+  "type": "array",
+  "label": "worth",
+  "index": false,
+  "values": [8,4,2,1],
+  "legend": {"active":"bit 2 of x, moved to the right end"},
+  "rows": [
+    {"label":"x = 13","values":[1,1,0,1],"states":{"1":"active"}},
+    {"label":"x >> 2 = 3","values":[0,0,1,1],"states":{"3":"active"}},
+    {"label":"(x >> 2) & 1 = 1","values":[0,0,0,1],"states":{"3":"active"}}
+  ]
+}
+</script>
+        <figcaption>Bit 2 of 13 is on.</figcaption>
+      </figure>
+<pre data-part="main"><code class="cpp">
+bool on = (x &gt;&gt; k) &amp; 1;             // 1 if bit k is on, else 0
+</code></pre></li>
+    <li><b>Set bit k</b> (make it 1). OR with a mask that has only bit <code>k</code>.
+      <figure class="viz" data-viz="array" data-gen="bits-set" aria-label="13 OR 2: bit 1 becomes 1, so 1101 becomes 1111, which is 15.">
+        <script type="application/json">
+{
+  "type": "array",
+  "label": "worth",
+  "index": false,
+  "values": [8,4,2,1],
+  "legend": {"active":"the bit we change or test"},
+  "rows": [
+    {"label":"x = 13","values":[1,1,0,1],"states":{"2":"active"}},
+    {"label":"mask = 2","values":[0,0,1,0],"states":{"2":"active"}},
+    {"label":"x | mask = 15","values":[1,1,1,1],"states":{"2":"active"}}
+  ]
+}
+</script>
+        <figcaption>Bit 1 was 0 and becomes 1: 13 becomes 15.</figcaption>
+      </figure>
+<pre data-part="main"><code class="cpp">
+x = x | (1 &lt;&lt; k);
+</code></pre></li>
+    <li><b>Clear bit k</b> (make it 0). AND with a mask where every bit is 1 except bit <code>k</code>.
+      <figure class="viz" data-viz="array" data-gen="bits-clear" aria-label="13 AND NOT 1: bit 0 becomes 0, so 1101 becomes 1100, which is 12.">
+        <script type="application/json">
+{
+  "type": "array",
+  "label": "worth",
+  "index": false,
+  "values": [8,4,2,1],
+  "legend": {"active":"the bit we change or test"},
+  "rows": [
+    {"label":"x = 13","values":[1,1,0,1],"states":{"3":"active"}},
+    {"label":"mask = 1","values":[0,0,0,1],"states":{"3":"active"}},
+    {"label":"x & ~mask = 12","values":[1,1,0,0],"states":{"3":"active"}}
+  ]
+}
+</script>
+        <figcaption>Bit 0 was 1 and becomes 0: 13 becomes 12.</figcaption>
+      </figure>
+<pre data-part="main"><code class="cpp">
+x = x &amp; ~(1 &lt;&lt; k);
+</code></pre></li>
+    <li><b>Flip bit k</b> (0 becomes 1, 1 becomes 0). XOR with the mask.
+      <figure class="viz" data-viz="array" data-gen="bits-flip" aria-label="13 XOR 8: bit 3 flips from 1 to 0, so 1101 becomes 0101, which is 5.">
+        <script type="application/json">
+{
+  "type": "array",
+  "label": "worth",
+  "index": false,
+  "values": [8,4,2,1],
+  "legend": {"active":"the bit we change or test"},
+  "rows": [
+    {"label":"x = 13","values":[1,1,0,1],"states":{"0":"active"}},
+    {"label":"mask = 8","values":[1,0,0,0],"states":{"0":"active"}},
+    {"label":"x ^ mask = 5","values":[0,1,0,1],"states":{"0":"active"}}
+  ]
+}
+</script>
+        <figcaption>Bit 3 was 1 and becomes 0: 13 becomes 5.</figcaption>
+      </figure>
+<pre data-part="main"><code class="cpp">
+x = x ^ (1 &lt;&lt; k);
+</code></pre></li>
+    <li><b>Count the 1 bits.</b> For 13 the answer is 3. For a <code>long long</code>, write <code>__builtin_popcountll(x)</code>.
+<pre data-part="main"><code class="cpp">
+int ones = __builtin_popcount(x);
+</code></pre></li>
+    <li><b>Find the one number without a pair.</b> All values come twice, one comes once. XOR all of them: the pairs cancel. For 4 7 4 9 9 the answer is 7.
+<pre data-part="main"><code class="cpp">
+int r = 0;
+for (int v : a) r ^= v;
+</code></pre></li>
+  </ul>
+  <p class="tip-box"><b>Which one do I use?</b> To loop over subsets, use the mask loop of Code 3. To test a bit, always write <code>(x &gt;&gt; k) &amp; 1</code>.</p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> You get \( n \) numbers and a number \( x \). How many subsets of the numbers have sum exactly \( x \)? Limits: \( 1 \le n \le 20 \), numbers up to \( 10^9 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> Count the choices of items whose sum is \( x \). The empty choice counts too, if \( x = 0 \).</li>
+    <li><b>A small example by hand.</b> The numbers are 3, 5, 2 (items 0, 1, 2) and \( x = 5 \). Bit 0 is the right digit.
+      <table>
+        <tr><th>mask</th><th>bits</th><th>items taken</th><th>sum</th></tr>
+        <tr><td>0</td><td>000</td><td>none</td><td>0</td></tr>
+        <tr><td>1</td><td>001</td><td>3</td><td>3</td></tr>
+        <tr><td>2</td><td>010</td><td>5</td><td class="hi">5</td></tr>
+        <tr><td>3</td><td>011</td><td>3, 5</td><td>8</td></tr>
+        <tr><td>4</td><td>100</td><td>2</td><td>2</td></tr>
+        <tr><td>5</td><td>101</td><td>3, 2</td><td class="hi">5</td></tr>
+        <tr><td>6</td><td>110</td><td>5, 2</td><td>7</td></tr>
+        <tr><td>7</td><td>111</td><td>3, 5, 2</td><td>10</td></tr>
+      </table>
+      <p>Two masks have sum 5. The answer is 2.</p>
+    </li>
+    <li><b>The idea.</b> Try every mask from 0 to \( 2^n - 1 \). For each mask, add the items whose bit is on. Count the masks with sum \( x \).</li>
+    <li><b>Why is it fast enough?</b> \( 2^{20} \) is about \( 10^6 \) masks. Each mask needs a loop of 20. That is \( 2 \cdot 10^7 \) steps, far below \( 10^8 \).</li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -61,12 +228,12 @@ using namespace std;
 int main() {
     int n;
     long long x;
-    cin &gt;&gt; n &gt;&gt; x;                              // n &lt;= 20
+    cin &gt;&gt; n &gt;&gt; x;                                  // n &lt;= 20
     vector&lt;long long&gt; a(n);
     for (auto &amp;v : a) cin &gt;&gt; v;
     int ways = 0;
     for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++) {   // every subset, one by one
-        long long sum = 0;
+        long long sum = 0;                           // up to 20 * 10^9: long long
         for (int i = 0; i &lt; n; i++)
             if ((mask &gt;&gt; i) &amp; 1) sum += a[i];       // item i is in this subset
         if (sum == x) ways++;
@@ -74,20 +241,61 @@ int main() {
     cout &lt;&lt; ways &lt;&lt; "\n";
 }
 </code></pre>
-    <p class="note">The same job can be done with <a href="#recursion">recursion</a> ("take it or skip it"). The mask loop is shorter to write.</p>
-  </div>
 </section>
 
-<p class="complexity">Speed: every operator is O(1). All subsets: O(2^n · n). Fine for n ≤ 20 (about 20 million steps), too slow for n = 30.</p>
+<p class="complexity">Speed: every operator is \( O(1) \). All subsets cost \( O(2^n \cdot n) \): fine for \( n \le 20 \), too slow for \( n = 30 \).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الرمز ^ في C++ يعني الأُسّ، فـ 2 ^ 3 تساوي 8.">In C++, <code>^</code> means power, so <code>2 ^ 3</code> is 8.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الرمز ^ هو XOR. ناتج 2 ^ 3 هو 1. لكتابة 2 أُس k اكتب 1 &lt;&lt; k.">It is XOR: <code>2 ^ 3</code> is 1. For \( 2^k \), write <code>1 &lt;&lt; k</code>.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="التعبير x &amp; 1 == 0 يختبر إن كان x زوجيًا.">The test <code>x &amp; 1 == 0</code> checks that <code>x</code> is even.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="المقارنة == تُنفَّذ قبل &amp;. لذلك يحسب الحاسوب x &amp; 0، والناتج دائمًا 0.">C++ does <code>==</code> before <code>&amp;</code>. So it computes <code>x &amp; (1 == 0)</code>, which is <code>x &amp; 0</code>, always 0.</span> This is <span class="term" data-t="precedence">operator precedence</span>. For <code>x = 6</code>:</p>
+<pre data-part="main"><code class="cpp">
+if (x &amp; 1 == 0) cout &lt;&lt; "even"; else cout &lt;&lt; "odd";     // prints odd. Wrong!
+if ((x &amp; 1) == 0) cout &lt;&lt; "even"; else cout &lt;&lt; "odd";   // prints even
+</code></pre>
+      <p>Always put brackets around <code>&amp;</code>, <code>|</code> and <code>^</code>.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="تجربة كل المجموعات الجزئية سريعة بما يكفي لـ n = 30.">Trying all subsets is fast enough for \( n = 30 \).</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="كل عنصر إضافي يضاعف عدد الأقنعة.">Each new item doubles the number of masks.</span> For \( n = 30 \) that is about \( 10^9 \) masks, times 30: far too slow. The mask loop is for \( n \le 20 \).</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><span class="term" data-t="precedence">Operator precedence</span>: <code>x &amp; 1 == 0</code> means <code>x &amp; (1 == 0)</code>. Always use brackets: <code>(x &amp; 1) == 0</code>.</li>
-    <li><code>1 &lt;&lt; k</code> with k ≥ 31 <span class="term" data-t="overflow">overflows</span>, because 1 is an <code>int</code>. Write <code>1LL &lt;&lt; k</code>.</li>
-    <li><code>^</code> is XOR, not power. <code>2 ^ 3</code> is 1, not 8. For 2<sup>k</sup> write <code>1 &lt;&lt; k</code>.</li>
-    <li><code>&amp;&amp;</code> and <code>&amp;</code> are different. <code>&amp;&amp;</code> is for conditions (true/false). <code>&amp;</code> works on the bits.</li>
+    <li><code>1 &lt;&lt; k</code> with \( k \ge 31 \) <span class="term" data-t="overflow">overflows</span>, because 1 is an <code>int</code>. Write <code>1LL &lt;&lt; k</code>.</li>
+    <li><code>&amp;&amp;</code> instead of <code>&amp;</code>. <code>&amp;&amp;</code> joins two conditions (true/false). <code>&amp;</code> works on the bits.</li>
+    <li><code>__builtin_popcount</code> on a <code>long long</code>. It counts only the low 32 bits. Use <code>__builtin_popcountll</code>.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>"Take it or skip it" with a function that calls itself.</b> It does the same job as the mask loop. You learn it in <a href="#recursion">Recursion</a>. Until then, use masks.</li>
+    <li><b>Why <code>~12</code> is -13</b> (how negative numbers are stored). You do not need it below 1600. Come back after the guide: <a href="#what-next">After 1600</a>.</li>
+    <li><b>DP over masks.</b> It is a strong tool, but mostly above 1600. Come back after the guide: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="ما ناتج 13 &amp; 6؟ اكتب البِتات أولًا.">What is <code>13 &amp; 6</code>? Write the bits first.</span>
+      <details><summary>Answer</summary><p>1101 AND 0110 is 0100, which is 4. Only bit 2 is 1 in both.</p></details></li>
+    <li><span class="tr" data-ar="لديك 4 عناصر. أيّ قناع يعني: خذ العنصرين 0 و 3 فقط؟">You have 4 items. Which mask means "take items 0 and 3 only"?</span>
+      <details><summary>Answer</summary><p>1001 in binary, which is \( 8 + 1 = 9 \).</p></details></li>
+    <li><span class="tr" data-ar="المصفوفة هي 4 7 4 9 9. ما ناتج XOR لكل العناصر؟">The array is 4 7 4 9 9. What is the XOR of all of them?</span>
+      <details><summary>Answer</summary><p>7. The two 4s cancel, the two 9s cancel, and 7 is left.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -107,9 +315,9 @@ int main() {
 <section class="more">
   <h2>Learn more</h2>
   <ul>
+    <li><a href="https://codeforces.com/blog/entry/73490">Bitwise operations for beginners</a> — a popular Codeforces blog by Errichto, step by step.</li>
     <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 10 "Bit manipulation".</li>
     <li><a href="https://usaco.guide/silver/intro-bitwise">USACO Guide: Intro to Bitwise Operators</a> — the operators with solved problems.</li>
-    <li><a href="https://cses.fi/problemset/task/1623">CSES: Apple Division</a> — a classic "try every subset" task with n ≤ 20.</li>
-    <li><a href="https://codeforces.com/blog/entry/73490">Codeforces blog: Bitwise operations for beginners</a> — a popular step-by-step text.</li>
+    <li><a href="https://cses.fi/problemset/task/1623">CSES: Apple Division</a> — a classic "try every subset" task with \( n \le 20 \).</li>
   </ul>
 </section>

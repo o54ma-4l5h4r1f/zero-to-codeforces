@@ -1,0 +1,540 @@
+== chars | s2 | Characters
+-- arrays-strings | What kind of character is c. These functions give 0 for no and some non-zero number for yes, so do not compare the result with true or 1.
+letter: {{isalpha: isalpha(c)}} · digit: {{isdigit: isdigit(c)}}
+small letter: {{islower: islower(c)}}
+capital letter: {{isupper: isupper(c)}}
+letter or digit: {{isalnum: isalnum(c)}}
+-- arrays-strings | The same tests written by hand. Letters and digits are in order in the character table, so a range test works.
+small letter: {{islower2: 'a' <= c && c <= 'z'}}
+capital letter: {{isupper2: 'A' <= c && c <= 'Z'}}
+digit: {{isdigit2: '0' <= c && c <= '9'}}
+-- arrays-strings | Change the case of a letter. toupper and tolower give an int, so wrap them in char( ) before printing. Other characters stay the same.
+to capital: {{toup: char(toupper(c))}}
+to small: {{tolow: char(tolower(c))}}
+by hand: {{toup2: char(c - 'a' + 'A')}} · {{tolow2: char(c - 'A' + 'a')}}
+-- arrays-strings | Turn a small letter into a number 0 .. 25 and back. Use the number as an index of an array of size 26. For capital letters use 'A'.
+letter to {{: 0..25}}: {{l2i: c - 'a'}}
+{{: 0..25}} to letter: {{i2l: char('a' + i)}}
+distance of two letters: {{ldist: abs(c1 - c2)}}
+-- arrays-strings | Move a small letter forward in the alphabet, and after z start again from a. The last row also works for a negative k.
+next letter: {{nextl: char('a' + (c - 'a' + 1) % 26)}}
+k letters forward: {{shiftl: char('a' + (c - 'a' + k) % 26)}}
+any k: {{shiftany: char('a' + ((c - 'a' + k) % 26 + 26) % 26)}}
+-- arrays-strings | Is the small letter c a vowel (a, e, i, o, u)? find gives string::npos when the letter is not in the text.
+>>> global isVowel
+bool isVowel(char c) {
+    string v = "aeiou";
+    return v.find(c) != string::npos;
+}
+<<<
+-- arrays-strings | A character is stored as a small number (its code). You do not need to remember the codes: write the character in quotes.
+{{asc_A: (int)'A'}} is {{: 65}} · {{asc_a: (int)'a'}} is {{: 97}}
+{{asc_0: (int)'0'}} is {{: 48}} · {{asc_sp: (int)' '}} is {{: 32}}
+code of c: {{asc_c: (int)c}}
+
+== strings | s3 | Strings
+-- arrays-strings | Size and ends of a string s. s.size() is unsigned, so cast it to int before you subtract. back() needs a string that is not empty.
+length: {{slen: (int)s.size()}}
+first: {{sfirst: s[0]}} · last: {{slast: s.back()}}
+is empty: {{sempty: s.empty()}}
+-- arrays-strings | Make a string longer or shorter at its end, and build a string of n equal characters.
+add at the end: {{sapp1: s += c}} · {{sapp2: s += t}}
+remove the last: {{spop: s.pop_back()}}
+n copies of a char: {{srep: string(n, 'a')}}
+join two: {{sjoin: s + t}}
+-- arrays-strings | Reverse a string in place, or make a reversed copy and keep the old one.
+>>> main srev
+reverse(s.begin(), s.end());     // changes s
+string t(s.rbegin(), s.rend());  // a copy
+<<<
+-- arrays-strings | Is s a palindrome (the same from both ends)? Compare the i-th character from the left with the i-th from the right.
+>>> global isPalindrome
+bool isPalindrome(const string &s) {
+    int n = s.size();
+    for (int i = 0; i < n / 2; i++)
+        if (s[i] != s[n - 1 - i])
+            return false;
+    return true;
+}
+<<<
+-- arrays-strings | Compare two strings. The < is dictionary order, character by character, so the text 10 comes before the text 9.
+equal: {{seq: s == t}}
+first in the dictionary: {{slt: s < t}}
+smaller of two: {{smin: min(s, t)}}
+-- arrays-strings | Cut a part out of a string: start position first, then the LENGTH (not the end position). Positions start at 0.
+len chars from pos: {{sub1: s.substr(pos, len)}}
+from pos to the end: {{sub2: s.substr(pos)}}
+first k: {{subfirst: s.substr(0, k)}}
+last k: {{sublast: s.substr(s.size() - k)}}
+-- arrays-strings | Look for the text t (or one character) inside s. find gives the first position, or string::npos when there is none.
+is inside: {{sfind: s.find(t) != string::npos}}
+position: {{sfindpos: s.find(t)}}
+starts with t: {{sstarts: s.substr(0, t.size()) == t}}
+-- arrays-strings | Count one character in a string, and count how many different characters it has.
+count of a char: {{scount: count(s.begin(), s.end(), 'a')}}
+different chars: {{sdistinct: set<char>(s.begin(), s.end()).size()}}
+-- counting | How many times each small letter appears: one array of 26 counters. The = {} sets all counters to 0.
+>>> main sfreq
+int cnt[26] = {};
+for (char c : s) cnt[c - 'a']++;
+<<<
+-- sorting | Sort the characters of a string. Two strings use the same letters (anagrams) when their sorted forms are equal.
+>>> main ssort
+sort(s.begin(), s.end());
+sort(t.begin(), t.end());
+bool sameLetters = (s == t);
+<<<
+-- arrays-strings | Change every character of a string: the & lets the loop write into the string.
+>>> main supper
+for (char &c : s) c = toupper(c);
+<<<
+-- arrays-strings | Look at every pair of neighbours in a string. Write i + 1 < n, and keep n as int: s.size() - 1 is a huge number for an empty string.
+>>> main sadj
+int n = s.size(), same = 0;
+for (int i = 0; i + 1 < n; i++)
+    if (s[i] == s[i + 1]) same++;
+<<<
+-- arrays-strings | Read a whole line with its spaces. After cin >> n the end of that line is still waiting, so skip it first.
+>>> main sgetline
+int n; cin >> n;
+cin.ignore();  // skip the end of line 1
+string line; getline(cin, line);
+<<<
+-- arrays-strings | Cut a line into its words (parts with no spaces).
+>>> main ssplit
+stringstream ss(line);
+string word; vector<string> words;
+while (ss >> word) words.push_back(word);
+<<<
+-- arrays-strings | Delete every copy of one character from a string.
+>>> main sremove
+s.erase(remove(s.begin(), s.end(), 'x'),
+        s.end());
+<<<
+
+== arrays | s4 | Arrays
+-- arrays-strings | Read n and then n numbers. The & in the loop is needed, or you read into a copy.
+>>> main aread
+int n; cin >> n;
+vector<long long> a(n);
+for (auto &x : a) cin >> x;
+<<<
+-- arrays-strings | The same, but the elements are a[1] .. a[n] like in most statements. a[0] is not used.
+>>> main aread1
+int n; cin >> n;
+vector<long long> a(n + 1);
+for (int i = 1; i <= n; i++) cin >> a[i];
+<<<
+-- overflow | Sum of an array. Keep the sum in a long long. In accumulate the start value must be 0LL: with 0 the sum is computed as int.
+>>> main asum
+long long sum = 0;
+for (long long x : a) sum += x;
+long long same =
+    accumulate(a.begin(), a.end(), 0LL);
+<<<
+-- arrays-strings | Position of the biggest element. With > you get the first one of equal elements, with >= the last one. For the smallest, turn the sign around.
+>>> main amaxpos
+int pos = 0;
+for (int i = 1; i < n; i++)
+    if (a[i] > a[pos]) pos = i;
+<<<
+-- stl-basics | Biggest and smallest element with the library, and their positions. The array must not be empty.
+>>> main amaxstl
+auto it = max_element(a.begin(), a.end());
+long long mx = *it;
+int imx = it - a.begin();
+auto jt = min_element(a.begin(), a.end());
+long long mn = *jt;
+int imn = jt - a.begin();
+<<<
+-- stl-basics | How many elements are equal to x, and is x in the array at all. Both read the whole array: O(n).
+count of x: {{acount: count(a.begin(), a.end(), x)}}
+x is there: {{ahas: find(a.begin(), a.end(), x) != a.end()}}
+index of first x: {{afind: find(a.begin(), a.end(), x) - a.begin()}}
+-- arrays-strings | First index where something is true, or -1 when it is never true. The break stops at the first one.
+>>> main afirst
+int pos = -1;
+for (int i = 0; i < n; i++)
+    if (a[i] > x) { pos = i; break; }
+<<<
+-- arrays-strings | Is something true for ALL elements, and is it true for AT LEAST ONE? Start all at true and any at false. For an empty array all stays true.
+>>> main aallany
+bool all = true, any = false;
+for (long long x : a) {
+    if (x > 0) any = true;
+    else all = false;
+}
+<<<
+-- arrays-strings | Walk an array from the last element to the first. Keep i as int: with an unsigned i the test i >= 0 is always true.
+>>> main abackward
+for (int i = n - 1; i >= 0; i--)
+    b.push_back(a[i]);
+<<<
+-- stl-basics | Reverse an array, and rotate it. Left by k: the element at index k becomes the first one. Needs 0 <= k <= n, so use k % n for a big k.
+reverse: {{arev: reverse(a.begin(), a.end())}}
+left by k: {{arotl: rotate(a.begin(), a.begin() + k, a.end())}}
+right by k: {{arotr: rotate(a.begin(), a.end() - k, a.end())}}
+-- arrays-strings | Is the array sorted from small to big? Compare every element with the next one. For strictly growing, write >= in the test.
+>>> main asorted
+bool sorted = true;
+for (int i = 0; i + 1 < n; i++)
+    if (a[i] > a[i + 1]) sorted = false;
+bool same = is_sorted(a.begin(), a.end());
+<<<
+-- stl-basics | Put the values in a set: it keeps one copy of each. Its size tells you how many different values there are, if all are equal, if all are different.
+>>> main aalleq
+set<long long> st(a.begin(), a.end());
+int different = st.size();
+bool allEqual = (st.size() == 1);
+bool allDifferent = (st.size() == a.size());
+<<<
+-- stl-basics | Remove repeated values. unique only removes neighbours that are equal, so sort first.
+>>> main adedup
+sort(a.begin(), a.end());
+auto last = unique(a.begin(), a.end());
+a.erase(last, a.end());
+<<<
+-- arrays-strings | The two biggest elements in one pass. They can be equal when the max appears twice. m2 stays LLONG_MIN when there is only one element.
+>>> main atwomax
+long long m1 = LLONG_MIN, m2 = LLONG_MIN;
+for (long long x : a) {
+    if (x > m1) { m2 = m1; m1 = x; }
+    else if (x > m2) m2 = x;
+}
+<<<
+-- arrays-strings | The second biggest DIFFERENT value: copies of the max do not count. It stays LLONG_MIN when all elements are equal.
+>>> main asecond
+long long mx = LLONG_MIN;
+long long second = LLONG_MIN;
+for (long long x : a) {
+    if (x > mx) { second = mx; mx = x; }
+    else if (x < mx && x > second)
+        second = x;
+}
+<<<
+-- prefix-sums | pm[i] is the biggest of a[0] .. a[i]. Build it left to right. For the best of a[i] .. a[n-1], do the same from the right.
+>>> main aprefmax
+vector<long long> pm(n), sm(n);
+pm[0] = a[0];
+for (int i = 1; i < n; i++)
+    pm[i] = max(pm[i - 1], a[i]);
+sm[n - 1] = a[n - 1];
+for (int i = n - 2; i >= 0; i--)
+    sm[i] = max(sm[i + 1], a[i]);
+<<<
+-- brute-force | Visit every pair of two different positions once: j always starts after i. This is O(n^2), so n must be at most about 5000.
+>>> main apairs
+for (int i = 0; i < n; i++)
+    for (int j = i + 1; j < n; j++)
+        if (a[i] + a[j] == target) cnt++;
+<<<
+-- sorting | Sort, but remember where every element was: sort pairs (value, old index).
+>>> main aindexsort
+vector<pair<long long, int>> v(n);
+for (int i = 0; i < n; i++)
+    v[i] = {a[i], i};
+sort(v.begin(), v.end());
+// v[0] = (smallest value, its old index)
+<<<
+-- stl-basics | Make an array with a start value, fill it again later, or fill it with 0, 1, 2, ...
+n copies of 5: {{amake: vector<int> a(n, 5)}}
+all 0 again: {{afill0: fill(a.begin(), a.end(), 0)}}
+0, 1, 2, ...: {{aiota: iota(a.begin(), a.end(), 0)}}
+-- sorting | After sorting: the smallest, the biggest and the middle element (the median). For an even n this is the upper of the two middle ones.
+smallest: {{asmall: a[0]}} · biggest: {{abig: a.back()}}
+middle: {{amedian: a[n / 2]}}
+lower middle: {{amedlow: a[(n - 1) / 2]}}
+-- arrays-strings | A table with n rows and m columns, all cells 0. The row index comes first: g[row][column].
+>>> main a2d
+vector<vector<int>> g(n, vector<int>(m, 0));
+for (int r = 0; r < n; r++)
+    for (int c = 0; c < m; c++)
+        cin >> g[r][c];
+<<<
+-- arrays-strings | A grid of characters: read every row as one string. Then g[r][c] is one cell.
+>>> main agridread
+int n, m; cin >> n >> m;
+vector<string> g(n);
+for (auto &row : g) cin >> row;
+<<<
+
+== grids | s0 | Grids
+-- graphs-bfs-dfs | Is the cell (r, c) inside a grid with n rows and m columns? Always test this before you read g[r][c].
+from 0: {{ginside: 0 <= r && r < n && 0 <= c && c < m}}
+from 1: {{ginside1: 1 <= r && r <= n && 1 <= c && c <= m}}
+-- graphs-bfs-dfs | The four neighbours of the cell (r, c): down, up, right, left. Skip the ones outside the grid.
+>>> main g4
+int dr[4] = {1, -1, 0, 0};
+int dc[4] = {0, 0, 1, -1};
+for (int d = 0; d < 4; d++) {
+    int nr = r + dr[d], nc = c + dc[d];
+    if (nr < 0 || nr >= n) continue;
+    if (nc < 0 || nc >= m) continue;
+    sum += g[nr][nc];   // a neighbour
+}
+<<<
+-- graphs-bfs-dfs | The eight neighbours (also the diagonal ones), and the eight jumps of a chess knight. Use them in the same loop with d from 0 to 7.
+>>> main g8
+int dr8[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+int dc8[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+int kr[8] = {-2, -2, -1, -1, 1, 1, 2, 2};
+int kc[8] = {-1, 1, -2, 2, -2, 2, -1, 1};
+<<<
+-- simulation | Walk with a direction number d: 0 up, 1 right, 2 down, 3 left. Row 0 is the top row, so up means r - 1.
+>>> main gdir
+int dr[4] = {-1, 0, 1, 0};
+int dc[4] = {0, 1, 0, -1};
+r += dr[d]; c += dc[d];    // one step
+<<<
+turn right: {{turn_r: d = (d + 1) % 4}}
+turn left: {{turn_l: d = (d + 3) % 4}}
+turn back: {{turn_b: d = (d + 2) % 4}}
+-- graphs-bfs-dfs | Give every cell one number, row by row, and go back from the number to the cell. Rows and columns start at 0; m is the number of columns.
+cell to number: {{gid: r * m + c}}
+number to row: {{gidr: id / m}}
+number to column: {{gidc: id % m}}
+from 1: {{gid1: (r - 1) * m + c}}
+-- arrays-strings | Diagonals of a square n by n table (indexes from 0). Cells of one diagonal share r - c, cells of one anti-diagonal share r + c.
+main diagonal: {{gdiag: r == c}}
+anti-diagonal: {{ganti: r + c == n - 1}}
+same diagonal: {{gsamed: r1 - c1 == r2 - c2}}
+same anti-diagonal: {{gsamea: r1 + c1 == r2 + c2}}
+-- basic-math | Distance between two cells. Manhattan: steps with 4 directions. Chebyshev: steps of a chess king (8 directions).
+Manhattan: {{gman: abs(r1 - r2) + abs(c1 - c2)}}
+Chebyshev: {{gcheb: max(abs(r1 - r2), abs(c1 - c2))}}
+-- constructive | Chessboard colouring: neighbours always get different colours. A step with 4 directions always changes the colour.
+colour of a cell: {{gcolor: (r + c) % 2}}
+same colour: {{gsamecol: (r1 + c1) % 2 == (r2 + c2) % 2}}
+-- basic-math | Can a chess piece go from (r1, c1) to (r2, c2) in one move on an empty board? The two cells must be different.
+rook: {{grook: r1 == r2 || c1 == c2}}
+bishop: {{gbishop: abs(r1 - r2) == abs(c1 - c2)}}
+king: {{gking: max(abs(r1 - r2), abs(c1 - c2)) == 1}}
+knight: {{gknight: abs(r1 - r2) * abs(c1 - c2) == 2}}
+-- arrays-strings | Is the cell on the edge of the grid, or in a corner (indexes from 0).
+on the border: {{gborder: r == 0 || c == 0 || r == n - 1 || c == m - 1}}
+corner: {{gcorner: (r == 0 || r == n - 1) && (c == 0 || c == m - 1)}}
+-- arrays-strings | Sum of every row and of every column of a table in one pass.
+>>> main growcol
+vector<long long> rowSum(n), colSum(m);
+for (int r = 0; r < n; r++)
+    for (int c = 0; c < m; c++) {
+        rowSum[r] += g[r][c];
+        colSum[c] += g[r][c];
+    }
+<<<
+-- arrays-strings | Turn a square n by n table a quarter turn, or flip it over the main diagonal. Right means clockwise. b is a second table of the same size.
+turn right: {{grot: b[c][n - 1 - r] = a[r][c]}}
+turn left: {{grotl: b[n - 1 - c][r] = a[r][c]}}
+flip (transpose): {{gtrans: b[c][r] = a[r][c]}}
+
+== powers | s1 | Squares, roots, powers
+-- basic-math | Square root rounded down, for n >= 0. It is exact up to the long long maximum. sqrt alone can be wrong by 1 for big numbers. The two loops repair that.
+>>> global isqrt
+long long isqrt(long long n) {
+    long long r = sqrtl(n);
+    while (r > 0 && r > n / r) r--;
+    while (r + 1 <= n / (r + 1)) r++;
+    return r;
+}
+<<<
+-- basic-math | Is n a perfect square (1, 4, 9, 16, ...)? Take the integer root (isqrt from this sheet) and square it again. Never test sqrt(n) with real numbers.
+>>> main issquare
+long long r = isqrt(n);
+bool square = (r * r == n);
+<<<
+-- basic-math | How many perfect squares are in a range: use the integer square root. isqrt is the function on this sheet. Needs 1 <= l <= r.
+in $$sq_1n: [1, n]: \lfloor \sqrt{n} \rfloor$$ = {{sq1n: isqrt(n)}}
+in $$: [l, r]$$: {{sqlr: isqrt(r) - isqrt(l - 1)}}
+-- overflow | Squares and cubes: multiply, do not call pow. Use long long: x = 10^5 squared is already 10^10.
+square: {{sqr: x * x}} · cube: {{cube: x * x * x}}
+loop to the root: {{sqloop: for (long long i = 1; i * i <= n; i++)}}
+-- bits | Powers of 2 with a shift. 1 << k is an int and works only for k up to 30. With 1LL it works for k up to 62.
+$$pow2_shift: 2^k$$ = {{pow2: 1LL << k}}
+times $$: 2^k$$: {{mulpow2: x << k}}
+divide by $$: 2^k$$: {{divpow2: x >> k}}
+-- bits | Is x a power of 2 (1, 2, 4, 8, ...)? A power of 2 has exactly one bit on. The x > 0 is needed because 0 is not a power of 2.
+power of 2: {{ispow2: x > 0 && (x & (x - 1)) == 0}}
+-- bits | Logarithm in base 2, rounded down: the position of the highest bit of x. Only for x > 0; __lg(0) is not defined.
+$$lg_floor: \lfloor \log_2 x \rfloor$$ = {{lg: __lg(x)}}
+number of bits: {{nbits: __lg(x) + 1}}
+biggest $$: 2^k \le x$$: {{pow2floor: 1LL << __lg(x)}}
+-- bits | The smallest power of 2 that is not below x, with a loop. For x up to 4·10^18.
+>>> main pow2ceil
+long long p = 1;
+while (p < x) p *= 2;
+<<<
+-- overflow | pow works with real numbers, so its result can be wrong for big integers. For an exact power, multiply in a loop. The result must fit in long long.
+>>> global ipow
+long long ipow(long long a, int b) {
+    long long r = 1;
+    for (int i = 0; i < b; i++) r *= a;
+    return r;
+}
+<<<
+-- overflow | Sizes to remember. 12! is the last factorial that fits in int, 20! is the last one that fits in long long.
+$$pw_10: 2^{10} = 1024 \approx 10^3$$
+$$pw_20: 2^{20} \approx 10^6$$ · $$pw_30: 2^{30} \approx 10^9$$
+$$pw_f12: 12! \approx 4.8 \cdot 10^8$$
+$$pw_f20: 20! \approx 2.4 \cdot 10^{18}$$
+
+== time | s2 | Time and units
+-- simulation | Change a number of seconds t into hours, minutes and seconds, and back. For t >= 0.
+hours: {{t_h: t / 3600}}
+minutes: {{t_m: t % 3600 / 60}}
+seconds: {{t_s: t % 60}}
+back: {{t_back: h * 3600 + m * 60 + s}}
+-- simulation | Turn a clock time h:m into one number: minutes since midnight. Then times are easy to compare, add and subtract. A day has 1440 minutes.
+to minutes: {{c_min: h * 60 + m}}
+back: {{c_h: t / 60}} and {{c_m: t % 60}}
+k minutes later: {{c_later: (t + k) % 1440}}
+from t1 to t2, maybe over midnight: {{c_diff: ((t2 - t1) % 1440 + 1440) % 1440}}
+-- simulation | Read a time written like 09:05, and print it again with two digits for each part.
+>>> main clockio
+int h, m; char colon;
+cin >> h >> colon >> m;
+cout << setfill('0') << setw(2) << h << ":"
+     << setw(2) << m << "\n";
+<<<
+-- simulation | Days of the week as numbers 0 .. 6: the day k days later, the day k days before, and weeks with left-over days.
+k days later: {{dow_fwd: (d + k) % 7}}
+k days before: {{dow_back: ((d - k) % 7 + 7) % 7}}
+full weeks: {{weeks: days / 7}} · days left: {{weekrest: days % 7}}
+-- simulation | A 12-hour clock shows 12 where a 24-hour clock shows 0 or 12. h is from 0 to 23.
+12-hour form: {{h12: (h % 12 == 0 ? 12 : h % 12)}}
+is afternoon (PM): {{ispm: h >= 12}}
+-- simulation | Is y a leap year (366 days)? Every 4th year is, but years like 1900 are not, and years like 2000 are again.
+>>> global isLeap
+bool isLeap(int y) {
+    if (y % 400 == 0) return true;
+    if (y % 100 == 0) return false;
+    return y % 4 == 0;
+}
+<<<
+-- simulation | Days in every month of a normal year. Month 1 is January, so index 0 is not used. In a leap year February has 29.
+>>> main monthdays
+int days[13] = {0, 31, 28, 31, 30, 31, 30,
+                31, 31, 30, 31, 30, 31};
+if (isLeap(y)) days[2] = 29;
+<<<
+-- basic-math | Split an amount x into a big unit and a small unit, when k small units make one big unit. Example: cents and dollars with k = 100.
+big units: {{u_big: x / k}} · small units left: {{u_small: x % k}}
+back: {{u_back: big * k + small}}
+p percent of x, rounded down: {{percent: x * p / 100}}
+
+== geometry | s3 | Geometry with integers
+-- basic-math | Distance between two points, squared. Compare squared distances and you never need sqrt or real numbers. Use long long.
+>>> global dist2fn
+long long dist2(long long x1, long long y1,
+        long long x2, long long y2) {
+    long long dx = x1 - x2, dy = y1 - y2;
+    return dx * dx + dy * dy;
+}
+<<<
+real distance: {{realdist: sqrt((double)dist2(x1, y1, x2, y2))}}
+-- basic-math | Cross product: on which side of the line from A to B is the point C? Positive: left (counter-clockwise). Negative: right. Zero: the three points are on one line. Safe for coordinates up to 10^9.
+>>> global cross
+long long cross(long long ax, long long ay,
+        long long bx, long long by,
+        long long cx, long long cy) {
+    return (bx - ax) * (cy - ay)
+         - (by - ay) * (cx - ax);
+}
+<<<
+-- basic-math | Area of the triangle ABC from the cross product on this sheet. Twice the area is always an integer, so keep it doubled as long as you can.
+twice the area: {{tri2: abs(cross(ax, ay, bx, by, cx, cy))}}
+area: {{triarea: abs(cross(ax, ay, bx, by, cx, cy)) / 2.0}}
+on one line: {{collinear: cross(ax, ay, bx, by, cx, cy) == 0}}
+-- basic-math | Can three lengths make a triangle, and is it a right triangle. Sort first so that c is the longest side.
+a triangle: {{tri_ok: a + b > c}}
+right angle: {{tri_right: a * a + b * b == c * c}}
+-- basic-math | A rectangle with sides parallel to the axes, from corner (x1, y1) to corner (x2, y2), with x1 <= x2 and y1 <= y2.
+area: {{rect_area: (x2 - x1) * (y2 - y1)}}
+border length: {{rect_per: 2 * ((x2 - x1) + (y2 - y1))}}
+point inside: {{rect_in: x1 <= x && x <= x2 && y1 <= y && y <= y2}}
+-- basic-math | Area shared by two rectangles A and B (sides parallel to the axes). It is the overlap of the x ranges times the overlap of the y ranges.
+>>> main rect_inter
+long long w = min(ax2, bx2) - max(ax1, bx1);
+long long h = min(ay2, by2) - max(ay1, by1);
+long long area = 0;
+if (w > 0 && h > 0) area = w * h;
+<<<
+-- basic-math | Is the point (x, y) inside or on a circle with centre (cx, cy) and radius r? Compare squared values, no sqrt. Use long long.
+inside or on: {{in_circle: (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r}}
+-- number-theory | How many points with integer coordinates are on the line segment between two integer points, both ends counted.
+points on the segment: {{lattice: gcd(abs(x1 - x2), abs(y1 - y2)) + 1}}
+-- basic-math | Do two directions (dx1, dy1) and (dx2, dy2) have the same slope? Multiply across; never divide, because division loses precision and dx can be 0.
+same slope: {{slope_eq: dy1 * dx2 == dy2 * dx1}}
+pi: {{pi: const double PI = acos(-1.0)}}
+
+== io | s4 | Input and output
+-- cpp-template | Print YES or NO from a true/false value. The brackets around the ? : part are needed.
+>>> main yesno
+cout << (ok ? "YES" : "NO") << "\n";
+<<<
+-- cpp-template | Print a real number with a fixed number of digits after the point. Without fixed, big values print like 1e+09 and you get Wrong Answer.
+>>> main fixedp
+cout << fixed << setprecision(9);
+cout << x << "\n";
+<<<
+-- cpp-template | Print all elements on one line with spaces between them. A space at the end of the line is accepted on Codeforces.
+>>> main printvec
+for (long long x : a) cout << x << " ";
+cout << "\n";
+<<<
+-- interactive | Both end the line. endl also sends the output at once (flush), which is slow when you print many lines. Use endl only in interactive problems.
+fast: {{nl_fast: cout << x << "\n"}}
+slow, flushes: {{nl_endl: cout << x << endl}}
+-- cpp-template | Read numbers until the input ends, when the statement does not tell you how many there are.
+>>> main readall
+long long x, sum = 0;
+while (cin >> x) sum += x;
+<<<
+-- cpp-template | Print several values on one line, and print one character from a number. Without char( ) you would print the number 99 and not the letter c.
+two values: {{pr_two: cout << a << " " << b << "\n"}}
+a letter: {{pr_char: cout << char('a' + i)}}
+-- cpp-template | The printf way. %d is for int and %lld for long long. %.6f prints a real number with 6 digits. %02d prints two digits with a leading zero. Do not mix printf with cout after sync_with_stdio(false).
+long long: {{pf_ll: printf("%lld\n", x)}}
+real number: {{pf_f: printf("%.6f\n", d)}}
+clock time: {{pf_02: printf("%02d:%02d\n", h, m)}}
+
+== safety | s0 | Overflow and other traps
+-- overflow | Quick size check before you choose a type: multiply or add the biggest values from the limits.
+$$of_1: 10^5 \cdot 10^5 = 10^{10}$$ → {{: long long}}
+$$of_2: 2 \cdot 10^5 \cdot 10^9 = 2 \cdot 10^{14}$$ → {{: long long}}
+$$of_3: 10^9 \cdot 10^9 = 10^{18}$$ → {{: long long}}, it fits
+$$of_4: 10^9 \cdot 10^9 \cdot 10^9$$ → too big, use % or divide
+-- overflow | Two ints are multiplied as int, and the result is already broken before it is stored. Put 1LL first so the product is computed as long long.
+wrong: {{of_bad: long long p = a * b}}
+right: {{of_good: long long p = 1LL * a * b}}
+in a loop test: {{of_loop: 1LL * i * i <= n}}
+-- overflow | Compare a product with a limit when the product itself can overflow: divide the limit. For a >= 0, b > 0, c >= 0.
+{{: a * b > c}} → {{cmp_gt: a > c / b}}
+{{: a * b <= c}} → {{cmp_le: a <= c / b}}
+{{: a * b >= c}} → {{cmp_ge: a >= c / b + (c % b != 0)}}
+-- overflow | Will a + b pass the long long maximum? Test it with a subtraction, which cannot overflow. For b >= 0.
+a + b is too big: {{add_of: a > LLONG_MAX - b}}
+-- overflow | The biggest and smallest values of int and long long, as ready names.
+{{c_intmax: INT_MAX}} = {{: 2147483647}}
+{{c_intmin: INT_MIN}} = {{: -2147483648}}
+{{c_llmax: LLONG_MAX}} = {{: 9223372036854775807}}
+{{c_llmin: LLONG_MIN}}
+-- overflow | A value that means infinity. Do not use INT_MAX or LLONG_MAX for it: adding anything to them overflows. These two leave room for one addition.
+for int: {{inf_int: const int INF = 1e9}}
+for long long: {{inf_ll: const long long INF = 1e18}}
+-- debugging | size() has no sign. For an empty vector, a.size() - 1 is not -1 but a huge number, and the loop runs into memory it must not touch. Cast to int first.
+wrong: {{sz_bad: a.size() - 1}}
+right: {{sz_good: (int)a.size() - 1}}
+loop: {{sz_loop: for (int i = 0; i + 1 < (int)a.size(); i++)}}
+-- binary-search | The middle of lo and hi. For 0 <= lo <= hi the first form never overflows. The second overflows when lo + hi is too big.
+safe: {{mid_safe: lo + (hi - lo) / 2}}
+can overflow: {{mid_bad: (lo + hi) / 2}}
+-- overflow | A double holds every integer exactly only up to 2^53, about 9·10^15. Above that, digits are lost. Keep big integers in long long.
+$$dbl_53: 2^{53} \approx 9 \cdot 10^{15}$$
+$$: x = 10^{18}$$: {{dbl_lost: (double)(x + 1) == (double)x}} is {{: true}}
+-- bits | A shift of the int 1 breaks at k = 31. Make the 1 a long long.
+wrong for $$: k \ge 31$$: {{: 1 << k}}
+right for $$: k \le 62$$: {{sh_good: 1LL << k}}
+-- debugging | An array has indexes 0 .. n-1. Reading or writing outside is not an error message: it gives random results. Make arrays a little bigger than the limit.
+last element: {{last_el: a[n - 1]}}
+not an element: {{: a[n]}}
+size with room: {{arr_room: const int MAXN = 200000 + 5}}

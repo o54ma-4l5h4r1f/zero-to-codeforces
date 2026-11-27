@@ -1,12 +1,21 @@
-<p class="idea">The shortest path when every edge has a length. Always fix the closest vertex that is not fixed yet.</p>
+<p class="idea"><span class="tr" data-ar="أقصر مسار عندما يكون لكل حافة طول. في كل خطوة ثبّت أقرب رأس لم يُثبَّت بعد.">The shortest path when every edge has a length. Again and again, fix the closest vertex that is not fixed yet.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can store a graph and run BFS → <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a></li>
+    <li>You know <code>priority_queue</code> with <code>greater</code> (smallest on top) → <a href="#stl-containers">map, set, stack, queue</a></li>
+    <li>You know when a sum needs <code>long long</code> → <a href="#overflow">int or long long?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
     <li>Roads have a length, a time or a price: each edge has a <span class="term" data-t="weight">weight</span>.</li>
     <li>The statement asks for the <b>minimum total cost</b> or the <span class="term" data-t="shortest-path">shortest path</span> from one vertex.</li>
-    <li>All weights are ≥ 0. (No negative numbers on edges.)</li>
-    <li>n and m are up to about 10<sup>5</sup> or 2 · 10<sup>5</sup>.</li>
+    <li>All weights are 0 or more. No edge has a negative number.</li>
+    <li>\( n \) and \( m \) are up to about \( 2 \cdot 10^5 \).</li>
   </ul>
 </section>
 
@@ -15,56 +24,146 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — the GPS</h3>
-    <p>A GPS knows the time of every road. At the start it knows one thing for sure: your own city is at distance 0.</p>
-    <p>Then it repeats one step. Take the <b>closest city that is not fixed yet</b>. Its distance is now final, because every other way to it goes through a city that is farther. Look at its roads: maybe they give a shorter way to its neighbours. If yes, write the smaller number.</p>
+    <p>A GPS knows the time of every road. At the start it is sure of one thing: your own city is at distance 0.</p>
+    <p>Then it repeats one step. Take the <b>closest city that is not fixed yet</b>. <span class="tr" data-ar="مسافتها الآن نهائية: كل طريق آخر إليها يمرّ بمدينة أبعد، والطرق لا تكون سالبة أبدًا.">Its distance is now final: every other way to it passes a city that is farther, and roads are never negative.</span> Then look at its roads. Maybe they give a shorter way to a neighbour.</p>
   </div>
 
   <div class="way">
     <h3><b>2 · Picture</b> — from vertex 1</h3>
-    <svg viewBox="0 0 490 200" width="490" role="img" aria-label="Weighted graph with 5 vertices. Edges: 1-2 weight 4, 1-3 weight 1, 3-2 weight 2, 2-4 weight 5, 3-4 weight 8, 4-5 weight 3. The shortest path from 1 to 5 is 1, 3, 2, 4, 5 with length 11.">
-      <g stroke="var(--line)" stroke-width="2">
-        <line x1="50" y1="100" x2="180" y2="40"/><line x1="180" y1="160" x2="320" y2="100"/>
-      </g>
-      <g stroke="var(--accent)" stroke-width="3">
-        <line x1="50" y1="100" x2="180" y2="160"/><line x1="180" y1="160" x2="180" y2="40"/>
-        <line x1="180" y1="40" x2="320" y2="100"/><line x1="320" y1="100" x2="440" y2="100"/>
-      </g>
-      <g fill="var(--surface)" stroke="currentColor" stroke-width="1.5">
-        <circle cx="50" cy="100" r="16"/><circle cx="180" cy="40" r="16"/><circle cx="180" cy="160" r="16"/>
-        <circle cx="320" cy="100" r="16"/><circle cx="440" cy="100" r="16"/>
-      </g>
-      <g fill="currentColor" font-size="14" font-weight="bold" text-anchor="middle">
-        <text x="50" y="105">1</text><text x="180" y="45">2</text><text x="180" y="165">3</text>
-        <text x="320" y="105">4</text><text x="440" y="105">5</text>
-      </g>
-      <g fill="currentColor" font-size="13" text-anchor="middle">
-        <text x="106" y="60">4</text><text x="106" y="148">1</text><text x="168" y="105">2</text>
-        <text x="258" y="60">5</text><text x="258" y="148">8</text><text x="380" y="92">3</text>
-      </g>
-    </svg>
     <p>The <span class="term" data-t="priority-queue">priority queue</span> holds pairs (distance, vertex). It always gives the pair with the smallest distance.</p>
-    <table>
-      <tr><th>take (d, v)</th><th>what happens</th><th>dist[1..5]</th><th>queue after</th></tr>
-      <tr><td>start</td><td>dist[1] = 0</td><td>0 ∞ ∞ ∞ ∞</td><td>(0,1)</td></tr>
-      <tr><td>(0,1)</td><td>2 gets 0+4 = 4, 3 gets 0+1 = 1</td><td>0 4 1 ∞ ∞</td><td>(1,3) (4,2)</td></tr>
-      <tr><td>(1,3)</td><td>2 gets 1+2 = 3 (better than 4), 4 gets 1+8 = 9</td><td>0 3 1 9 ∞</td><td>(3,2) (4,2) (9,4)</td></tr>
-      <tr><td>(3,2)</td><td>4 gets 3+5 = 8 (better than 9)</td><td>0 3 1 8 ∞</td><td>(4,2) (8,4) (9,4)</td></tr>
-      <tr><td>(4,2)</td><td>4 &gt; dist[2] = 3 → old pair, skip</td><td>0 3 1 8 ∞</td><td>(8,4) (9,4)</td></tr>
-      <tr><td>(8,4)</td><td>5 gets 8+3 = 11</td><td>0 3 1 8 11</td><td>(9,4) (11,5)</td></tr>
-      <tr><td>(9,4)</td><td>9 &gt; dist[4] = 8 → old pair, skip</td><td>0 3 1 8 11</td><td>(11,5)</td></tr>
-      <tr><td>(11,5)</td><td>no better way → queue empty, stop</td><td class="hi">0 3 1 8 11</td><td>empty</td></tr>
-    </table>
-    <p class="note">The direct road 1–2 costs 4, but 1 → 3 → 2 costs only 3. The thick lines show the shortest path to 5: 1 → 3 → 2 → 4 → 5 = 11.</p>
+    <figure class="viz" data-viz="stepper" data-gen="dijkstra" aria-label="Step by step: Dijkstra from vertex 1 on a graph with 5 vertices. Edges: 1-2 weight 4, 1-3 weight 1, 3-2 weight 2, 2-4 weight 5, 3-4 weight 8, 4-5 weight 3. The final distances are 0, 3, 1, 8, 11.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":80,"nodes":[{"id":1,"x":0,"y":1},{"id":2,"x":1.4,"y":0},{"id":3,"x":1.4,"y":2},{"id":4,"x":2.8,"y":1},{"id":5,"x":4.1,"y":1}],"edges":[{"from":1,"to":2,"w":4},{"from":1,"to":3,"w":1},{"from":3,"to":2,"w":2},{"from":2,"to":4,"w":5},{"from":3,"to":4,"w":8},{"from":4,"to":5,"w":3}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"v: taken and fixed now","queued":"has a pair in the queue","done":"fixed: final distance","bad":"old pair: skipped"},
+  "code": ["dist[1] = 0;  pq.push({0, 1});","while (!pq.empty()) {","    long long d = pq.top().first;","    int v = pq.top().second;  pq.pop();","    if (d > dist[v]) continue;","    for (auto edge : g[v]) {","        int to = edge.first;","        long long w = edge.second;","        if (dist[v] + w < dist[to]) {","            dist[to] = dist[v] + w;","            pq.push({dist[to], to});","        }","    }","}"],
+  "steps": [
+    {"line":1,"g":{"states":{"1":"queued","2":"","3":"","4":"","5":""},"notes":{"1":"dist 0","2":"dist ∞","3":"dist ∞","4":"dist ∞","5":"dist ∞"},"edgeStates":{}},"v":{"items":[["taken (d, v)",""],["priority queue",["(0, 1)"]]]}},
+    {"line":[3,4,9,10,11],"g":{"states":{"1":"active","2":"queued","3":"queued","4":"","5":""},"notes":{"1":"dist 0","2":"dist 4","3":"dist 1","4":"dist ∞","5":"dist ∞"},"edgeStates":{"1-2":"active","1-3":"active"}},"v":{"items":[["taken (d, v)","(0, 1)"],["priority queue",["(1, 3)","(4, 2)"]]]}},
+    {"line":[3,4,9,10,11],"g":{"states":{"1":"done","2":"queued","3":"active","4":"queued","5":""},"notes":{"1":"dist 0","2":"dist 3","3":"dist 1","4":"dist 9","5":"dist ∞"},"edgeStates":{"3-2":"active","1-3":"done","3-4":"active"}},"v":{"items":[["taken (d, v)","(1, 3)"],["priority queue",["(3, 2)","(4, 2)","(9, 4)"]]]}},
+    {"line":[3,4,9,10,11],"g":{"states":{"1":"done","2":"active","3":"done","4":"queued","5":""},"notes":{"1":"dist 0","2":"dist 3","3":"dist 1","4":"dist 8","5":"dist ∞"},"edgeStates":{"3-2":"done","1-3":"done","2-4":"active"}},"v":{"items":[["taken (d, v)","(3, 2)"],["priority queue",["(4, 2)","(8, 4)","(9, 4)"]]]}},
+    {"line":5,"g":{"states":{"1":"done","2":"bad","3":"done","4":"queued","5":""},"notes":{"1":"dist 0","2":"dist 3","3":"dist 1","4":"dist 8","5":"dist ∞"},"edgeStates":{"3-2":"done","1-3":"done"}},"v":{"items":[["taken (d, v)","(4, 2)"],["priority queue",["(8, 4)","(9, 4)"]]]}},
+    {"line":[3,4,9,10,11],"g":{"states":{"1":"done","2":"done","3":"done","4":"active","5":"queued"},"notes":{"1":"dist 0","2":"dist 3","3":"dist 1","4":"dist 8","5":"dist 11"},"edgeStates":{"3-2":"done","1-3":"done","2-4":"done","4-5":"active"}},"v":{"items":[["taken (d, v)","(8, 4)"],["priority queue",["(9, 4)","(11, 5)"]]]}},
+    {"line":5,"g":{"states":{"1":"done","2":"done","3":"done","4":"bad","5":"queued"},"notes":{"1":"dist 0","2":"dist 3","3":"dist 1","4":"dist 8","5":"dist 11"},"edgeStates":{"3-2":"done","1-3":"done","2-4":"done"}},"v":{"items":[["taken (d, v)","(9, 4)"],["priority queue",["(11, 5)"]]]}},
+    {"line":[3,4,9],"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"active"},"notes":{"1":"dist 0","2":"dist 3","3":"dist 1","4":"dist 8","5":"dist 11"},"edgeStates":{"3-2":"done","1-3":"done","2-4":"done","4-5":"done"}},"v":{"items":[["taken (d, v)","(11, 5)"],["priority queue",[]]]}},
+    {"line":2,"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"done"},"notes":{"1":"dist 0","2":"dist 3","3":"dist 1","4":"dist 8","5":"dist 11"},"edgeStates":{"3-2":"done","1-3":"done","2-4":"done","4-5":"done"}},"v":{"items":[["taken (d, v)",""],["priority queue",[]]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start: <code>dist[1] = 0</code>, and the queue holds (0, 1). The ∞ sign means "not reached yet".</li>
+        <li>Take (0, 1): vertex 1 is final. Its roads give vertex 2 the distance 4 and vertex 3 the distance 1.</li>
+        <li>Take (1, 3), the smallest pair. Through 3, vertex 2 costs \( 1 + 2 = 3 \) (better than 4), and vertex 4 gets \( 1 + 8 = 9 \).</li>
+        <li>Take (3, 2). Through 2, vertex 4 costs \( 3 + 5 = 8 \), better than 9.</li>
+        <li><span class="tr" data-ar="نأخذ (4, 2). لكن dist[2] الآن 3، و 4 أكبر من 3: زوج قديم، نتخطّاه.">Take (4, 2). But <code>dist[2]</code> is 3 now, and 4 is bigger: an old pair, so skip it.</span></li>
+        <li>Take (8, 4). Vertex 5 gets \( 8 + 3 = 11 \).</li>
+        <li>Take (9, 4): another old pair, because <code>dist[4]</code> is 8. Skip it.</li>
+        <li>Take (11, 5). No road gives a better number.</li>
+        <li>The queue is empty. The final distances are 0, 3, 1, 8, 11.</li>
+      </ol>
+      <figcaption>The direct road 1–2 costs 4, but 1 → 3 → 2 costs only 3. The green edges show where each best distance came from.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — distance and the path</h3>
-    <p>This program solves the classic problem "Dijkstra?" (20C): print the shortest path from 1 to n, or −1. To print a path, remember for each vertex <b>where you came from</b>: <code>parent[to] = v</code>. At the end walk back from n to 1.</p>
+    <h3><b>3 · Code</b> — the distances from one vertex</h3>
+    <p><code>g[v]</code> holds pairs {neighbour, weight}. When a distance gets better, push a new pair. The old pair stays in the queue, so skip it when it comes out.</p>
+<pre data-part="global"><code class="cpp">
+const long long INF = 1e18;                      // "not reached yet"
+vector&lt;vector&lt;pair&lt;int, long long&gt;&gt;&gt; g;          // g[v] = {neighbour, weight}
+
+vector&lt;long long&gt; dijkstra(int start, int n) {
+    vector&lt;long long&gt; dist(n + 1, INF);
+    // pairs {distance, vertex}; "greater" puts the SMALLEST distance on top
+    priority_queue&lt;pair&lt;long long, int&gt;, vector&lt;pair&lt;long long, int&gt;&gt;,
+                   greater&lt;pair&lt;long long, int&gt;&gt;&gt; pq;
+    dist[start] = 0;
+    pq.push({0, start});
+    while (!pq.empty()) {
+        long long d = pq.top().first;
+        int v = pq.top().second;
+        pq.pop();
+        if (d &gt; dist[v]) continue;               // old pair: v has a better distance now
+        for (auto edge : g[v]) {
+            int to = edge.first;
+            long long w = edge.second;
+            if (dist[v] + w &lt; dist[to]) {        // a shorter way to "to", through v
+                dist[to] = dist[v] + w;
+                pq.push({dist[to], to});
+            }
+        }
+    }
+    return dist;
+}
+</code></pre>
+    <p class="note">Put the distance <b>first</b> in the pair. Pairs are compared by the first number.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p class="tip-box"><b>Which tool?</b> Every edge costs the same → <a href="#graphs-bfs-dfs">BFS</a>: simpler and faster. Weights 0 or more → Dijkstra. <span class="tr" data-ar="أوزان سالبة ← Dijkstra لا يصلح. تحتاج أداة أخرى تتعلّمها لاحقًا.">Negative weights → Dijkstra is not safe. You need another tool, which you learn later.</span></p>
+  <p>Why BFS is wrong here. BFS counts edges, not lengths:</p>
+  <figure class="viz" data-viz="graph" aria-label="Three vertices. The edge 1-3 has weight 10. The edges 1-2 and 2-3 have weight 1. The best way from 1 to 3 is 1, 2, 3 with cost 2.">
+    <script type="application/json">
+{ "nodes": [ { "id": 1, "x": 0, "y": 1 }, { "id": 2, "x": 1.2, "y": 0 }, { "id": 3, "x": 2.4, "y": 1 } ],
+  "edges": [ { "from": 1, "to": 3, "w": 10 }, { "from": 1, "to": 2, "w": 1 }, { "from": 2, "to": 3, "w": 1 } ],
+  "edgeStates": { "1-3": "bad", "1-2": "done", "2-3": "done" },
+  "legend": { "bad": "BFS: 1 edge, cost 10", "done": "2 edges, cost 2" } }
+    </script>
+    <figcaption>BFS reaches 3 in one edge and stops there: cost 10. The real best is 1 → 2 → 3, cost \( 1 + 1 = 2 \).</figcaption>
+  </figure>
+  <p>Why a negative weight breaks Dijkstra. The roads here are one-way:</p>
+  <figure class="viz" data-viz="graph" aria-label="Three vertices with one-way edges: 1 to 2 weight 2, 1 to 3 weight 3, 3 to 2 weight -2. Dijkstra fixes vertex 2 at distance 2, but 1, 3, 2 costs 1.">
+    <script type="application/json">
+{ "directed": true,
+  "nodes": [ { "id": 1, "x": 0, "y": 1 }, { "id": 2, "x": 1.2, "y": 0 }, { "id": 3, "x": 2.4, "y": 1 } ],
+  "edges": [ { "from": 1, "to": 2, "w": 2 }, { "from": 1, "to": 3, "w": 3 }, { "from": 3, "to": 2, "w": -2 } ],
+  "states": { "2": "bad" }, "notes": { "2": "fixed at 2?" },
+  "legend": { "bad": "called final too early" } }
+    </script>
+    <figcaption><span class="tr" data-ar="Dijkstra يأخذ الرأس 2 أوّلًا لأن 2 أصغر من 3، ويعدّ المسافة 2 نهائية. لكن 1 ← 3 ← 2 تكلّف 3 − 2 = 1.">Dijkstra takes vertex 2 first (2 is less than 3) and calls 2 final. But 1 → 3 → 2 costs \( 3 - 2 = 1 \).</span> Our code would correct it later with extra work. On big tests that extra work can be huge.</figcaption>
+  </figure>
+  <p><b>Default:</b> the code above, with the edges read in both directions. Then change one thing:</p>
+  <ul>
+    <li><b>One-way roads (directed).</b> Add each edge once, from <code>a</code> to <code>b</code>:
+<pre data-part="main"><code class="cpp">
+g[a].push_back({b, w});            // and NOT g[b].push_back({a, w})
+</code></pre></li>
+    <li><b>Print the path, not only its length.</b> Remember where each better distance came from. "Solve one together" below does this.
+<pre data-part="main"><code class="cpp">
+dist[to] = dist[v] + w;
+parent[to] = v;                    // the best way to "to" comes from v
+</code></pre></li>
+    <li><b>The distance from every vertex TO a target <code>t</code>, on one-way roads.</b> Turn every road around, then run Dijkstra from <code>t</code>:
+<pre data-part="main"><code class="cpp">
+g[b].push_back({a, w});            // the road a -&gt; b, stored backwards
+vector&lt;long long&gt; distTo = dijkstra(t, n);
+</code></pre></li>
+    <li><b>Several start vertices</b> (for example, many hospitals). Put all of them in the queue at distance 0 before the loop:
+<pre data-part="main"><code class="cpp">
+for (int s : starts) { dist[s] = 0; pq.push({0, s}); }
+</code></pre></li>
+  </ul>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> A graph has \( n \) vertices and \( m \) two-way edges with weights. Print a shortest path from vertex 1 to vertex \( n \), as a list of vertices. If there is no path, print -1. Limits: \( 2 \le n \le 10^5 \), \( 0 \le m \le 10^5 \), \( 1 \le w \le 10^6 \). (This is Codeforces 20C "Dijkstra?".)</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The path itself, not only its length. Weights differ, so we need Dijkstra, not BFS.</li>
+    <li><b>A small example by hand.</b> Use the graph of the picture, with \( n = 5 \). The distance to 5 is 11. Where did 11 come from? From vertex 4. Vertex 4 got its 8 from vertex 2. Vertex 2 got its 3 from vertex 3, and 3 got its 1 from vertex 1. Backwards: 5, 4, 2, 3, 1. So the path is 1 3 2 4 5.</li>
+    <li><b>The idea.</b> <span class="tr" data-ar="كل مرة تتحسّن فيها مسافة، احفظ الرأس الذي جئت منه في parent. في النهاية امشِ إلى الخلف من n إلى 1.">Each time a distance gets better, save where it came from in <code>parent</code>. At the end, walk back from <code>n</code> to 1.</span> Then reverse the list.</li>
+    <li><b>Why is it fast enough?</b> Each edge can push one pair, and a queue step costs about \( \log n \approx 17 \). So about \( (n + m) \cdot 17 \approx 3.4 \cdot 10^6 \) steps. Far below \( 10^8 \). A path can be \( 10^5 \) edges of \( 10^6 \): that is \( 10^{11} \), so use <code>long long</code>.</li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-const long long INF = 1e18;                      // "no path yet"
+const long long INF = 1e18;                      // "not reached yet"
 
 int main() {
     int n, m;
@@ -80,7 +179,6 @@ int main() {
 
     vector&lt;long long&gt; dist(n + 1, INF);
     vector&lt;int&gt; parent(n + 1, 0);
-    // pairs {distance, vertex}; "greater" puts the SMALLEST distance on top
     priority_queue&lt;pair&lt;long long, int&gt;, vector&lt;pair&lt;long long, int&gt;&gt;,
                    greater&lt;pair&lt;long long, int&gt;&gt;&gt; pq;
     dist[1] = 0;
@@ -89,13 +187,13 @@ int main() {
         long long d = pq.top().first;
         int v = pq.top().second;
         pq.pop();
-        if (d &gt; dist[v]) continue;               // old pair: v has a better distance now
+        if (d &gt; dist[v]) continue;               // old pair: skip it
         for (auto edge : g[v]) {
             int to = edge.first;
             long long w = edge.second;
-            if (dist[v] + w &lt; dist[to]) {        // a shorter way to "to", through v
+            if (dist[v] + w &lt; dist[to]) {
                 dist[to] = dist[v] + w;
-                parent[to] = v;
+                parent[to] = v;                  // we came to "to" from v
                 pq.push({dist[to], to});
             }
         }
@@ -112,22 +210,56 @@ int main() {
     cout &lt;&lt; "\n";
 }
 </code></pre>
-    <p class="note">Why <code>if (d &gt; dist[v]) continue;</code>? When a distance gets better, you push a new pair. The old pair stays in the queue. This line throws old pairs away. Without it the code can be very slow.</p>
-  </div>
 </section>
 
-<p class="tip-box"><b>Which tool?</b> No weights (every edge costs 1) → <a href="#graphs-bfs-dfs">BFS</a>, it is simpler and faster. Weights ≥ 0 → Dijkstra. Negative weights → Dijkstra is wrong; you need Bellman-Ford (see <a href="#what-next">After 1600</a>).</p>
+<p class="complexity">Speed: \( O((n + m) \log n) \). Fine for \( n \) and \( m \) up to a few \( 10^5 \).</p>
 
-<p class="complexity">Speed: O((n + m) log n). Fine for n and m up to a few 10^5.</p>
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="BFS يكفي، حتى مع الأوزان.">BFS is enough, even with weights.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="BFS يعدّ الحواف ولا يجمع الأوزان. يعمل فقط إذا كانت كل الحواف بالتكلفة نفسها.">BFS counts edges and ignores weights. It works only if every edge costs the same.</span> See the first small picture.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="Dijkstra يعمل مع أي أوزان، حتى السالبة.">Dijkstra works with any weights, even negative ones.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="مع وزن سالب قد يصبح الرأس «النهائي» أقصر لاحقًا. فكرة Dijkstra تنكسر.">With a negative weight, a "final" vertex can get shorter later. The idea of Dijkstra breaks.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="مسافة الرأس نهائية عندما أضعه في الطابور أوّل مرة.">A distance is final when the vertex first enters the queue.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="المسافة نهائية فقط عندما يخرج الرأس من الطابور أوّل مرة. قبل ذلك قد تتحسّن.">It is final only when the vertex first comes OUT of the queue. Before that it can still get better.</span> In the picture, vertex 2 went from 4 to 3.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><code>dist</code> is <code>int</code>. A path can be 10<sup>5</sup> edges × 10<sup>9</sup> = 10<sup>14</sup>. Use <code>long long</code> and INF = 10<sup>18</sup>.</li>
-    <li>No <code>greater&lt;…&gt;</code>. Then the queue gives the <b>biggest</b> distance first: the answer can still be right, but it is far too slow.</li>
-    <li>The pair is in the wrong order. Put the distance <b>first</b>: pairs are compared by the first number.</li>
-    <li>You forget the line <code>if (d &gt; dist[v]) continue;</code> → time limit exceeded on big tests.</li>
+    <li><code>dist</code> is <code>int</code>. A path can be \( 10^5 \) edges of \( 10^9 \), that is \( 10^{14} \). Use <code>long long</code> and <code>INF = 1e18</code>.</li>
+    <li>No <code>greater&lt;…&gt;</code>. Then the queue gives the <b>biggest</b> distance first. The answer can still be right, but it is far too slow.</li>
+    <li>You forget <code>if (d &gt; dist[v]) continue;</code>. Then old pairs do the work again: "Time limit exceeded" on big tests.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Negative weights (Bellman-Ford).</b> Rare up to 1600. See <a href="#what-next">After 1600</a>.</li>
+    <li><b>Weights that are only 0 or 1 (0-1 BFS).</b> Dijkstra already solves it. A faster trick exists: <a href="#what-next">after 1600</a>.</li>
+    <li><b>Distances between all pairs (Floyd-Warshall)</b>, for \( n \le 500 \). See <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="كل الطرق طولها 1. هل تستخدم Dijkstra أم BFS؟">Every road has length 1. Do you use Dijkstra or BFS?</span>
+      <details><summary>Answer</summary><p>BFS. It gives the same answer, it is simpler, and it is faster: \( O(n + m) \).</p></details></li>
+    <li><span class="tr" data-ar="لماذا نحتاج السطر if (d &gt; dist[v]) continue؟">Why do we need the line <code>if (d &gt; dist[v]) continue;</code>?</span>
+      <details><summary>Answer</summary><p>A vertex can have old pairs in the queue, like (4, 2) in the picture. Without the line, each old pair looks at all edges again. On big tests that is too slow.</p></details></li>
+    <li><span class="tr" data-ar="في الصورة، ما المسافة من 1 إلى 4، وما المسار؟">In the picture, what is the distance from 1 to 4, and what is the path?</span>
+      <details><summary>Answer</summary><p>8, by 1 → 3 → 2 → 4: \( 1 + 2 + 5 = 8 \). The direct way through 3 costs \( 1 + 8 = 9 \).</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -140,7 +272,7 @@ int main() {
     <li><a class="cf" data-p="20C">Dijkstra?</a><span class="r">1900</span></li>
     <li><a href="https://cses.fi/problemset/task/1195">CSES: Flight Discount</a><span class="r">CSES</span> — harder: run Dijkstra two times, from the start and from the end.</li>
   </ol>
-  <p class="note">"Dijkstra?" is the direct exercise for this page. Its rating is high only because you must print the path. The first two Codeforces problems need only BFS: use them to check that you pick the right tool. Pure Dijkstra problems are rare below 1700, so CSES is the best place to train.</p>
+  <p class="note">"Dijkstra?" is the problem of "Solve one together". Its rating is high only because you must print the path. The first two Codeforces problems need only BFS: use them to check that you pick the right tool. Pure Dijkstra problems are rare below 1700, so CSES is the best place to train.</p>
 </section>
 
 <section class="more">
@@ -150,5 +282,6 @@ int main() {
     <li><a href="https://cp-algorithms.com/graph/dijkstra_sparse.html">cp-algorithms: Dijkstra</a> — reference text with the same priority queue code.</li>
     <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 13 "Shortest paths" (also Bellman-Ford).</li>
     <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — shortest path lessons by Mostafa Saad.</li>
+    <li><a href="https://codeforces.com/blog/entry/132653">Common mistakes on Dijkstra algorithm and how to hack them</a> — Codeforces blog: the slow versions of Dijkstra and why they fail.</li>
   </ul>
 </section>

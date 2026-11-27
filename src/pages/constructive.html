@@ -1,4 +1,13 @@
-<p class="idea">You do not search for the best answer. You must build one answer that follows the rules. Find a simple pattern and print it.</p>
+<p class="idea"><span class="tr" data-ar="أنت لا تبحث عن أفضل إجابة. أنت تبني إجابة واحدة تتبع القواعد. ابحث عن نمط بسيط واطبعه.">You do not search for the best answer. You build one answer that follows the rules. Find a simple pattern and print it.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know <span class="term" data-t="parity">parity</span> and the sum \( 1 + 2 + \dots + n \) → <a href="#basic-math">Basic math</a></li>
+    <li>You can try all options on small inputs → <a href="#brute-force">Brute force</a></li>
+    <li>You can test your code against a checker → <a href="#debugging">How to find your bug</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
@@ -6,44 +15,96 @@
     <li>"If there are several answers, print <b>any</b> of them."</li>
     <li>"Find an array / a <span class="term" data-t="permutation">permutation</span> / a string such that …"</li>
     <li>"… or print −1 (or NO) if it is impossible."</li>
-    <li>The limits are big, but the task has no real data to work on, often only one number n.</li>
+    <li>The input is tiny, often only one number \( n \). The work is to invent the output.</li>
   </ul>
 </section>
 
 <section>
   <h2>Three ways to understand it</h2>
+  <p><span class="tr" data-ar="لا توجد خوارزمية واحدة هنا. توجد ثلاث طرق لإيجاد البناء، ونجرّبها كلها على مسألة واحدة.">There is no single algorithm here. There are three ways to <b>find</b> a construction.</span> We use all three on one task: split the numbers \( 1, 2, \dots, n \) into two groups with equal sums, or print NO.</p>
 
   <div class="way">
-    <h3><b>1 · Story</b> — tiling a floor</h3>
-    <p>A worker covers a big floor with tiles. He does not think about each tile alone. He finds a small <span class="term" data-t="pattern">pattern</span> that works, and he repeats it over the whole floor.</p>
-    <p>A <span class="term" data-t="constructive">constructive</span> problem is the same. The judge accepts any <span class="term" data-t="valid">valid</span> answer, so choose the one that is the easiest to describe.</p>
-    <p><b>How to find the pattern:</b></p>
-    <ol>
-      <li>Solve the tiny cases by hand: n = 1, 2, 3, 4, 5, 6. Write the answers in a table.</li>
-      <li>Try simple shapes first: sorted, reversed, shifted by one, <span class="term" data-t="alternating">alternating</span> (small, big, small, big), all equal.</li>
-      <li>Find when it is impossible. Look at <span class="term" data-t="parity">parity</span> and sums: something that never changes (an <span class="term" data-t="invariant">invariant</span>).</li>
-      <li>Test your pattern with a small checker before you submit (see the code below).</li>
-    </ol>
-    <p class="note">Example for step 3: "split the numbers 1..n into two groups with equal sums". The total is n · (n + 1) / 2. If the total is odd, no split exists. Print NO at once.</p>
-  </div>
-
-  <div class="way">
-    <h3><b>2 · Picture</b> — a permutation where no number stays at home</h3>
-    <p>Task: for a given n ≥ 2 print a permutation <code>p</code> of 1..n with <code>p[i] ≠ i</code> for every position i (positions from 1).</p>
+    <h3><b>1 · Tiny cases</b> — solve n = 1 to 8 by hand, write a table</h3>
     <table>
-      <tr><th>n</th><th>an answer found by hand</th><th>what we see</th></tr>
-      <tr><td>2</td><td>2 1</td><td>the only one</td></tr>
-      <tr><td>3</td><td>2 3 1</td><td>everybody moves one step</td></tr>
-      <tr><td>4</td><td>2 3 4 1</td><td>the same idea works</td></tr>
-      <tr><td>5</td><td>2 3 4 5 1</td><td>again</td></tr>
-      <tr><td>6</td><td>2 3 4 5 6 1</td><td class="hi">pattern: 2, 3, …, n, 1</td></tr>
+      <tr><th>n</th><th>group A</th><th>group B</th><th>possible?</th></tr>
+      <tr><td>1</td><td colspan="2">—</td><td>no</td></tr>
+      <tr><td>2</td><td colspan="2">—</td><td>no</td></tr>
+      <tr><td>3</td><td>1, 2</td><td>3</td><td class="hi">yes</td></tr>
+      <tr><td>4</td><td>1, 4</td><td>2, 3</td><td class="hi">yes</td></tr>
+      <tr><td>5</td><td colspan="2">—</td><td>no</td></tr>
+      <tr><td>6</td><td colspan="2">—</td><td>no</td></tr>
+      <tr><td>7</td><td>1, 2, 4, 7</td><td>3, 5, 6</td><td class="hi">yes</td></tr>
+      <tr><td>8</td><td>1, 4, 5, 8</td><td>2, 3, 6, 7</td><td class="hi">yes</td></tr>
     </table>
-    <p>Now check the pattern for every n, not only for the table. Position i (for i &lt; n) holds i + 1, which is not i. Position n holds 1, which is not n because n ≥ 2. Every number is used once. So it is always valid.</p>
-    <p class="note">This pattern is a <span class="term" data-t="shift">shift</span> by one. It is one of the most useful shapes in constructive problems.</p>
+    <p>Look at the "yes" rows: 3, 4, 7, 8. It looks like "yes" when \( n \bmod 4 \) is 0 or 3. A table is only a guess. Ways 2 and 3 make it sure.</p>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — print the pattern</h3>
+    <h3><b>2 · What never changes</b> — the total sum</h3>
+    <p>However you split, the total stays \( 1 + 2 + \dots + n = \frac{n (n + 1)}{2} \). Each group must get half of it.</p>
+    <p>For \( n = 5 \) the total is 15. Half of 15 is not a whole number, so the answer is NO. For \( n = 6 \) the total is 21: also NO.</p>
+    <p><span class="tr" data-ar="الشيء الذي لا يتغيّر مهما فعلت يسمّى ثابتًا. إذا كان المجموع فرديًا فلا يوجد تقسيم.">A thing that never changes, whatever you do, is an <span class="term" data-t="invariant">invariant</span>. If the total is odd, no split exists.</span> The total is even exactly when \( n \bmod 4 \) is 0 or 3. So the table was right.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Simple shapes</b> — blocks of four</h3>
+    <p>Take four numbers in a row, like 1 2 3 4. The outer two have the same sum as the inner two: \( 1 + 4 = 2 + 3 \). So put the outer two in A and the inner two in B.</p>
+    <figure class="viz" data-viz="array" data-gen="con-split8" aria-label="The numbers 1 to 8 in two blocks of four. In each block the outer two numbers go to group A and the inner two go to group B. Both groups have sum 18.">
+      <script type="application/json">
+{
+  "type": "array",
+  "label": "n = 8",
+  "index": false,
+  "values": [1,2,3,4,5,6,7,8],
+  "states": {"0":"done","1":"queued","2":"queued","3":"done","4":"done","5":"queued","6":"queued","7":"done"},
+  "legend": {"done":"group A, sum 18","queued":"group B, sum 18"}
+}
+</script>
+      <figcaption>Each block of four gives A and B the same sum. For \( n \bmod 4 = 3 \), first put 1, 2 in A and 3 in B. Then use blocks from 4.</figcaption>
+    </figure>
+<pre data-part="main"><code class="cpp">
+for (int s = start; s + 3 &lt;= n; s += 4) {     // start = 1, or 4 after the 1 2 | 3 part
+    A.push_back(s);     A.push_back(s + 3);    // the outer two
+    B.push_back(s + 1); B.push_back(s + 2);    // the inner two
+}
+</code></pre>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p>Most answers below 1600 use one of these shapes. <span class="tr" data-ar="الطريقة الافتراضية: جرّب الأشكال بهذا الترتيب، وأول شكل ينجح مع المدقّق هو إجابتك.">The default: try the shapes in this order. The first one that passes your checker is your answer.</span> Positions <code>i</code> go from 1 to \( n \); the examples use \( n = 6 \).</p>
+  <table>
+    <tr><th>shape</th><th>n = 6</th><th>the line for <code>p[i]</code></th><th>when it helps</th></tr>
+    <tr><td>sorted</td><td>1 2 3 4 5 6</td><td><code>i</code></td><td>neighbours must be close, or the order must grow</td></tr>
+    <tr><td>reversed</td><td>6 5 4 3 2 1</td><td><code>n + 1 - i</code></td><td>sorted gives the opposite of what you need</td></tr>
+    <tr><td>shifted by one</td><td>2 3 4 5 6 1</td><td><code>i % n + 1</code></td><td>no number may stay at its own place</td></tr>
+    <tr><td>small, big, small, big</td><td>1 6 2 5 3 4</td><td><code>i % 2 == 1 ? (i + 1) / 2 : n + 1 - i / 2</code></td><td>the order must go up, down, up, down</td></tr>
+    <tr><td>all equal</td><td>3 3 3 3 3 3</td><td><code>c</code></td><td>sums or differences must be the same everywhere (arrays only)</td></tr>
+    <tr><td>pairs swapped</td><td>2 1 4 3 6 5</td><td><code>i % 2 == 1 ? i + 1 : i - 1</code></td><td>each number may move only one step; even \( n \) only</td></tr>
+  </table>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> There are \( t \) tests. Each test gives \( n \) with \( 2 \le n \le 100 \). Print a permutation \( p \) of \( 1 \dots n \) with \( p_i \ne i \) for every position \( i \) (positions from 1). "Nobody stays at home."</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> Any order of 1 to \( n \) where no number stands at its own position.</li>
+    <li><b>A small example by hand.</b> For \( n = 2 \) the only answer is 2 1. For \( n = 3 \), 2 3 1 works.</li>
+    <li><b>First try: reversed.</b> For \( n = 4 \), 4 3 2 1 works. For \( n = 3 \) we get 3 2 1. But position 2 holds 2. <span class="tr" data-ar="مع كل n فردي يبقى العدد الأوسط في مكانه. المحاولة فشلت.">For every odd \( n \) the middle number stays at home. This try fails.</span></li>
+    <li><b>Second try: pairs swapped.</b> For \( n = 4 \), 2 1 4 3 works. For \( n = 5 \) we get 2 1 4 3 5, and the 5 has no partner. It fails for odd \( n \) again.</li>
+    <li><b>The idea.</b> Both failures were at odd \( n \). Make a table of shifted by one:
+      <table>
+        <tr><th>n</th><th>shifted by one</th><th>valid?</th></tr>
+        <tr><td>2</td><td>2 1</td><td>yes</td></tr>
+        <tr><td>3</td><td>2 3 1</td><td>yes</td></tr>
+        <tr><td>4</td><td>2 3 4 1</td><td>yes</td></tr>
+        <tr><td>5</td><td>2 3 4 5 1</td><td class="hi">yes, odd too</td></tr>
+      </table>
+      <p>Why does it always work? Position \( i &lt; n \) holds \( i + 1 \), which is not \( i \). <span class="tr" data-ar="الموضع n يحمل 1، وهذا ليس n لأن n ≥ 2.">Position \( n \) holds 1, which is not \( n \), because \( n \ge 2 \).</span></p>
+    </li>
+    <li><b>Why is it fast enough?</b> We print \( n \) numbers per test: \( O(n) \). The hard part was the idea, not the speed.</li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -53,14 +114,24 @@ int main() {
     cin &gt;&gt; t;
     while (t--) {
         int n;
-        cin &gt;&gt; n;                                  // n &gt;= 2
-        for (int i = 2; i &lt;= n; i++) cout &lt;&lt; i &lt;&lt; " ";   // positions 1..n-1 get 2..n
-        cout &lt;&lt; 1 &lt;&lt; "\n";                         // position n gets 1
+        cin &gt;&gt; n;                                          // n &gt;= 2
+        for (int i = 2; i &lt;= n; i++) cout &lt;&lt; i &lt;&lt; " ";     // positions 1..n-1 get 2..n
+        cout &lt;&lt; 1 &lt;&lt; "\n";                                 // position n gets 1
     }
 }
 </code></pre>
-    <p><b>A checker.</b> Write a small function that tests the rules of the statement. Run it on your own computer for every n from 2 to 50. If it says "false" for some n, you found a bug before the judge did. More about this in <a href="#debugging">How to find your bug</a>.</p>
-<pre data-part="global"><code class="cpp">
+  <p><b>Test the pattern before you submit.</b> Write a function that tests the rules of the statement. Run it for every \( n \) from 2 to 50. Put "reversed" into <code>build</code> and it prints <code>wrong for n = 3</code> at once. More in <a href="#debugging">How to find your bug</a>.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+vector&lt;int&gt; build(int n) {                 // the pattern we want to test
+    vector&lt;int&gt; p;
+    for (int i = 2; i &lt;= n; i++) p.push_back(i);
+    p.push_back(1);
+    return p;
+}
+
 bool isValid(vector&lt;int&gt; p) {              // p[0] is position 1, p[1] is position 2, ...
     int n = p.size();
     vector&lt;bool&gt; seen(n + 1, false);
@@ -72,20 +143,62 @@ bool isValid(vector&lt;int&gt; p) {              // p[0] is position 1, p[1] is 
     }
     return true;
 }
+
+int main() {
+    for (int n = 2; n &lt;= 50; n++)          // n starts at 2, as in the statement
+        if (!isValid(build(n))) { cout &lt;&lt; "wrong for n = " &lt;&lt; n &lt;&lt; "\n"; return 0; }
+    cout &lt;&lt; "all n from 2 to 50 are OK\n";
+}
 </code></pre>
-  </div>
 </section>
 
-<p class="complexity">Speed: usually O(n), you only print the answer. The hard part is the idea, not the running time.</p>
+<p class="complexity">Speed: usually \( O(n) \), you only print the answer. The hard part is the idea, not the running time.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يجب أن يطابق ناتجي ناتج المثال تمامًا.">My output must be the same as the sample output.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا. القاضي يقبل أي إجابة صحيحة عندما يقول نص المسألة «اطبع أيًّا منها».">No. When the statement says "print any", the judge accepts every <span class="term" data-t="valid">valid</span> answer.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="إذا نجح النمط مع n = 4 و 6 و 8 فهو ينجح دائمًا.">If my pattern works for \( n = 4 \), 6 and 8, it always works.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="جرّب الأعداد الفردية والأعداد الصغيرة جدًا أيضًا. شغّل المدقّق على كل n.">Test odd \( n \) and the smallest \( n \) too. Run the checker on every \( n \).</span> The reversed shape above works for 4, 6, 8 and fails for 3.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="توجد طريقة ذكية واحدة يجب أن أتعلّمها لحل هذه المسائل.">There is one clever method I must learn for these problems.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا توجد خوارزمية واحدة. استخدم الطرق الثلاث: حالات صغيرة، ثابت لا يتغيّر، أشكال بسيطة.">There is no single algorithm. Use the three ways: tiny cases, what never changes, simple shapes.</span></p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>Forgetting the small cases. A pattern that works for n ≥ 4 can fail for n = 1, 2 or 3. Check each <span class="term" data-t="edge-case">edge case</span> by hand.</li>
-    <li>Forgetting the impossible case, or printing −1 when an answer exists.</li>
-    <li>Thinking your output must be equal to the sample output. It does not. Any valid answer is accepted.</li>
-    <li>Looking for a clever method for too long. First write tiny cases on paper. The pattern often shows itself.</li>
+    <li>Forgetting the impossible case. Or printing −1 when an answer exists.</li>
+    <li>Not checking the smallest \( n \) allowed. A pattern for \( n \ge 4 \) can fail for \( n = 2 \) or 3. Check each <span class="term" data-t="edge-case">edge case</span> by hand.</li>
+    <li>Spending an hour on a clever idea. First write tiny cases on paper for 10 minutes.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Full proofs</b> that a pattern works for every \( n \). At this level a short reason plus a checker is enough. Come back after the guide: <a href="#what-next">After 1600</a>.</li>
+    <li><b>Building graphs and trees</b> ("print a tree with …"). You need graphs first: <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="للمسألة «لا أحد يبقى في مكانه» مع n = 5، هل 2 1 4 3 5 إجابة صحيحة؟">For the "nobody stays at home" task with \( n = 5 \), is 2 1 4 3 5 valid?</span>
+      <details><summary>Answer</summary><p>No. Position 5 holds 5.</p></details></li>
+    <li><span class="tr" data-ar="هل يمكن تقسيم الأعداد من 1 إلى 6 إلى مجموعتين لهما المجموع نفسه؟">Can you split 1 to 6 into two groups with equal sums?</span>
+      <details><summary>Answer</summary><p>No. The total is \( \frac{6 \cdot 7}{2} = 21 \), an odd number. It cannot be cut into two equal halves.</p></details></li>
+    <li><span class="tr" data-ar="تحتاج ترتيبًا يصعد ثم ينزل ثم يصعد ثم ينزل. أيّ شكل تجرّب أولًا؟">You need an order that goes up, down, up, down. Which shape do you try first?</span>
+      <details><summary>Answer</summary><p>Small, big, small, big. For \( n = 6 \): 1 6 2 5 3 4 goes up, down, up, down, up. Then test it with a checker.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -108,6 +221,6 @@ bool isValid(vector&lt;int&gt; p) {              // p[0] is position 1, p[1] is 
   <ul>
     <li><a href="https://codeforces.com/problemset">Codeforces problem set</a> — choose the tag "constructive algorithms" and rating 800–1200. Many small problems are the best teacher here.</li>
     <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — easy problems where you look for a pattern.</li>
-    <li><a href="#debugging">How to find your bug</a> — how to compare your answer with a brute force.</li>
+    <li><a href="https://codeforces.com/blog/entry/81841">Stress Testing Tutorial</a> — a Codeforces blog on testing your answer with a checker and a brute force.</li>
   </ul>
 </section>

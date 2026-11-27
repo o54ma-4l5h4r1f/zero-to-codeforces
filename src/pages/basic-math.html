@@ -1,12 +1,20 @@
-<p class="idea">A few small formulas replace a long loop. Learn them once and many 800 problems become one line.</p>
+<p class="idea"><span class="tr" data-ar="بضع صيغ صغيرة تحلّ محلّ حلقة طويلة. تعلّمها مرة واحدة، فتصبح مسائل كثيرة سطرًا واحدًا.">A few small formulas replace a long loop. Learn them once, and many 800 problems become one line.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know when a number needs <code>long long</code> → <a href="#overflow">int or long long?</a></li>
+    <li>You know that a loop to \( 10^9 \) or \( 10^{18} \) is too slow → <a href="#big-o">How much does my code cost?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>The numbers go up to 10<sup>9</sup> or 10<sup>18</sup>. A loop is too slow, so there must be a formula.</li>
+    <li>The numbers go up to \( 10^9 \) or \( 10^{18} \). A loop is too slow, so there must be a formula.</li>
     <li>The statement talks about <span class="term" data-t="even">even</span> and <span class="term" data-t="odd">odd</span>, or <span class="term" data-t="divisible">divisible</span> numbers, or digits.</li>
     <li>"How many boxes / buses / steps do you need at least?" This is division that rounds up.</li>
-    <li>"Find the sum 1 + 2 + … + n" or "how many numbers from l to r are…".</li>
+    <li>"How many numbers from \( l \) to \( r \) are…" or "find the sum \( 1 + 2 + \dots + n \)".</li>
   </ul>
 </section>
 
@@ -15,37 +23,66 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — the buses</h3>
-    <p>10 people go on a trip. One bus takes 4 people. In C++, <code>10 / 4</code> is <b>2</b>: integer division throws away the rest (<span class="term" data-t="round-down">rounds down</span>). But 2 buses leave 2 people on the street.</p>
-    <p>You need to <span class="term" data-t="round-up">round up</span>: 3 buses. The trick is <code>(10 + 4 - 1) / 4</code> = 13 / 4 = <b>3</b>. In general: <code>(a + b - 1) / b</code>.</p>
+    <p>One bus takes 4 people. In C++, <code>10 / 4</code> is <b>2</b>. Division of two <code>int</code>s throws away the rest: it <span class="term" data-t="round-down">rounds down</span>. <button type="button" class="why" data-why="int-division">why?</button> But 2 buses leave 2 people on the street. We need to <span class="term" data-t="round-up">round up</span>.</p>
+    <p>Look at more numbers of people \( a \). <code>a % 4</code> is the rest: the people who do not fill a bus.</p>
+    <table>
+      <tr><th>people \( a \)</th><td>8</td><td>9</td><td>10</td><td>11</td><td>12</td><td>13</td></tr>
+      <tr><th><code>a / 4</code></th><td>2</td><td>2</td><td>2</td><td>2</td><td>3</td><td>3</td></tr>
+      <tr><th><code>a % 4</code></th><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>1</td></tr>
+      <tr><th>buses needed</th><td>2</td><td class="hi">3</td><td class="hi">3</td><td class="hi">3</td><td>3</td><td class="hi">4</td></tr>
+      <tr><th><code>(a + 3) / 4</code></th><td>2</td><td>3</td><td>3</td><td>3</td><td>3</td><td>4</td></tr>
+    </table>
+    <p><span class="tr" data-ar="إذا بقي شخص واحد على الأقل، نحتاج حافلة إضافية. إضافة 3 قبل القسمة تفعل ذلك تمامًا.">If at least one person is left over, we need one more bus. Adding 3 before dividing does exactly that.</span> Why 3? It is one less than the bus size 4. A full bus (rest 0) gets no extra bus.</p>
+    <p>With letters: \( a \) people and buses of size \( b \). Rounding up is written \( \lceil a / b \rceil \). In C++ write <code>(a + b - 1) / b</code>. This works when \( a \ge 0 \) and \( b &gt; 0 \).</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — take a number apart</h3>
-    <p><code>x % 10</code> is the last <span class="term" data-t="digit">digit</span>. <code>x / 10</code> removes the last digit. Repeat until nothing is left. Example: the sum of the digits of 4072.</p>
-    <table>
-      <tr><th>step</th><th>x</th><th>x % 10 (last digit)</th><th>sum</th><th>x / 10 (new x)</th></tr>
-      <tr><td>1</td><td>4072</td><td class="hi">2</td><td>2</td><td>407</td></tr>
-      <tr><td>2</td><td>407</td><td class="hi">7</td><td>9</td><td>40</td></tr>
-      <tr><td>3</td><td>40</td><td class="hi">0</td><td>9</td><td>4</td></tr>
-      <tr><td>4</td><td>4</td><td class="hi">4</td><td>13</td><td>0</td></tr>
-      <tr><td>end</td><td>0</td><td colspan="3">x is 0 → stop. The sum is 13. The number has 4 digits.</td></tr>
-    </table>
+    <h3><b>2 · Picture</b> — counting on a number line</h3>
+    <p><b>How many whole numbers are in \( [l, r] \)?</b> Here \( [l, r] \) means "from \( l \) to \( r \), both included". Take \( l = 5 \) and \( r = 17 \). The answer is 13, not 12. <span class="tr" data-ar="العدد هو r − l + 1، لأننا نعدّ الطرفين معًا.">The count is \( r - l + 1 \), because both ends count.</span></p>
+    <p><b>How many <span class="term" data-t="multiple">multiples</span> of 3 are in \( [5, 17] \)?</b> A multiple of 3 is 3, 6, 9, 12 and so on.</p>
+    <figure class="viz" data-viz="numberline" aria-label="A number line from 0 to 18. The range from 5 to 17 is a thick bar. The multiples of 3 are marked: 3 is before the range, and 6, 9, 12 and 15 are inside it.">
+      <script type="application/json">
+{ "min": 0, "max": 18, "range": [5, 17],
+  "pointers": { "l": 5, "r": 17 },
+  "states": { "3": "dim", "6": "done", "9": "done", "12": "done", "15": "done", "18": "dim" },
+  "notes": { "3": "3", "6": "6", "9": "9", "12": "12", "15": "15", "18": "18" },
+  "legend": { "done": "multiple of 3 inside [5, 17]", "dim": "multiple of 3 outside" } }
+</script>
+      <figcaption>Four multiples of 3 sit inside the bar: 6, 9, 12, 15.</figcaption>
+    </figure>
+    <p>Count them with two easy questions:</p>
+    <ul>
+      <li>Multiples of 3 from 1 to 17: \( \lfloor 17 / 3 \rfloor = 5 \). They are 3, 6, 9, 12, 15. The sign \( \lfloor x \rfloor \) means "round \( x \) down", like <code>17 / 3</code> in C++.</li>
+      <li>Multiples of 3 from 1 to 4, the part before \( l \): \( \lfloor 4 / 3 \rfloor = 1 \). It is the 3.</li>
+      <li>Take away the part before \( l \): \( 5 - 1 = 4 \).</li>
+    </ul>
+    \[ \text{multiples of } k \text{ in } [l, r] = \lfloor r / k \rfloor - \lfloor (l - 1) / k \rfloor \]
+    <p><b>Even and odd.</b> A number is even when <code>x % 2 == 0</code>. The rules for two numbers \( a \) and \( b \):</p>
+    <figure class="viz" data-viz="table" aria-label="A table of parity rules. Even plus even is even, even plus odd is odd, odd plus odd is even. A product is odd only when both numbers are odd.">
+      <script type="application/json">
+{ "corner": "a, b", "colLabels": ["example", "a + b", "a · b"],
+  "rowLabels": ["even, even", "even, odd", "odd, odd"],
+  "rows": [["4 and 6", "10: even", "24: even"], ["4 and 3", "7: odd", "12: even"], ["5 and 3", "8: even", "15: odd"]],
+  "states": { "1,1": "active", "2,2": "active" },
+  "legend": { "active": "the result is odd" } }
+</script>
+      <figcaption><span class="tr" data-ar="المجموع فردي فقط إذا كان عدد واحد فقط فرديًا. والضرب فردي فقط إذا كان العددان فرديين.">A sum is odd only when exactly one number is odd. A product is odd only when both are odd.</span></figcaption>
+    </figure>
+    <p><b>Sum of \( 1 + 2 + \dots + n \).</b> Take \( n = 10 \). Pair the ends: \( 1 + 10 = 11 \), \( 2 + 9 = 11 \), and so on. There are 5 pairs of 11, so the sum is 55. In general:</p>
+    \[ 1 + 2 + \dots + n = \frac{n \cdot (n + 1)}{2} \]
     <p>The formulas to remember:</p>
     <table>
-      <tr><th>I want…</th><th>formula</th><th>example</th></tr>
-      <tr><td>is x even?</td><td><code>x % 2 == 0</code></td><td>8 % 2 = 0 → even</td></tr>
-      <tr><td>is a divisible by b?</td><td><code>a % b == 0</code></td><td>12 % 4 = 0 → yes</td></tr>
-      <tr><td>a / b rounded down</td><td><code>a / b</code></td><td>10 / 4 = 2</td></tr>
-      <tr><td>a / b rounded up</td><td><code>(a + b - 1) / b</code></td><td>(10 + 3) / 4 = 3</td></tr>
-      <tr><td>1 + 2 + … + n</td><td>n · (n + 1) / 2</td><td>1 + … + 100 = 5050</td></tr>
-      <tr><td>1 + 3 + 5 + … (the first n odd numbers)</td><td>n · n</td><td>1 + 3 + 5 + 7 = 16</td></tr>
-      <tr><td>a sum where each step adds the same value</td><td>(first + last) · count / 2</td><td>3 + 5 + 7 + 9 = 12 · 4 / 2 = 24</td></tr>
-      <tr><td>how many <span class="term" data-t="multiple">multiples</span> of k from 1 to n</td><td><code>n / k</code></td><td>multiples of 3 up to 10: 3</td></tr>
-      <tr><td>how many multiples of k from l to r</td><td><code>r / k - (l - 1) / k</code></td><td>multiples of 3 in 5..10: 3 − 1 = 2</td></tr>
-      <tr><td>distance between x and y</td><td><code>abs(x - y)</code></td><td>abs(3 − 8) = 5</td></tr>
-      <tr><td>fewest steps to walk d, a step is at most s</td><td><code>(d + s - 1) / s</code></td><td>d = 23, s = 4 → 6 steps</td></tr>
+      <tr><th>I want…</th><th>math</th><th>C++</th><th>example</th></tr>
+      <tr><td>is \( x \) even?</td><td>\( x \bmod 2 = 0 \)</td><td><code>x % 2 == 0</code></td><td>\( 8 \bmod 2 = 0 \): even</td></tr>
+      <tr><td>is \( a \) divisible by \( b \)?</td><td>\( a \bmod b = 0 \)</td><td><code>a % b == 0</code></td><td>\( 12 \bmod 4 = 0 \): yes</td></tr>
+      <tr><td>\( a / b \) rounded down</td><td>\( \lfloor a / b \rfloor \)</td><td><code>a / b</code></td><td>\( \lfloor 10 / 4 \rfloor = 2 \)</td></tr>
+      <tr><td>\( a / b \) rounded up</td><td>\( \lceil a / b \rceil \)</td><td><code>(a + b - 1) / b</code></td><td>\( \lceil 10 / 4 \rceil = 3 \)</td></tr>
+      <tr><td>\( 1 + 2 + \dots + n \)</td><td>\( \frac{n (n + 1)}{2} \)</td><td><code>n * (n + 1) / 2</code></td><td>\( n = 100 \): 5050</td></tr>
+      <tr><td>whole numbers in \( [l, r] \)</td><td>\( r - l + 1 \)</td><td><code>r - l + 1</code></td><td>\( [5, 17] \): 13</td></tr>
+      <tr><td>multiples of \( k \) in \( [l, r] \)</td><td>\( \lfloor r / k \rfloor - \lfloor (l-1) / k \rfloor \)</td><td><code>r / k - (l - 1) / k</code></td><td>\( k = 3 \), \( [5, 17] \): 4</td></tr>
+      <tr><td>distance between \( x \) and \( y \)</td><td>\( |x - y| \)</td><td><code>abs(x - y)</code></td><td>\( |3 - 8| = 5 \)</td></tr>
     </table>
-    <p class="note">The third sum is called an <span class="term" data-t="arithmetic-progression">arithmetic progression</span>. <code>abs</code> is the <span class="term" data-t="absolute-value">absolute value</span>: the number without its minus sign.</p>
+    <p class="note">Here \( a \bmod b \) is the <span class="term" data-t="remainder">remainder</span>, <code>a % b</code> in C++. \( |x| \) is the <span class="term" data-t="absolute-value">absolute value</span>: the number without its minus sign.</p>
   </div>
 
   <div class="way">
@@ -63,7 +100,7 @@ long long multiples(long long l, long long r, long long k) {   // in [l..r], l &
     return r / k - (l - 1) / k;
 }
 </code></pre>
-    <p>The digits loop from the picture, as a full program:</p>
+    <p><b>Digits.</b> <code>x % 10</code> is the last <span class="term" data-t="digit">digit</span>. <code>x / 10</code> removes it. Repeat until \( x = 0 \). For 4072: the digits come out as 2, 7, 0, 4, and their sum is 13.</p>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -83,16 +120,78 @@ int main() {
   </div>
 </section>
 
-<p class="complexity">Speed: a formula is O(1). The digits loop is O(number of digits): at most 19 turns for a long long.</p>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem</b> (1A, Theatre Square). A square is \( n \) metres by \( m \) metres. You cover it with square stones of size \( a \) by \( a \). Stones may go over the edge, but you cannot break them. How many stones do you need at least? Limits: \( 1 \le n, m, a \le 10^9 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> One number: the fewest stones.</li>
+    <li><b>A small example by hand.</b> \( n = 6 \), \( m = 6 \), \( a = 4 \). Along one side, one stone covers 4 metres. 2 metres are left, so we need a second stone: \( \lceil 6 / 4 \rceil = 2 \). The same on the other side. In total \( 2 \cdot 2 = 4 \) stones.</li>
+    <li><b>The idea.</b> <span class="tr" data-ar="عدد الأحجار على كل ضلع هو قسمة مع تقريب إلى الأعلى. والجواب هو حاصل ضرب العددين.">The stones on each side are a division that rounds up. The answer is the product of the two.</span>
+      \[ \lceil n / a \rceil \cdot \lceil m / a \rceil \]
+    </li>
+    <li><b>Why is it fast enough?</b> Two divisions and one product: \( O(1) \). <span class="tr" data-ar="لكن الجواب قد يصل إلى 10^18، لذلك نستخدم long long.">But the answer can reach \( 10^9 \cdot 10^9 = 10^{18} \), so we use <code>long long</code>.</span></li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    long long n, m, a;                  // long long: the answer can be 10^18
+    cin &gt;&gt; n &gt;&gt; m &gt;&gt; a;
+    long long along = (n + a - 1) / a;  // stones along n, rounded up
+    long long across = (m + a - 1) / a; // stones along m, rounded up
+    cout &lt;&lt; along * across &lt;&lt; "\n";
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: a formula is \( O(1) \). The digits loop is \( O(\text{number of digits}) \): at most 19 turns for a <code>long long</code>.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="ceil(10 / 4) في C++ يعطي 3.">In C++, <code>ceil(10 / 4)</code> gives 3.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يعطي 2، لأن 10 / 4 بين عددين صحيحين تساوي 2 قبل أن يعمل ceil.">It gives 2. <code>10 / 4</code> is already 2 before <code>ceil</code> runs.</span> Stay with integers and write <code>(a + b - 1) / b</code>.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="عدد الأعداد من l إلى r هو r − l.">The count of numbers from \( l \) to \( r \) is \( r - l \).</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إنه r − l + 1، لأن الطرفين داخلان. من 5 إلى 7 هناك 3 أعداد.">It is \( r - l + 1 \), because both ends are in. From 5 to 7 there are 3 numbers.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الشرط x % 2 == 1 يختبر دائمًا إن كان العدد فرديًا.">The test <code>x % 2 == 1</code> always finds odd numbers.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="مع الأعداد السالبة يكون الباقي سالبًا: -7 % 2 يساوي -1. اكتب x % 2 != 0.">With a negative number the remainder is negative: <code>-7 % 2</code> is <code>-1</code>. Write <code>x % 2 != 0</code>.</span> <button type="button" class="why" data-why="negative-mod">why?</button></p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><code>n * (n + 1) / 2</code> with <code>int n</code> can <span class="term" data-t="overflow">overflow</span>: it overflows when n is above about 46 000. Use <code>long long</code> when n can pass 10<sup>4</sup>.</li>
-    <li><code>%</code> with a negative number gives a negative <span class="term" data-t="remainder">remainder</span>: <code>-7 % 2</code> is <code>-1</code>. Test odd with <code>x % 2 != 0</code>, not <code>== 1</code>.</li>
-    <li>You use <code>double</code> and <code>ceil(a / b)</code>. With big numbers it loses digits. Stay with integers and <code>(a + b - 1) / b</code>.</li>
-    <li>The digits loop does nothing for x = 0. If 0 is a possible input, handle it alone.</li>
+    <li><code>n * (n + 1) / 2</code> with <code>int n</code> can <span class="term" data-t="overflow">overflow</span>. It overflows from \( n = 46341 \), about \( 4.6 \cdot 10^4 \). Use <code>long long</code> when \( n \) can pass \( 10^4 \).</li>
+    <li>Two numbers up to \( 10^9 \) multiplied in <code>int</code>. The product needs <code>long long</code> before you multiply.</li>
+    <li>The digits loop does nothing for \( x = 0 \). If 0 is a possible input, handle it alone.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Primes, divisors, GCD.</b> They are the next level of the same math. You learn them in <a href="#number-theory">GCD, primes, divisors</a>.</li>
+    <li><b>"Print the answer modulo \( 10^9 + 7 \)".</b> That needs its own rules for <code>%</code>. You learn them in <a href="#modular">Mod and fast power</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="23 شخصًا، والحافلة تتّسع لـ 5. كم حافلة تحتاج؟ اكتب الحساب في C++.">23 people, a bus takes 5. How many buses? Write the C++ expression.</span>
+      <details><summary>Answer</summary><p><code>(23 + 5 - 1) / 5</code> = <code>27 / 5</code> = 5 buses. Four full buses carry 20, and the fifth carries 3.</p></details></li>
+    <li><span class="tr" data-ar="كم مضاعفًا للعدد 4 يوجد في المجال [10, 30]؟">How many multiples of 4 are in \( [10, 30] \)?</span>
+      <details><summary>Answer</summary><p>\( \lfloor 30 / 4 \rfloor - \lfloor 9 / 4 \rfloor = 7 - 2 = 5 \). They are 12, 16, 20, 24, 28.</p></details></li>
+    <li><span class="tr" data-ar="a فردي و b فردي. هل a + b زوجي أم فردي؟ وماذا عن a · b؟">\( a \) is odd and \( b \) is odd. Is \( a + b \) even or odd? And \( a \cdot b \)?</span>
+      <details><summary>Answer</summary><p>\( a + b \) is even, like \( 5 + 3 = 8 \). \( a \cdot b \) is odd, like \( 5 \cdot 3 = 15 \).</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">

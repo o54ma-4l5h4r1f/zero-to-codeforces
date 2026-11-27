@@ -1,12 +1,21 @@
-<p class="idea">Count the ways without listing them. Multiply for "and", add for "or", and use nCr to choose r things from n.</p>
+<p class="idea"><span class="tr" data-ar="اكتب الحالات الصغيرة كلها أولًا، ثم عُدّ الطرق بقاعدة: اضرب عند «و»، واجمع عند «أو»، واستخدم C(n, r) لاختيار r من n.">List the small cases first, then count with a rule: multiply for "and", add for "or", and use \( C(n, r) \) to choose r things from n.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can try all options with loops → <a href="#brute-force">Brute force</a></li>
+    <li>You know when to use <code>long long</code> → <a href="#overflow">int or long long?</a></li>
+    <li>You can take <code>% MOD</code> after each step and use <code>power</code> → <a href="#modular">Mod and fast power</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
     <li>"How many ways…", "count the number of…", and the answer is huge.</li>
-    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> 10<sup>9</sup>+7" (or 998244353).</li>
+    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> \( 10^9 + 7 \)" (or 998244353).</li>
     <li>You choose some items from many, and the order of the chosen items does not matter.</li>
-    <li>You count pairs: n items give <code>n·(n−1)/2</code> pairs.</li>
+    <li>You count pairs, <span class="term" data-t="subset">subsets</span>, orders, or paths in a grid.</li>
   </ul>
 </section>
 
@@ -14,50 +23,178 @@
   <h2>Three ways to understand it</h2>
 
   <div class="way">
-    <h3><b>1 · Story</b> — clothes and pizza</h3>
-    <p><b>Rule of product ("and" → multiply).</b> You have 3 shirts and 2 trousers. You wear one shirt <b>and</b> one pair of trousers: 3 × 2 = 6 ways.</p>
-    <p><b>Rule of sum ("or" → add).</b> You go to school by one of 3 buses <b>or</b> one of 2 trains: 3 + 2 = 5 ways.</p>
-    <p><b><span class="term" data-t="factorial">Factorial</span>.</b> 3 friends stand in a line: 3 choices for the first place, then 2, then 1. So 3 × 2 × 1 = 6 ways. This is <code>3!</code>. In general <code>n! = 1 × 2 × … × n</code>, and <code>0! = 1</code>.</p>
-    <p><b>nCr.</b> A pizza shop has 4 toppings: Cheese, Olives, Mushrooms, Tomato. You choose 2. Order does not matter (CO is the same pizza as OC). List them: CO, CM, CT, OM, OT, MT → <b>6 ways</b>.</p>
-    <p>This number is called C(n, r) or nCr, a <span class="term" data-t="combination">combination</span>: <code>C(n, r) = n! / (r! · (n−r)!)</code>. Check: C(4, 2) = 24 / (2 · 2) = 6.</p>
+    <h3><b>1 · Story</b> — write them all down, then count</h3>
+    <p><b>"Or" → add.</b> You go to school by one of 3 buses <b>or</b> one of 2 trains. The list is B1, B2, B3, T1, T2. That is \( 3 + 2 = 5 \) ways.</p>
+    <p><b>"And" → multiply.</b> You wear one of 3 shirts <b>and</b> one of 2 trousers. The tree in the picture below lists all 6 outfits: \( 3 \cdot 2 = 6 \).</p>
+    <p><b>Orders.</b> Three friends A, B, C stand in a line. All orders: ABC, ACB, BAC, BCA, CAB, CBA. That is 6. Now four things A, B, C, D. These orders start with A:</p>
+    <table>
+      <tr><td>ABCD</td><td>ABDC</td><td>ACBD</td><td>ACDB</td><td>ADBC</td><td>ADCB</td></tr>
+    </table>
+    <p>Six start with A, six with B, six with C, six with D. So there are \( 4 \cdot 6 = 24 \) orders. There are 4 choices for the first place, then 3, then 2, then 1.</p>
+    \[ 4! = 4 \cdot 3 \cdot 2 \cdot 1 = 24 \]
+    <p>This is a <span class="term" data-t="factorial">factorial</span>. \( n! \) is \( 1 \cdot 2 \cdot \dots \cdot n \), and \( 0! = 1 \).</p>
+    <p><b>Choose 2 of 4.</b> A pizza has 2 of 4 toppings: Cheese, Olives, Mushrooms, Tomato. CO is the same pizza as OC. All choices:</p>
+    <table>
+      <tr><td>CO</td><td>CM</td><td>CT</td><td>OM</td><td>OT</td><td>MT</td></tr>
+    </table>
+    <p>That is 6. Why? With order there are \( 4 \cdot 3 = 12 \) pairs. <span class="tr" data-ar="كل اختيار يُعدّ مرتين (CO و OC)، فنقسم على 2: 12 / 2 = 6.">Each choice is counted twice (CO and OC), so divide by 2.</span> We write this count as \( C(n, r) \), read "n choose r". It counts the ways to choose r things from n when order does not matter:</p>
+    \[ C(n, r) = \frac{n!}{r! \cdot (n - r)!} \]
+    <p>Check: \( C(4, 2) = \frac{24}{2 \cdot 2} = 6 \).</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — Pascal's triangle</h3>
-    <p>Row n, column r holds C(n, r). Each number is the sum of two numbers in the row above: the one above it and the one above-left.</p>
-    <table>
-      <tr><th>n \ r</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
-      <tr><th>0</th><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
-      <tr><th>1</th><td>1</td><td>1</td><td></td><td></td><td></td><td></td></tr>
-      <tr><th>2</th><td>1</td><td>2</td><td>1</td><td></td><td></td><td></td></tr>
-      <tr><th>3</th><td>1</td><td class="hi">3</td><td class="hi">3</td><td>1</td><td></td><td></td></tr>
-      <tr><th>4</th><td>1</td><td>4</td><td class="hi">6</td><td>4</td><td>1</td><td></td></tr>
-      <tr><th>5</th><td>1</td><td>5</td><td>10</td><td>10</td><td>5</td><td>1</td></tr>
-    </table>
-    <p><code>C(n, r) = C(n−1, r−1) + C(n−1, r)</code>. Here C(4, 2) = 3 + 3 = 6.</p>
-    <p class="note">Why? Look at the last item. Take it: choose r−1 more from the other n−1. Or leave it: choose all r from the other n−1. "Or" → add.</p>
-    <p>For n up to about 2000, fill this table. No division is needed:</p>
+    <h3><b>2 · Picture</b> — a tree of choices, and Pascal's triangle</h3>
+    <figure class="viz" data-viz="graph" aria-label="A tree of choices. From the start there are 3 shirts A, B, C. From each shirt there are 2 trousers. The 6 leaves are the outfits A1, A2, B1, B2, C1, C2.">
+      <script type="application/json">
+{
+  "unit": 70,
+  "nodes": [
+    { "id": "S", "label": "", "x": 2.5, "y": 0 },
+    { "id": "A", "x": 0.5, "y": 1 }, { "id": "B", "x": 2.5, "y": 1 }, { "id": "C", "x": 4.5, "y": 1 },
+    { "id": "A1", "x": 0, "y": 2 }, { "id": "A2", "x": 1, "y": 2 }, { "id": "B1", "x": 2, "y": 2 },
+    { "id": "B2", "x": 3, "y": 2 }, { "id": "C1", "x": 4, "y": 2 }, { "id": "C2", "x": 5, "y": 2 }
+  ],
+  "edges": [
+    { "from": "S", "to": "A" }, { "from": "S", "to": "B" }, { "from": "S", "to": "C" },
+    { "from": "A", "to": "A1" }, { "from": "A", "to": "A2" }, { "from": "B", "to": "B1" },
+    { "from": "B", "to": "B2" }, { "from": "C", "to": "C1" }, { "from": "C", "to": "C2" }
+  ],
+  "notes": { "S": "start" },
+  "states": { "A1": "done", "A2": "done", "B1": "done", "B2": "done", "C1": "done", "C2": "done" },
+  "legend": { "done": "one outfit" }
+}
+      </script>
+      <figcaption>First pick a shirt: 3 branches. From each shirt, 2 branches for the trousers. So the tree has \( 3 \cdot 2 = 6 \) leaves.</figcaption>
+    </figure>
+    <p>Now put \( C(n, r) \) in a table: row n, column r. <span class="tr" data-ar="كل خانة هي مجموع خانتين في الصف الذي فوقها: التي فوقها مباشرة والتي فوقها إلى اليسار.">Each cell is the sum of two cells in the row above: the one above it and the one above-left.</span></p>
+    <figure class="viz" data-viz="stepper" data-gen="pascal" aria-label="Step by step: Pascal's triangle for n from 0 to 5. Each new cell is the sum of the cell above it and the cell above-left.">
+      <script type="application/json">
+{
+  "scenes": [{"type":"table","id":"t","corner":"n \\ r","colLabels":[0,1,2,3,4,5],"rowLabels":["0","1","2","3","4","5"],"rows":[["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""]]}],
+  "legend": {"active":"C(n, r): filled now","read":"the two cells it adds"},
+  "code": ["for (int n = 0; n <= 5; n++) {","    C[n][0] = C[n][n] = 1;","    for (int r = 1; r < n; r++)","        C[n][r] = C[n-1][r-1]","                + C[n-1][r];","}"],
+  "steps": [
+    {"line":2,"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""]],"states":{}}},
+    {"line":[2,4,5],"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],[1,2,1,"","",""],["","","","","",""],["","","","","",""],["","","","","",""]],"states":{"2,1":"active","1,0":"read","1,1":"read"}}},
+    {"line":[2,4,5],"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],[1,2,1,"","",""],[1,3,"",1,"",""],["","","","","",""],["","","","","",""]],"states":{"3,1":"active","2,0":"read","2,1":"read"}}},
+    {"line":[4,5],"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],[1,2,1,"","",""],[1,3,3,1,"",""],["","","","","",""],["","","","","",""]],"states":{"3,2":"active","2,1":"read","2,2":"read"}}},
+    {"line":[2,4,5],"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],[1,2,1,"","",""],[1,3,3,1,"",""],[1,4,"","",1,""],["","","","","",""]],"states":{"4,1":"active","3,0":"read","3,1":"read"}}},
+    {"line":[4,5],"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],[1,2,1,"","",""],[1,3,3,1,"",""],[1,4,6,"",1,""],["","","","","",""]],"states":{"4,2":"active","3,1":"read","3,2":"read"}}},
+    {"line":[4,5],"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],[1,2,1,"","",""],[1,3,3,1,"",""],[1,4,6,4,1,""],["","","","","",""]],"states":{"4,3":"active","3,2":"read","3,3":"read"}}},
+    {"line":[2,3,4,5],"t":{"rows":[[1,"","","","",""],[1,1,"","","",""],[1,2,1,"","",""],[1,3,3,1,"",""],[1,4,6,4,1,""],[1,5,10,10,5,1]],"states":{}}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Rows 0 and 1 are all ones. Every row starts and ends with 1.</li>
+        <li>\( C(2, 1) = 1 + 1 = 2 \): the cell above-left plus the cell above.</li>
+        <li>\( C(3, 1) = 1 + 2 = 3 \).</li>
+        <li>\( C(3, 2) = 2 + 1 = 3 \).</li>
+        <li>\( C(4, 1) = 1 + 3 = 4 \).</li>
+        <li>\( C(4, 2) = 3 + 3 = 6 \). This is the 6 from the pizza list.</li>
+        <li>\( C(4, 3) = 3 + 1 = 4 \).</li>
+        <li>Row 5 is filled the same way: 1, 5, 10, 10, 5, 1.</li>
+      </ol>
+      <figcaption>Why a sum? Look at the last item. Take it, and choose \( r - 1 \) more from the other \( n - 1 \). Or leave it, and choose all r from the other \( n - 1 \). "Or" → add.</figcaption>
+    </figure>
+    <p>The same table in code, for n up to 2000. It needs no division:</p>
 <pre data-part="main"><code class="cpp">
-// before main:  const int MOD = 1e9 + 7;  long long C[2001][2001];   (all zeros)
+// before main:  const int MOD = 1e9 + 7;  long long C[2001][2001];
 for (int n = 0; n &lt;= 2000; n++) {
-    C[n][0] = 1;                                         // choose nothing: 1 way
-    for (int r = 1; r &lt;= n; r++)
+    C[n][0] = C[n][n] = 1;
+    for (int r = 1; r &lt; n; r++)
         C[n][r] = (C[n - 1][r - 1] + C[n - 1][r]) % MOD;
 }
 </code></pre>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — nCr mod p for big n</h3>
-    <p>For n up to 10<sup>5</sup> or 10<sup>6</sup> the table is too big. Use the formula with factorials. But you cannot divide under mod. You multiply by the <span class="term" data-t="modular-inverse">modular inverse</span>.</p>
-    <p>When p is <span class="term" data-t="prime">prime</span>, the inverse of a is <code>a<sup>p−2</sup> mod p</code> (Fermat). Compute it with fast power from <a href="#modular">Mod and fast power</a>.</p>
-    <p>So <span class="term" data-t="precompute">precompute</span> <code>fact[i] = i!</code> and <code>invfact[i]</code> = inverse of i!. Then <code>C(n, r) = fact[n] · invfact[r] · invfact[n−r]</code>.</p>
+    <h3><b>3 · Code</b> — dividing under mod</h3>
+    <p>For n up to \( 10^6 \) the table is too big. We need the formula with factorials. But the formula divides. Try it with \( C(5, 2) = 10 \) and mod 7. The right answer is \( 10 \bmod 7 = 3 \).</p>
+    <ul>
+      <li>\( 5! = 120 \), and \( 120 \bmod 7 = 1 \).</li>
+      <li>\( 2! \cdot 3! = 12 \), and \( 12 \bmod 7 = 5 \).</li>
+      <li>Now <code>1 / 5</code> in C++ is 0. <span class="tr" data-ar="النتيجة 0 وليست 3. القسمة بعد أخذ باقي القسمة تعطي رقمًا خاطئًا.">We get 0, not 3. Dividing after taking the mod gives a wrong number.</span></li>
+    </ul>
+    <p>The fix: never divide. Multiply by the <span class="term" data-t="modular-inverse">modular inverse</span>. The inverse of 5 mod 7 is a number x with \( 5 \cdot x \bmod 7 = 1 \). Here \( x = 3 \), because \( 15 \bmod 7 = 1 \). Now \( 1 \cdot 3 \bmod 7 = 3 \). Correct.</p>
+    <p class="tip-box"><b>The recipe (<span class="term" data-t="fermat">Fermat</span>).</b> <span class="tr" data-ar="إذا كان p عددًا أوليًّا و a ليس من مضاعفات p، فإن معكوس a هو a^(p-2) mod p.">If p is a prime and a is not a multiple of p, the inverse of a is \( a^{p-2} \bmod p \).</span> Check: \( 5^{5} = 3125 \), and \( 3125 \bmod 7 = 3 \). This is a rule you may use without the proof for now. Both \( 10^9 + 7 \) and 998244353 are primes.</p>
+<pre data-part="global"><code class="cpp">
+const long long MOD = 1e9 + 7;              // a prime
+
+long long power(long long a, long long b) { // a^b mod MOD, fast
+    long long res = 1;
+    a %= MOD;
+    while (b &gt; 0) {
+        if (b % 2 == 1) res = res * a % MOD;
+        a = a * a % MOD;
+        b /= 2;
+    }
+    return res;
+}
+
+long long inverse(long long a) {            // works only because MOD is prime
+    return power(a, MOD - 2);
+}
+</code></pre>
+    <p>So \( C(n, r) \) = <code>fact[n] * inverse(fact[r] * fact[n-r] % MOD) % MOD</code>. The program in "Solve one together" makes this fast.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p>The DEFAULT is \( C(n, r) \) with precomputed factorials (the program below). Check two things: does order matter, and may an item repeat?</p>
+  <table>
+    <tr><th>The problem says</th><th>Count</th><th>Small check</th></tr>
+    <tr><td>choose r of n, order does not matter</td><td>\( C(n, r) \)</td><td>\( C(4, 2) = 6 \)</td></tr>
+    <tr><td>choose r of n, <b>order matters</b></td><td>\( P(n, r) = \frac{n!}{(n - r)!} \)</td><td>\( P(4, 2) = 12 \)</td></tr>
+    <tr><td>pairs of n items</td><td>\( C(n, 2) = \frac{n \cdot (n - 1)}{2} \)</td><td>4 items: 6 pairs</td></tr>
+    <tr><td>all subsets of n items</td><td>\( 2^n \)</td><td>3 items: 8 subsets</td></tr>
+    <tr><td>a word of length r from n letters, a letter may repeat</td><td>\( n^r \)</td><td>2 letters, length 3: 8</td></tr>
+    <tr><td>choose r of n kinds, a kind may repeat, order does not matter</td><td>\( C(n + r - 1, r) \)</td><td>2 kinds, take 3: 4</td></tr>
+  </table>
+  <p>Order matters: <span class="tr" data-ar="احذف invfact[r] من C.">drop <code>invfact[r]</code> from <code>C</code>.</span></p>
+<pre data-part="main"><code class="cpp">
+long long P = fact[n] * invfact[n - r] % MOD;   // was: C(n, r)
+</code></pre>
+  <p>Subsets and repeated letters use <code>power(2, n)</code> and <code>power(n, r)</code>. The last row is a rule you may use now. Its proof is in "Not now".</p>
+  <p><b>Paths in a grid.</b> You walk from the bottom-left corner to the top-right one. You move only right or up. With 3 right moves and 2 up moves, a path is a word like RRURU.</p>
+  <figure class="viz" data-viz="plane" aria-label="A grid from 0 to 3 to the right and 0 to 2 up. One path goes right, right, up, right, up from the corner 0, 0 to the corner 3, 2.">
+    <script type="application/json">
+{
+  "x": [0, 3], "y": [0, 2], "unit": 56,
+  "points": [ { "at": [0, 0], "label": "start" }, { "at": [3, 2], "label": "end" } ],
+  "paths": [ { "points": [[0, 0], [2, 0], [2, 1], [3, 1], [3, 2]], "label": "RRURU", "state": "active", "arrow": true } ],
+  "legend": { "active": "one path" }
+}
+    </script>
+    <figcaption>Every path has 5 moves. You only choose which 2 of them go up. So there are \( C(5, 2) = 10 \) paths.</figcaption>
+  </figure>
+<pre data-part="main"><code class="cpp">
+long long paths = C(right + up, up);   // C(5, 2) = 10
+</code></pre>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> You get \( q \) questions. Each question is two numbers n and r. Print \( C(n, r) \bmod (10^9 + 7) \). Limits: \( 1 \le q \le 10^5 \) and \( 0 \le r \le n \le 10^6 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> \( C(n, r) \) many times, for n up to \( 10^6 \). The table needs \( 10^{12} \) cells: too big. So we use factorials.</li>
+    <li><b>A small example by hand.</b> "5 2" → \( \frac{120}{2 \cdot 6} = 10 \). "10 3" → \( \frac{3628800}{6 \cdot 5040} = 120 \). Small numbers can be divided. Big ones are taken mod, so we must multiply by inverses.</li>
+    <li><b>The idea.</b> Compute <code>fact[i]</code> \( = i! \bmod p \) once, for every i. Compute <code>invfact[i]</code>, the inverse of \( i! \). Only one inverse comes from Fermat. The others come by going back with multiplication.
+      \[ \frac{1}{(i-1)!} = \frac{1}{i!} \cdot i \]
+      <p>Then each answer is <code>fact[n] * invfact[r] % MOD * invfact[n - r] % MOD</code>.</p>
+    </li>
+    <li><b>Why is it fast enough?</b> The tables take \( 10^6 \) steps each. Fermat takes about 30 steps. Each question takes 2 multiplications.
+      \[ 2 \cdot 10^6 + 2 \cdot 10^5 \text{ steps} \]
+      <p>That is far below \( 10^8 \).</p>
+    </li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-const int MOD = 1e9 + 7;                    // a prime
-const int MAXN = 200000;                    // the biggest n you need
+const long long MOD = 1e9 + 7;              // a prime
+const int MAXN = 1000000;                   // the biggest n you need
 long long fact[MAXN + 1], invfact[MAXN + 1];
 
 long long power(long long a, long long b) { // a^b mod MOD, fast
@@ -92,20 +229,56 @@ int main() {
     }
 }
 </code></pre>
-    <p class="tip-box">Three numbers to remember. Pairs from n items: <code>n·(n−1)/2</code> (this is C(n, 2)). <span class="term" data-t="subset">Subsets</span> of n items: <code>2<sup>n</sup></code> (each item is in or out). Orders of n items: <code>n!</code>.</p>
-  </div>
 </section>
 
-<p class="complexity">Speed: O(MAXN) once to precompute, then O(1) for each C(n, r). Pascal's table: O(n²).</p>
+<p class="complexity">Speed: \( O(\text{MAXN}) \) once for the tables, then \( O(1) \) for each \( C(n, r) \). Pascal's table: \( O(n^2) \).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="أستطيع أن آخذ باقي القسمة أولًا ثم أقسم.">I can take the mod first and divide after.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="هذا يعطي رقمًا خاطئًا، كما في مثال C(5, 2) مع 7. اضرب في المعكوس بدل القسمة.">That gives a wrong number, as in the example \( C(5, 2) \) mod 7. Multiply by the inverse instead.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="C(n, r) يعدّ AB و BA كاختيارين مختلفين.">\( C(n, r) \) counts AB and BA as two different choices.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="في C(n, r) الترتيب لا يهمّ. إذا كان الترتيب يهمّ فاستخدم P(n, r).">In \( C(n, r) \) the order does not matter. If order matters, use \( P(n, r) \).</span> Ask "is AB the same as BA?" before you choose.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="إذا كان n صغيرًا، مثل 70، فإن C(n, r) يتّسع في long long دون باقي قسمة.">For a small n like 70, \( C(n, r) \) fits in <code>long long</code> without a mod.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="C(67, 33) أكبر من أي قيمة يتّسع لها long long.">\( C(67, 33) \) is already too big for <code>long long</code>.</span> Use the mod, or Pascal's table if the problem has no mod and n is small.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>Dividing under mod: <code>fact[n] / fact[r] % MOD</code> is wrong. Multiply by the inverse.</li>
-    <li>Forgetting <code>% MOD</code> after <b>each</b> multiplication. Three numbers multiplied together <span class="term" data-t="overflow">overflow</span> <code>long long</code>.</li>
+    <li>No <code>% MOD</code> after <b>each</b> multiplication. Three numbers below \( 10^9 \) multiplied together <span class="term" data-t="overflow">overflow</span> <code>long long</code>.</li>
     <li>No check for <code>r &lt; 0</code> or <code>r &gt; n</code>. Then you read outside the array.</li>
-    <li>Arrays too small, or <code>n·(n−1)/2</code> in <code>int</code>. For n = 200 000 the number of pairs is 2·10<sup>10</sup>: use <code>long long</code>.</li>
+    <li>Pairs as <code>n * (n - 1) / 2</code> in <code>int</code>. For \( n = 2 \cdot 10^5 \) the result is about \( 2 \cdot 10^{10} \): use <code>long long</code>.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Why Fermat's rule is true.</b> The proof needs more number theory. You can use the recipe without it. Come back: <a href="#what-next">After 1600</a>.</li>
+    <li><b>Why \( C(n + r - 1, r) \) counts choices with repeats</b> ("stars and bars"). Use the formula now. The proof: <a href="#what-next">After 1600</a>.</li>
+    <li><b>Counting with "not" and overlaps</b> (inclusion–exclusion). It is rare below 1600: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="بكم طريقة تختار 3 طلاب من 5 طلاب، إذا كان الترتيب لا يهمّ؟">In how many ways can you choose 3 students out of 5, if the order does not matter?</span>
+      <details><summary>Answer</summary><p>\( C(5, 3) = \frac{120}{6 \cdot 2} = 10 \). It is also row 5, column 3 of Pascal's triangle.</p></details></li>
+    <li><span class="tr" data-ar="لديك 4 قمصان و 3 قبعات. تلبس قميصًا واحدًا وقبعة واحدة. كم طريقة؟">You have 4 shirts and 3 hats. You wear one shirt and one hat. How many ways?</span>
+      <details><summary>Answer</summary><p>"And" → multiply: \( 4 \cdot 3 = 12 \).</p></details></li>
+    <li><span class="tr" data-ar="ما معكوس 3 بباقي القسمة على 7؟ تحقّق بالضرب.">What is the inverse of 3 mod 7? Check it with a multiplication.</span>
+      <details><summary>Answer</summary><p>5, because \( 3 \cdot 5 = 15 \) and \( 15 \bmod 7 = 1 \). Fermat gives the same: \( 3^{5} = 243 \), and \( 243 \bmod 7 = 5 \).</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -119,7 +292,7 @@ int main() {
     <li><a class="cf" data-p="1475E">Advertising Agency</a><span class="r">1600</span></li>
     <li><a class="cf" data-p="1288C">Two Arrays</a><span class="r">1600</span></li>
     <li><a class="cf" data-p="300C">Beautiful Numbers</a><span class="r">1800</span></li>
-    <li><a href="https://cses.fi/problemset/task/1079">CSES: Binomial Coefficients</a><span class="r">CSES</span> — the program above with <code>MAXN = 1000000</code>.</li>
+    <li><a href="https://cses.fi/problemset/task/1079">CSES: Binomial Coefficients</a><span class="r">CSES</span> — the problem of "Solve one together". Submit the program there.</li>
   </ol>
 </section>
 
@@ -130,6 +303,6 @@ int main() {
     <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 22 "Combinatorics".</li>
     <li><a href="https://cp-algorithms.com/combinatorics/binomial-coefficients.html">cp-algorithms: Binomial Coefficients</a> — reference text with all the ways to compute nCr.</li>
     <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — lessons by Mostafa Saad, look for the counting videos.</li>
-    <li><a href="https://codeforces.com/blog/entry/110376">Codeforces blog: Combinatorics Study Notes</a> — more formulas with examples, for after this page.</li>
+    <li><a href="https://codeforces.com/blog/entry/110376">[Educational] Combinatorics Study Notes (1)</a> — a Codeforces blog with more formulas and examples, for after this page.</li>
   </ul>
 </section>

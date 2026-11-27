@@ -1,60 +1,25 @@
-<p class="idea">Do not change code and hope. Look at the verdict, follow a checklist in order, and test your code against a slow, simple solution.</p>
+<p class="idea"><span class="tr" data-ar="لا تغيّر الكود عشوائيًا على أمل أن ينجح. اقرأ الحكم، واتبع قائمة فحص بالترتيب، وقارن كودك بحل بطيء وبسيط.">Do not change code and hope. Look at the verdict, follow a checklist in order, and test your code against a slow, simple solution.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know the verdicts WA, TLE and RE → <a href="#how-codeforces-works">How Codeforces works</a></li>
+    <li>You can count the steps of a loop → <a href="#big-o">How much does my code cost?</a></li>
+    <li>You know when to use <code>long long</code> → <a href="#overflow">int or long long?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
-  <h2>First: read the verdict</h2>
-  <p>The <span class="term" data-t="verdict">verdict</span> tells you where to look. Each one has its own <span class="term" data-t="checklist">checklist</span> below.</p>
+  <h2>First: the verdict tells you where to look</h2>
+  <p>Each <span class="term" data-t="verdict">verdict</span> has its own <span class="term" data-t="checklist">checklist</span>. <span class="tr" data-ar="ابدأ بالفحص الأول، ولا تنتقل إلى التالي قبل أن تنتهي منه.">Start with check 1. Do not jump to check 2 before you finish check 1.</span></p>
   <table>
-    <tr><th>Verdict</th><th>Short</th><th>It means</th></tr>
-    <tr><td>Wrong answer</td><td>WA</td><td>The program ran, but printed something wrong.</td></tr>
-    <tr><td>Time limit exceeded</td><td>TLE</td><td>The program is too slow, or it never stops.</td></tr>
-    <tr><td>Runtime error</td><td>RE</td><td>The program crashed.</td></tr>
+    <tr><th>Verdict</th><th>Check these, in this order</th></tr>
+    <tr><td><b>Wrong answer</b> (WA)</td><td><ol><li>Read the statement and the output format again, slowly.</li><li>Test <span class="term" data-t="edge-case">edge cases</span> by hand: \( n = 1 \), all equal, the biggest values.</li><li>Overflow: can a sum or a product pass \( 2 \cdot 10^9 \)?</li></ol></td></tr>
+    <tr><td><b>Time limit exceeded</b> (TLE)</td><td><ol><li>Count the steps for the biggest \( n \). More than about \( 10^8 \)? You need a new idea.</li><li>A loop that never ends: does the loop variable really change?</li><li><code>endl</code> or no fast-input lines: print <code>"\n"</code>, keep the template.</li></ol></td></tr>
+    <tr><td><b>Runtime error</b> (RE)</td><td><ol><li>An index <span class="term" data-t="out-of-range">out of range</span>: <code>a[n]</code>, <code>a[-1]</code>, an array too small.</li><li>Division by zero: <code>x / 0</code> and <code>x % 0</code> both crash.</li><li>An empty container: <code>v.back()</code> when <code>v</code> is empty.</li></ol></td></tr>
+    <tr><td><b>Memory limit exceeded</b> (MLE)</td><td><ol><li>The size of your arrays: \( 10^8 \) <code>int</code> values need 400 MB. The usual limit is 256 MB.</li><li>A 2D array of \( n \cdot n \) cells: with \( n = 10^4 \) that is \( 10^8 \) cells.</li><li>A <code>vector</code> that grows forever in a loop that never ends.</li></ol></td></tr>
   </table>
-</section>
-
-<section>
-  <h2>Wrong answer: check in this order</h2>
-  <ol>
-    <li><b>Read the statement again</b>, slowly. Also read the output format. Most bugs are here.</li>
-    <li><b>Test <span class="term" data-t="edge-case">edge cases</span> by hand:</b> n = 1, all numbers equal, already sorted, the maximum values, an answer of 0.</li>
-    <li><b>Overflow:</b> can a sum or a product pass 2·10<sup>9</sup>? Use <code>long long</code>. See <a href="#overflow">int or long long?</a></li>
-    <li><b>Array bounds:</b> is every index from 0 to n − 1? Look at <code>a[i + 1]</code> and <code>a[i - 1]</code>.</li>
-    <li><b><span class="term" data-t="uninitialised">Uninitialised</span> variables:</b> <code>int sum;</code> holds garbage. Write <code>int sum = 0;</code></li>
-    <li><b>Many test cases:</b> do you reset every array and counter before each test case?</li>
-    <li><b>Spelling:</b> <code>YES</code> or <code>Yes</code>? A space or a new line between the numbers?</li>
-  </ol>
-  <p class="tip-box">Explain your code line by line to a friend, or to an empty chair. When you must say what each line does, you often see the bug.</p>
-</section>
-
-<section>
-  <h2>Time limit exceeded</h2>
-  <ul>
-    <li><b>Count the steps</b> from the limits. More than about 10<sup>8</sup>? You need a faster idea, not a faster keyboard. See <a href="#complexity">Limits → speed</a>.</li>
-    <li><b><code>endl</code></b> is slow when you print many lines. Print <code>"\n"</code>.</li>
-    <li><b>A vector passed by value</b> is copied on every call. Write <code>const vector&lt;int&gt; &amp;a</code>.</li>
-    <li><b>A loop that never ends:</b> does the loop variable really change? Is it <code>i++</code> in the inner loop, or <code>j++</code>?</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Runtime error</h2>
-  <ul>
-    <li><b>Index <span class="term" data-t="out-of-range">out of range</span>:</b> an array that is too small, <code>a[n]</code>, or <code>a[-1]</code>.</li>
-    <li><b>Division by zero:</b> <code>x / 0</code> and <code>x % 0</code> both crash.</li>
-    <li><b>Empty container:</b> <code>v.back()</code>, <code>s.top()</code> or <code>q.front()</code> when nothing is inside.</li>
-    <li><b>Recursion that is too deep</b>, or that never stops because the stop condition is missing.</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Print what your program thinks</h2>
-  <p>Print the variables inside the loop and compare them with your hand <span class="term" data-t="trace">trace</span>. Use <code>cerr</code>, not <code>cout</code>. The judge ignores <code>cerr</code>, so a forgotten line does not give Wrong answer.</p>
-<pre data-part="main"><code class="cpp">
-for (int i = 0; i &lt; n; i++) {
-    sum += a[i];
-    cerr &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " a[i]=" &lt;&lt; a[i] &lt;&lt; " sum=" &lt;&lt; sum &lt;&lt; "\n";   // debug line
-}
-</code></pre>
-  <p class="note">Still delete these lines before you submit. Printing a lot to <code>cerr</code> takes time.</p>
+  <p class="note">Wrong answer still? Then check <span class="term" data-t="uninitialised">uninitialised</span> variables (<code>int sum;</code> holds garbage) <button type="button" class="why" data-why="global-zero">why?</button>, resets between test cases, and spelling: <code>YES</code> or <code>Yes</code>.</p>
 </section>
 
 <section>
@@ -63,28 +28,28 @@ for (int i = 0; i &lt; n; i++) {
 
   <div class="way">
     <h3><b>1 · Story</b> — two students</h3>
-    <p>One student is fast but makes mistakes. The other is very slow but always right. Give both the same small questions. When their answers differ, you found a question where the fast student is wrong.</p>
+    <p>One student is fast but makes mistakes. The other is very slow but always right. Give both the same small questions. <span class="tr" data-ar="عندما يختلف جواباهما تكون قد وجدت سؤالًا أخطأ فيه الطالب السريع.">When their answers differ, you found a question where the fast student is wrong.</span></p>
   </div>
 
   <div class="way">
     <h3><b>2 · Picture</b> — the three parts</h3>
     <table>
       <tr><th>Part</th><th>What it is</th></tr>
-      <tr><td><code>fast(...)</code></td><td>Your real solution. Maybe it has a bug.</td></tr>
-      <tr><td><code>slow(...)</code></td><td>A <span class="term" data-t="brute-force">brute force</span>: simple loops that are clearly correct. Speed does not matter.</td></tr>
-      <tr><td>generator</td><td>Makes small <span class="term" data-t="random">random</span> inputs: n ≤ 6, values from −5 to 5.</td></tr>
+      <tr><td><code>fast(...)</code></td><td>Your real solution. Maybe it has a bug. <button type="button" class="why" data-why="bug">why?</button></td></tr>
+      <tr><td><code>slow(...)</code></td><td>A <span class="term" data-t="brute-force">brute force</span>: simple loops that are surely correct. Speed does not matter.</td></tr>
+      <tr><td>generator</td><td>Makes small <span class="term" data-t="random">random</span> inputs: \( n \le 6 \), values from −5 to 5.</td></tr>
     </table>
-    <p class="note">Small inputs are the point. A wrong case with 4 numbers is easy to check by hand. A wrong case with 1000 numbers is useless.</p>
+    <p class="note"><span class="tr" data-ar="الاختبارات الصغيرة هي المقصود. حالة خاطئة من 4 أعداد تفحصها بيدك بسهولة.">Small inputs are the point. A wrong case with 4 numbers is quick to check by hand.</span> A wrong case with 1000 numbers is useless.</p>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — everything in one file</h3>
-    <p>Toy task: find the maximum sum of a <span class="term" data-t="subarray">subarray</span> (at least one element).</p>
+    <p>Toy task: find the biggest sum of a <span class="term" data-t="subarray">subarray</span>, a block of neighbours with at least one element.</p>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-long long fast(const vector&lt;int&gt; &amp;a) {     // the solution you want to submit: O(n)
+long long fast(const vector&lt;int&gt; &amp;a) {     // the solution you want to submit: n steps
     long long best = a[0], cur = 0;
     for (int x : a) {
         cur = max(cur + x, (long long)x);  // continue the old subarray, or start at x
@@ -93,7 +58,7 @@ long long fast(const vector&lt;int&gt; &amp;a) {     // the solution you want to
     return best;
 }
 
-long long slow(const vector&lt;int&gt; &amp;a) {     // try every subarray: O(n^2), clearly correct
+long long slow(const vector&lt;int&gt; &amp;a) {     // every subarray: n * n steps, surely right
     int n = a.size();
     long long best = a[0];
     for (int i = 0; i &lt; n; i++) {
@@ -123,26 +88,133 @@ int main() {
     cout &lt;&lt; "all 1000 tests are equal\n";
 }
 </code></pre>
-    <p>Try it: change <code>best = a[0]</code> in <code>fast</code> to <code>best = 0</code>. The program now prints a small array with only negative numbers. That is the bug: the answer cannot be an empty subarray.</p>
+    <p>Try it: change <code>best = a[0]</code> in <code>fast</code> to <code>best = 0</code>. <span class="tr" data-ar="الآن يطبع البرنامج مصفوفة صغيرة كل أعدادها سالبة. هذا هو الخطأ: الجواب لا يمكن أن يكون مصفوفة جزئية فارغة.">Now the program prints a small array of only negative numbers. That is the bug: the answer cannot be an empty subarray.</span></p>
+    <p class="note">You do not need to understand how <code>fast</code> works. Only the idea matters: compare it with <code>slow</code>.</p>
   </div>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> There are \( t \) test cases. Each one has \( n \) numbers. Print how many of them are even. This code passes the first test case but fails the second. Find the bug.</p>
+
+  <ol class="steps">
+    <li><b>The code.</b> Read it once before you trace it.
+<pre data-part="main"><code class="cpp">
+int t; cin &gt;&gt; t;
+int cnt = 0;
+while (t--) {
+    int n; cin &gt;&gt; n;
+    for (int i = 0; i &lt; n; i++) {
+        int x; cin &gt;&gt; x;
+        if (x % 2 == 0) cnt++;
+    }
+    cout &lt;&lt; cnt &lt;&lt; "\n";
+}
+</code></pre>
+    </li>
+    <li><b>What is wrong?</b> The verdict is Wrong answer. So we start with check 1: the statement. It is clear: count the even numbers of <b>each</b> test case.</li>
+    <li><b>A small test by hand.</b> Input: <code>2</code>, then <code>3</code> and <code>2 4 5</code>, then <code>1</code> and <code>6</code>. The right output is <code>2</code> then <code>1</code>.</li>
+    <li><b>Trace it.</b> We follow the code line by line and write every value in a <span class="term" data-t="trace">trace</span> table.
+      <table>
+        <tr><th>Test</th><th><code>x</code></th><th>Even?</th><th><code>cnt</code> after</th><th>Printed</th></tr>
+        <tr><td>1</td><td>2</td><td>yes</td><td>1</td><td></td></tr>
+        <tr><td>1</td><td>4</td><td>yes</td><td>2</td><td></td></tr>
+        <tr><td>1</td><td>5</td><td>no</td><td>2</td><td>2 (right)</td></tr>
+        <tr><td>2</td><td>6</td><td>yes</td><td class="hi">3</td><td class="hi">3 (should be 1)</td></tr>
+      </table>
+    </li>
+    <li><b>The bug.</b> <span class="tr" data-ar="العدّاد cnt لا يعود إلى 0 في بداية حالة الاختبار الثانية. فيبدأ من 2 بدل 0.">The counter <code>cnt</code> does not go back to 0 when test case 2 starts. It starts from 2, not from 0.</span></li>
+    <li><b>The fix.</b> Move <code>int cnt = 0;</code> inside the <code>while</code> loop. Or put the work in <code>solve()</code>, as the template does. Run the hand test again: it prints <code>2</code> then <code>1</code>.</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int t;
+    cin &gt;&gt; t;
+    while (t--) {
+        int cnt = 0;                     // fresh for every test case
+        int n;
+        cin &gt;&gt; n;
+        for (int i = 0; i &lt; n; i++) {
+            int x;
+            cin &gt;&gt; x;
+            if (x % 2 == 0) cnt++;
+        }
+        cout &lt;&lt; cnt &lt;&lt; "\n";
+    }
+}
+</code></pre>
+</section>
+
+<section>
+  <h2>Print what your program thinks</h2>
+  <p>A trace table by hand is slow for big loops. Let the program print it. Use <code>cerr</code>, not <code>cout</code>. <span class="tr" data-ar="الحَكَم يتجاهل cerr، لذلك السطر المنسي لا يسبّب إجابة خاطئة.">The judge ignores <code>cerr</code>, so a forgotten line does not give Wrong answer.</span></p>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++) {
+    sum += a[i];
+    cerr &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " sum=" &lt;&lt; sum &lt;&lt; "\n";   // debug line
+}
+</code></pre>
+  <p class="note">Still delete these lines before you submit. Printing a lot to <code>cerr</code> takes time.</p>
+</section>
+
+
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="كل الأمثلة نجحت، إذن الخطأ عند الحَكَم.">All samples pass, so the judge must be wrong.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الأمثلة سهلة عمدًا. الخطأ تقريبًا دائمًا في كودك، في حالة لم تجرّبها.">The samples are easy on purpose. The bug is almost always in your code, in a case you did not try.</span> <button type="button" class="why" data-why="samples">why?</button></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="سأغيّر سطرًا وأرسل مرة أخرى لأرى ما يحدث.">I will change one line and submit again to see what happens.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="كل إرسال خاطئ يكلّف نقاطًا. ابحث عن مثال يفشل فيه الكود أولًا، ثم أصلحه.">Each wrong submit costs points. First find an input that fails, then fix the code.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="Time limit exceeded يعني أن الكود يحتاج تحسينات صغيرة.">Time limit exceeded means the code needs small speed-ups.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="غالبًا تحتاج فكرة أسرع، لا لوحة مفاتيح أسرع. عُدّ الخطوات أولًا.">Usually you need a faster idea, not a faster keyboard. Count the steps first.</span> See <a href="#complexity">Limits → speed</a>.</p>
+    </li>
+  </ul>
 </section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>You submit again and again with small random changes. Each wrong submit costs points in a contest.</li>
-    <li>You test only the samples. The samples are easy on purpose.</li>
+    <li>You test only the samples. Make your own small tests: \( n = 1 \), all equal, negative numbers.</li>
     <li>In a stress test you copy the same wrong idea into <code>slow</code>. Write <code>slow</code> in a different, simpler way.</li>
-    <li>Your random tests are big. Keep n small and the values small, so equal numbers and negative numbers appear often.</li>
+    <li>Your random tests are big. Keep \( n \) small and the values small, so equal and negative numbers appear often.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>How <code>fast</code> above works.</b> It is a known trick for the biggest subarray sum. You meet ideas like it in <a href="#dp">Dynamic programming</a>.</li>
+    <li><b>How to write a good <code>slow</code>.</b> "Try every case" is a full lesson: <a href="#brute-force">Brute force</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="حصلت على Runtime error. ما أول شيء تفحصه؟">You get Runtime error. What do you check first?</span>
+      <details><summary>Answer</summary><p>An index out of range: <code>a[n]</code>, <code>a[-1]</code> or an array that is too small. Then division by zero.</p></details></li>
+    <li><span class="tr" data-ar="الحالة الأولى صحيحة والثانية خاطئة، والحالة الثانية وحدها صحيحة. ما الخطأ المحتمل؟">Test case 1 is right, test case 2 is wrong. Alone, test case 2 is right. What is the likely bug?</span>
+      <details><summary>Answer</summary><p>A variable is not reset between test cases. It keeps its value from test case 1.</p></details></li>
+    <li><span class="tr" data-ar="لماذا نستخدم اختبارات عشوائية صغيرة جدًا في اختبار الضغط؟">Why do we use very small random tests in a stress test?</span>
+      <details><summary>Answer</summary><p>So we can check a failing case by hand. Small values also make equal and negative numbers appear often.</p></details></li>
+  </ol>
 </section>
 
 <section class="more">
   <h2>Learn more</h2>
   <ul>
+    <li><a href="https://codeforces.com/blog/entry/81841">Stress Testing Tutorial</a> — the same idea as above, as a tutorial.</li>
+    <li><a href="https://codeforces.com/blog/entry/111217">[Tutorial] Common Mistakes in Competitive Programming and How to Avoid Them</a> — a long list of real bugs, very useful.</li>
+    <li><a href="https://codeforces.com/blog/entry/15547">Catching silly mistakes with GCC</a> — compiler options that find bugs for you.</li>
     <li><a href="https://usaco.guide/general/debugging-cpp">USACO Guide: Debugging C++</a> — more ways to print and to find a crash.</li>
-    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book. Chapter 5 shows more brute-force code you can use as <code>slow</code>.</li>
-    <li><a href="https://codeforces.com/blog/entry/111217">Codeforces blog: Common Mistakes and How to Avoid Them</a> — a long list of real bugs, very useful.</li>
-    <li><a href="https://codeforces.com/blog/entry/15547">Codeforces blog: Catching silly mistakes with GCC</a> — compiler options that find bugs for you.</li>
   </ul>
 </section>

@@ -1,0 +1,415 @@
+== numtheory | s1 | Divisors and primes
+-- number-theory | Greatest common divisor and least common multiple. In the lcm, divide before you multiply to avoid overflow.
+$$gcd_rule: \gcd(a, b) = \gcd(b, a \bmod b)$$, $$gcd_zero: \gcd(a, 0) = a$$
+$$lcm_rule: \text{lcm}(a, b) = \frac{a}{\gcd(a, b)} \cdot b$$
+C++: {{gcd_std: gcd(a, b)}}, {{lcm_std: lcm(a, b)}}, {{gcd_old: __gcd(a, b)}}
+no common divisor: {{coprime: gcd(a, b) == 1}}
+-- number-theory | The gcd of a whole array: start from 0, because gcd(0, x) is x.
+>>> main gcdarr
+long long g = 0;
+for (long long x : a) g = gcd(g, x);
+<<<
+-- number-theory | Is n prime? Try divisors up to the square root. O(√n), fine for n up to about 10^14.
+>>> global isPrime
+bool isPrime(long long n) {
+    if (n < 2) return false;
+    for (long long i = 2; i * i <= n; i++)
+        if (n % i == 0) return false;
+    return true;
+}
+<<<
+-- number-theory | All divisors of n in O(√n): they come in pairs (i, n / i). The list d is not sorted.
+>>> main divisors
+for (long long i = 1; i * i <= n; i++)
+    if (n % i == 0) {
+        d.push_back(i);
+        if (i != n / i) d.push_back(n / i);
+    }
+<<<
+-- number-theory | Break n into prime factors, small to big, with repeats: 12 gives 2, 2, 3. O(√n). What is left above 1 at the end is one more prime.
+>>> global factorize
+vector<long long> factorize(long long n) {
+    vector<long long> f;
+    for (long long p = 2; p * p <= n; p++)
+        while (n % p == 0) {
+            f.push_back(p);
+            n /= p;
+        }
+    if (n > 1) f.push_back(n);
+    return f;
+}
+<<<
+-- number-theory | Sieve: find all primes up to N at once. O(N log log N). Good for N up to about 10^7.
+>>> global sieve
+const int N = 1000000;
+vector<bool> prime(N + 1, true);
+void sieve() {
+    prime[0] = prime[1] = false;
+    for (int i = 2; 1LL * i * i <= N; i++) {
+        if (!prime[i]) continue;
+        for (int j = i * i; j <= N; j += i)
+            prime[j] = false;
+    }
+}
+<<<
+
+== mod | s2 | Modulo and counting formulas
+-- modular | Rules for answers modulo 10^9+7, with a and b already in 0 .. m-1. Take % after every step. Never divide normally under mod.
+add: {{mod_add: (a + b) % m}}
+subtract: {{mod_sub: ((a - b) % m + m) % m}}
+multiply: {{mod_mul: (1LL * a * b) % m}}
+divide: $$mod_div: a / b \to a \cdot b^{m-2} \bmod m$$ ($$: m$$ prime)
+-- modular | Fast power: a^b mod m in O(log b) steps by squaring. Needs m below about 3·10^9 so that the products fit in long long.
+>>> global power
+long long power(long long a, long long b,
+                long long m) {
+    long long r = 1 % m; a %= m;
+    while (b > 0) {
+        if (b & 1) r = r * a % m;
+        a = a * a % m;
+        b >>= 1;
+    }
+    return r;
+}
+<<<
+-- combinatorics | Counting formulas: ways to order, ways to choose, number of pairs, number of subsets.
+$$fact_def: n! = 1 \cdot 2 \cdot \dots \cdot n$$
+$$ncr_def: C(n, r) = \frac{n!}{r! \cdot (n-r)!}$$
+$$ncr_pascal: C(n, r) = C(n-1, r-1) + C(n-1, r)$$
+pairs: $$ncr_pairs: \frac{n(n-1)}{2}$$ · subsets: $$ncr_subsets: 2^n$$
+-- combinatorics span2 | nCr mod a prime, many times: precompute factorials and inverse factorials once with init(), then each answer is O(1).
+>>> global ncr
+const int MOD = 1e9 + 7, MAXN = 200005;
+long long fact[MAXN], inv[MAXN];
+long long pw(long long a, long long b) {
+    long long r = 1; a %= MOD;
+    for (; b > 0; b >>= 1, a = a * a % MOD)
+        if (b & 1) r = r * a % MOD;
+    return r;
+}
+void init() {
+    fact[0] = 1;
+    for (int i = 1; i < MAXN; i++) fact[i] = fact[i-1] * i % MOD;
+    inv[MAXN-1] = pw(fact[MAXN-1], MOD - 2);
+    for (int i = MAXN - 1; i > 0; i--) inv[i-1] = inv[i] * i % MOD;
+}
+long long C(int n, int r) {
+    if (r < 0 || r > n) return 0;
+    return fact[n] * inv[r] % MOD * inv[n-r] % MOD;
+}
+<<<
+
+== bits | s3 | Bits
+-- bits | Read and change bit k of x. Use 1LL << k when k can be 31 or more. Always put brackets around & | ^ in a comparison.
+bit k on? {{bit_get: (x >> k) & 1}}
+set: {{bit_set: x | (1 << k)}}
+clear: {{bit_clear: x & ~(1 << k)}}
+flip: {{bit_flip: x ^ (1 << k)}}
+-- bits | Count the bits that are on, and find the lowest one. The ll at the end is for long long. ctz is not defined for x = 0.
+count ones: {{popcnt: __builtin_popcountll(x)}}
+lowest bit, as a value: {{lowbit: x & -x}}
+lowest bit, its position: {{ctz: __builtin_ctzll(x)}}
+-- bits | XOR facts: a value XOR itself is 0, XOR with 0 changes nothing, and the order does not matter. So equal values cancel in pairs.
+{{xor_self: a ^ a}} is {{: 0}} · {{xor_zero: a ^ 0}} is {{: a}}
+{{xor_undo: (a ^ b) ^ b}} is {{: a}}
+-- bits | A set of small numbers 0 .. n-1 stored in one int (a mask). Rows: the full set, the common part, the union, and a test that set a is inside set b.
+all n bits on: {{mask_all: (1 << n) - 1}}
+in both: {{mask_and: a & b}} · in a or b: {{mask_or: a | b}}
+a is inside b: {{mask_sub: (a & b) == a}}
+-- bits | Try every subset of n items (n <= 20). Bit i of mask says if item i is taken.
+>>> main subsets_loop
+for (int mask = 0; mask < (1 << n); mask++)
+    for (int i = 0; i < n; i++)
+        if ((mask >> i) & 1)    // i is in
+            sum[mask] += a[i];
+<<<
+
+== stl | s4 | STL
+-- stl-basics | Everyday tools on a vector: sort, sort from big to small, reverse, biggest, smallest, sum.
+>>> main vec_tools
+sort(a.begin(), a.end());
+sort(a.rbegin(), a.rend());  // big to small
+reverse(a.begin(), a.end());
+int mx = *max_element(a.begin(), a.end());
+int mn = *min_element(a.begin(), a.end());
+long long s =
+    accumulate(a.begin(), a.end(), 0LL);
+<<<
+-- sorting | Sort by your own rule: here by the second number, and for equal second numbers the bigger first number comes first. The rule must use strict < or >, never <=.
+>>> main comparator
+sort(v.begin(), v.end(),
+     [](pair<int,int> x, pair<int,int> y) {
+    if (x.second != y.second)
+        return x.second < y.second;
+    return x.first > y.first;
+});
+<<<
+-- stl-containers | Which container for which job. set and map cost O(log n) per step; stack and queue cost O(1).
+|| unique + sorted | set
+|| sorted, repeats | multiset
+|| key → value | map
+|| last in, first out | stack
+|| first in, first out | queue
+|| both ends | deque
+|| always the max / min | priority_queue
+-- stl-containers | set: sorted, no repeats, O(log n) per line. lower_bound gives s.end() when no element is >= x; do not read *it then.
+>>> main set_lines
+set<int> s;
+s.insert(x);
+if (s.count(x)) found = true;  // x inside?
+auto it = s.lower_bound(x);    // first >= x
+s.erase(x);
+<<<
+-- stl-containers | map: one value for every key, sorted by key. m[key] creates the key with value 0 when it is missing, so test with count.
+>>> main map_lines
+map<string, int> m;
+m[key]++;                     // starts at 0
+if (m.count(key)) found = true;
+for (auto [k, v] : m) total += v;  // sorted
+<<<
+-- stl-containers | multiset: sorted, repeats allowed. erase(x) removes ALL copies of x. To remove one copy, erase what find gives; x must be inside.
+>>> main multiset_lines
+multiset<int> ms;
+ms.insert(x); ms.insert(x);
+int smallest = *ms.begin();
+int biggest = *ms.rbegin();
+ms.erase(ms.find(x));        // one copy
+ms.erase(x);                 // all copies
+<<<
+-- stl-containers | priority_queue: the biggest element is always on top. The long form with greater keeps the smallest on top. top and pop need a queue that is not empty.
+>>> main pq_lines
+priority_queue<int> pq;    // biggest on top
+pq.push(x); int top = pq.top(); pq.pop();
+priority_queue<int, vector<int>,
+               greater<int>> mn; // smallest
+mn.push(x);
+<<<
+-- counting | Count how many times each value appears. Array for small values, map for big values.
+>>> main freq
+int cnt[26] = {};
+for (char c : s) cnt[c - 'a']++;
+map<long long, long long> f;
+for (auto x : a) f[x]++;
+// k equal items: k * (k - 1) / 2 pairs
+<<<
+-- counting | Number of pairs of equal elements in an array: every value that appears k times gives k(k-1)/2 pairs.
+>>> main eqpairs
+map<long long, long long> f;
+for (long long x : a) f[x]++;
+long long pairs = 0;
+for (auto [value, k] : f)
+    pairs += k * (k - 1) / 2;
+<<<
+-- counting | The value that appears most often, and how many times. For a tie this keeps the smallest value, because a map walks its keys from small to big.
+>>> main mostfreq
+map<long long, int> f;
+for (long long x : a) f[x]++;
+long long best = 0; int bestCount = 0;
+for (auto [value, k] : f)
+    if (k > bestCount) {
+        bestCount = k; best = value;
+    }
+<<<
+
+== ranges | s0 | Prefix sums, two pointers, binary search
+-- prefix-sums | Sum of any part of an array in O(1) after one O(n) pass. pre has n + 1 elements.
+build: {{#pre_build: pre[0] = 0, pre[i+1] = pre[i] + a[i]}}
+sum of {{: a[l..r]}} = {{pre_query: pre[r+1] - pre[l]}}
+-- prefix-sums | Difference array: add v to a whole range [l..r] in O(1), many times. One prefix sum at the end gives the real values. d has n + 1 elements.
+add v on l..r: {{diff_upd: d[l] += v, d[r+1] -= v}}
+then {{#diff_final: a[i] = d[0] + ... + d[i]}}
+-- prefix-sums span2 | 2D prefix sums: sum of any rectangle in O(1). Rows and columns are 1-indexed; row 0 and column 0 stay 0.
+build: {{pre2_build: P[i][j] = a[i][j] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]}}
+query: {{pre2_query: sum = P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1]}}
+-- two-pointers | Sliding window: longest part with sum <= S (positive numbers). Each pointer only moves forward, so it is O(n).
+>>> main window
+long long sum = 0; int best = 0;
+for (int l = 0, r = 0; r < n; r++) {
+    sum += a[r];
+    while (sum > S) sum -= a[l++];
+    best = max(best, r - l + 1);
+}
+<<<
+-- two-pointers | Two pointers from both ends of a SORTED array: is there a pair with sum equal to target? O(n).
+>>> main twosum
+int i = 0, j = n - 1; bool found = false;
+while (i < j) {
+    long long s = a[i] + a[j];
+    if (s == target) { found = true; break; }
+    if (s < target) i++; else j--;
+}
+<<<
+-- binary-search | Binary search for the first value where ok() is true. lo must be a 'no', hi must be a 'yes'.
+>>> main bsearch
+// ok: no no no YES YES YES
+while (hi - lo > 1) {
+    long long mid = lo + (hi - lo) / 2;
+    if (ok(mid)) hi = mid; else lo = mid;
+}
+// answer = hi
+<<<
+-- binary-search | Ready-made binary search on a sorted vector. i is the first index with a[i] >= x, j the first with a[j] > x. Both are n when there is none.
+>>> main bounds
+int i = lower_bound(a.begin(), a.end(), x)
+        - a.begin();
+int j = upper_bound(a.begin(), a.end(), x)
+        - a.begin();
+bool has =
+    binary_search(a.begin(), a.end(), x);
+<<<
+-- binary-search | Counting in a sorted vector with the two indexes of the card before: how many are equal to x, below x, above x.
+equal to x: {{bs_eq: j - i}}
+smaller than x: {{bs_less: i}}
+bigger than x: {{bs_more: n - j}}
+
+== recdp | s1 | Recursion and DP
+-- recursion | Recursion: try 'take' and 'skip' for every item. Visits all 2^n subsets.
+>>> global rec_subsets
+int n; vector<int> a, cur;
+void go(int i) {
+    if (i == n) { /* use cur */ return; }
+    go(i + 1);                 // skip a[i]
+    cur.push_back(a[i]);
+    go(i + 1);                 // take a[i]
+    cur.pop_back();            // undo
+}
+<<<
+-- recursion | Every order of the elements (n <= 10). Sort first, or you miss some orders.
+>>> main perms
+sort(a.begin(), a.end());
+do {
+    /* use a */
+} while (next_permutation(a.begin(), a.end()));
+<<<
+-- dp | The four questions for every DP problem.
+1. {{: dp[i]}} means … (in words)
+2. {{: dp[i]}} = formula from smaller ones
+3. base cases
+4. order of filling, where is the answer
+-- dp span2 | Classic DP formulas: stairs, min coins, grid paths, knapsack, longest increasing subsequence, longest common subsequence.
+stairs: {{#dp_stairs: dp[i] = dp[i-1] + dp[i-2]}}
+coins: {{#dp_coins: dp[x] = min(dp[x - c] + 1)}} for each coin {{: c}}
+grid: {{#dp_grid: dp[i][j] = dp[i-1][j] + dp[i][j-1]}}
+knapsack: for {{: w = W..wt}}: {{#dp_knap: dp[w] = max(dp[w], dp[w - wt] + val)}}
+LIS: {{#dp_lis: dp[i] = 1 + max(dp[j])}} for {{: j < i}}, {{: a[j] < a[i]}}
+LCS: {{#dp_lcs: a[i] == b[j] ? dp[i-1][j-1] + 1 : max(dp[i-1][j], dp[i][j-1])}}
+
+== graphs | s2 | Graphs and trees
+-- graphs-bfs-dfs | Read a graph with n vertices and m edges into an adjacency list (1-indexed, two-way edges).
+>>> main readgraph
+vector<vector<int>> g(n + 1);
+for (int i = 0; i < m; i++) {
+    int u, v; cin >> u >> v;
+    g[u].push_back(v);
+    g[v].push_back(u);
+}
+<<<
+-- graphs-bfs-dfs | DFS: visit everything you can reach from v. Call it once per unvisited vertex to count connected components.
+>>> global dfs
+vector<vector<int>> g; vector<bool> vis;
+void dfs(int v) {
+    vis[v] = true;
+    for (int u : g[v]) if (!vis[u]) dfs(u);
+}
+<<<
+-- graphs-bfs-dfs | BFS: shortest distance (number of edges) from s to every vertex. -1 means not reachable.
+>>> global bfs
+vector<int> bfs(int s,
+        const vector<vector<int>> &g) {
+    vector<int> dist(g.size(), -1);
+    queue<int> q; q.push(s); dist[s] = 0;
+    while (!q.empty()) {
+        int v = q.front(); q.pop();
+        for (int u : g[v])
+            if (dist[u] == -1) {
+                dist[u] = dist[v] + 1;
+                q.push(u);
+            }
+    }
+    return dist;
+}
+<<<
+-- dijkstra span2 | Dijkstra: shortest path when edges have weights >= 0. O((n + m) log n). A distance equal to INF means not reachable.
+>>> global dijkstra
+const long long INF = 1e18;
+vector<long long> dijkstra(int s,
+        const vector<vector<pair<int,long long>>> &g) {
+    vector<long long> dist(g.size(), INF);
+    priority_queue<pair<long long,int>,
+        vector<pair<long long,int>>, greater<>> pq;
+    dist[s] = 0; pq.push({0, s});
+    while (!pq.empty()) {
+        auto [d, v] = pq.top(); pq.pop();
+        if (d > dist[v]) continue;
+        for (auto [u, w] : g[v])
+            if (dist[v] + w < dist[u]) {
+                dist[u] = dist[v] + w;
+                pq.push({dist[u], u});
+            }
+    }
+    return dist;
+}
+<<<
+-- dijkstra | Which shortest-path tool to use.
+|| no weights | BFS
+|| weights $$: \ge 0$$ | Dijkstra
+|| negative weights | Bellman-Ford
+|| all pairs, $$: n \le 500$$ | Floyd-Warshall
+-- trees | One DFS on a tree: depth goes down from the parent, subtree size comes up from the children. Call dfs(root, 0).
+>>> global treedfs
+vector<vector<int>> g;
+vector<int> depth, sz;
+void dfs(int v, int p) {
+    sz[v] = 1;
+    for (int u : g[v]) if (u != p) {
+        depth[u] = depth[v] + 1;
+        dfs(u, v);
+        sz[v] += sz[u];
+    }
+}
+<<<
+-- trees | Facts about every tree.
+$$tree_edges: n$$ vertices, $$: n - 1$$ edges
+connected, no cycle
+one path between any two vertices
+-- dsu | DSU: merge groups and ask if two things are in the same group. Almost O(1) per call. Same group: find(a) == find(b).
+>>> global dsu
+struct DSU {
+    vector<int> p, sz;
+    DSU(int n) : p(n + 1), sz(n + 1, 1) {
+        iota(p.begin(), p.end(), 0);
+    }
+    int find(int x) {
+        if (p[x] != x) p[x] = find(p[x]);
+        return p[x];
+    }
+    bool unite(int a, int b) {
+        a = find(a); b = find(b);
+        if (a == b) return false;
+        if (sz[a] < sz[b]) swap(a, b);
+        p[b] = a; sz[a] += sz[b];
+        return true;
+    }
+};
+<<<
+-- toposort span2 | Topological sort (Kahn): an order where every edge goes forward. If the order has fewer than n vertices, there is a cycle.
+>>> global topo
+vector<int> topo(int n, const vector<vector<int>> &g) {
+    vector<int> in(n + 1, 0), order;
+    for (int v = 1; v <= n; v++) for (int u : g[v]) in[u]++;
+    queue<int> q;
+    for (int v = 1; v <= n; v++) if (in[v] == 0) q.push(v);
+    while (!q.empty()) {
+        int v = q.front(); q.pop();
+        order.push_back(v);
+        for (int u : g[v]) if (--in[u] == 0) q.push(u);
+    }
+    return order;          // size < n  =>  cycle
+}
+<<<
+-- interactive | Interactive problems: print a question, flush (endl does it), then read the reply.
+>>> main interactive
+cout << "? " << mid << endl;   // flush
+string reply; cin >> reply;
+cout << "! " << answer << endl;
+<<<

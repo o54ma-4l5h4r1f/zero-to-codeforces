@@ -1,11 +1,19 @@
-<p class="idea">A tree is a connected graph with no cycle. One DFS from the root answers most tree questions.</p>
+<p class="idea"><span class="tr" data-ar="الشجرة مخطّط متّصل بلا دورة. بحث DFS واحد من الجذر يجيب عن معظم أسئلة الأشجار.">A tree is a connected graph with no cycle. One DFS from the root answers most tree questions.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can store a graph and run DFS and BFS → <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a></li>
+    <li>You know that a call waits for the calls it makes → <a href="#recursion">Recursion and backtracking</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>"n vertices and <b>n − 1 edges</b>", and the graph is <span class="term" data-t="connected">connected</span>.</li>
+    <li>"\( n \) vertices and \( n - 1 \) edges", and the graph is <span class="term" data-t="connected">connected</span>.</li>
     <li>"There is <b>exactly one path</b> between every two vertices."</li>
-    <li>"The <span class="term" data-t="parent">parent</span> of vertex i is p<sub>i</sub>", or a boss and workers, or folders inside folders.</li>
+    <li>"The <span class="term" data-t="parent">parent</span> of vertex \( i \) is \( p_i \)", or a boss and workers, or folders inside folders.</li>
     <li>Words like <span class="term" data-t="root">root</span>, <span class="term" data-t="leaf">leaf</span>, <span class="term" data-t="subtree">subtree</span>.</li>
   </ul>
 </section>
@@ -16,46 +24,76 @@
   <div class="way">
     <h3><b>1 · Story</b> — a company</h3>
     <p>A company has one director. This is the <b>root</b>. Every other person has exactly one boss: the <b>parent</b>. The people directly under you are your <span class="term" data-t="child">children</span>. A person with no workers is a <b>leaf</b>.</p>
-    <p>Your <span class="term" data-t="depth">depth</span> is the number of bosses above you. Your <b>subtree</b> is you and everybody under you. A <span class="term" data-t="tree">tree</span> has no <span class="term" data-t="cycle">cycle</span>: nobody is the boss of their own boss.</p>
+    <p>Your <span class="term" data-t="depth">depth</span> is the number of bosses above you. Your <b>subtree</b> is you and everybody under you. <span class="tr" data-ar="الشجرة ليس فيها دورة: لا أحد رئيسٌ لرئيسه.">A <span class="term" data-t="tree">tree</span> has no <span class="term" data-t="cycle">cycle</span>: nobody is the boss of their own boss.</span></p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — depth and subtree size</h3>
-    <svg viewBox="0 0 520 290" width="520" role="img" aria-label="Rooted tree with 7 vertices. Root 1 has children 2 and 3. Vertex 2 has children 4 and 5. Vertex 3 has child 6. Vertex 6 has child 7. Each vertex shows its depth d and its subtree size s.">
-      <g stroke="var(--line)" stroke-width="2">
-        <line x1="250" y1="34" x2="140" y2="104"/><line x1="250" y1="34" x2="360" y2="104"/>
-        <line x1="140" y1="104" x2="80" y2="174"/><line x1="140" y1="104" x2="200" y2="174"/>
-        <line x1="360" y1="104" x2="360" y2="174"/><line x1="360" y1="174" x2="360" y2="244"/>
-      </g>
-      <g fill="var(--surface)" stroke="currentColor" stroke-width="1.5">
-        <circle cx="250" cy="34" r="16" stroke="var(--accent)" stroke-width="3"/>
-        <circle cx="140" cy="104" r="16"/><circle cx="360" cy="104" r="16"/>
-        <circle cx="80" cy="174" r="16"/><circle cx="200" cy="174" r="16"/><circle cx="360" cy="174" r="16"/>
-        <circle cx="360" cy="244" r="16"/>
-      </g>
-      <g fill="currentColor" font-size="14" font-weight="bold" text-anchor="middle">
-        <text x="250" y="39">1</text><text x="140" y="109">2</text><text x="360" y="109">3</text>
-        <text x="80" y="179">4</text><text x="200" y="179">5</text><text x="360" y="179">6</text><text x="360" y="249">7</text>
-      </g>
-      <g fill="var(--muted)" font-size="12">
-        <text x="274" y="38">root · d=0 s=7</text>
-        <text x="118" y="108" text-anchor="end">d=1 s=3</text><text x="384" y="108">d=1 s=3</text>
-        <text x="80" y="210" text-anchor="middle">leaf · d=2 s=1</text><text x="200" y="210" text-anchor="middle">leaf · d=2 s=1</text>
-        <text x="384" y="178">d=2 s=2</text><text x="384" y="248">leaf · d=3 s=1</text>
-      </g>
-    </svg>
-    <p><b>d</b> = depth, <b>s</b> = size of the subtree. Two directions of information:</p>
-    <table>
-      <tr><th>Value</th><th>Direction</th><th>Rule</th><th>Example</th></tr>
-      <tr><td>depth</td><td>goes <b>down</b>: parent → child</td><td>depth[child] = depth[parent] + 1</td><td>depth[7] = depth[6] + 1 = 3</td></tr>
-      <tr><td>size</td><td>comes <b>up</b>: children → parent</td><td>size[v] = 1 + sizes of all children</td><td>size[2] = 1 + 1 + 1 = 3</td></tr>
-    </table>
-    <p class="note">Set "down" values <b>before</b> the call to the child. Collect "up" values <b>after</b> the call returns.</p>
+    <h3><b>2 · Picture</b> — depth goes down, size comes up</h3>
+    <p>One DFS from the root 1. Each vertex gets two labels: <b>d</b> = depth, <b>s</b> = size of its subtree.</p>
+    <p><span class="tr" data-ar="العمق يعرفه الرأس عند النزول إليه. أمّا حجم الشجرة الفرعية فلا يُعرف إلا عند الرجوع منه.">The depth is known on the way <b>down</b>. The size is known only on the way back <b>up</b>.</span></p>
+    <figure class="viz" data-viz="stepper" data-gen="tree-dfs" aria-label="Step by step: DFS on a tree with 7 vertices, root 1. Vertex 1 has children 2 and 3, vertex 2 has children 4 and 5, vertex 3 has child 6, vertex 6 has child 7. The depth of each vertex is written when the DFS enters it. The subtree size is written when the DFS leaves it.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":80,"nodes":[{"id":1,"x":2,"y":0},{"id":2,"x":1,"y":1},{"id":3,"x":3,"y":1},{"id":4,"x":0.4,"y":2},{"id":5,"x":1.6,"y":2},{"id":6,"x":3,"y":2},{"id":7,"x":3,"y":3}],"edges":[{"from":1,"to":2},{"from":1,"to":3},{"from":2,"to":4},{"from":2,"to":5},{"from":3,"to":6},{"from":6,"to":7}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"v: the call we look at","queued":"waiting for a child","done":"finished: size known"},
+  "code": ["void dfs(int v, int parent) {","    sz[v] = 1;","    for (int to : g[v]) {","        if (to == parent) continue;","        depth[to] = depth[v] + 1;","        dfs(to, v);","        sz[v] += sz[to];","    }","}"],
+  "steps": [
+    {"line":2,"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":"","7":""},"notes":{"1":"d 0","2":"","3":"","4":"","5":"","6":"","7":""},"edgeStates":{}},"v":{"items":[["call stack",["dfs(1)"]],["depth[v]",0],["sz[v]",""]]}},
+    {"line":[5,6],"g":{"states":{"1":"queued","2":"active","3":"","4":"","5":"","6":"","7":""},"notes":{"1":"d 0","2":"d 1","3":"","4":"","5":"","6":"","7":""},"edgeStates":{"1-2":"active"}},"v":{"items":[["call stack",["dfs(1)","dfs(2)"]],["depth[v]",1],["sz[v]",""]]}},
+    {"line":[5,6,2],"g":{"states":{"1":"queued","2":"queued","3":"","4":"active","5":"","6":"","7":""},"notes":{"1":"d 0","2":"d 1","3":"","4":"d 2, s 1","5":"","6":"","7":""},"edgeStates":{"1-2":"active","2-4":"active"}},"v":{"items":[["call stack",["dfs(1)","dfs(2)","dfs(4)"]],["depth[v]",2],["sz[v]",1]]}},
+    {"line":[5,6,2],"g":{"states":{"1":"queued","2":"queued","3":"","4":"done","5":"active","6":"","7":""},"notes":{"1":"d 0","2":"d 1","3":"","4":"d 2, s 1","5":"d 2, s 1","6":"","7":""},"edgeStates":{"1-2":"active","2-4":"done","2-5":"active"}},"v":{"items":[["call stack",["dfs(1)","dfs(2)","dfs(5)"]],["depth[v]",2],["sz[v]",1]]}},
+    {"line":7,"g":{"states":{"1":"queued","2":"active","3":"","4":"done","5":"done","6":"","7":""},"notes":{"1":"d 0","2":"d 1, s 3","3":"","4":"d 2, s 1","5":"d 2, s 1","6":"","7":""},"edgeStates":{"1-2":"active","2-4":"done","2-5":"done"}},"v":{"items":[["call stack",["dfs(1)","dfs(2)"]],["depth[v]",1],["sz[v]",3]]}},
+    {"line":[5,6],"g":{"states":{"1":"queued","2":"done","3":"active","4":"done","5":"done","6":"","7":""},"notes":{"1":"d 0","2":"d 1, s 3","3":"d 1","4":"d 2, s 1","5":"d 2, s 1","6":"","7":""},"edgeStates":{"1-2":"done","1-3":"active","2-4":"done","2-5":"done"}},"v":{"items":[["call stack",["dfs(1)","dfs(3)"]],["depth[v]",1],["sz[v]",""]]}},
+    {"line":[5,6],"g":{"states":{"1":"queued","2":"done","3":"queued","4":"done","5":"done","6":"active","7":""},"notes":{"1":"d 0","2":"d 1, s 3","3":"d 1","4":"d 2, s 1","5":"d 2, s 1","6":"d 2","7":""},"edgeStates":{"1-2":"done","1-3":"active","2-4":"done","2-5":"done","3-6":"active"}},"v":{"items":[["call stack",["dfs(1)","dfs(3)","dfs(6)"]],["depth[v]",2],["sz[v]",""]]}},
+    {"line":[5,6,2],"g":{"states":{"1":"queued","2":"done","3":"queued","4":"done","5":"done","6":"queued","7":"active"},"notes":{"1":"d 0","2":"d 1, s 3","3":"d 1","4":"d 2, s 1","5":"d 2, s 1","6":"d 2","7":"d 3, s 1"},"edgeStates":{"1-2":"done","1-3":"active","2-4":"done","2-5":"done","3-6":"active","6-7":"active"}},"v":{"items":[["call stack",["dfs(1)","dfs(3)","dfs(6)","dfs(7)"]],["depth[v]",3],["sz[v]",1]]}},
+    {"line":7,"g":{"states":{"1":"queued","2":"done","3":"queued","4":"done","5":"done","6":"active","7":"done"},"notes":{"1":"d 0","2":"d 1, s 3","3":"d 1","4":"d 2, s 1","5":"d 2, s 1","6":"d 2, s 2","7":"d 3, s 1"},"edgeStates":{"1-2":"done","1-3":"active","2-4":"done","2-5":"done","3-6":"active","6-7":"done"}},"v":{"items":[["call stack",["dfs(1)","dfs(3)","dfs(6)"]],["depth[v]",2],["sz[v]",2]]}},
+    {"line":7,"g":{"states":{"1":"queued","2":"done","3":"active","4":"done","5":"done","6":"done","7":"done"},"notes":{"1":"d 0","2":"d 1, s 3","3":"d 1, s 3","4":"d 2, s 1","5":"d 2, s 1","6":"d 2, s 2","7":"d 3, s 1"},"edgeStates":{"1-2":"done","1-3":"active","2-4":"done","2-5":"done","3-6":"done","6-7":"done"}},"v":{"items":[["call stack",["dfs(1)","dfs(3)"]],["depth[v]",1],["sz[v]",3]]}},
+    {"line":7,"g":{"states":{"1":"active","2":"done","3":"done","4":"done","5":"done","6":"done","7":"done"},"notes":{"1":"d 0, s 7","2":"d 1, s 3","3":"d 1, s 3","4":"d 2, s 1","5":"d 2, s 1","6":"d 2, s 2","7":"d 3, s 1"},"edgeStates":{"1-2":"done","1-3":"done","2-4":"done","2-5":"done","3-6":"done","6-7":"done"}},"v":{"items":[["call stack",["dfs(1)"]],["depth[v]",0],["sz[v]",7]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start at the root 1: depth 0. Its size is not known yet.</li>
+        <li>Go down to 2. Before the call, <code>depth[2] = depth[1] + 1 = 1</code>.</li>
+        <li>Go down to 4: depth 2. It has no children, so it is a leaf with size 1.</li>
+        <li>Vertex 5 is a leaf too: depth 2, size 1.</li>
+        <li>Back in 2: both children have returned, so now its size is known: \( 1 + 1 + 1 = 3 \).</li>
+        <li>Go down to 3: depth 1.</li>
+        <li>Go down to 6: depth 2.</li>
+        <li>Vertex 7 is a leaf: depth 3, size 1.</li>
+        <li>Back in 6: size \( 1 + 1 = 2 \).</li>
+        <li>Back in 3: size \( 1 + 2 = 3 \).</li>
+        <li>Back in 1: size \( 1 + 3 + 3 = 7 \), the whole tree.</li>
+      </ol>
+      <figcaption>"d" appears when the DFS enters a vertex. "s" appears when it leaves. Set "down" values before the call to the child; add "up" values after the call returns.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — one DFS</h3>
-    <p>The input is n, then n − 1 edges. The root is vertex 1. A tree has no cycle, so you need no visited array: just do not walk back to the parent.</p>
+    <p>The input comes in one of two forms. Here is the same tree in both:</p>
+    <table>
+      <tr><th>vertex</th><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+      <tr><th>its parent (parent form)</th><td>1</td><td>1</td><td>2</td><td>2</td><td>3</td><td>6</td></tr>
+      <tr><th>its line in the edge list</th><td>1 2</td><td>1 3</td><td>2 4</td><td>2 5</td><td>3 6</td><td>6 7</td></tr>
+    </table>
+    <p>Every vertex except the root has one parent, so there are \( n - 1 = 6 \) edges. The program below reads the edge list. The root is vertex 1.</p>
+    <p><span class="tr" data-ar="لا نحتاج مصفوفة visited. الشجرة بلا دورة، فالطريق الوحيد للرجوع إلى رأس زرناه هو الأب.">You need no <code>visited</code> array. A tree has no cycle, so the only visited neighbour is the parent.</span> Skip the parent, and you never come back:</p>
+    <figure class="viz" data-viz="graph" aria-label="The same tree. The DFS is at vertex 2, which came from vertex 1. Its neighbours are 1, 4 and 5. The edge to 1 is skipped because 1 is the parent. The edges to 4 and 5 are used.">
+      <script type="application/json">
+{ "unit": 80,
+  "nodes": [ { "id": 1, "x": 2, "y": 0 }, { "id": 2, "x": 1, "y": 1 }, { "id": 3, "x": 3, "y": 1 }, { "id": 4, "x": 0.4, "y": 2 }, { "id": 5, "x": 1.6, "y": 2 }, { "id": 6, "x": 3, "y": 2 }, { "id": 7, "x": 3, "y": 3 } ],
+  "edges": [ { "from": 1, "to": 2 }, { "from": 1, "to": 3 }, { "from": 2, "to": 4 }, { "from": 2, "to": 5 }, { "from": 3, "to": 6 }, { "from": 6, "to": 7 } ],
+  "states": { "2": "active", "1": "bad", "4": "queued", "5": "queued" },
+  "edgeStates": { "1-2": "bad", "2-4": "active", "2-5": "active" },
+  "notes": { "1": "parent: skip" },
+  "legend": { "active": "dfs(2, 1) is here", "bad": "to == parent: skip", "queued": "children: go down" } }
+      </script>
+      <figcaption><code>g[2]</code> holds 1, 4 and 5. The line <code>if (to == parent) continue;</code> skips 1. So the DFS only goes down.</figcaption>
+    </figure>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -90,30 +128,160 @@ int main() {
         cout &lt;&lt; v &lt;&lt; ": depth " &lt;&lt; depth[v] &lt;&lt; ", size " &lt;&lt; sz[v] &lt;&lt; "\n";
 }
 </code></pre>
-    <p>The other input form gives the parent of each vertex 2..n. Then you add edges from parent to child only, and the <code>if (to == parent)</code> line is not needed:</p>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p><b>Default:</b> the function <code>dfs(v, parent)</code> above. A "down" value goes before the call. An "up" value goes after it.</p>
+  <ul>
+    <li><b>The input gives parents, not edges.</b> Store children only. The same <code>dfs</code> still works: the parent is never in the list.
 <pre data-part="main"><code class="cpp">
 for (int v = 2; v &lt;= n; v++) {
     int p;
     cin &gt;&gt; p;                 // p is the parent of v
     g[p].push_back(v);        // g[p] = children of p
 }
-</code></pre>
-    <p class="note">A vertex v is a leaf when it has no children: <code>sz[v] == 1</code>.</p>
-  </div>
+</code></pre></li>
+    <li><b>Count the leaves.</b> <span class="tr" data-ar="الرأس ورقة إذا بقي حجمه 1 بعد الحلقة، أي ليس له أبناء.">A vertex is a leaf if its size is still 1 after the loop: it has no children.</span> Add after the loop in <code>dfs</code>:
+<pre data-part="main"><code class="cpp">
+if (sz[v] == 1) leaves++;
+</code></pre></li>
+    <li><b>The sum of the values in each subtree.</b> The same as size, with values in place of 1. Use <code>long long</code>:
+<pre data-part="main"><code class="cpp">
+sum[v] = val[v];              // in place of sz[v] = 1
+sum[v] += sum[to];            // in place of sz[v] += sz[to]
+</code></pre></li>
+    <li><b>The height: the longest way down to a leaf.</b> An "up" value with <code>max</code>. Start with <code>h[v] = 0</code>:
+<pre data-part="main"><code class="cpp">
+h[v] = max(h[v], h[to] + 1);  // after dfs(to, v)
+</code></pre></li>
+  </ul>
 </section>
 
-<p class="tip-box"><b>Diameter</b> = the longest path in the tree. Run <a href="#graphs-bfs-dfs">BFS</a> from any vertex and take the farthest vertex <code>a</code>. Run BFS again from <code>a</code> and take the farthest vertex <code>b</code>. The <span class="term" data-t="diameter">diameter</span> is the path from a to b, and its length is <code>dist[b]</code>.</p>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> A tree has \( n \) vertices. Find the length of its longest path, counted in edges. This path is the <span class="term" data-t="diameter">diameter</span>. Limits: \( 1 \le n \le 2 \cdot 10^5 \). (This is "Tree Diameter" on CSES.)</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The biggest distance between any two vertices. Trying every pair is \( n^2 = 4 \cdot 10^{10} \) steps: too slow.</li>
+    <li><b>A small example by hand.</b> The same tree. Run BFS two times:
+      <figure class="viz" data-viz="stepper" data-gen="tree-diameter" aria-label="Step by step: BFS from vertex 1 finds the farthest vertex 7. BFS from 7 finds the farthest vertex 4 at distance 5. The path 7, 6, 3, 1, 2, 4 is the diameter.">
+        <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":80,"nodes":[{"id":1,"x":2,"y":0},{"id":2,"x":1,"y":1},{"id":3,"x":3,"y":1},{"id":4,"x":0.4,"y":2},{"id":5,"x":1.6,"y":2},{"id":6,"x":3,"y":2},{"id":7,"x":3,"y":3}],"edges":[{"from":1,"to":2},{"from":1,"to":3},{"from":2,"to":4},{"from":2,"to":5},{"from":3,"to":6},{"from":6,"to":7}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"start of this BFS","done":"farthest vertex / the diameter"},
+  "steps": [
+    {"g":{"states":{"1":"active","2":"","3":"","4":"","5":"","6":"","7":"done"},"notes":{"1":"dist 0","2":"dist 1","3":"dist 1","4":"dist 2","5":"dist 2","6":"dist 2","7":"dist 3"},"edgeStates":{}},"v":{"items":[["BFS from",1],["farthest vertex",7],["its dist",3]]}},
+    {"g":{"states":{"1":"","2":"","3":"","4":"done","5":"","6":"","7":"active"},"notes":{"1":"dist 3","2":"dist 4","3":"dist 2","4":"dist 5","5":"dist 5","6":"dist 1","7":"dist 0"},"edgeStates":{}},"v":{"items":[["BFS from",7],["farthest vertex",4],["its dist",5]]}},
+    {"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"","6":"done","7":"active"},"notes":{"1":"dist 3","2":"dist 4","3":"dist 2","4":"dist 5","5":"dist 5","6":"dist 1","7":"dist 0"},"edgeStates":{"4-2":"done","2-1":"done","1-3":"done","3-6":"done","6-7":"done"}},"v":{"items":[["BFS from",7],["farthest vertex",4],["its dist",5]]}}
+  ]
+}
+</script>
+        <ol class="viz-steps">
+          <li>BFS from 1: the farthest vertex is 7, at distance 3. Call it <code>a</code>.</li>
+          <li>BFS again, from 7: the farthest vertex is 4, at distance 5. Vertex 5 is also at 5; either one works.</li>
+          <li>The path from 7 to 4 is a longest path: 5 edges.</li>
+        </ol>
+        <figcaption>The answer for this tree is 5: the path 4, 2, 1, 3, 6, 7.</figcaption>
+      </figure></li>
+    <li><b>The idea.</b> <span class="tr" data-ar="أبعد رأس عن أي رأس هو دائمًا طرف لأطول مسار. هذه حقيقة معروفة عن الأشجار، ولن نبرهنها هنا.">The farthest vertex from any vertex is always one end of a longest path. This is a known fact about trees; we do not prove it here.</span> So: BFS from 1, take the farthest vertex <code>a</code>. BFS from <code>a</code>. The biggest distance is the answer.</li>
+    <li><b>Why is it fast enough?</b> Two BFS runs, each \( O(n) \). That is about \( 4 \cdot 10^5 \) steps. Far below \( 10^8 \).</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
 
-<p class="complexity">Speed: O(n). The DFS enters every vertex once.</p>
+int n;
+vector&lt;vector&lt;int&gt;&gt; g;
+
+vector&lt;int&gt; bfs(int start) {
+    vector&lt;int&gt; dist(n + 1, -1);          // -1 = not reached yet
+    queue&lt;int&gt; q;
+    dist[start] = 0;
+    q.push(start);
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        for (int to : g[v]) {
+            if (dist[to] != -1) continue;
+            dist[to] = dist[v] + 1;
+            q.push(to);
+        }
+    }
+    return dist;
+}
+
+int main() {
+    cin &gt;&gt; n;
+    g.assign(n + 1, vector&lt;int&gt;());
+    for (int i = 0; i &lt; n - 1; i++) {
+        int a, b;
+        cin &gt;&gt; a &gt;&gt; b;
+        g[a].push_back(b);
+        g[b].push_back(a);
+    }
+    vector&lt;int&gt; d1 = bfs(1);
+    int a = 1;
+    for (int v = 1; v &lt;= n; v++)
+        if (d1[v] &gt; d1[a]) a = v;            // a = farthest from 1
+    vector&lt;int&gt; d2 = bfs(a);
+    int best = 0;
+    for (int v = 1; v &lt;= n; v++) best = max(best, d2[v]);
+    cout &lt;&lt; best &lt;&lt; "\n";                    // the diameter, in edges
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: \( O(n) \). The DFS (or the BFS) enters every vertex once and uses every edge twice.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="أحتاج مصفوفة visited في DFS على الشجرة.">I need a <code>visited</code> array for a DFS on a tree.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا. بلا دورة، الجار الوحيد الذي زرته هو الأب. يكفي أن تتخطّاه.">No. With no cycle, the only visited neighbour is the parent. Skipping it is enough.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="السطر «a b» في قائمة الحواف يعني أن a هو أب b.">The line "a b" in the edge list means that <code>a</code> is the parent of <code>b</code>.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الحافة لا اتجاه لها. أنت تختار الجذر، ثم يحدّد DFS من هو الأب.">An edge has no direction. You choose the root, and the DFS decides who is the parent.</span> Read the statement: sometimes the root is given.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="حجم الشجرة الفرعية جاهز عندما أدخل إلى الرأس.">The size of a subtree is ready when I enter the vertex.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الحجم جاهز فقط بعد أن يعود كل الأبناء، أي بعد الحلقة.">It is ready only after all children return, so after the loop.</span> In the picture, "s" appears on the way up.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>You read n edges. A tree has <b>n − 1</b> edges.</li>
-    <li>You forget <code>if (to == parent) continue;</code> → the DFS jumps between two vertices forever.</li>
-    <li>You think the root is always 1, or that the edge "a b" means a is the parent. Read the statement.</li>
-    <li>You use <code>sz[v]</code> before the calls to the children are finished. "Up" values are ready only after the loop.</li>
+    <li>You read \( n \) edges. A tree has \( n - 1 \) edges.</li>
+    <li>You forget <code>if (to == parent) continue;</code>. Then the DFS jumps between two vertices forever.</li>
+    <li>A tree can be one long chain of \( 2 \cdot 10^5 \) vertices. The DFS then goes that many calls deep. On some judges this crashes. If you see a strange runtime error, use BFS.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>The distance between any two vertices, many times (LCA, binary lifting).</b> Needed above 1600. See <a href="#what-next">After 1600</a>.</li>
+    <li><b>DP on trees</b> (the best answer for every subtree). Learn <a href="#dp">Dynamic programming</a> first, then come back <a href="#what-next">after 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="في الشجرة التي في الصورة، ما عمق الرأس 6 وما حجم شجرته الفرعية؟">In the tree of the picture, what are the depth of vertex 6 and the size of its subtree?</span>
+      <details><summary>Answer</summary><p>Depth 2 (bosses 3 and 1). Size 2 (vertex 6 and vertex 7).</p></details></li>
+    <li><span class="tr" data-ar="شجرة فيها 10 رؤوس. كم حافة فيها؟">A tree has 10 vertices. How many edges does it have?</span>
+      <details><summary>Answer</summary><p>9. Every vertex except the root has exactly one edge to its parent.</p></details></li>
+    <li><span class="tr" data-ar="لماذا نضيف sz[to] بعد استدعاء dfs(to, v) وليس قبله؟">Why do we add <code>sz[to]</code> after the call <code>dfs(to, v)</code>, and not before it?</span>
+      <details><summary>Answer</summary><p>Before the call, <code>sz[to]</code> is still 0. The call fills it. Size is an "up" value.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -124,7 +292,7 @@ for (int v = 2; v &lt;= n; v++) {
     <li><a class="cf" data-p="913B">Christmas Spruce</a><span class="r">1200</span></li>
     <li><a class="cf" data-p="1843D">Apple Tree</a><span class="r">1200</span></li>
     <li><a class="cf" data-p="1676G">White-Black Balanced Subtrees</a><span class="r">1300</span></li>
-    <li><a href="https://cses.fi/problemset/task/1131">CSES: Tree Diameter</a><span class="r">CSES</span> — the two-BFS trick.</li>
+    <li><a href="https://cses.fi/problemset/task/1131">CSES: Tree Diameter</a><span class="r">CSES</span> — the problem of "Solve one together".</li>
     <li><a class="cf" data-p="1143C">Queen</a><span class="r">1400</span></li>
     <li><a class="cf" data-p="580C">Kefa and Park</a><span class="r">1500</span></li>
     <li><a class="cf" data-p="1336A">Linova and Kingdom</a><span class="r">1600</span></li>
@@ -137,6 +305,6 @@ for (int v = 2; v &lt;= n; v++) {
     <li><a href="https://usaco.guide/silver/intro-tree">USACO Guide: Introduction to Tree Algorithms</a> — subtree sizes, depth and diameter with pictures.</li>
     <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — the "Tree Algorithms" section. The first four problems fit this page.</li>
     <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 14 "Tree algorithms".</li>
-    <li><a href="https://codeforces.com/blog/entry/81527">Codeforces blog: Tree Basics</a> — one of the most-liked tree lessons, with a practice contest.</li>
+    <li><a href="https://codeforces.com/blog/entry/81527">Algorithms Thread 8: Tree Basics (+ Gym Contest)</a> — Codeforces blog: one of the most-liked tree lessons, with a practice contest.</li>
   </ul>
 </section>

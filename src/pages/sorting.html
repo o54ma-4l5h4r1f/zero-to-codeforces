@@ -1,12 +1,21 @@
-<p class="idea">Put the values in order first. In a sorted array, close values stand next to each other, and many problems become easy.</p>
+<p class="idea"><span class="tr" data-ar="لا تكتب خوارزمية ترتيب بنفسك. استدعِ sort()، ثم غيّر قاعدة الترتيب لتناسب مسألتك.">Do not write your own sorting algorithm. Call <code>sort()</code>, then change the order rule to fit your problem.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can call <code>sort</code> and use a <code>pair</code> → <a href="#stl-basics">STL basics</a></li>
+    <li>You can read \( O(n \log n) \) and \( O(n^2) \) → <a href="#complexity">Limits → speed</a></li>
+    <li>You know "take the smallest first" ideas → <a href="#greedy">Greedy</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>The order of the input does not matter: you choose a group, or pairs, or "any k elements".</li>
+    <li>The order of the input does not matter. You choose a group, pairs, or "any \( k \) elements".</li>
     <li>The statement asks for the smallest difference, or for equal elements.</li>
-    <li>A <span class="term" data-t="greedy">greedy</span> idea: "take the smallest first" or "take the biggest first".</li>
-    <li>You want to use binary search or two pointers. Both need a <span class="term" data-t="sorted">sorted</span> array.</li>
+    <li>A <span class="term" data-t="greedy">greedy</span> idea: "serve the shortest first", "take the biggest first".</li>
+    <li>The output must be "in order of score", "by name", and so on.</li>
   </ul>
 </section>
 
@@ -15,21 +24,54 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — students in a line</h3>
-    <p>Find the two students with the closest heights. If they stand in a random order, you must compare every student with every other student. That is slow.</p>
-    <p>Now ask them to stand in a line by height. The two closest students are now <span class="term" data-t="adjacent">adjacent</span>. You only look at neighbours.</p>
+    <p>Find the two students with the closest heights. In a random crowd, you compare every student with every other one. That is slow.</p>
+    <p>Now they stand in a line by height. The two closest students are now <span class="term" data-t="adjacent">adjacent</span>. You look only at neighbours.</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — smallest difference between two elements</h3>
+    <h3><b>2 · Picture</b> — what sorting buys you, and how it is so fast</h3>
     <table>
       <tr><th>before</th><td>8</td><td>1</td><td>9</td><td>4</td><td>13</td></tr>
       <tr><th>after sort</th><td>1</td><td>4</td><td class="hi">8</td><td class="hi">9</td><td>13</td></tr>
+      <tr><th>gap to the left neighbour</th><td>–</td><td>3</td><td>4</td><td class="hi">1</td><td>4</td></tr>
     </table>
-    <table>
-      <tr><th>neighbours</th><td>1, 4</td><td>4, 8</td><td>8, 9</td><td>9, 13</td></tr>
-      <tr><th>difference</th><td>3</td><td>4</td><td class="hi">1</td><td>4</td></tr>
-    </table>
-    <p class="note">Before sorting: 10 pairs to check. After sorting: only 4 neighbours. For n = 200 000 that is 2·10<sup>10</sup> pairs against 200 000 neighbours.</p>
+    <p>Before sorting there are 10 pairs to check. After sorting, only 4 neighbours. Now take \( n = 2 \cdot 10^5 \) values. All pairs: about \( 2 \cdot 10^{10} \) checks, far too slow. Sort plus one loop: about \( n \log_2 n \approx 3.6 \cdot 10^6 \) steps.</p>
+    <p>Why is sorting so fast? One idea inside it is the <span class="term" data-t="merge">merge</span>. <span class="tr" data-ar="لدمج قائمتين مرتّبتين، قارن العنصرين الأوّلين وخذ الأصغر. كرّر ذلك.">To merge two sorted lists, compare their two front values and take the smaller one. Repeat.</span></p>
+    <figure class="viz" data-viz="stepper" data-gen="merge" aria-label="Step by step: the sorted lists a = 2 5 8 and b = 1 3 9 are merged into one sorted list c, with one pointer i in a and one pointer j in b.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"a","label":"a","values":[2,5,8]},
+    {"type":"array","id":"b","label":"b","values":[1,3,9]},
+    {"type":"array","id":"c","label":"c","values":["","","","","",""]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"read":"compared now","dim":"already taken","active":"just written","done":"written"},
+  "code": ["int i = 0, j = 0;","while (i < n && j < m) {","    if (a[i] <= b[j]) {","        c.push_back(a[i]); i++;","    } else {","        c.push_back(b[j]); j++;","    }","}","while (i < n) { c.push_back(a[i]); i++; }","while (j < m) { c.push_back(b[j]); j++; }"],
+  "steps": [
+    {"line":1,"a":{"states":{"0":"read"},"pointers":{"i":0}},"b":{"states":{"0":"read"},"pointers":{"j":0}},"c":{"values":["","","","","",""],"states":{}},"v":{"items":[["a[i]",2],["b[j]",1],["take",""]]}},
+    {"line":[2,5,6],"a":{"states":{"0":"read"},"pointers":{"i":0}},"b":{"states":{"0":"dim","1":"read"},"pointers":{"j":1}},"c":{"values":[1,"","","","",""],"states":{"0":"active"}},"v":{"items":[["a[i]",2],["b[j]",3],["take","b[j] = 1"]]}},
+    {"line":[2,3,4],"a":{"states":{"0":"dim","1":"read"},"pointers":{"i":1}},"b":{"states":{"0":"dim","1":"read"},"pointers":{"j":1}},"c":{"values":[1,2,"","","",""],"states":{"0":"done","1":"active"}},"v":{"items":[["a[i]",5],["b[j]",3],["take","a[i] = 2"]]}},
+    {"line":[2,5,6],"a":{"states":{"0":"dim","1":"read"},"pointers":{"i":1}},"b":{"states":{"0":"dim","1":"dim","2":"read"},"pointers":{"j":2}},"c":{"values":[1,2,3,"","",""],"states":{"0":"done","1":"done","2":"active"}},"v":{"items":[["a[i]",5],["b[j]",9],["take","b[j] = 3"]]}},
+    {"line":[2,3,4],"a":{"states":{"0":"dim","1":"dim","2":"read"},"pointers":{"i":2}},"b":{"states":{"0":"dim","1":"dim","2":"read"},"pointers":{"j":2}},"c":{"values":[1,2,3,5,"",""],"states":{"0":"done","1":"done","2":"done","3":"active"}},"v":{"items":[["a[i]",8],["b[j]",9],["take","a[i] = 5"]]}},
+    {"line":[2,3,4],"a":{"states":{"0":"dim","1":"dim","2":"dim"},"pointers":{"i":3}},"b":{"states":{"0":"dim","1":"dim","2":"read"},"pointers":{"j":2}},"c":{"values":[1,2,3,5,8,""],"states":{"0":"done","1":"done","2":"done","3":"done","4":"active"}},"v":{"items":[["a[i]","—"],["b[j]",9],["take","a[i] = 8"]]}},
+    {"line":10,"a":{"states":{"0":"dim","1":"dim","2":"dim"},"pointers":{"i":3}},"b":{"states":{"0":"dim","1":"dim","2":"dim"},"pointers":{"j":3}},"c":{"values":[1,2,3,5,8,9],"states":{"0":"done","1":"done","2":"done","3":"done","4":"done","5":"active"}},"v":{"items":[["a[i]","—"],["b[j]","—"],["take","b[j] = 9"]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start: <code>a</code> and <code>b</code> are sorted, and <code>i</code> and <code>j</code> stand at their fronts.</li>
+        <li>Compare 2 and 1. The 1 is smaller: write it to <code>c</code> and move <code>j</code>.</li>
+        <li>Compare 2 and 3. Write 2 and move <code>i</code>.</li>
+        <li>Compare 5 and 3. Write 3 and move <code>j</code>.</li>
+        <li>Compare 5 and 9. Write 5 and move <code>i</code>.</li>
+        <li>Compare 8 and 9 and write 8. Now <code>i = 3</code>: list <code>a</code> is used up.</li>
+        <li>Copy what is left in <code>b</code>, the 9. The list <code>c</code> is sorted.</li>
+      </ol>
+      <figcaption>Each step writes one value. So merging 6 values costs 6 steps. You meet this walk again in Two pointers.</figcaption>
+    </figure>
+    <p>A sort can use merging like this. Take 8 values. Merge them in pairs of 1 + 1, then 2 + 2, then 4 + 4. Each round costs 8 steps. The size doubles each round, so there are 3 rounds: \( 8 \cdot 3 = 24 \) steps. For \( n \) values: \( n \log_2 n \) steps, written \( O(n \log n) \). <button type="button" class="why" data-why="sort-nlogn">why?</button></p>
+    <p class="note">This method is called merge sort. C++ <code>sort</code> uses another method inside, but its cost is also \( O(n \log n) \).</p>
   </div>
 
   <div class="way">
@@ -50,46 +92,148 @@ int main() {
     cout &lt;&lt; best &lt;&lt; "\n";
 }
 </code></pre>
-    <p>Other orders. A <code>pair</code> is sorted by <code>first</code>, then by <code>second</code>. Use it to remember the old position.</p>
-<pre data-part="main"><code class="cpp">
-vector&lt;pair&lt;int, int&gt;&gt; p(n);
-for (int i = 0; i &lt; n; i++) p[i] = {a[i], i};  // (value, old index)
-sort(p.begin(), p.end());                      // by value; same value: by index
-// p[0].second = where the smallest value was in a
-sort(a.begin(), a.end(), greater&lt;int&gt;());      // a itself: big -&gt; small
-</code></pre>
-    <p>Your own order: write a <span class="term" data-t="comparator">comparator</span>. It returns <code>true</code> when <code>x</code> must come <b>before</b> <code>y</code>.</p>
-<pre data-part="global"><code class="cpp">
-struct Student { string name; int score; };
-
-bool before(const Student &amp;x, const Student &amp;y) {
-    if (x.score != y.score) return x.score &gt; y.score;  // bigger score first
-    return x.name &lt; y.name;                            // same score: by name
-}
-// in main:  sort(v.begin(), v.end(), before);
-</code></pre>
-    <p>The same thing as a short lambda, written inside <code>sort</code>:</p>
-<pre data-part="main"><code class="cpp">
-// sort numbers by their last digit; same last digit: smaller number first
-sort(a.begin(), a.end(), [](int x, int y) {
-    if (x % 10 != y % 10) return x % 10 &lt; y % 10;
-    return x &lt; y;
-});
-</code></pre>
-    <p class="tip-box">After sorting, equal values are neighbours. So "are there two equal elements?" is just: is <code>a[i] == a[i - 1]</code> for some <code>i</code>?</p>
+    <p class="tip-box">After sorting, equal values are neighbours. "Are two elements equal?" becomes: is <code>a[i] == a[i - 1]</code> for some <code>i</code>?</p>
   </div>
 </section>
 
-<p class="complexity">Speed: sort is O(n log n). For n = 200 000 that is about 4 million steps: very fast.</p>
+<section>
+  <h2>Change it to fit</h2>
+  <p>This is the real skill. <span class="tr" data-ar="لا تغيّر طريقة الترتيب. غيّر فقط ما يُرتَّب أو قاعدة المقارنة.">You never change how <code>sort</code> works. You change what you sort, or the rule that compares two values.</span></p>
+
+  <p><b>1. Big → small.</b> Use this one form:</p>
+<pre data-part="main"><code class="cpp">
+sort(a.rbegin(), a.rend());                // 13 9 8 4 1
+</code></pre>
+
+  <p><b>2. Your own order.</b> Give <code>sort</code> a small function, a <span class="term" data-t="lambda">lambda</span>. <span class="tr" data-ar="الدالة ترجع true فقط إذا كان يجب أن يأتي x قبل y.">It returns <code>true</code> only when <code>x</code> must come <b>before</b> <code>y</code>.</span> Here: by the last digit.</p>
+<pre data-part="main"><code class="cpp">
+sort(a.begin(), a.end(), [](int x, int y) {
+    return x % 10 &lt; y % 10;                // 13 5 21 44 -&gt; 21 13 44 5
+});
+</code></pre>
+  <p class="note">Always use <code>&lt;</code> or <code>&gt;</code> here, never <code>&lt;=</code>. <span class="tr" data-ar="إذا كانت القيمتان متساويتين، يجب أن ترجع الدالة false.">For two equal values the function must return <code>false</code>.</span> With <code>&lt;=</code> the program can crash.</p>
+
+  <p><b>3. By one key, then by another.</b> Score big → small. Equal scores: name a → z.</p>
+<pre data-part="main"><code class="cpp">
+vector&lt;pair&lt;int, string&gt;&gt; v;              // (score, name)
+sort(v.begin(), v.end(), [](const auto &amp;x, const auto &amp;y) {
+    if (x.first != y.first) return x.first &gt; y.first;   // first key: bigger score first
+    return x.second &lt; y.second;                          // equal score: name a -&gt; z
+});
+</code></pre>
+
+  <p><b>4. Keep the old position.</b> Build the pairs (value, index) first. Then sort the pairs. Each value carries its old index with it.</p>
+<pre data-part="main"><code class="cpp">
+vector&lt;pair&lt;int, int&gt;&gt; p(n);
+for (int i = 0; i &lt; n; i++) p[i] = {a[i], i};  // BEFORE sorting
+sort(p.begin(), p.end());                      // by value; equal value: by index
+// p[0].second = the old index of the smallest value
+</code></pre>
+
+  <p><b>5. Only a part.</b> <code>sort(a.begin() + l, a.begin() + r + 1)</code> sorts <code>a[l]</code> … <code>a[r]</code>. The second place is one step <b>after</b> the last value. An array filled from index 1: <code>sort(a.begin() + 1, a.end())</code>.</p>
+
+  <p><b>6. Small values: count them.</b> Values from 0 to 100 only? Count each value, then write them out. That is \( n + 101 \) steps.</p>
+<pre data-part="main"><code class="cpp">
+vector&lt;int&gt; cnt(101, 0);                   // cnt[v] = how many times v appears
+for (int x : a) cnt[x]++;
+a.clear();
+for (int v = 0; v &lt;= 100; v++)
+    for (int k = 0; k &lt; cnt[v]; k++) a.push_back(v);
+</code></pre>
+  <p class="note">Use it only when a problem needs \( O(n) \). The default is <code>sort</code>.</p>
+
+  <p class="tip-box"><b>Sort first, then think.</b> Many tools need sorted input. You saw <a href="#greedy">greedy</a>. Two pointers and binary search come next, and both start with a sort.</p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> \( n \) people wait at one desk. Person \( i \) needs \( t_i \) minutes. The desk serves one person at a time. A person waits until their own turn starts. Choose the order with the smallest total waiting time. Print that total and the order of person numbers. Limits: \( 1 \le n \le 2 \cdot 10^5 \) and \( 1 \le t_i \le 10^4 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> An order of the people, and its total waiting time.</li>
+    <li><b>A small example by hand.</b> Three people need 3, 1 and 2 minutes.
+      <table>
+        <tr><th>order</th><th>each one waits</th><th>total</th></tr>
+        <tr><td>1, 2, 3</td><td>0, 3, 3 + 1 = 4</td><td>7</td></tr>
+        <tr><td>3, 2, 1</td><td>0, 2, 2 + 1 = 3</td><td>5</td></tr>
+        <tr><td>2, 3, 1</td><td>0, 1, 1 + 2 = 3</td><td class="hi">4</td></tr>
+      </table>
+    </li>
+    <li><b>The idea.</b> <span class="tr" data-ar="كل من يأتي بعد شخص ما ينتظر وقت هذا الشخص. لذلك الأقصر يجب أن يأتي أولًا.">Everyone after a person waits for that person's time. So the shortest one goes first.</span> Sort by time. The answer is person numbers, so use idea 4: pairs (time, number) built <b>before</b> the sort.</li>
+    <li><b>Why is it fast enough?</b> The sort costs about \( 2 \cdot 10^5 \cdot 18 \approx 3.6 \cdot 10^6 \) steps. The total wait is at most \( 2 \cdot 10^5 \cdot 2 \cdot 10^5 \cdot 10^4 = 4 \cdot 10^{14} \). That needs <code>long long</code>.</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;pair&lt;int, int&gt;&gt; p(n);             // (time, person number)
+    for (int i = 0; i &lt; n; i++) {
+        cin &gt;&gt; p[i].first;
+        p[i].second = i + 1;                   // remember the number BEFORE sorting
+    }
+    sort(p.begin(), p.end());                  // shortest time first
+    long long now = 0, total = 0;              // now = when the next person starts
+    for (auto [t, id] : p) {
+        total += now;                          // this person waited "now" minutes
+        now += t;
+    }
+    cout &lt;&lt; total &lt;&lt; "\n";
+    for (auto [t, id] : p) cout &lt;&lt; id &lt;&lt; " ";
+    cout &lt;&lt; "\n";
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: <code>sort</code> is \( O(n \log n) \). For \( n = 2 \cdot 10^5 \): about \( 3.6 \cdot 10^6 \) steps, very fast.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الترتيب لا يضرّ أبدًا، فأستطيع ترتيب أي مصفوفة أولًا.">Sorting never hurts. I can sort any array first.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الترتيب يمحو المواضع الأصلية. إذا كانت المسألة عن المواضع أو عن مصفوفة جزئية، فقد خسرت المعلومة.">Sorting destroys the old positions. If the problem is about positions or a subarray, that information is gone.</span> Example: in 30 10 20 the smallest is at index 1. After the sort, it is at index 0. Keep pairs (idea 4).</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="المقارنة بـ &lt;= تعطي الترتيب نفسه، فهي صحيحة أيضًا.">A rule with <code>&lt;=</code> gives the same order, so it is fine too.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="القاعدة يجب أن تكون صارمة. مع &lt;= قد ينهار البرنامج أو يعطي ترتيبًا خاطئًا.">The rule must be strict. With <code>&lt;=</code> the program can crash or give a wrong order.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يجب أن أتعلّم خوارزميات ترتيب كثيرة لأصبح جيّدًا.">I must learn many sorting algorithms to get good.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="في Codeforces تستدعي sort(). المهمّ هو أن تغيّر الترتيب ليناسب المسألة.">On Codeforces you call <code>sort()</code>. The skill is to change the order to fit the problem.</span> Only the merge idea comes back later.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>A comparator with <code>&lt;=</code> or <code>&gt;=</code>. It must be strict: <code>&lt;</code> or <code>&gt;</code>. For two equal elements it must return <code>false</code>. If not, the program can crash.</li>
-    <li>Sorting loses the old positions. If the answer needs them, sort pairs <code>(value, index)</code>.</li>
-    <li>Sorting when the order matters. If the problem talks about a <span class="term" data-t="subarray">subarray</span> or "the next element", you usually cannot sort.</li>
-    <li>An array that starts from index 1: write <code>sort(a + 1, a + n + 1)</code>, not <code>sort(a, a + n)</code>.</li>
+    <li>You sort <code>a</code> and then build the pairs (value, index). The indexes are now the new ones. Build the pairs first.</li>
+    <li>An array filled from index 1, sorted with <code>sort(a.begin(), a.end())</code>. The empty <code>a[0]</code> is sorted in too. Write <code>sort(a.begin() + 1, a.end())</code>.</li>
+    <li>A rule that forgets the second key. Equal scores then come in any order, and your output differs from the expected one.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Bubble, insertion, selection, quick and heap sort.</b> They are for university exams and interviews. You do not need them to solve Codeforces problems below 1600: <a href="#what-next">After 1600</a>.</li>
+    <li><b>Writing merge sort yourself</b>, and counting "inversions" with it. It needs a function that calls itself: <a href="#recursion">Recursion</a>.</li>
+    <li><b>The count array in full.</b> Idea 6 is the main tool of the next lesson: <a href="#counting">Counting</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="القاعدة هي return x &lt;= y;. ما الخطأ فيها؟">Your rule is <code>return x &lt;= y;</code>. What is wrong?</span>
+      <details><summary>Answer</summary><p>It is not strict. For two equal values it returns <code>true</code>, and it must return <code>false</code>. Write <code>x &lt; y</code>.</p></details></li>
+    <li><span class="tr" data-ar="ما ترتيب الأزواج (3,0) و (1,1) و (3,2) و (2,3) بعد sort؟">You sort the pairs (3, 0), (1, 1), (3, 2), (2, 3). What is the order?</span>
+      <details><summary>Answer</summary><p>(1, 1), (2, 3), (3, 0), (3, 2). By the first value; the two 3s by the second value.</p></details></li>
+    <li><span class="tr" data-ar="تريد ترتيب a[2] إلى a[5] فقط. ماذا تكتب؟">You want to sort only <code>a[2]</code> to <code>a[5]</code>. What do you write?</span>
+      <details><summary>Answer</summary><p><code>sort(a.begin() + 2, a.begin() + 6)</code>. The second place is one step after <code>a[5]</code>.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">

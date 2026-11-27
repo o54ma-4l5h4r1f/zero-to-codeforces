@@ -1,12 +1,20 @@
-<p class="idea">A function that calls itself on a smaller problem. With it you can try every choice: take or skip, this order or that order.</p>
+<p class="idea"><span class="tr" data-ar="دالة تستدعي نفسها على مسألة أصغر. بها تجرّب كل الاختيارات: خُذ أو اترك، هذا الترتيب أو ذاك.">A function that calls itself on a smaller problem. With it you can try every choice: take or skip, this order or that order.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know the idea "try every case and check it" → <a href="#brute-force">Brute force</a></li>
+    <li>You can compare a number of steps with \( 10^8 \) → <a href="#complexity">Limits → speed</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li><b>n is very small</b>: n ≤ 20 means "try all <span class="term" data-t="subset">subsets</span>" (2<sup>20</sup> ≈ 10<sup>6</sup>). n ≤ 10 means "try all orders" (10! ≈ 3.6 · 10<sup>6</sup>).</li>
-    <li>For every item you make a choice: take it or skip it, plus or minus, group A or group B.</li>
-    <li>The statement says "print all…" or "count all ways…" and the numbers are tiny.</li>
-    <li>The problem contains a smaller copy of itself, like n! = n × (n−1)!.</li>
+    <li><b>\( n \) is very small.</b> \( n \le 20 \) means "try all <span class="term" data-t="subset">subsets</span>": \( 2^{20} \approx 10^6 \).</li>
+    <li>\( n \le 10 \) means "try all orders": \( 10! \approx 3.6 \cdot 10^6 \). Here \( 10! = 10 \cdot 9 \cdot \dots \cdot 1 \).</li>
+    <li>For every item you make a choice: take it or skip it, group A or group B, plus or minus.</li>
+    <li>The statement says "print all …" or "count all ways …", and the numbers are tiny.</li>
   </ul>
 </section>
 
@@ -15,128 +23,259 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — the line of people</h3>
-    <p>You stand in a long line. You want to know your position, but you cannot see the front.</p>
-    <p>You ask the person in front of you: "What is your position?" He does not know, so he asks the next person. This goes on until the first person. She says "I am 1". This is the <span class="term" data-t="base-case">base case</span>: no more questions.</p>
-    <p>Now the answers come back: 2, 3, 4… Each person adds 1 to the answer he gets. Every <span class="term" data-t="recursion">recursion</span> has these two parts: a <b>base case</b> that stops, and a <b>step</b> that asks a smaller question.</p>
+    <p>You stand in a long line. You want your position, but you cannot see the front. You ask the person in front of you. He does not know, so he asks the next person.</p>
+    <p>The first person says "I am 1". She asks nobody. This is the <span class="term" data-t="base-case">base case</span>. Then the answers come back: 2, 3, 4 … Each person adds 1 to the answer he gets.</p>
+    <p><span class="tr" data-ar="لكل استدعاء ذاتي جزءان: حالة أساسية تتوقّف، وخطوة تطرح سؤالًا أصغر.">Every <span class="term" data-t="recursion">recursion</span> has two parts: a base case that stops, and a step that asks a smaller question.</span></p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — all subsets of {1, 2, 3}</h3>
-    <p>Look at the numbers one by one. For each number choose: <b>take</b> it (go left) or <b>skip</b> it (go right). After 3 choices you reach the bottom. Each bottom point is one subset.</p>
-    <svg viewBox="0 0 640 250" width="640" role="img" aria-label="Call tree: for each of 1, 2, 3 go left to take it or right to skip it. The 8 leaves are the 8 subsets.">
-      <line x1="320" y1="32" x2="160" y2="76" stroke="var(--accent)" stroke-width="1.5"/>
-      <line x1="320" y1="32" x2="480" y2="76" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <line x1="160" y1="100" x2="80" y2="144" stroke="var(--accent)" stroke-width="1.5"/>
-      <line x1="160" y1="100" x2="240" y2="144" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <line x1="480" y1="100" x2="400" y2="144" stroke="var(--accent)" stroke-width="1.5"/>
-      <line x1="480" y1="100" x2="560" y2="144" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <line x1="80" y1="168" x2="40" y2="212" stroke="var(--accent)" stroke-width="1.5"/>
-      <line x1="80" y1="168" x2="120" y2="212" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <line x1="240" y1="168" x2="200" y2="212" stroke="var(--accent)" stroke-width="1.5"/>
-      <line x1="240" y1="168" x2="280" y2="212" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <line x1="400" y1="168" x2="360" y2="212" stroke="var(--accent)" stroke-width="1.5"/>
-      <line x1="400" y1="168" x2="440" y2="212" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <line x1="560" y1="168" x2="520" y2="212" stroke="var(--accent)" stroke-width="1.5"/>
-      <line x1="560" y1="168" x2="600" y2="212" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 3"/>
-      <text x="320" y="28" text-anchor="middle" font-size="13" fill="currentColor">{ }</text>
-      <text x="160" y="96" text-anchor="middle" font-size="13" fill="currentColor">{1}</text>
-      <text x="480" y="96" text-anchor="middle" font-size="13" fill="currentColor">{ }</text>
-      <text x="80" y="164" text-anchor="middle" font-size="13" fill="currentColor">{1,2}</text>
-      <text x="240" y="164" text-anchor="middle" font-size="13" fill="currentColor">{1}</text>
-      <text x="400" y="164" text-anchor="middle" font-size="13" fill="currentColor">{2}</text>
-      <text x="560" y="164" text-anchor="middle" font-size="13" fill="currentColor">{ }</text>
-      <text x="40" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{1,2,3}</text>
-      <text x="120" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{1,2}</text>
-      <text x="200" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{1,3}</text>
-      <text x="280" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{1}</text>
-      <text x="360" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{2,3}</text>
-      <text x="440" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{2}</text>
-      <text x="520" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{3}</text>
-      <text x="600" y="232" text-anchor="middle" font-size="13" fill="var(--ok)" font-weight="bold">{ }</text>
-      <text x="4" y="58" font-size="12" fill="var(--muted)">1 ?</text>
-      <text x="4" y="126" font-size="12" fill="var(--muted)">2 ?</text>
-      <text x="4" y="194" font-size="12" fill="var(--muted)">3 ?</text>
-      <text x="636" y="16" text-anchor="end" font-size="12" fill="var(--accent)">solid line = take</text>
-      <text x="636" y="32" text-anchor="end" font-size="12" fill="var(--muted)">dashed line = skip</text>
-    </svg>
-    <p class="note">This drawing is the <span class="term" data-t="call-tree">call tree</span>. 3 choices → 2 × 2 × 2 = 8 subsets. With n numbers the bottom has 2<sup>n</sup> points.</p>
+    <h3><b>2 · Picture</b> — a function waits for the call it made</h3>
+    <p>The smallest recursion: \( \text{sum}(3) = 3 + 2 + 1 = 6 \). Read the rule as "sum of 1..n is n plus the sum of 1..n-1". The base case comes first: the sum of nothing is 0.</p>
+    <figure class="viz" data-viz="stepper" data-gen="rec-sum" aria-label="Step by step: sum(3) calls sum(2), which calls sum(1), which calls sum(0). Then the answers come back: 0, 1, 3, 6. The call stack is shown under the picture.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":70,"nodes":[{"id":3,"label":"n=3","x":0,"y":0},{"id":2,"label":"n=2","x":1,"y":1},{"id":1,"label":"n=1","x":2,"y":2},{"id":0,"label":"n=0","x":3,"y":3}],"edges":[{"from":3,"to":2,"directed":true},{"from":2,"to":1,"directed":true},{"from":1,"to":0,"directed":true}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"running now","queued":"waiting for the call it made","done":"returned"},
+  "code": ["int sum(int n) {","    if (n == 0) return 0; // base","    return n + sum(n - 1);","}"],
+  "steps": [
+    {"line":3,"g":{"states":{"0":"","1":"","2":"","3":"active"},"notes":{"0":"","1":"","2":"","3":"running"}},"v":{"items":[["call stack",["sum(3)"]],["last returned",""]]}},
+    {"line":3,"g":{"states":{"0":"","1":"","2":"active","3":"queued"},"notes":{"0":"","1":"","2":"running","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)"]],["last returned",""]]}},
+    {"line":3,"g":{"states":{"0":"","1":"active","2":"queued","3":"queued"},"notes":{"0":"","1":"running","2":"waits","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)","sum(1)"]],["last returned",""]]}},
+    {"line":2,"g":{"states":{"0":"done","1":"queued","2":"queued","3":"queued"},"notes":{"0":"returns 0","1":"waits","2":"waits","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)","sum(1)","sum(0)"]],["last returned",0]]}},
+    {"line":3,"g":{"states":{"0":"done","1":"done","2":"queued","3":"queued"},"notes":{"0":"returns 0","1":"returns 1","2":"waits","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)","sum(1)"]],["last returned",1]]}},
+    {"line":3,"g":{"states":{"0":"done","1":"done","2":"done","3":"queued"},"notes":{"0":"returns 0","1":"returns 1","2":"returns 3","3":"waits"}},"v":{"items":[["call stack",["sum(3)","sum(2)"]],["last returned",3]]}},
+    {"line":3,"g":{"states":{"0":"done","1":"done","2":"done","3":"done"},"notes":{"0":"returns 0","1":"returns 1","2":"returns 3","3":"returns 6"}},"v":{"items":[["call stack",["sum(3)"]],["last returned",6]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li><code>sum(3)</code> starts. 3 is not 0, so it calls <code>sum(2)</code> and waits.</li>
+        <li><code>sum(2)</code> starts. It calls <code>sum(1)</code> and waits too.</li>
+        <li><code>sum(1)</code> starts. It calls <code>sum(0)</code> and waits: three calls wait now.</li>
+        <li><code>sum(0)</code> is the base case. It returns 0 at once, with no new call.</li>
+        <li>The call <code>sum(1)</code> goes on from the line where it stopped: \( 1 + 0 = 1 \).</li>
+        <li><code>sum(2)</code> goes on: \( 2 + 1 = 3 \). It returns 3.</li>
+        <li><code>sum(3)</code> goes on: \( 3 + 3 = 6 \). The call stack is empty, and the answer is 6.</li>
+      </ol>
+      <figcaption>The <span class="term" data-t="call-stack">call stack</span> is the list of calls that are waiting. It grows on the way down and shrinks on the way back.</figcaption>
+    </figure>
+    <p class="note">For a sum, a loop is better. Recursion is worth it when every step has a <b>choice</b>, as in the next box.</p>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — take or skip</h3>
-    <p>Count the subsets with sum exactly <code>target</code>. The function <code>go(i, sum)</code> means: "numbers 0..i−1 are decided, their sum is <code>sum</code>".</p>
+    <h3><b>3 · Code</b> — take or skip: all subsets of {1, 2, 3}</h3>
+    <p>For each number choose: <b>take</b> it or <b>skip</b> it. <code>go(i)</code> means "numbers before index <code>i</code> are decided". The vector <code>chosen</code> holds the taken numbers.</p>
+    <p><span class="tr" data-ar="هذا هو التراجع: افعل (أضف العدد)، ثم استدعِ، ثم تراجع (احذفه) قبل الاختيار التالي.">This is <span class="term" data-t="backtracking">backtracking</span>: do (add the number), recurse, then undo (remove it) before the next choice.</span></p>
+    <figure class="viz" data-viz="stepper" data-gen="rec-subsets" aria-label="Step by step: the call tree of all subsets of 1, 2, 3. Going left takes a number, going right skips it. The 8 bottom calls print the 8 subsets.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":48,"nodes":[{"id":"r","label":"{}","y":0,"x":3.5},{"id":"rT","label":"1","y":1.5,"x":1.5},{"id":"rTT","label":"12","y":3,"x":0.5},{"id":"rTTT","label":"123","y":4.5,"x":0},{"id":"rTTS","label":"12","y":4.5,"x":1},{"id":"rTS","label":"1","y":3,"x":2.5},{"id":"rTST","label":"13","y":4.5,"x":2},{"id":"rTSS","label":"1","y":4.5,"x":3},{"id":"rS","label":"{}","y":1.5,"x":5.5},{"id":"rST","label":"2","y":3,"x":4.5},{"id":"rSTT","label":"23","y":4.5,"x":4},{"id":"rSTS","label":"2","y":4.5,"x":5},{"id":"rSS","label":"{}","y":3,"x":6.5},{"id":"rSST","label":"3","y":4.5,"x":6},{"id":"rSSS","label":"{}","y":4.5,"x":7}],"edges":[{"from":"rTT","to":"rTTT","w":"+3"},{"from":"rTT","to":"rTTS"},{"from":"rTS","to":"rTST","w":"+3"},{"from":"rTS","to":"rTSS"},{"from":"rT","to":"rTT","w":"+2"},{"from":"rT","to":"rTS"},{"from":"rST","to":"rSTT","w":"+3"},{"from":"rST","to":"rSTS"},{"from":"rSS","to":"rSST","w":"+3"},{"from":"rSS","to":"rSSS"},{"from":"rS","to":"rST","w":"+2"},{"from":"rS","to":"rSS"},{"from":"r","to":"rT","w":"+1"},{"from":"r","to":"rS"}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"the call running now","queued":"waiting for its call","done":"returned"},
+  "code": ["void go(int i) {","    if (i == n) {     // base case","        print(chosen); return;","    }","    chosen.push_back(a[i]); // do","    go(i + 1);","    chosen.pop_back();  // undo","    go(i + 1);          // skip","}"],
+  "steps": [
+    {"line":1,"g":{"states":{"r":"active","rT":"","rTT":"","rTTT":"","rTTS":"","rTS":"","rTST":"","rTSS":"","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{}},"v":{"items":[["call stack",["go(0)"]],["chosen",[]],["printed",""]]}},
+    {"line":[5,6],"g":{"states":{"r":"queued","rT":"active","rTT":"","rTTT":"","rTTS":"","rTS":"","rTST":"","rTSS":"","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"r-rT":"active"}},"v":{"items":[["call stack",["go(0)","go(1)"]],["chosen",[1]],["printed",""]]}},
+    {"line":[5,6],"g":{"states":{"r":"queued","rT":"queued","rTT":"active","rTTT":"","rTTS":"","rTS":"","rTST":"","rTSS":"","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"rT-rTT":"active","r-rT":"active"}},"v":{"items":[["call stack",["go(0)","go(1)","go(2)"]],["chosen",[1,2]],["printed",""]]}},
+    {"line":[2,3],"g":{"states":{"r":"queued","rT":"queued","rTT":"queued","rTTT":"active","rTTS":"","rTS":"","rTST":"","rTSS":"","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"rTT-rTTT":"active","rT-rTT":"active","r-rT":"active"}},"v":{"items":[["call stack",["go(0)","go(1)","go(2)","go(3)"]],["chosen",[1,2,3]],["printed","{1,2,3}"]]}},
+    {"line":[7,8,3],"g":{"states":{"r":"queued","rT":"queued","rTT":"queued","rTTT":"done","rTTS":"active","rTS":"","rTST":"","rTSS":"","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"rTT-rTTT":"done","rTT-rTTS":"active","rT-rTT":"active","r-rT":"active"}},"v":{"items":[["call stack",["go(0)","go(1)","go(2)","go(3)"]],["chosen",[1,2]],["printed","{1,2,3} {1,2}"]]}},
+    {"line":[7,8],"g":{"states":{"r":"queued","rT":"queued","rTT":"done","rTTT":"done","rTTS":"done","rTS":"active","rTST":"","rTSS":"","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"rTT-rTTT":"done","rTT-rTTS":"done","rT-rTT":"done","rT-rTS":"active","r-rT":"active"}},"v":{"items":[["call stack",["go(0)","go(1)","go(2)"]],["chosen",[1]],["printed","{1,2,3} {1,2}"]]}},
+    {"line":[2,3],"g":{"states":{"r":"queued","rT":"queued","rTT":"done","rTTT":"done","rTTS":"done","rTS":"queued","rTST":"active","rTSS":"","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"rTT-rTTT":"done","rTT-rTTS":"done","rTS-rTST":"active","rT-rTT":"done","rT-rTS":"active","r-rT":"active"}},"v":{"items":[["call stack",["go(0)","go(1)","go(2)","go(3)"]],["chosen",[1,3]],["printed","{1,2,3} {1,2} {1,3}"]]}},
+    {"line":[7,8,3],"g":{"states":{"r":"queued","rT":"queued","rTT":"done","rTTT":"done","rTTS":"done","rTS":"queued","rTST":"done","rTSS":"active","rS":"","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"rTT-rTTT":"done","rTT-rTTS":"done","rTS-rTST":"done","rTS-rTSS":"active","rT-rTT":"done","rT-rTS":"active","r-rT":"active"}},"v":{"items":[["call stack",["go(0)","go(1)","go(2)","go(3)"]],["chosen",[1]],["printed","{1,2,3} {1,2} {1,3} {1}"]]}},
+    {"line":[7,8],"g":{"states":{"r":"queued","rT":"done","rTT":"done","rTTT":"done","rTTS":"done","rTS":"done","rTST":"done","rTSS":"done","rS":"active","rST":"","rSTT":"","rSTS":"","rSS":"","rSST":"","rSSS":""},"notes":{},"edgeStates":{"rTT-rTTT":"done","rTT-rTTS":"done","rTS-rTST":"done","rTS-rTSS":"done","rT-rTT":"done","rT-rTS":"done","r-rT":"done","r-rS":"active"}},"v":{"items":[["call stack",["go(0)","go(1)"]],["chosen",[]],["printed","{1,2,3} {1,2} {1,3} {1}"]]}},
+    {"line":9,"g":{"states":{"r":"done","rT":"done","rTT":"done","rTTT":"done","rTTS":"done","rTS":"done","rTST":"done","rTSS":"done","rS":"done","rST":"done","rSTT":"done","rSTS":"done","rSS":"done","rSST":"done","rSSS":"done"},"notes":{},"edgeStates":{"rTT-rTTT":"done","rTT-rTTS":"done","rTS-rTST":"done","rTS-rTSS":"done","rT-rTT":"done","rT-rTS":"done","rST-rSTT":"done","rST-rSTS":"done","rSS-rSST":"done","rSS-rSSS":"done","rS-rST":"done","rS-rSS":"done","r-rT":"done","r-rS":"done"}},"v":{"items":[["call stack",[]],["chosen",[]],["printed","{1,2,3} {1,2} {1,3} {1} {2,3} {2} {3} {}"]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li><code>go(0)</code> starts with nothing chosen. First question: take 1?</li>
+        <li>Take 1: <code>push_back(1)</code>, then call <code>go(1)</code>. The call <code>go(0)</code> waits.</li>
+        <li>Take 2. Now <code>chosen</code> holds 1 and 2.</li>
+        <li>Take 3. Now <code>i == 3</code>: the base case prints {1,2,3} and returns.</li>
+        <li><span class="tr" data-ar="تراجع: pop_back يحذف 3. ثم اترك 3: الحالة الأساسية تطبع {1,2}.">Undo: <code>pop_back()</code> removes 3. Then skip 3: the base case prints {1,2}.</span></li>
+        <li><code>go(2)</code> is finished. Back in <code>go(1)</code>: undo 2, then skip 2.</li>
+        <li>Take 3: the base case prints {1,3}.</li>
+        <li>Undo 3 and skip it: print {1}.</li>
+        <li>Back in <code>go(0)</code>: undo 1. Now skip 1, with nothing chosen.</li>
+        <li>The right half works the same way: {2,3}, {2}, {3}, {}. All 8 subsets are printed.</li>
+      </ol>
+      <figcaption>Left edge = take, right edge = skip. Each level is one number, so 3 numbers give \( 2 \cdot 2 \cdot 2 = 8 \) bottom calls. This drawing is the <span class="term" data-t="call-tree">call tree</span>.</figcaption>
+    </figure>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
 int n;
-long long target;
-vector&lt;long long&gt; a;
-int ways = 0;
+vector&lt;int&gt; a, chosen;
 
-void go(int i, long long sum) {
-    if (i == n) {                  // base case: every number is decided
-        if (sum == target) ways++;
+void print(const vector&lt;int&gt;&amp; v) {
+    cout &lt;&lt; "{";
+    for (int k = 0; k &lt; (int)v.size(); k++) cout &lt;&lt; (k ? "," : "") &lt;&lt; v[k];
+    cout &lt;&lt; "}\n";
+}
+
+void go(int i) {
+    if (i == n) {                  // base case FIRST: every number is decided
+        print(chosen);
         return;
     }
-    go(i + 1, sum + a[i]);         // choice 1: take a[i]
-    go(i + 1, sum);                // choice 2: skip a[i]
+    chosen.push_back(a[i]);        // do: take a[i]
+    go(i + 1);                     // recurse
+    chosen.pop_back();             // undo
+    go(i + 1);                     // skip a[i]
 }
 
 int main() {
-    cin &gt;&gt; n &gt;&gt; target;
+    cin &gt;&gt; n;
     a.resize(n);
-    for (auto &amp;x : a) cin &gt;&gt; x;
-    go(0, 0);
-    cout &lt;&lt; ways &lt;&lt; "\n";
+    for (int&amp; x : a) cin &gt;&gt; x;
+    go(0);
 }
 </code></pre>
-    <p class="note">Input <code>3 3</code> and <code>1 2 3</code> prints 2: the subsets {1, 2} and {3}.</p>
+    <p class="note">Input <code>3</code> and <code>1 2 3</code> prints the 8 subsets in the order of the picture.</p>
   </div>
 </section>
 
 <section>
-  <h2>Backtracking: try, go deeper, undo</h2>
-  <p>Sometimes you need the chosen items themselves, not only their sum. Keep them in one <code>vector</code>. Add an item, go deeper, then <b>remove it</b> before the next choice. This is <span class="term" data-t="backtracking">backtracking</span>.</p>
-<pre data-part="global"><code class="cpp">
-int n;
-vector&lt;int&gt; a, chosen;
-
-void go(int i) {
-    if (i == n) {                        // base case: print this subset
-        for (int x : chosen) cout &lt;&lt; x &lt;&lt; " ";
-        cout &lt;&lt; "\n";
-        return;
-    }
-    chosen.push_back(a[i]);              // try: take a[i]
-    go(i + 1);                           // go deeper
-    chosen.pop_back();                   // undo
-    go(i + 1);                           // now try without a[i]
-}
-</code></pre>
-  <p>Two short forms without recursion. Subsets: a loop over <a href="#bits">bit masks</a>. Orders: <code>next_permutation</code> (sort first!).</p>
+  <h2>Change it to fit</h2>
+  <p><b>Default:</b> the take-or-skip function above. For "all orders", use <code>next_permutation</code> instead of your own recursion.</p>
+  <ul>
+    <li><b>Count, do not print.</b> Example: count the subsets with sum <code>target</code>. Pass the sum as a parameter. Then there is nothing to undo.
 <pre data-part="main"><code class="cpp">
-for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++) {     // every subset
-    long long sum = 0;
-    for (int i = 0; i &lt; n; i++)
-        if (mask &gt;&gt; i &amp; 1) sum += a[i];          // bit i is 1 -&gt; a[i] is taken
+void go(int i, long long sum) {
+    if (i == n) { if (sum == target) ways++; return; }
+    go(i + 1, sum + a[i]);         // take
+    go(i + 1, sum);                // skip
 }
-sort(p.begin(), p.end());
-do { /* use the order p */ } while (next_permutation(p.begin(), p.end()));
-</code></pre>
-  <p class="tip-box">Stop early when a branch cannot win. Example: the sum is already bigger than the target and all numbers are positive → <code>return</code>. This makes backtracking much faster.</p>
+</code></pre></li>
+    <li><b>Only subsets of size <code>k</code>.</b> Change the base case. You can also stop early: with more than <code>k</code> numbers chosen, no answer is left below.
+<pre data-part="main"><code class="cpp">
+if ((int)chosen.size() &gt; k) return;              // stop early
+if (i == n) { if ((int)chosen.size() == k) print(chosen); return; }
+</code></pre></li>
+    <li><b>All orders (<span class="term" data-t="permutation">permutations</span>).</b> Sort first. <code>next_permutation</code> changes <code>p</code> to the next order and returns <code>false</code> after the last one. For 1 2 3 you get 6 orders: 123, 132, 213, 231, 312, 321.
+<pre data-part="main"><code class="cpp">
+sort(p.begin(), p.end());                        // start from the smallest order
+do {
+    // use the order p here
+} while (next_permutation(p.begin(), p.end()));
+</code></pre></li>
+    <li><b>All strings of length <code>n</code> over the letters a, b, c.</b> Each position has 3 choices, not 2. Loop over the choices. There are \( 3^n \) strings.
+<pre data-part="main"><code class="cpp">
+void go(int i) {                                 // s is a global string
+    if (i == n) { cout &lt;&lt; s &lt;&lt; "\n"; return; }
+    for (char c : {'a', 'b', 'c'}) {
+        s.push_back(c);  go(i + 1);  s.pop_back();   // do, recurse, undo
+    }
+}
+</code></pre></li>
+  </ul>
 </section>
 
-<p class="complexity">Speed: subsets O(2^n) → fine for n ≤ 20. Orders O(n!) → fine for n ≤ 10. Always check n before you start.</p>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> There are \( n \) apples with weights \( p_1, \dots, p_n \). Split them into two groups, A and B. Make the difference of the two total weights as small as possible. Print that difference. Limits: \( 1 \le n \le 20 \), \( 1 \le p_i \le 10^9 \). (This is "Apple Division" on CSES.)</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The smallest value of \( |\text{sumA} - \text{sumB}| \). The bars mean "without the minus sign": \( |8 - 9| = 1 \).</li>
+    <li><b>A small example by hand.</b> Weights 3, 2, 7, 4, 1. The total is 17. Put 3, 4, 1 in A: \( \text{sumA} = 8 \). Then \( \text{sumB} = 17 - 8 = 9 \). The difference is 1. It cannot be 0, because 17 is odd. So the answer is 1.</li>
+    <li><b>The idea.</b> Every apple has two choices: A or B. That is take or skip. Pass <code>sumA</code> as a parameter. In the base case, <code>sumB = total - sumA</code>. Keep the best difference.</li>
+    <li><b>Why is it fast enough?</b> Count the bottom calls for a few \( n \):
+      <table>
+        <tr><th>\( n \)</th><td>3</td><td>10</td><td>20</td><td>30</td></tr>
+        <tr><th>\( 2^n \)</th><td>8</td><td>1024</td><td>\( \approx 10^6 \)</td><td class="hi">\( \approx 10^9 \)</td></tr>
+      </table>
+      <p>For \( n = 20 \) that is about \( 2 \cdot 10^6 \) calls in all. Far below \( 10^8 \). For \( n = 30 \) it would be too slow.</p>
+    </li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int n;
+vector&lt;long long&gt; p;
+long long total = 0, best;
+
+void go(int i, long long sumA) {
+    if (i == n) {                            // base case: every apple has a group
+        long long sumB = total - sumA;
+        best = min(best, abs(sumA - sumB));
+        return;
+    }
+    go(i + 1, sumA + p[i]);                  // apple i goes to A
+    go(i + 1, sumA);                         // apple i goes to B
+}
+
+int main() {
+    cin &gt;&gt; n;
+    p.resize(n);
+    for (long long&amp; x : p) {
+        cin &gt;&gt; x;
+        total += x;                          // up to 2 * 10^10: long long
+    }
+    best = total;                            // the worst split: all in one group
+    go(0, 0);
+    cout &lt;&lt; best &lt;&lt; "\n";
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: all subsets \( O(2^n) \), fine for \( n \le 20 \). All orders \( O(n!) \), fine for \( n \le 10 \). Check \( n \) before you start.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الاستدعاء الذاتي سحر لا أستطيع تتبّعه.">Recursion is magic. I cannot follow what happens.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="كل استدعاء هو استدعاء دالة عادي له نسخته الخاصة من المتغيّرات.">Each call is a normal function call with its own copy of the variables.</span> Trace \( n = 2 \) on paper, like the picture with <code>sum(3)</code>.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="عندما تستدعي الدالة نفسها، تبدأ من جديد وتنسى ما كانت تفعله.">When a function calls itself, it restarts and forgets what it was doing.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الدالة تنتظر. عندما يعود الاستدعاء الداخلي، تكمل من السطر التالي بقيمة n الخاصة بها.">The function waits. When the inner call returns, it goes on from the next line, with its own <code>n</code>.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الحالة الأساسية تفصيل صغير، أكتبه في النهاية.">The base case is a small detail. I add it at the end.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="بدون حالة أساسية لا تتوقّف الاستدعاءات أبدًا، فينهار البرنامج. اكتبها أوّلًا.">Without a base case the calls never stop, and the program crashes. Write it first.</span> On Codeforces you get "Runtime error".</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الاستدعاء الذاتي بطيء دائمًا.">Recursion is always slow.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="التكلفة هي عدد الاستدعاءات. sum(n) تقوم بـ n+1 استدعاء فقط، مثل الحلقة.">The cost is the number of calls. <code>sum(n)</code> makes only \( n + 1 \) calls, like a loop.</span> Take or skip is slow only because it makes \( 2^n \) calls.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>No base case, or a base case that is never reached. The function calls itself forever and the program crashes.</li>
-    <li>The next call is not smaller: you write <code>go(i)</code> and not <code>go(i + 1)</code>.</li>
-    <li>You forget to undo. After <code>push_back</code> and the call, you must <code>pop_back</code>.</li>
-    <li>n is too big. For n = 40, 2<sup>40</sup> is about 10<sup>12</sup>: too slow. Look for <a href="#dp">DP</a> or <a href="#greedy">greedy</a>.</li>
+    <li>The next call is not smaller: you write <code>go(i)</code> and not <code>go(i + 1)</code>. It never reaches the base case.</li>
+    <li>You forget to undo. After <code>push_back</code> and the call, write <code>pop_back</code>.</li>
+    <li>You call <code>next_permutation</code> on an array that is not sorted. Then you miss the orders that come "before" it.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>The same call runs many times.</b> Storing each answer once makes it fast. That is <a href="#dp">Dynamic programming</a>.</li>
+    <li><b>Recursion on a graph.</b> Walking from a point to its neighbours is the same idea. You learn it next, in <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a>.</li>
+    <li><b>\( n \) up to 40 (meet in the middle) and bitmask DP.</b> Rare below 1600. Come back <a href="#what-next">after 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="ما الذي تُرجعه sum(4)؟ وكم استدعاءً ينتظر عندما تبدأ sum(0)؟">What does <code>sum(4)</code> return? How many calls wait when <code>sum(0)</code> starts?</span>
+      <details><summary>Answer</summary><p>It returns \( 4 + 3 + 2 + 1 = 10 \). Four calls wait: <code>sum(4)</code>, <code>sum(3)</code>, <code>sum(2)</code>, <code>sum(1)</code>.</p></details></li>
+    <li><span class="tr" data-ar="في كود الأخذ أو الترك، ماذا يحدث إذا حذفت السطر chosen.pop_back()؟">In the take-or-skip code, what goes wrong if you delete <code>chosen.pop_back()</code>?</span>
+      <details><summary>Answer</summary><p>Numbers you skipped stay inside <code>chosen</code>. For {1, 2, 3} the second line prints {1,2,3} again, not {1,2}.</p></details></li>
+    <li><span class="tr" data-ar="n ≤ 15 والمطلوب تجربة كل ترتيب. هل هذا سريع بما يكفي؟">\( n \le 15 \) and you must try every order. Is that fast enough?</span>
+      <details><summary>Answer</summary><p>No. \( 15! \approx 1.3 \cdot 10^{12} \), far above \( 10^8 \). All orders are fine only up to about \( n = 10 \).</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -149,7 +288,7 @@ do { /* use the order p */ } while (next_permutation(p.begin(), p.end()));
     <li><a class="cf" data-p="96B">Lucky Numbers (easy)</a><span class="r">1300</span></li>
     <li><a class="cf" data-p="550B">Preparing Olympiad</a><span class="r">1400</span></li>
     <li><a class="cf" data-p="1385D">a-Good String</a><span class="r">1500</span></li>
-    <li><a href="https://cses.fi/problemset/task/1623">CSES: Apple Division</a><span class="r">CSES</span> — n ≤ 20: each apple goes to group A or group B.</li>
+    <li><a href="https://cses.fi/problemset/task/1623">CSES: Apple Division</a><span class="r">CSES</span> — the problem of "Solve one together". Type it yourself.</li>
     <li><a href="https://cses.fi/problemset/task/1622">CSES: Creating Strings</a><span class="r">CSES</span> — print all orders of the letters.</li>
     <li><a href="https://cses.fi/problemset/task/1624">CSES: Chessboard and Queens</a><span class="r">CSES</span> — classic backtracking: put a queen, go deeper, remove it.</li>
   </ol>

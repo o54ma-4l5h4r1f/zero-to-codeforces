@@ -1,4 +1,12 @@
-<p class="idea">Solve a few problems a little above your level, every day. Think first, read the solution late, then write the code yourself.</p>
+<p class="idea"><span class="tr" data-ar="حُلّ كل يوم بضع مسائل أعلى قليلًا من مستواك. فكّر أولًا، واقرأ الحل متأخرًا، ثم اكتب الكود بنفسك.">Solve a few problems a little above your level, every day. Think first, read the solution late, then write the code yourself.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know contests, divisions and rating → <a href="#how-codeforces-works">How Codeforces works</a></li>
+    <li>You can test your code on the samples → <a href="#cpp-template">Your C++ template</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>The practice loop</h2>
@@ -6,53 +14,50 @@
     <li><b>Pick</b> a problem at your <span class="term" data-t="rating">rating</span>, or up to 200 above it. No rating yet? Start with 800.</li>
     <li><b>Think</b> for 20–40 minutes. Use paper. Try small examples by hand.</li>
     <li><b>Stuck?</b> Open the <span class="term" data-t="editorial">editorial</span>. Read only until you get the idea. Then close it.</li>
-    <li><b>Write the code yourself</b> and get Accepted. Reading a solution is not solving.</li>
+    <li><b>Write the code yourself</b> and get Accepted. <span class="tr" data-ar="قراءة الحل ليست حلًّا. الكود الذي تكتبه بنفسك هو ما يعلّمك.">Reading a solution is not solving. The code you write yourself is what teaches you.</span></li>
     <li><b>Write one line</b> in your notebook: the trick you learned.</li>
   </ol>
 </section>
 
 <section>
   <h2>How to pick problems</h2>
-  <p>Open the <a href="https://codeforces.com/problemset">Problemset</a> on Codeforces. Set the rating filter, for example 800 to 1000. Then sort by the number of people who solved each problem.</p>
+  <p>Open the <a href="https://codeforces.com/problemset">Problemset</a>. Set the rating filter, for example 800 to 1000. Then sort by the number of people who solved each problem.</p>
   <table>
     <tr><th>The problem feels…</th><th>What it means</th><th>What to do</th></tr>
     <tr><td>easy, solved in 5 minutes</td><td>you learn little</td><td>go up by 100</td></tr>
     <tr><td class="hi">hard, but you solve one in three to one in two alone</td><td class="hi">the best level</td><td class="hi">stay here</td></tr>
     <tr><td>impossible, even with the editorial</td><td>too far for now</td><td>go down by 100–200</td></tr>
   </table>
-  <p class="tip-box">More solvers = a fairer problem for its rating. Start with the most-solved problems. Leave the strange ones for later.</p>
-  <p>The practice ladders in this guide are built the same way. They are sorted by the official rating, then by how many people solved each problem.</p>
-</section>
-
-<section>
-  <h2>Three rules that matter most</h2>
-
-  <div class="way">
-    <h3><b>1 · A little every day</b></h3>
-    <p>3–5 problems a day is better than 30 problems on one day. Your brain learns while you sleep. Make practice a <span class="term" data-t="habit">habit</span>, like brushing your teeth.</p>
-  </div>
-
-  <div class="way">
-    <h3><b>2 · Upsolve after every contest</b></h3>
-    <p><span class="term" data-t="upsolving">Upsolving</span> means: after the <span class="term" data-t="contest">contest</span>, solve the <b>next</b> problem, the first one you could not solve. This one problem teaches you more than ten easy ones. It is exactly at the edge of your level.</p>
-  </div>
-
-  <div class="way">
-    <h3><b>3 · Never copy a solution</b></h3>
-    <p>If you copy code, you get a green "Accepted" and learn nothing. Understand the idea, close the page, and type every line yourself. If you cannot, you did not understand it yet.</p>
-  </div>
+  <p><span class="tr" data-ar="سلالم التدريب في هذا الدليل مرتّبة حسب التقييم الرسمي، ثم حسب عدد من حلّوا كل مسألة.">The practice ladders in this guide are sorted by the official rating, then by how many people solved each problem.</span> So the top of a ladder is the easiest and the most-solved. More solvers also mean a fairer rating.</p>
+  <p>Finished a ladder? The site has a <a href="#training">Training</a> page. It has more real problems for each lesson, from easy to hard. Its <a href="#train-mixed">Mixed set</a> hides the topic, like a real contest.</p>
+  <p class="note">Not sure which lesson a problem needs? Open <a href="#choose-a-tool">Which tool?</a>. It goes from the words in a statement to the right tool.</p>
 </section>
 
 <section>
   <h2>What strong coders say</h2>
-  <p>This advice comes from the most-liked practice posts on Codeforces.</p>
+  <p>This advice comes from the most-liked practice posts on Codeforces. Many authors agree on these points.</p>
   <ul>
-    <li><b>Be honest with yourself.</b> The biggest trap is to "think" for some minutes without really trying, and then read the solution. Real effort matters more than any method.</li>
-    <li><b>When to read the editorial? People do not agree.</b> Some strong coders say: never, come back to the problem later. Others say: read it when you have no new idea for 10–30 minutes. Both agree on this: do not open it while you still have ideas to try.</li>
-    <li><b>Pick problems you solve alone about one time in three.</b> On Codeforces, a problem with your rating means you solve it about half of the time in a contest.</li>
-    <li><b>Mix topics.</b> After you learn a topic, hide the tags and solve problems in a random order. In a contest nobody tells you the topic. Finding it is the skill.</li>
-    <li><b>Do not learn advanced topics early.</b> Up to 1600 you need the basics, done well. Segment trees and other big tools can wait.</li>
+    <li><b>Practice a little above your level.</b> Easy problems feel good but teach little. Aim to solve about one in three to one in two alone.</li>
+    <li><b>Be honest with yourself.</b> <span class="tr" data-ar="أكبر فخّ هو أن «تفكّر» بضع دقائق دون محاولة حقيقية، ثم تقرأ الحل.">The biggest trap is to "think" for some minutes without really trying, and then read the solution.</span> Real effort matters more than hours or problem counts.</li>
+    <li><b>When to read the editorial? People do not agree.</b> Some say: never, come back later. Others say: after 10–30 minutes with no new idea. <span class="tr" data-ar="الجميع متّفقون على أمر واحد: لا تفتح الحل ما دامت عندك أفكار لم تجرّبها.">All agree on one thing: do not open it while you still have ideas to try.</span></li>
+    <li><b>After the editorial, write the code yourself.</b> Never copy it.</li>
+    <li><b>Upsolve after every contest.</b> <span class="term" data-t="upsolving">Upsolving</span> means: after the contest, solve the first problem you could not solve. It sits exactly at the edge of your level.</li>
+    <li><b>Virtual contests count</b>, if you take them seriously and upsolve after. Contests train speed. The archive trains solving.</li>
+    <li><b>Learn a new algorithm when problems ask for it.</b> Most people are stuck because of thinking, not because a topic is missing.</li>
+    <li><b>Learn to stress test.</b> One post says it is worth more than 100 rating points. You learn it in the next lesson.</li>
+    <li><b>First by topic, then mixed.</b> Beginners learn one topic at a time. Then hide the tags: in a contest nobody tells you the topic.</li>
   </ul>
+</section>
+
+<section>
+  <h2>What you can skip on the way to 1600</h2>
+  <p><span class="tr" data-ar="لا تتوقّف عند درس صعب. ثلاثة دروس في المرحلة 3 اختيارية قبل 1600.">Do not stall on a hard lesson. Three lessons of Stage 3 are optional below 1600:</span></p>
+  <ul>
+    <li><b>DSU (union-find)</b>,</li>
+    <li><b>Topological sort</b>,</li>
+    <li><b>Interactive problems</b>.</li>
+  </ul>
+  <p>No practice post we read lists them as needed below 1600. Read them later, or when a problem asks for one. Big tools like segment trees are not in this guide at all. They come after 1600.</p>
 </section>
 
 <section>
@@ -61,56 +66,101 @@
     <li>Join every <b>Div. 4</b>, <b>Div. 3</b> and <b>Educational</b> round. They are made for learning. Join Div. 2 rounds too when you have time.</li>
     <li>No contest at a good time for you? Use <span class="term" data-t="virtual">virtual participation</span>: an old contest with a real timer. It does not change your rating.</li>
     <li>In a contest, solve in order: A, then B, then C. Do not stay on one problem for the whole time.</li>
-    <li>Your rating goes up and down. This is normal. <b>Ignore it for your first 20 contests.</b> Count solved problems, not rating points.</li>
+    <li><span class="tr" data-ar="تقييمك يصعد وينزل، وهذا طبيعي. تجاهله في أول 20 مسابقة، وعُدّ المسائل المحلولة بدلًا منه.">Your rating goes up and down. This is normal. <b>Ignore it for your first 20 contests.</b> Count solved problems instead.</span></li>
   </ul>
 </section>
 
 <section>
   <h2>A simple weekly plan</h2>
-  <p>About 1–2 hours a day. Move the days to fit your week.</p>
+  <p>About 1–2 hours a day. A little every day beats a lot on one day. Move the days to fit your week.</p>
   <table>
     <tr><th>Day</th><th>What you do</th><th>Time</th></tr>
     <tr><td>1</td><td>One new page of this guide + the first problems of its ladder</td><td>90 min</td></tr>
     <tr><td>2</td><td>3–4 problems at your rating, up to +200</td><td>60–90 min</td></tr>
-    <tr><td>3</td><td>Finish the ladder of this week's page</td><td>60–90 min</td></tr>
+    <tr><td>3</td><td>Finish the ladder, then its Training track</td><td>60–90 min</td></tr>
     <tr><td>4</td><td>3–4 problems at your rating, up to +200</td><td>60–90 min</td></tr>
     <tr><td class="hi">5</td><td class="hi">A contest: live, or virtual</td><td class="hi">2 hours</td></tr>
     <tr><td>6</td><td>Upsolve 1–2 problems of that contest. Write the tricks in your notebook.</td><td>60 min</td></tr>
     <tr><td>7</td><td>Rest, or read your notebook again</td><td>10 min</td></tr>
   </table>
+  <p class="note">Your notebook: one or two lines per problem that taught you something. For example "1A: round up without double: <code>(a + b - 1) / b</code>". Read it before a contest.</p>
 </section>
 
-<section>
-  <h2>Your notebook of tricks</h2>
-  <p>Keep a small notebook or a text file. After each problem that taught you something, write one or two lines. Read it again before a contest.</p>
-  <table>
-    <tr><th>Problem</th><th>Trick I learned</th></tr>
-    <tr><td>1A</td><td>Round up without double: (a + b − 1) / b.</td></tr>
-    <tr><td>160A</td><td>"Fewest items to pass half of the sum" → sort from big to small, take from the front.</td></tr>
-    <tr><td>(my bug)</td><td>The sum was int. Sum of many numbers → long long.</td></tr>
-  </table>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> Last week you tried 12 problems, 4 at each rating. At 800 you solved 4 of 4, each in about 5 minutes. At 900 you solved 2 of 4 alone. At 1000 you solved 0 of 4, and even the editorials were not clear. Where do you practice this week?</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> Find the rating where you solve about one in three to one in two alone.</li>
+    <li><b>Look at each rating.</b>
+      <table>
+        <tr><th>Rating</th><th>Solved alone</th><th>Share</th><th>Meaning</th></tr>
+        <tr><td>800</td><td>4 of 4</td><td>all</td><td>too easy: you learn little</td></tr>
+        <tr><td class="hi">900</td><td class="hi">2 of 4</td><td class="hi">one in two</td><td class="hi">the best level</td></tr>
+        <tr><td>1000</td><td>0 of 4</td><td>none</td><td>too far for now</td></tr>
+      </table>
+    </li>
+    <li><b>The plan.</b> <span class="tr" data-ar="تدرّب هذا الأسبوع على 900، ومعها مسألة واحدة من 1000 في اليوم.">Practice at 900 this week, plus one 1000 problem each day.</span> Upsolve the 1000 problems after you read their editorials.</li>
+    <li><b>Check again next week.</b> When 900 feels like 800 did, move up by 100.</li>
+  </ol>
+</section>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="كلما حللت مسائل أكثر تحسّنت أكثر، مهما كانت سهلة.">The more problems I solve, the better I get, even if they are easy.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="المسائل السهلة لا تعلّمك شيئًا جديدًا. المسائل الصعبة قليلًا هي التي تنقلك للأمام.">Easy problems teach you nothing new. Problems a little too hard for you move you forward.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="لكي أصل إلى 1600 يجب أن أتعلّم كل الخوارزميات المتقدّمة.">To reach 1600 I must learn every advanced algorithm.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="حتى 1600 تحتاج الأساسيات، لكن متقنة جيّدًا. التفكير أهم من عدد المواضيع.">Up to 1600 you need the basics, done well. Thinking matters more than the number of topics.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="نزل تقييمي بعد مسابقة، إذن أصبحت أسوأ.">My rating went down after one contest, so I got worse.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="مسابقة واحدة فيها حظ كثير. انظر إلى مسائلك المحلولة خلال شهر.">One contest has a lot of luck in it. Look at your solved problems over a month.</span></p>
+    </li>
+  </ul>
 </section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>You solve only easy problems because green feels good. You stop growing.</li>
     <li>You open the editorial after 5 minutes. The thinking time is the training.</li>
     <li>You read the editorial and say "I understand", but you do not write the code.</li>
     <li>You watch lessons for weeks and solve nothing. One lesson, then problems.</li>
   </ul>
 </section>
 
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>The three optional lessons.</b> Come back when you are near 1600, or when a problem needs one: <a href="#dsu">DSU (union-find)</a>, <a href="#toposort">Topological sort</a>, <a href="#interactive">Interactive problems</a>.</li>
+    <li><b>Segment trees and other big tools.</b> Many strong coders say they learned them too early. Wait until after 1600: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="تحلّ كل مسائل 1100 وحدك في 10 دقائق. ماذا تفعل؟">You solve every 1100 problem alone in 10 minutes. What do you do?</span>
+      <details><summary>Answer</summary><p>Go up by 100, to 1200. At 1100 you learn little now.</p></details></li>
+    <li><span class="tr" data-ar="بعد مسابقة لم تحل المسألة C. ما أول شيء تفعله في اليوم التالي؟">After a contest you could not solve problem C. What do you do the next day?</span>
+      <details><summary>Answer</summary><p>Upsolve C: think again, read the editorial if needed, and write the code yourself.</p></details></li>
+    <li><span class="tr" data-ar="تقييمك 1350 ودرس DSU صعب عليك. هل يجب أن تتوقف حتى تفهمه؟">Your rating is 1350 and the DSU lesson is hard for you. Must you stop until you get it?</span>
+      <details><summary>Answer</summary><p>No. DSU is optional below 1600. Go on with the other lessons and come back later.</p></details></li>
+  </ol>
+</section>
+
 <section class="more">
   <h2>Learn more</h2>
   <ul>
-    <li><a href="https://codeforces.com/blog/entry/98621">Codeforces blog: Self-deception</a> — why some people practice every day and do not improve. Short and honest.</li>
+    <li><a href="https://codeforces.com/blog/entry/91114">My opinion on how to practice competitive programming</a> — by Radewoosh. The most-liked practice post: why easy problems do not help.</li>
+    <li><a href="https://codeforces.com/blog/entry/98621">Self-deception: maybe why you're still grey after practicing every day</a> — short and honest, about real effort.</li>
     <li><a href="https://codeforces.com/blog/entry/98806">Codeforces blog: How to practice (Um_nik)</a> — advice from one of the best coders in the world.</li>
     <li><a href="https://codeforces.com/blog/entry/116371">Codeforces blog: How to Effectively Practice CP</a> — a full guide to choosing problems and learning from them.</li>
-    <li><a href="https://codeforces.com/blog/entry/113785">Codeforces blog: Pro Tips</a> — "upsolve to your next level" and other short tips.</li>
+    <li><a href="https://codeforces.com/blog/entry/113785">Pro Tips — get them while they are free</a> — "upsolve to your next level" and other short tips.</li>
     <li><a href="https://codeforces.com/blog/entry/62865">Codeforces blog: Problem Difficulties</a> — what a problem rating means, from the founder of the site.</li>
     <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — hundreds of very easy problems, sorted by topic. Good before your first 800.</li>
     <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — 300+ classic problems, sorted by topic. No ratings, no contests, only practice.</li>
-    <li><a href="https://codeforces.com/edu/course/2">Codeforces EDU</a> — free lessons with video, text and problems for each step.</li>
   </ul>
 </section>

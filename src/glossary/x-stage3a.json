@@ -1,0 +1,3 @@
+{
+  "call-stack": { "en": "call stack", "ar": "مكدّس الاستدعاءات (الاستدعاءات التي تنتظر)", "note": "the list of function calls that started and are still waiting for a call they made" }
+}

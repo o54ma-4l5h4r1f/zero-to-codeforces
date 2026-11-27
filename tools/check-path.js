@@ -7,13 +7,50 @@
 //   (a) Arabic written into the text: class="ar" spans, or Arabic inside brackets (Arabic belongs in tooltips only)
 //   (b) structure: the required blocks, in the required order, with the right number of items
 //   (c) forward links: href="#slug" to a LATER lesson outside the "Not now" box and "Learn more"
+//   (e) pictures (figure.viz): at most 2 steppers per lesson, at most 12 steps per stepper (the JSON itself is checked by build.js)
+//   (f) "why?" chips: exact markup, the story exists in src/whys/, at most 3 per page, never inside code, a tooltip,
+//       a picture, a link, a heading or a <summary>. The stories themselves get the math and Arabic rules of (a).
 // WARNINGS (never fail): (d) sentences longer than 22 words, plain-text math (<sup>, ≤, × …) that should be LaTeX,
-//   LaTeX commands outside the allowed table, fewer than 6 sentence translations (.tr).
+//   LaTeX commands outside the allowed table, fewer than 6 sentence translations (.tr),
+//   a stepper caption with more than 2 sentences, a stepper with fewer than 3 steps;
+//   a story with fewer than 3 or more than 8 sentences, or not 2–4 sentence translations.
 // On old pages (not upgraded yet) the same findings are printed as "old:" notes and do not fail.
 const fs = require('fs'), path = require('path');
 const { sentences } = require('./readability.js');
 const src = path.join(__dirname, '..', 'src'), dir = path.join(src, 'pages');
 const stages = JSON.parse(fs.readFileSync(path.join(src, 'topics.json'), 'utf8'));
+// extra pages (src/extras.json) are not lessons: only the math and Arabic rules apply. One that is not written yet is skipped.
+const extras = fs.existsSync(path.join(src, 'extras.json')) ? JSON.parse(fs.readFileSync(path.join(src, 'extras.json'), 'utf8')).map(e => e.slug) : [];
+const MAX_STEPPERS = 2, MAX_STEPS = 12;
+// "Why?" stories: <article data-key="KEY"> in src/whys/*.html (AUTHORING.md "Why? notes")
+const whyDir = path.join(src, 'whys'), stories = {};
+if (fs.existsSync(whyDir)) for (const f of fs.readdirSync(whyDir).filter(f => f.endsWith('.html')).sort())
+  for (const m of fs.readFileSync(path.join(whyDir, f), 'utf8').matchAll(/<article data-key="([^"]*)">([\s\S]*?)<\/article>/g)) stories[m[1]] = m[2];
+const MAX_CHIPS = 3, CHIP = /^<button type="button" class="why" data-why="([a-z0-9-]+)">why\?<\/button>$/;
+// [opening pattern, tag]: a chip must not sit inside these elements
+const NO_CHIP = [['<pre\\b', 'pre', 'code'], ['<code\\b', 'code', 'code'], ['<figure\\b', 'figure', 'a picture'], ['<span class="tr"', 'span', 'a .tr tooltip'],
+  ['<span class="term"', 'span', 'a .term tooltip'], ['<a\\b', 'a', 'a link'], ['<summary\\b', 'summary', 'a <summary>'], ['<h[1-4]\\b', 'h[1-4]', 'a heading'], ['<button\\b(?![^>]*class="why")', 'button', 'a button']];
+// the [start, end) of every element that opens with `open` (nested tags of the same name are counted)
+function ranges(html, open, tag) {
+  const out = [], tagRe = new RegExp('<(/?)(' + tag + ')\\b[^>]*>', 'g');
+  for (const m of html.matchAll(new RegExp(open, 'g'))) {
+    let depth = 0, end = html.length; tagRe.lastIndex = m.index;
+    for (let t; (t = tagRe.exec(html));) { depth += t[1] ? -1 : 1; if (!depth) { end = t.index + t[0].length; break; } }
+    out.push([m.index, end]);
+  }
+  return out;
+}
+function checkChips(html, E) {
+  const chips = [...html.matchAll(/<button\b[^>]*\bdata-why=[\s\S]*?<\/button>/g)];
+  if (chips.length > MAX_CHIPS) E.push(`${chips.length} "why?" chips on one page, max ${MAX_CHIPS}`);
+  const inside = NO_CHIP.map(([o, t, name]) => [ranges(html, o, t), name]);
+  for (const c of chips) {
+    const m = CHIP.exec(c[0]);
+    if (!m) { E.push(`a "why?" chip must be exactly <button type="button" class="why" data-why="KEY">why?</button>: ${short(c[0])}`); continue; }
+    if (!stories[m[1]]) E.push(`"why?" chip with no story: data-why="${m[1]}" (add <article data-key="${m[1]}"> to src/whys/)`);
+    for (const [rs, name] of inside) if (rs.some(([a, b]) => a < c.index && c.index < b)) E.push(`"why?" chip "${m[1]}" is inside ${name}; put it after the fact, outside`);
+  }
+}
 const order = [], stageOf = {};
 for (const st of stages) for (const t of st.topics) { stageOf[t.slug] = st.id; order.push(t.slug); }
 const want = process.argv.slice(2);
@@ -41,17 +78,7 @@ const block = (html, name) => {            // the whole element of a block ('' i
 const count = (s, re) => (s.match(re) || []).length;
 const short = s => s.replace(/\s+/g, ' ').trim().slice(0, 110);
 
-let errors = 0, warns = 0, oldNotes = 0, nUp = 0, nOld = 0, fwdAll = 0, longAll = 0;
-const oldList = [];
-const files = ['home', 'cheatsheet', ...order].filter(s => !want.length || want.includes(s));
-for (const slug of files) {
-  const file = path.join(dir, slug + '.html');
-  if (!fs.existsSync(file)) { console.log(`${slug}: page file is missing`); errors++; continue; }
-  const html = fs.readFileSync(file, 'utf8');
-  const lesson = slug in stageOf, upgraded = !lesson || html.includes('class="before"');
-  if (lesson) { if (upgraded) nUp++; else { nOld++; oldList.push(slug); } }
-  const E = [], W = [];
-
+function checkProse(html, E, W, upgraded) {
   // ---------- (a) math ----------
   const codeParts = html.match(/<pre[\s\S]*?<\/pre>|<code[\s\S]*?<\/code>/g) || [];
   for (const c of codeParts) {
@@ -77,6 +104,34 @@ for (const slug of files) {
   // ---------- (a) Arabic only in tooltips ----------
   if (/class="ar"/.test(html)) E.push('class="ar" span: Arabic must not be written into the text, use .term or .tr');
   for (const m of prose.matchAll(/[(（][^()（）]*[؀-ۿ][^()（）]*[)）]/g)) E.push(`Arabic in brackets in the text: ${short(m[0])}`);
+
+}
+let errors = 0, warns = 0, oldNotes = 0, nUp = 0, nOld = 0, fwdAll = 0, longAll = 0;
+const oldList = [];
+const files = ['home', 'cheatsheet', ...extras.filter(s => fs.existsSync(path.join(dir, s + '.html'))), ...order].filter(s => !want.length || want.includes(s));
+// (node tools/check-path.js whys) checks only the stories
+for (const s of want) if (extras.includes(s) && !files.includes(s)) console.log(`${s}: extra page, not written yet (skipped)`);
+for (const slug of files) {
+  const file = path.join(dir, slug + '.html');
+  if (!fs.existsSync(file)) { console.log(`${slug}: page file is missing`); errors++; continue; }
+  const raw = fs.readFileSync(file, 'utf8');
+  const html = raw.replace(/<script type="application\/json">[\s\S]*?<\/script>/g, '');     // the JSON of a picture is not prose
+  const lesson = slug in stageOf, upgraded = !lesson || html.includes('class="before"');
+  if (lesson) { if (upgraded) nUp++; else { nOld++; oldList.push(slug); } }
+  const E = [], W = [];
+
+  checkProse(html, E, W, upgraded);
+  checkChips(raw, E);
+
+  // ---------- (e) pictures ----------
+  const steppers = raw.match(/<figure\b[^>]*data-viz="stepper"[\s\S]*?<\/figure>/g) || [];
+  if (lesson && steppers.length > MAX_STEPPERS) E.push(`${steppers.length} steppers on one page, max ${MAX_STEPPERS}`);
+  steppers.forEach((f, i) => {
+    const caps = ((/<ol class="viz-steps">([\s\S]*?)<\/ol>/.exec(f) || [])[1] || '').split(/<li\b[^>]*>/).slice(1);
+    if (caps.length > MAX_STEPS) E.push(`stepper ${i + 1} has ${caps.length} steps, max ${MAX_STEPS}`);
+    if (caps.length < 3) W.push(`stepper ${i + 1} has only ${caps.length} step(s); use a static picture`);
+    caps.forEach((c, k) => { const t = c.replace(/<\/li>[\s\S]*/, '').replace(/<code[\s\S]*?<\/code>|\\\([\s\S]*?\\\)/g, 'X').replace(/<[^>]+>/g, ''), n = (t.match(/[.!?](?=["”)]?(\s|$))/g) || []).length; if (n > 2) W.push(`stepper ${i + 1}, step ${k + 1}: ${n} sentences in the caption, write one (two short ones at most)`); });
+  });
 
   if (lesson) {
     // ---------- (b) structure ----------
@@ -144,6 +199,24 @@ for (const slug of files) {
     console.log(`${slug}${upgraded ? '' : ' (old page, not upgraded yet)'}\n${lines.slice(0, lim).join('\n')}${lines.length > lim ? `\n  … ${lines.length - lim} more (run: node tools/check-path.js ${slug})` : ''}`);
   }
 }
+// ---------- (f) the "Why?" stories (all of them, or: node tools/check-path.js whys) ----------
+let nStories = 0;
+if (!want.length || want.includes('whys')) for (const key in stories) {
+  const body = stories[key].replace(/<script type="application\/json">[\s\S]*?<\/script>/g, ''), E = [], W = [];
+  nStories++;
+  checkProse(body, E, W, true);
+  if (/data-why=/.test(body)) E.push('a story cannot contain a "why?" chip');
+  if (!/<p class="why-means"><b>What this means for you:<\/b>/.test(body)) E.push('needs a last line <p class="why-means"><b>What this means for you:</b> …</p>');
+  const told = body.replace(/^\s*<h3>[\s\S]*?<\/h3>/, '').replace(/<p class="why-means">[\s\S]*?<\/p>|<table[\s\S]*?<\/table>|<figure[\s\S]*?<\/figure>|<ul[\s\S]*?<\/ul>|\\\[[\s\S]*?\\\]/g, ' ');
+  const sn = sentences(told).filter(x => /[.!?]["”)]?$/.test(x.text));      // a piece that ends at a colon is part of the next sentence
+  if (sn.length < 3 || sn.length > 8) W.push(`${sn.length} sentences in the story (lists and tables not counted), write 3–8`);
+  for (const x of sentences(body)) if (x.words.length > MAXW) W.push(`${x.words.length} words: ${x.text.slice(0, 160)}`);
+  const ntr = count(body, /class="tr"/g);
+  if (ntr < 2 || ntr > 4) W.push(`${ntr} sentence translations (.tr), write 2–4`);
+  errors += E.length; warns += W.length;
+  if (E.length || W.length) console.log(`why story ${key}\n${[...E.map(x => '  ERROR ' + x), ...W.map(x => '  warn  ' + x)].join('\n')}`);
+}
+if (nStories) console.log(`\n${nStories} "Why?" stories checked`);
 console.log(`\n${nUp} lesson(s) upgraded, ${nOld} old${oldList.length && !want.length ? ' (' + oldList.join(', ') + ')' : ''}`);
 console.log(`${fwdAll} forward link(s), ${longAll} sentence(s) longer than ${MAXW} words, ${oldNotes} note(s) on old pages`);
 console.log(`${errors} error(s) and ${warns} warning(s) on upgraded pages`);

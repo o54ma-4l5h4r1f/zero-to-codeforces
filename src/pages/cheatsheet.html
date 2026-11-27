@@ -1,4 +1,30 @@
-<section class="s0">
+<ul class="chips cjump">
+  <li><a href="#cheatsheet" data-jump="cs-start" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Limits and types</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-parity" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Even and odd</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-division" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Division and rounding</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-wrap" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Remainder and wrap around</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-digits" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Digits</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-compare" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Compare and bound</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-counting" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Counting without a loop</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-chars" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Characters</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-strings" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Strings</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-arrays" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Arrays</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-grids" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Grids</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-powers" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Squares, roots, powers</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-time" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Time and units</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-geometry" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Geometry with integers</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-io" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Input and output</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-safety" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Overflow and other traps</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-numtheory" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Divisors and primes</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-mod" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Modulo and counting formulas</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-bits" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Bits</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-stl" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">STL</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-ranges" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Prefix sums, two pointers, binary search</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-recdp" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Recursion and DP</a></li>
+  <li><a href="#cheatsheet" data-jump="cs-graphs" onclick="document.getElementById(this.getAttribute('data-jump')).scrollIntoView();return false">Graphs and trees</a></li>
+</ul>
+
+<section class="s0" id="cs-start" style="scroll-margin-top:64px">
 <h2>Limits and types</h2>
 <div class="cgrid">
   <div class="cc" data-to="complexity" data-tip="About 10^8 simple steps run in 1 second. Read n from the limits, then pick the speed you need.">
@@ -14,18 +40,19 @@
     </table>
   </div>
   <div class="cc" data-to="overflow" data-tip="How big a number each type can hold. If a sum or product can pass 2·10^9, use long long.">
-    <div class="fx"><code>int</code> \( \approx \pm 2 \cdot 10^9 \) &nbsp;\( (2^{31} - 1) \)</div>
-    <div class="fx"><code>long long</code> \( \approx \pm 9 \cdot 10^{18} \) &nbsp;\( (2^{63} - 1) \)</div>
-    <div class="fx">1 second \( \approx 10^8 \) steps</div>
-    <div class="fx">256 MB \( \approx 6 \cdot 10^7 \) ints</div>
+    <div class="fx"><code>int</code> \( \approx \pm 2 \cdot 10^9 \) · \( (2^{31} - 1) \) <button type="button" class="why" data-why="int-max">why?</button></div>
+    <div class="fx"><code>long long</code> \( \approx \pm 9 \cdot 10^{18} \) · \( (2^{63} - 1) \)</div>
+    <div class="fx">1 second \( \approx 10^8 \) steps <button type="button" class="why" data-why="ten-to-eight">why?</button></div>
+    <div class="fx">256 MB \( \approx 6 \cdot 10^7 \) ints <button type="button" class="why" data-why="memory-256">why?</button></div>
   </div>
   <div class="cc" data-to="overflow" data-tip="Multiply two ints safely: start with 1LL so the whole product is computed as long long.">
 <pre data-part="main"><code class="cpp">
 long long p = 1LL * a * b;
-long long big = 1e18;   const int MOD = 1e9 + 7;
+long long big = 1e18;
+const int MOD = 1e9 + 7;
 </code></pre>
   </div>
-  <div class="cc span2" data-to="cpp-template" data-tip="The start of every solution: fast input/output and a loop over the test cases.">
+  <div class="cc span2" data-to="cpp-template" data-tip="The start of every solution: fast input and output, and a loop over the test cases.">
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -53,34 +80,1119 @@ int main() {
 </div>
 </section>
 
-<section class="s1">
-<h2>Math</h2>
+<section class="s1" id="cs-parity" style="scroll-margin-top:64px">
+<h2>Even and odd</h2>
 <div class="cgrid">
-  <div class="cc" data-to="basic-math" data-tip="Sums you should know by heart. Use long long.">
-    <div class="fx">\( 1 + 2 + \dots + n = \frac{n(n+1)}{2} \)</div>
-    <div class="fx">\( 1 + 3 + \dots + (2n - 1) = n^2 \)</div>
-    <div class="fx">\( 1^2 + 2^2 + \dots + n^2 = \frac{n(n+1)(2n+1)}{6} \)</div>
-    <div class="fx">\( a + (a+d) + \dots = \frac{n \cdot (\text{first} + \text{last})}{2} \) &nbsp;(\( n \) terms)</div>
-    <div class="fx">\( 1 + 2 + 4 + \dots + 2^k = 2^{k+1} - 1 \)</div>
+  <div class="cc" data-to="basic-math" data-tip="Test if x is even or odd. Never write x % 2 == 1: for a negative odd x the remainder is -1, so the test fails.">
+    <div class="fx">even: <code>x % 2 == 0</code></div>
+    <div class="fx">odd: <code>x % 2 != 0</code></div>
+    <div class="fx">1 if odd, 0 if even: <code>x &amp; 1</code></div>
+    <div class="fx"><code>-7 % 2</code> is <code>-1</code>, not <code>1</code></div>
   </div>
-  <div class="cc" data-to="basic-math" data-tip="Integer division tricks: round up, count multiples in a range, even/odd test.">
-    <div class="fx">\( \lceil a / b \rceil \) = <code>(a + b - 1) / b</code></div>
-    <div class="fx">multiples of \( k \) in \( [1, n] \): \( \lfloor n / k \rfloor \)</div>
-    <div class="fx">in \( [l, r] \): \( \lfloor r / k \rfloor - \lfloor (l - 1) / k \rfloor \)</div>
-    <div class="fx">odd: <code>x % 2 != 0</code> &nbsp; even: <code>x % 2 == 0</code></div>
-    <div class="fx">numbers in \( [l, r] \): \( r - l + 1 \)</div>
+  <div class="cc" data-to="basic-math" data-tip="Parity rules: is the result even or odd when you add, subtract or multiply. Use them to answer without computing the real value.">
+    <div class="fx">\( \text{even} \pm \text{even} = \text{even} \)</div>
+    <div class="fx">\( \text{odd} \pm \text{odd} = \text{even} \)</div>
+    <div class="fx">\( \text{even} \pm \text{odd} = \text{odd} \)</div>
+    <div class="fx">\( \text{even} \cdot \text{any} = \text{even} \)</div>
+    <div class="fx">\( \text{odd} \cdot \text{odd} = \text{odd} \)</div>
   </div>
-  <div class="cc" data-to="basic-math" data-tip="Walk over the digits of a number from the last digit to the first.">
+  <div class="cc" data-to="basic-math" data-tip="Same parity means both even or both odd. Do not write a % 2 == b % 2: it fails when one of them is negative. A sum is odd when it has an odd count of odd numbers.">
+    <div class="fx">same parity: <code>(a - b) % 2 == 0</code></div>
+    <div class="fx">different parity: <code>(a - b) % 2 != 0</code></div>
+    <div class="fx">sum of all is odd: <code>cntOdd % 2 != 0</code></div>
+    <div class="fx">product of all is odd: <code>cntEven == 0</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Count the even or odd numbers in a range without a loop. Needs n &gt;= 0 and 1 &lt;= l &lt;= r.">
+    <div class="fx">even in \( [1, n] \): <code>n / 2</code></div>
+    <div class="fx">odd in \( [1, n] \): <code>(n + 1) / 2</code></div>
+    <div class="fx">even in \( [l, r] \): <code>r / 2 - (l - 1) / 2</code></div>
+    <div class="fx">odd in \( [l, r] \): <code>(r + 1) / 2 - l / 2</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Move x to the nearest even or odd number, going up or going down. Works for negative x too.">
+    <div class="fx">first even \( \ge x \): <code>x + (x &amp; 1)</code></div>
+    <div class="fx">first odd \( \ge x \): <code>x | 1</code></div>
+    <div class="fx">last even \( \le x \): <code>x - (x &amp; 1)</code></div>
+    <div class="fx">last odd \( \le x \): <code>(x - 1) | 1</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="The k-th even and the k-th odd positive number (k starts at 1), and the way back from the number to k.">
+    <div class="fx">k-th even: <code>2 * k</code></div>
+    <div class="fx">k-th odd: <code>2 * k - 1</code></div>
+    <div class="fx">which even is x: <code>x / 2</code></div>
+    <div class="fx">which odd is x: <code>(x + 1) / 2</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Cut n into two halves that differ by at most 1. For n &gt;= 0. The big half is n / 2 rounded up.">
+    <div class="fx">small half: <code>n / 2</code></div>
+    <div class="fx">big half: <code>(n + 1) / 2</code></div>
+    <div class="fx">also the big half: <code>n - n / 2</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Do one thing on even indexes and another thing on odd indexes. Index 0 is even, so it is the 1st element.">
 <pre data-part="main"><code class="cpp">
-while (x &gt; 0) { int d = x % 10; x /= 10; }
+for (int i = 0; i &lt; n; i++) {
+    if (i % 2 == 0) first.push_back(a[i]);
+    else            second.push_back(a[i]);
+}
+// first: a[0], a[2]..  second: a[1], a[3]..
 </code></pre>
   </div>
-  <div class="cc" data-to="number-theory" data-tip="Greatest common divisor and least common multiple. Divide before you multiply to avoid overflow.">
-    <div class="fx">\( \gcd(a, b) = \gcd(b, a \bmod b) \), &nbsp;\( \gcd(a, 0) = a \)</div>
+  <div class="cc" data-to="simulation" data-tip="Small tools for patterns that alternate: flip a 0/1 value, alternate the sign, count the even and the odd indexes among 0 .. n-1.">
+    <div class="fx">flip 0 and 1: <code>b = 1 - b</code></div>
+    <div class="fx">sign + - + -: <code>(i % 2 == 0 ? 1 : -1)</code></div>
+    <div class="fx">take turns x, y, x, y: <code>(i % 2 == 0 ? x : y)</code></div>
+    <div class="fx">even indexes in <code>0..n-1</code>: <code>(n + 1) / 2</code></div>
+    <div class="fx">odd indexes in <code>0..n-1</code>: <code>n / 2</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s2" id="cs-division" style="scroll-margin-top:64px">
+<h2>Division and rounding</h2>
+<div class="cgrid">
+  <div class="cc" data-to="basic-math" data-tip="Division of two integers cuts the fraction: it rounds toward zero. The remainder has the sign of the left number. Never divide by 0.">
+    <div class="fx"><code>7 / 2</code> is <code>3</code> · <code>-7 / 2</code> is <code>-3</code></div>
+    <div class="fx"><code>7 % 2</code> is <code>1</code> · <code>-7 % 2</code> is <code>-1</code></div>
+    <div class="fx">always true: <code>a == (a / b) * b + a % b</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Round a / b down, up, or to the nearest integer. Only for a &gt;= 0 and b &gt; 0. A half rounds up.">
+    <div class="fx">down: \( \lfloor a / b \rfloor \) = <code>a / b</code></div>
+    <div class="fx">up: \( \lceil a / b \rceil \) = <code>(a + b - 1) / b</code></div>
+    <div class="fx">up, no overflow: <code>a / b + (a % b != 0)</code></div>
+    <div class="fx">nearest: <code>(a + b / 2) / b</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Round down and round up when a or b can be negative. C++ rounds toward zero, so one step of repair is needed. b must not be 0.">
+<pre data-part="global"><code class="cpp">
+long long floorDiv(long long a, long long b) {
+    long long q = a / b;
+    if (a % b != 0 &amp;&amp; (a &lt; 0) != (b &lt; 0)) q--;
+    return q;
+}
+long long ceilDiv(long long a, long long b) {
+    long long q = a / b;
+    if (a % b != 0 &amp;&amp; (a &lt; 0) == (b &lt; 0)) q++;
+    return q;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Get a real (not cut) result from two integers: make one side a double first. The average of an array needs this too.">
+    <div class="fx">real division: <code>1.0 * a / b</code></div>
+    <div class="fx">same: <code>(double)a / b</code></div>
+    <div class="fx">average: <code>1.0 * sum / n</code></div>
+    <div class="fx">wrong, cut first: <code>(double)(a / b)</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Round a real number x to an integer. Do not write ceil(a / b) with two integers: a / b is already cut.">
+    <div class="fx">cut the fraction: <code>(long long)x</code></div>
+    <div class="fx">down: <code>floor(x)</code> · up: <code>ceil(x)</code></div>
+    <div class="fx">nearest: <code>llround(x)</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Is x a multiple of k, and the nearest multiples of k around x. The rounding rows need x &gt;= 0 and k &gt; 0.">
+    <div class="fx">k divides x: <code>x % k == 0</code></div>
+    <div class="fx">last multiple \( \le x \): <code>x / k * k</code></div>
+    <div class="fx">first multiple \( \ge x \): <code>(x + k - 1) / k * k</code></div>
+    <div class="fx">first multiple \( &gt; x \): <code>(x / k + 1) * k</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Put n items into boxes of k items each. How many boxes are full, how many items are left, how many boxes hold everything. For n &gt;= 0, k &gt; 0.">
+    <div class="fx">full boxes: <code>n / k</code></div>
+    <div class="fx">left over: <code>n % k</code></div>
+    <div class="fx">boxes needed: <code>(n + k - 1) / k</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Divisible by both a and b, or by at least one of them. Divisible by both is the same as divisible by lcm(a, b).">
+    <div class="fx">by both: <code>x % a == 0 &amp;&amp; x % b == 0</code></div>
+    <div class="fx">by one or both: <code>x % a == 0 || x % b == 0</code></div>
+    <div class="fx">by both, one test: <code>x % lcm(a, b) == 0</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s3" id="cs-wrap" style="scroll-margin-top:64px">
+<h2>Remainder and wrap around</h2>
+<div class="cgrid">
+  <div class="cc" data-to="modular" data-tip="In C++ a % m is negative when a is negative. This form always gives a value from 0 to m - 1. Needs m &gt; 0.">
+    <div class="fx">always 0 .. m-1: <code>((a % m) + m) % m</code></div>
+    <div class="fx"><code>-7 % 3</code> is <code>-1</code></div>
+    <div class="fx"><code>((-7 % 3) + 3) % 3</code> is <code>2</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Walk around a circle of n places with indexes 0 .. n-1. Going back, add n before the %, or the index becomes negative.">
+    <div class="fx">next: <code>(i + 1) % n</code></div>
+    <div class="fx">previous: <code>(i - 1 + n) % n</code></div>
+    <div class="fx">k steps forward: <code>(i + k) % n</code></div>
+    <div class="fx">k steps back: <code>((i - k) % n + n) % n</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="The same circle with indexes 1 .. n. Go to 0-indexed, move, then add 1 again.">
+    <div class="fx">next: <code>i % n + 1</code></div>
+    <div class="fx">previous: <code>(i + n - 2) % n + 1</code></div>
+    <div class="fx">k steps forward: <code>(i - 1 + k) % n + 1</code></div>
+    <div class="fx">k steps back: <code>((i - 1 - k) % n + n) % n + 1</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Steps between places i and j on a circle of n places (indexes 0 .. n-1). First row: going forward only. Second row: the shorter of the two ways.">
+    <div class="fx">forward from i to j: <code>(j - i + n) % n</code></div>
+    <div class="fx">shorter way: <code>min(abs(i - j), n - abs(i - j))</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Item number p when the items fill rows of k items each. The first two rows count from 0, the last two count from 1.">
+    <div class="fx">from 0: row <code>p / k</code> · column <code>p % k</code></div>
+    <div class="fx">from 1: row <code>(p - 1) / k + 1</code></div>
+    <div class="fx">from 1: column <code>(p - 1) % k + 1</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="A pattern that repeats forever: the element at position k (from 0) of the string s written again and again.">
+    <div class="fx">char at position k: <code>s[k % s.size()]</code></div>
+    <div class="fx">full copies in k chars: <code>k / s.size()</code></div>
+  </div>
+  <div class="cc" data-to="modular" data-tip="Remainder of a big sum or product: take % after every step, the result is the same. For values &gt;= 0, and m up to about 3·10^9.">
+    <div class="fx">sum: <code>(a % m + b % m) % m</code></div>
+    <div class="fx">product: <code>(a % m) * (b % m) % m</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s4" id="cs-digits" style="scroll-margin-top:64px">
+<h2>Digits</h2>
+<div class="cgrid">
+  <div class="cc" data-to="basic-math" data-tip="Cut digits off the end of x with % and /. For x &gt;= 0. If x can be negative, use abs(x) first.">
+    <div class="fx">last digit: <code>x % 10</code></div>
+    <div class="fx">without the last digit: <code>x / 10</code></div>
+    <div class="fx">last two digits: <code>x % 100</code></div>
+    <div class="fx">without the last two: <code>x / 100</code></div>
+    <div class="fx">tens digit: <code>x / 10 % 10</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Build p = 10^k with a loop, then cut x at any place: the last k digits, and the rest. For x &gt;= 0 and k from 0 to 18.">
+<pre data-part="main"><code class="cpp">
+long long p = 1;
+for (int i = 0; i &lt; k; i++) p *= 10;
+</code></pre>
+    <div class="fx">last k digits: <code>x % p</code></div>
+    <div class="fx">without the last k: <code>x / p</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Walk over the digits of x from the last digit to the first. Reverse the list to get the first digit first. x = 0 gives an empty list.">
+<pre data-part="main"><code class="cpp">
+vector&lt;int&gt; digits;
+while (x &gt; 0) {
+    digits.push_back(x % 10);  // last digit
+    x /= 10;                   // remove it
+}
+reverse(digits.begin(), digits.end());
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Number of digits of x, for x &gt;= 0. It answers 1 for x = 0.">
+<pre data-part="global"><code class="cpp">
+int countDigits(long long x) {
+    int c = 1;
+    while (x &gt;= 10) { x /= 10; c++; }
+    return c;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Sum of the digits of x, for x &gt;= 0.">
+<pre data-part="global"><code class="cpp">
+int digitSum(long long x) {
+    int s = 0;
+    for (; x &gt; 0; x /= 10) s += x % 10;
+    return s;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Write the digits of x in reverse order: 1230 becomes 321. Then x is a palindrome when it equals its reverse. For 0 &lt;= x &lt; 10^18.">
+<pre data-part="global"><code class="cpp">
+long long reverseNumber(long long x) {
+    long long r = 0;
+    while (x &gt; 0) {
+        r = r * 10 + x % 10;
+        x /= 10;
+    }
+    return r;
+}
+</code></pre>
+    <div class="fx">palindrome: <code>x == reverseNumber(x)</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Build one number from its digits, first digit first. At most 18 digits fit in a long long.">
+<pre data-part="main"><code class="cpp">
+long long x = 0;
+for (int d : digits) x = x * 10 + d;
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="The first (leftmost) digit of x, for x &gt;= 0: remove last digits while more than one is left.">
+<pre data-part="main"><code class="cpp">
+while (x &gt;= 10) x /= 10;
+// now x is the first digit
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Change between a digit character like '7' and the number 7. Printing '0' + d without char( ) prints a number like 55.">
+    <div class="fx">char to digit: <code>c - '0'</code></div>
+    <div class="fx">digit to char: <code>char('0' + d)</code></div>
+    <div class="fx">is a digit: <code>'0' &lt;= c &amp;&amp; c &lt;= '9'</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Change between a number and its text. stoi is for int, stoll is for long long. The text must hold a number that fits. In the last row k counts from 0.">
+    <div class="fx">number to text: <code>to_string(x)</code></div>
+    <div class="fx">text to number: <code>stoll(s)</code> · <code>stoi(s)</code></div>
+    <div class="fx">digit count: <code>to_string(x).size()</code></div>
+    <div class="fx">digit k from the left: <code>to_string(x)[k] - '0'</code></div>
+  </div>
+  <div class="cc" data-to="modular" data-tip="A number too long for long long (up to 10^5 digits): read it as text. This gives its remainder when divided by m.">
+<pre data-part="main"><code class="cpp">
+string s; cin &gt;&gt; s;
+long long r = 0;
+for (char c : s)
+    r = (r * 10 + (c - '0')) % m;
+// r is the big number % m
+</code></pre>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="Divisibility from the digits: x and its digit sum leave the same remainder for 3 and for 9. For 4, only the last two digits matter. For x &gt;= 0.">
+    <div class="fx">\( 2, 5, 10 \): look at the last digit</div>
+    <div class="fx">\( 4 \): look at the last two digits</div>
+    <div class="fx">\( 3, 9 \): look at the sum of digits</div>
+    <div class="fx">always true: <code>x % 3 == digitSum(x) % 3</code></div>
+    <div class="fx">always true: <code>x % 9 == digitSum(x) % 9</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Numbers with exactly k digits go from 10^(k-1) to 10^k - 1, so there are 9 · 10^(k-1) of them.">
+    <div class="fx">\( k \text{ digits}: 10^{k-1} \dots 10^k - 1 \)</div>
+    <div class="fx">\( \text{how many}: 9 \cdot 10^{k-1} \)</div>
+  </div>
+</div>
+</section>
+
+<section class="s0" id="cs-compare" style="scroll-margin-top:64px">
+<h2>Compare and bound</h2>
+<div class="cgrid">
+  <div class="cc" data-to="stl-basics" data-tip="Smallest and biggest of two or more values. Both sides must have the same type: write max(x, 0LL) when x is long long.">
+    <div class="fx">of two: <code>min(a, b)</code> · <code>max(a, b)</code></div>
+    <div class="fx">of three: <code>min({a, b, c})</code></div>
+    <div class="fx">of four: <code>max({a, b, c, d})</code></div>
+    <div class="fx">with zero: <code>max(x, 0LL)</code></div>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="Keep the best value seen so far in a loop. Start the max at a very small value and the min at a very big value.">
+<pre data-part="main"><code class="cpp">
+long long mx = LLONG_MIN, mn = LLONG_MAX;
+for (long long x : a) {
+    mx = max(mx, x);
+    mn = min(mn, x);
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="Force x to stay inside [lo, hi]: values below lo become lo, values above hi become hi. Needs lo &lt;= hi.">
+    <div class="fx">into [lo, hi]: <code>max(lo, min(x, hi))</code></div>
+    <div class="fx">same: <code>clamp(x, lo, hi)</code></div>
+    <div class="fx">never below 0: <code>max(0LL, x)</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="How far is x from the range [lo, hi]: 0 when x is inside, else the distance to the nearer end.">
+    <div class="fx">distance to [lo, hi]: <code>max({0LL, lo - x, x - hi})</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Size of x without its sign, and how far apart a and b are. The difference a - b must fit in the type.">
+    <div class="fx">without the sign: <code>abs(x)</code></div>
+    <div class="fx">distance: <code>abs(a - b)</code></div>
+    <div class="fx">same: <code>max(a, b) - min(a, b)</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Is x inside the range from l to r? Never write l &lt;= x &lt;= r: it compiles but it does not mean that.">
+    <div class="fx">inside \( [l, r] \): <code>l &lt;= x &amp;&amp; x &lt;= r</code></div>
+    <div class="fx">outside: <code>x &lt; l || x &gt; r</code></div>
+    <div class="fx">inside \( [l, r) \): <code>l &lt;= x &amp;&amp; x &lt; r</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Two ranges [a, b] and [c, d] on a line: do they share a point, and what is the shared part.">
+    <div class="fx">they touch: <code>max(a, c) &lt;= min(b, d)</code></div>
+    <div class="fx">shared part: from <code>max(a, c)</code> to <code>min(b, d)</code></div>
+    <div class="fx">no common point: <code>b &lt; c || d &lt; a</code></div>
+    <div class="fx">[a, b] inside [c, d]: <code>c &lt;= a &amp;&amp; b &lt;= d</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Size of the shared part of [a, b] and [c, d]. The first row counts integers, the second row measures length. Both are 0 when the ranges are apart.">
+    <div class="fx">shared integers: <code>max(0LL, min(b, d) - max(a, c) + 1)</code></div>
+    <div class="fx">shared length: <code>max(0LL, min(b, d) - max(a, c))</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="How many integers are covered by [a, b] or by [c, d]: add both sizes, then remove the shared part once.">
+    <div class="fx">covered integers: <code>(b - a + 1) + (d - c + 1) - max(0LL, min(b, d) - max(a, c) + 1)</code></div>
+  </div>
+  <div class="cc" data-to="sorting" data-tip="Put three values in order with three swaps. After it, a &lt;= b &lt;= c.">
+<pre data-part="main"><code class="cpp">
+if (a &gt; b) swap(a, b);
+if (b &gt; c) swap(b, c);
+if (a &gt; b) swap(a, b);
+</code></pre>
+  </div>
+  <div class="cc" data-to="sorting" data-tip="Order two values, and the middle one of three values, without sorting.">
+    <div class="fx">exchange two values: <code>swap(a, b)</code></div>
+    <div class="fx">make a the smaller: <code>if (a &gt; b) swap(a, b)</code></div>
+    <div class="fx">middle of three: <code>a + b + c - min({a, b, c}) - max({a, b, c})</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Tests on three values. Never write a == b == c: it compiles but it is wrong.">
+    <div class="fx">all equal: <code>a == b &amp;&amp; b == c</code></div>
+    <div class="fx">all different: <code>a != b &amp;&amp; b != c &amp;&amp; a != c</code></div>
+    <div class="fx">at least two equal: <code>a == b || b == c || a == c</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="The sign of x as -1, 0 or 1, and a test that two numbers have different signs. Here 0 counts as positive. Do not test a * b &lt; 0: the product can overflow.">
+    <div class="fx">sign: <code>(x &gt; 0) - (x &lt; 0)</code></div>
+    <div class="fx">different signs: <code>(a &lt; 0) != (b &lt; 0)</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Compare two fractions a/b and c/d without dividing: multiply across. Needs b &gt; 0 and d &gt; 0, and the products must fit in long long.">
+    <div class="fx">\( \frac{a}{b} &lt; \frac{c}{d} \): <code>a * d &lt; c * b</code></div>
+    <div class="fx">\( \frac{a}{b} = \frac{c}{d} \): <code>a * d == c * b</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Real numbers (double) are not exact. Do not compare them with ==. Two values are equal when they are closer than a tiny number.">
+    <div class="fx">equal: <code>abs(x - y) &lt; 1e-9</code></div>
+    <div class="fx">x is smaller: <code>x &lt; y - 1e-9</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s1" id="cs-counting" style="scroll-margin-top:64px">
+<h2>Counting without a loop</h2>
+<div class="cgrid">
+  <div class="cc" data-to="basic-math" data-tip="How many integers are in a range, for l &lt;= r (strictly between needs l &lt; r). The usual mistake is to forget the + 1.">
+    <div class="fx">in \( [l, r] \): <code>r - l + 1</code></div>
+    <div class="fx">in \( [l, r) \): <code>r - l</code></div>
+    <div class="fx">strictly between \( l \) and \( r \): <code>r - l - 1</code></div>
+    <div class="fx">gaps between \( n \) points: <code>n - 1</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="How many multiples of k are in a range. Needs k &gt; 0 and 1 &lt;= l &lt;= r, because C++ division rounds toward zero.">
+    <div class="fx">in \( [1, n] \): \( \lfloor n / k \rfloor \) = <code>n / k</code></div>
+    <div class="fx">in \( [l, r] \): <code>r / k - (l - 1) / k</code></div>
+    <div class="fx">first in \( [l, r] \): <code>(l + k - 1) / k * k</code></div>
+    <div class="fx">last in \( [l, r] \): <code>r / k * k</code></div>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="Numbers from 1 to n divisible by a or by b. Numbers divisible by both are counted twice, so remove them once.">
+    <div class="fx">by both: <code>n / lcm(a, b)</code></div>
+    <div class="fx">by one or both: <code>n / a + n / b - n / lcm(a, b)</code></div>
+    <div class="fx">by none: <code>n - n / a - n / b + n / lcm(a, b)</code></div>
+  </div>
+  <div class="cc" data-to="combinatorics" data-tip="How many pairs you can pick from n things. Use long long: n = 10^5 already gives 5·10^9.">
+    <div class="fx">pairs \( \frac{n(n-1)}{2} \) = <code>n * (n - 1) / 2</code></div>
+    <div class="fx">ordered pairs \( n(n-1) \) = <code>n * (n - 1)</code></div>
+    <div class="fx">pairs with \( i \le j \): <code>n * (n + 1) / 2</code></div>
+    <div class="fx">one from each group: <code>n * m</code></div>
+  </div>
+  <div class="cc" data-to="combinatorics" data-tip="More counts of the same kind: triples, handshakes, edges of a full graph, subarrays, subsets. The triple row fits in long long for n up to 2·10^6.">
+    <div class="fx">triples \( \frac{n(n-1)(n-2)}{6} \)</div>
+    <div class="fx">= <code>n * (n - 1) * (n - 2) / 6</code></div>
+    <div class="fx">handshakes, edges: <code>n * (n - 1) / 2</code></div>
+    <div class="fx">subarrays: <code>n * (n + 1) / 2</code></div>
+    <div class="fx">subsets: \( 2^n \) = <code>1LL &lt;&lt; n</code></div>
+  </div>
+  <div class="cc" data-to="two-pointers" data-tip="How many windows of length k fit in n elements in a row. How many k by k squares fit in an n by m grid. Needs k &lt;= n and k &lt;= m.">
+    <div class="fx">windows of length k: <code>n - k + 1</code></div>
+    <div class="fx">k by k squares: <code>(n - k + 1) * (m - k + 1)</code></div>
+    <div class="fx">last window starts at: <code>n - k</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Sums you should know by heart. Use long long.">
+    <div class="fx">\( 1 + 2 + \dots + n = \frac{n(n+1)}{2} \)</div>
+    <div class="fx">\( l + (l+1) + \dots + r = \frac{(l + r)(r - l + 1)}{2} \)</div>
+    <div class="fx">\( 1 + 3 + \dots + (2n - 1) = n^2 \)</div>
+    <div class="fx">\( 2 + 4 + \dots + 2n = n(n+1) \)</div>
+    <div class="fx">\( 1^2 + 2^2 + \dots + n^2 = \frac{n(n+1)(2n+1)}{6} \)</div>
+    <div class="fx">\( 1^3 + 2^3 + \dots + n^3 = \frac{n^2 (n+1)^2}{4} \)</div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="The same sums in C++. All variables are long long. Multiply first, divide last, or the division cuts too early.">
+    <div class="fx"><code>1..n</code>: <code>n * (n + 1) / 2</code></div>
+    <div class="fx"><code>l..r</code>: <code>(l + r) * (r - l + 1) / 2</code></div>
+    <div class="fx">squares: <code>n * (n + 1) * (2 * n + 1) / 6</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Arithmetic progression: every term is the one before plus d. Its sum is the number of terms times the average of the first and the last term.">
+    <div class="fx">\( k\text{-th term}: a + (k - 1) \cdot d \)</div>
+    <div class="fx">\( \text{terms}: \frac{\text{last} - \text{first}}{d} + 1 \)</div>
+    <div class="fx">\( \text{sum}: \frac{\text{terms} \cdot (\text{first} + \text{last})}{2} \)</div>
+    <div class="fx">in C++: <code>cnt * (first + last) / 2</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Powers of 2 and geometric sums: every term is the one before times r. The sum of all powers of 2 below 2^(k+1) is one less than 2^(k+1). The C++ row works for k up to 61.">
+    <div class="fx">\( 1 + 2 + 4 + \dots + 2^k = 2^{k+1} - 1 \)</div>
+    <div class="fx">\( 1 + r + r^2 + \dots + r^k = \frac{r^{k+1} - 1}{r - 1} \)</div>
+    <div class="fx">in C++: <code>(1LL &lt;&lt; (k + 1)) - 1</code></div>
+  </div>
+  <div class="cc" data-to="counting" data-tip="Count how many times something is true: a comparison is 1 when true and 0 when false, so you can add it.">
+<pre data-part="main"><code class="cpp">
+int cnt = 0;
+for (long long x : a) cnt += (x % 2 == 0);
+</code></pre>
+  </div>
+</div>
+</section>
+
+<section class="s2" id="cs-chars" style="scroll-margin-top:64px">
+<h2>Characters</h2>
+<div class="cgrid">
+  <div class="cc" data-to="arrays-strings" data-tip="What kind of character is c. These functions give 0 for no and some non-zero number for yes, so do not compare the result with true or 1.">
+    <div class="fx">letter: <code>isalpha(c)</code> · digit: <code>isdigit(c)</code></div>
+    <div class="fx">small letter: <code>islower(c)</code></div>
+    <div class="fx">capital letter: <code>isupper(c)</code></div>
+    <div class="fx">letter or digit: <code>isalnum(c)</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="The same tests written by hand. Letters and digits are in order in the character table, so a range test works.">
+    <div class="fx">small letter: <code>'a' &lt;= c &amp;&amp; c &lt;= 'z'</code></div>
+    <div class="fx">capital letter: <code>'A' &lt;= c &amp;&amp; c &lt;= 'Z'</code></div>
+    <div class="fx">digit: <code>'0' &lt;= c &amp;&amp; c &lt;= '9'</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Change the case of a letter. toupper and tolower give an int, so wrap them in char( ) before printing. Other characters stay the same.">
+    <div class="fx">to capital: <code>char(toupper(c))</code></div>
+    <div class="fx">to small: <code>char(tolower(c))</code></div>
+    <div class="fx">by hand: <code>char(c - 'a' + 'A')</code> · <code>char(c - 'A' + 'a')</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Turn a small letter into a number 0 .. 25 and back. Use the number as an index of an array of size 26. For capital letters use 'A'.">
+    <div class="fx">letter to <code>0..25</code>: <code>c - 'a'</code></div>
+    <div class="fx"><code>0..25</code> to letter: <code>char('a' + i)</code></div>
+    <div class="fx">distance of two letters: <code>abs(c1 - c2)</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Move a small letter forward in the alphabet, and after z start again from a. The last row also works for a negative k.">
+    <div class="fx">next letter: <code>char('a' + (c - 'a' + 1) % 26)</code></div>
+    <div class="fx">k letters forward: <code>char('a' + (c - 'a' + k) % 26)</code></div>
+    <div class="fx">any k: <code>char('a' + ((c - 'a' + k) % 26 + 26) % 26)</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Is the small letter c a vowel (a, e, i, o, u)? find gives string::npos when the letter is not in the text.">
+<pre data-part="global"><code class="cpp">
+bool isVowel(char c) {
+    string v = "aeiou";
+    return v.find(c) != string::npos;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="A character is stored as a small number (its code). You do not need to remember the codes: write the character in quotes.">
+    <div class="fx"><code>(int)'A'</code> is <code>65</code> · <code>(int)'a'</code> is <code>97</code></div>
+    <div class="fx"><code>(int)'0'</code> is <code>48</code> · <code>(int)' '</code> is <code>32</code></div>
+    <div class="fx">code of c: <code>(int)c</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s3" id="cs-strings" style="scroll-margin-top:64px">
+<h2>Strings</h2>
+<div class="cgrid">
+  <div class="cc" data-to="arrays-strings" data-tip="Size and ends of a string s. s.size() is unsigned, so cast it to int before you subtract. back() needs a string that is not empty.">
+    <div class="fx">length: <code>(int)s.size()</code></div>
+    <div class="fx">first: <code>s[0]</code> · last: <code>s.back()</code></div>
+    <div class="fx">is empty: <code>s.empty()</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Make a string longer or shorter at its end, and build a string of n equal characters.">
+    <div class="fx">add at the end: <code>s += c</code> · <code>s += t</code></div>
+    <div class="fx">remove the last: <code>s.pop_back()</code></div>
+    <div class="fx">n copies of a char: <code>string(n, 'a')</code></div>
+    <div class="fx">join two: <code>s + t</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Reverse a string in place, or make a reversed copy and keep the old one.">
+<pre data-part="main"><code class="cpp">
+reverse(s.begin(), s.end());     // changes s
+string t(s.rbegin(), s.rend());  // a copy
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Is s a palindrome (the same from both ends)? Compare the i-th character from the left with the i-th from the right.">
+<pre data-part="global"><code class="cpp">
+bool isPalindrome(const string &amp;s) {
+    int n = s.size();
+    for (int i = 0; i &lt; n / 2; i++)
+        if (s[i] != s[n - 1 - i])
+            return false;
+    return true;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Compare two strings. The &lt; is dictionary order, character by character, so the text 10 comes before the text 9.">
+    <div class="fx">equal: <code>s == t</code></div>
+    <div class="fx">first in the dictionary: <code>s &lt; t</code></div>
+    <div class="fx">smaller of two: <code>min(s, t)</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Cut a part out of a string: start position first, then the LENGTH (not the end position). Positions start at 0.">
+    <div class="fx">len chars from pos: <code>s.substr(pos, len)</code></div>
+    <div class="fx">from pos to the end: <code>s.substr(pos)</code></div>
+    <div class="fx">first k: <code>s.substr(0, k)</code></div>
+    <div class="fx">last k: <code>s.substr(s.size() - k)</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Look for the text t (or one character) inside s. find gives the first position, or string::npos when there is none.">
+    <div class="fx">is inside: <code>s.find(t) != string::npos</code></div>
+    <div class="fx">position: <code>s.find(t)</code></div>
+    <div class="fx">starts with t: <code>s.substr(0, t.size()) == t</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Count one character in a string, and count how many different characters it has.">
+    <div class="fx">count of a char: <code>count(s.begin(), s.end(), 'a')</code></div>
+    <div class="fx">different chars: <code>set&lt;char&gt;(s.begin(), s.end()).size()</code></div>
+  </div>
+  <div class="cc" data-to="counting" data-tip="How many times each small letter appears: one array of 26 counters. The = {} sets all counters to 0.">
+<pre data-part="main"><code class="cpp">
+int cnt[26] = {};
+for (char c : s) cnt[c - 'a']++;
+</code></pre>
+  </div>
+  <div class="cc" data-to="sorting" data-tip="Sort the characters of a string. Two strings use the same letters (anagrams) when their sorted forms are equal.">
+<pre data-part="main"><code class="cpp">
+sort(s.begin(), s.end());
+sort(t.begin(), t.end());
+bool sameLetters = (s == t);
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Change every character of a string: the &amp; lets the loop write into the string.">
+<pre data-part="main"><code class="cpp">
+for (char &amp;c : s) c = toupper(c);
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Look at every pair of neighbours in a string. Write i + 1 &lt; n, and keep n as int: s.size() - 1 is a huge number for an empty string.">
+<pre data-part="main"><code class="cpp">
+int n = s.size(), same = 0;
+for (int i = 0; i + 1 &lt; n; i++)
+    if (s[i] == s[i + 1]) same++;
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Read a whole line with its spaces. After cin &gt;&gt; n the end of that line is still waiting, so skip it first.">
+<pre data-part="main"><code class="cpp">
+int n; cin &gt;&gt; n;
+cin.ignore();  // skip the end of line 1
+string line; getline(cin, line);
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Cut a line into its words (parts with no spaces).">
+<pre data-part="main"><code class="cpp">
+stringstream ss(line);
+string word; vector&lt;string&gt; words;
+while (ss &gt;&gt; word) words.push_back(word);
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Delete every copy of one character from a string.">
+<pre data-part="main"><code class="cpp">
+s.erase(remove(s.begin(), s.end(), 'x'),
+        s.end());
+</code></pre>
+  </div>
+</div>
+</section>
+
+<section class="s4" id="cs-arrays" style="scroll-margin-top:64px">
+<h2>Arrays</h2>
+<div class="cgrid">
+  <div class="cc" data-to="arrays-strings" data-tip="Read n and then n numbers. The &amp; in the loop is needed, or you read into a copy.">
+<pre data-part="main"><code class="cpp">
+int n; cin &gt;&gt; n;
+vector&lt;long long&gt; a(n);
+for (auto &amp;x : a) cin &gt;&gt; x;
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="The same, but the elements are a[1] .. a[n] like in most statements. a[0] is not used.">
+<pre data-part="main"><code class="cpp">
+int n; cin &gt;&gt; n;
+vector&lt;long long&gt; a(n + 1);
+for (int i = 1; i &lt;= n; i++) cin &gt;&gt; a[i];
+</code></pre>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="Sum of an array. Keep the sum in a long long. In accumulate the start value must be 0LL: with 0 the sum is computed as int.">
+<pre data-part="main"><code class="cpp">
+long long sum = 0;
+for (long long x : a) sum += x;
+long long same =
+    accumulate(a.begin(), a.end(), 0LL);
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Position of the biggest element. With &gt; you get the first one of equal elements, with &gt;= the last one. For the smallest, turn the sign around.">
+<pre data-part="main"><code class="cpp">
+int pos = 0;
+for (int i = 1; i &lt; n; i++)
+    if (a[i] &gt; a[pos]) pos = i;
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="Biggest and smallest element with the library, and their positions. The array must not be empty.">
+<pre data-part="main"><code class="cpp">
+auto it = max_element(a.begin(), a.end());
+long long mx = *it;
+int imx = it - a.begin();
+auto jt = min_element(a.begin(), a.end());
+long long mn = *jt;
+int imn = jt - a.begin();
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="How many elements are equal to x, and is x in the array at all. Both read the whole array: O(n).">
+    <div class="fx">count of x: <code>count(a.begin(), a.end(), x)</code></div>
+    <div class="fx">x is there: <code>find(a.begin(), a.end(), x) != a.end()</code></div>
+    <div class="fx">index of first x: <code>find(a.begin(), a.end(), x) - a.begin()</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="First index where something is true, or -1 when it is never true. The break stops at the first one.">
+<pre data-part="main"><code class="cpp">
+int pos = -1;
+for (int i = 0; i &lt; n; i++)
+    if (a[i] &gt; x) { pos = i; break; }
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Is something true for ALL elements, and is it true for AT LEAST ONE? Start all at true and any at false. For an empty array all stays true.">
+<pre data-part="main"><code class="cpp">
+bool all = true, any = false;
+for (long long x : a) {
+    if (x &gt; 0) any = true;
+    else all = false;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Walk an array from the last element to the first. Keep i as int: with an unsigned i the test i &gt;= 0 is always true.">
+<pre data-part="main"><code class="cpp">
+for (int i = n - 1; i &gt;= 0; i--)
+    b.push_back(a[i]);
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="Reverse an array, and rotate it. Left by k: the element at index k becomes the first one. Needs 0 &lt;= k &lt;= n, so use k % n for a big k.">
+    <div class="fx">reverse: <code>reverse(a.begin(), a.end())</code></div>
+    <div class="fx">left by k: <code>rotate(a.begin(), a.begin() + k, a.end())</code></div>
+    <div class="fx">right by k: <code>rotate(a.begin(), a.end() - k, a.end())</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Is the array sorted from small to big? Compare every element with the next one. For strictly growing, write &gt;= in the test.">
+<pre data-part="main"><code class="cpp">
+bool sorted = true;
+for (int i = 0; i + 1 &lt; n; i++)
+    if (a[i] &gt; a[i + 1]) sorted = false;
+bool same = is_sorted(a.begin(), a.end());
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="Put the values in a set: it keeps one copy of each. Its size tells you how many different values there are, if all are equal, if all are different.">
+<pre data-part="main"><code class="cpp">
+set&lt;long long&gt; st(a.begin(), a.end());
+int different = st.size();
+bool allEqual = (st.size() == 1);
+bool allDifferent = (st.size() == a.size());
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="Remove repeated values. unique only removes neighbours that are equal, so sort first.">
+<pre data-part="main"><code class="cpp">
+sort(a.begin(), a.end());
+auto last = unique(a.begin(), a.end());
+a.erase(last, a.end());
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="The two biggest elements in one pass. They can be equal when the max appears twice. m2 stays LLONG_MIN when there is only one element.">
+<pre data-part="main"><code class="cpp">
+long long m1 = LLONG_MIN, m2 = LLONG_MIN;
+for (long long x : a) {
+    if (x &gt; m1) { m2 = m1; m1 = x; }
+    else if (x &gt; m2) m2 = x;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="The second biggest DIFFERENT value: copies of the max do not count. It stays LLONG_MIN when all elements are equal.">
+<pre data-part="main"><code class="cpp">
+long long mx = LLONG_MIN;
+long long second = LLONG_MIN;
+for (long long x : a) {
+    if (x &gt; mx) { second = mx; mx = x; }
+    else if (x &lt; mx &amp;&amp; x &gt; second)
+        second = x;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="prefix-sums" data-tip="pm[i] is the biggest of a[0] .. a[i]. Build it left to right. For the best of a[i] .. a[n-1], do the same from the right.">
+<pre data-part="main"><code class="cpp">
+vector&lt;long long&gt; pm(n), sm(n);
+pm[0] = a[0];
+for (int i = 1; i &lt; n; i++)
+    pm[i] = max(pm[i - 1], a[i]);
+sm[n - 1] = a[n - 1];
+for (int i = n - 2; i &gt;= 0; i--)
+    sm[i] = max(sm[i + 1], a[i]);
+</code></pre>
+  </div>
+  <div class="cc" data-to="brute-force" data-tip="Visit every pair of two different positions once: j always starts after i. This is O(n^2), so n must be at most about 5000.">
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = i + 1; j &lt; n; j++)
+        if (a[i] + a[j] == target) cnt++;
+</code></pre>
+  </div>
+  <div class="cc" data-to="sorting" data-tip="Sort, but remember where every element was: sort pairs (value, old index).">
+<pre data-part="main"><code class="cpp">
+vector&lt;pair&lt;long long, int&gt;&gt; v(n);
+for (int i = 0; i &lt; n; i++)
+    v[i] = {a[i], i};
+sort(v.begin(), v.end());
+// v[0] = (smallest value, its old index)
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-basics" data-tip="Make an array with a start value, fill it again later, or fill it with 0, 1, 2, ...">
+    <div class="fx">n copies of 5: <code>vector&lt;int&gt; a(n, 5)</code></div>
+    <div class="fx">all 0 again: <code>fill(a.begin(), a.end(), 0)</code></div>
+    <div class="fx">0, 1, 2, ...: <code>iota(a.begin(), a.end(), 0)</code></div>
+  </div>
+  <div class="cc" data-to="sorting" data-tip="After sorting: the smallest, the biggest and the middle element (the median). For an even n this is the upper of the two middle ones.">
+    <div class="fx">smallest: <code>a[0]</code> · biggest: <code>a.back()</code></div>
+    <div class="fx">middle: <code>a[n / 2]</code></div>
+    <div class="fx">lower middle: <code>a[(n - 1) / 2]</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="A table with n rows and m columns, all cells 0. The row index comes first: g[row][column].">
+<pre data-part="main"><code class="cpp">
+vector&lt;vector&lt;int&gt;&gt; g(n, vector&lt;int&gt;(m, 0));
+for (int r = 0; r &lt; n; r++)
+    for (int c = 0; c &lt; m; c++)
+        cin &gt;&gt; g[r][c];
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="A grid of characters: read every row as one string. Then g[r][c] is one cell.">
+<pre data-part="main"><code class="cpp">
+int n, m; cin &gt;&gt; n &gt;&gt; m;
+vector&lt;string&gt; g(n);
+for (auto &amp;row : g) cin &gt;&gt; row;
+</code></pre>
+  </div>
+</div>
+</section>
+
+<section class="s0" id="cs-grids" style="scroll-margin-top:64px">
+<h2>Grids</h2>
+<div class="cgrid">
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="Is the cell (r, c) inside a grid with n rows and m columns? Always test this before you read g[r][c].">
+    <div class="fx">from 0: <code>0 &lt;= r &amp;&amp; r &lt; n &amp;&amp; 0 &lt;= c &amp;&amp; c &lt; m</code></div>
+    <div class="fx">from 1: <code>1 &lt;= r &amp;&amp; r &lt;= n &amp;&amp; 1 &lt;= c &amp;&amp; c &lt;= m</code></div>
+  </div>
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="The four neighbours of the cell (r, c): down, up, right, left. Skip the ones outside the grid.">
+<pre data-part="main"><code class="cpp">
+int dr[4] = {1, -1, 0, 0};
+int dc[4] = {0, 0, 1, -1};
+for (int d = 0; d &lt; 4; d++) {
+    int nr = r + dr[d], nc = c + dc[d];
+    if (nr &lt; 0 || nr &gt;= n) continue;
+    if (nc &lt; 0 || nc &gt;= m) continue;
+    sum += g[nr][nc];   // a neighbour
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="The eight neighbours (also the diagonal ones), and the eight jumps of a chess knight. Use them in the same loop with d from 0 to 7.">
+<pre data-part="main"><code class="cpp">
+int dr8[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+int dc8[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+int kr[8] = {-2, -2, -1, -1, 1, 1, 2, 2};
+int kc[8] = {-1, 1, -2, 2, -2, 2, -1, 1};
+</code></pre>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Walk with a direction number d: 0 up, 1 right, 2 down, 3 left. Row 0 is the top row, so up means r - 1.">
+<pre data-part="main"><code class="cpp">
+int dr[4] = {-1, 0, 1, 0};
+int dc[4] = {0, 1, 0, -1};
+r += dr[d]; c += dc[d];    // one step
+</code></pre>
+    <div class="fx">turn right: <code>d = (d + 1) % 4</code></div>
+    <div class="fx">turn left: <code>d = (d + 3) % 4</code></div>
+    <div class="fx">turn back: <code>d = (d + 2) % 4</code></div>
+  </div>
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="Give every cell one number, row by row, and go back from the number to the cell. Rows and columns start at 0; m is the number of columns.">
+    <div class="fx">cell to number: <code>r * m + c</code></div>
+    <div class="fx">number to row: <code>id / m</code></div>
+    <div class="fx">number to column: <code>id % m</code></div>
+    <div class="fx">from 1: <code>(r - 1) * m + c</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Diagonals of a square n by n table (indexes from 0). Cells of one diagonal share r - c, cells of one anti-diagonal share r + c.">
+    <div class="fx">main diagonal: <code>r == c</code></div>
+    <div class="fx">anti-diagonal: <code>r + c == n - 1</code></div>
+    <div class="fx">same diagonal: <code>r1 - c1 == r2 - c2</code></div>
+    <div class="fx">same anti-diagonal: <code>r1 + c1 == r2 + c2</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Distance between two cells. Manhattan: steps with 4 directions. Chebyshev: steps of a chess king (8 directions).">
+    <div class="fx">Manhattan: <code>abs(r1 - r2) + abs(c1 - c2)</code></div>
+    <div class="fx">Chebyshev: <code>max(abs(r1 - r2), abs(c1 - c2))</code></div>
+  </div>
+  <div class="cc" data-to="constructive" data-tip="Chessboard colouring: neighbours always get different colours. A step with 4 directions always changes the colour.">
+    <div class="fx">colour of a cell: <code>(r + c) % 2</code></div>
+    <div class="fx">same colour: <code>(r1 + c1) % 2 == (r2 + c2) % 2</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Can a chess piece go from (r1, c1) to (r2, c2) in one move on an empty board? The two cells must be different.">
+    <div class="fx">rook: <code>r1 == r2 || c1 == c2</code></div>
+    <div class="fx">bishop: <code>abs(r1 - r2) == abs(c1 - c2)</code></div>
+    <div class="fx">king: <code>max(abs(r1 - r2), abs(c1 - c2)) == 1</code></div>
+    <div class="fx">knight: <code>abs(r1 - r2) * abs(c1 - c2) == 2</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Is the cell on the edge of the grid, or in a corner (indexes from 0).">
+    <div class="fx">on the border: <code>r == 0 || c == 0 || r == n - 1 || c == m - 1</code></div>
+    <div class="fx">corner: <code>(r == 0 || r == n - 1) &amp;&amp; (c == 0 || c == m - 1)</code></div>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Sum of every row and of every column of a table in one pass.">
+<pre data-part="main"><code class="cpp">
+vector&lt;long long&gt; rowSum(n), colSum(m);
+for (int r = 0; r &lt; n; r++)
+    for (int c = 0; c &lt; m; c++) {
+        rowSum[r] += g[r][c];
+        colSum[c] += g[r][c];
+    }
+</code></pre>
+  </div>
+  <div class="cc" data-to="arrays-strings" data-tip="Turn a square n by n table a quarter turn, or flip it over the main diagonal. Right means clockwise. b is a second table of the same size.">
+    <div class="fx">turn right: <code>b[c][n - 1 - r] = a[r][c]</code></div>
+    <div class="fx">turn left: <code>b[n - 1 - c][r] = a[r][c]</code></div>
+    <div class="fx">flip (transpose): <code>b[c][r] = a[r][c]</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s1" id="cs-powers" style="scroll-margin-top:64px">
+<h2>Squares, roots, powers</h2>
+<div class="cgrid">
+  <div class="cc" data-to="basic-math" data-tip="Square root rounded down, for n &gt;= 0. It is exact up to the long long maximum. sqrt alone can be wrong by 1 for big numbers. The two loops repair that.">
+<pre data-part="global"><code class="cpp">
+long long isqrt(long long n) {
+    long long r = sqrtl(n);
+    while (r &gt; 0 &amp;&amp; r &gt; n / r) r--;
+    while (r + 1 &lt;= n / (r + 1)) r++;
+    return r;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Is n a perfect square (1, 4, 9, 16, ...)? Take the integer root (isqrt from this sheet) and square it again. Never test sqrt(n) with real numbers.">
+<pre data-part="main"><code class="cpp">
+long long r = isqrt(n);
+bool square = (r * r == n);
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="How many perfect squares are in a range: use the integer square root. isqrt is the function on this sheet. Needs 1 &lt;= l &lt;= r.">
+    <div class="fx">in \( [1, n]: \lfloor \sqrt{n} \rfloor \) = <code>isqrt(n)</code></div>
+    <div class="fx">in \( [l, r] \): <code>isqrt(r) - isqrt(l - 1)</code></div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="Squares and cubes: multiply, do not call pow. Use long long: x = 10^5 squared is already 10^10.">
+    <div class="fx">square: <code>x * x</code> · cube: <code>x * x * x</code></div>
+    <div class="fx">loop to the root: <code>for (long long i = 1; i * i &lt;= n; i++)</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="Powers of 2 with a shift. 1 &lt;&lt; k is an int and works only for k up to 30. With 1LL it works for k up to 62.">
+    <div class="fx">\( 2^k \) = <code>1LL &lt;&lt; k</code></div>
+    <div class="fx">times \( 2^k \): <code>x &lt;&lt; k</code></div>
+    <div class="fx">divide by \( 2^k \): <code>x &gt;&gt; k</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="Is x a power of 2 (1, 2, 4, 8, ...)? A power of 2 has exactly one bit on. The x &gt; 0 is needed because 0 is not a power of 2.">
+    <div class="fx">power of 2: <code>x &gt; 0 &amp;&amp; (x &amp; (x - 1)) == 0</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="Logarithm in base 2, rounded down: the position of the highest bit of x. Only for x &gt; 0; __lg(0) is not defined.">
+    <div class="fx">\( \lfloor \log_2 x \rfloor \) = <code>__lg(x)</code></div>
+    <div class="fx">number of bits: <code>__lg(x) + 1</code></div>
+    <div class="fx">biggest \( 2^k \le x \): <code>1LL &lt;&lt; __lg(x)</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="The smallest power of 2 that is not below x, with a loop. For x up to 4·10^18.">
+<pre data-part="main"><code class="cpp">
+long long p = 1;
+while (p &lt; x) p *= 2;
+</code></pre>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="pow works with real numbers, so its result can be wrong for big integers. For an exact power, multiply in a loop. The result must fit in long long.">
+<pre data-part="global"><code class="cpp">
+long long ipow(long long a, int b) {
+    long long r = 1;
+    for (int i = 0; i &lt; b; i++) r *= a;
+    return r;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="Sizes to remember. 12! is the last factorial that fits in int, 20! is the last one that fits in long long.">
+    <div class="fx">\( 2^{10} = 1024 \approx 10^3 \)</div>
+    <div class="fx">\( 2^{20} \approx 10^6 \) · \( 2^{30} \approx 10^9 \)</div>
+    <div class="fx">\( 12! \approx 4.8 \cdot 10^8 \)</div>
+    <div class="fx">\( 20! \approx 2.4 \cdot 10^{18} \)</div>
+  </div>
+</div>
+</section>
+
+<section class="s2" id="cs-time" style="scroll-margin-top:64px">
+<h2>Time and units</h2>
+<div class="cgrid">
+  <div class="cc" data-to="simulation" data-tip="Change a number of seconds t into hours, minutes and seconds, and back. For t &gt;= 0.">
+    <div class="fx">hours: <code>t / 3600</code></div>
+    <div class="fx">minutes: <code>t % 3600 / 60</code></div>
+    <div class="fx">seconds: <code>t % 60</code></div>
+    <div class="fx">back: <code>h * 3600 + m * 60 + s</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Turn a clock time h:m into one number: minutes since midnight. Then times are easy to compare, add and subtract. A day has 1440 minutes.">
+    <div class="fx">to minutes: <code>h * 60 + m</code></div>
+    <div class="fx">back: <code>t / 60</code> and <code>t % 60</code></div>
+    <div class="fx">k minutes later: <code>(t + k) % 1440</code></div>
+    <div class="fx">from t1 to t2, maybe over midnight: <code>((t2 - t1) % 1440 + 1440) % 1440</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Read a time written like 09:05, and print it again with two digits for each part.">
+<pre data-part="main"><code class="cpp">
+int h, m; char colon;
+cin &gt;&gt; h &gt;&gt; colon &gt;&gt; m;
+cout &lt;&lt; setfill('0') &lt;&lt; setw(2) &lt;&lt; h &lt;&lt; ":"
+     &lt;&lt; setw(2) &lt;&lt; m &lt;&lt; "\n";
+</code></pre>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Days of the week as numbers 0 .. 6: the day k days later, the day k days before, and weeks with left-over days.">
+    <div class="fx">k days later: <code>(d + k) % 7</code></div>
+    <div class="fx">k days before: <code>((d - k) % 7 + 7) % 7</code></div>
+    <div class="fx">full weeks: <code>days / 7</code> · days left: <code>days % 7</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="A 12-hour clock shows 12 where a 24-hour clock shows 0 or 12. h is from 0 to 23.">
+    <div class="fx">12-hour form: <code>(h % 12 == 0 ? 12 : h % 12)</code></div>
+    <div class="fx">is afternoon (PM): <code>h &gt;= 12</code></div>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Is y a leap year (366 days)? Every 4th year is, but years like 1900 are not, and years like 2000 are again.">
+<pre data-part="global"><code class="cpp">
+bool isLeap(int y) {
+    if (y % 400 == 0) return true;
+    if (y % 100 == 0) return false;
+    return y % 4 == 0;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="simulation" data-tip="Days in every month of a normal year. Month 1 is January, so index 0 is not used. In a leap year February has 29.">
+<pre data-part="main"><code class="cpp">
+int days[13] = {0, 31, 28, 31, 30, 31, 30,
+                31, 31, 30, 31, 30, 31};
+if (isLeap(y)) days[2] = 29;
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Split an amount x into a big unit and a small unit, when k small units make one big unit. Example: cents and dollars with k = 100.">
+    <div class="fx">big units: <code>x / k</code> · small units left: <code>x % k</code></div>
+    <div class="fx">back: <code>big * k + small</code></div>
+    <div class="fx">p percent of x, rounded down: <code>x * p / 100</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s3" id="cs-geometry" style="scroll-margin-top:64px">
+<h2>Geometry with integers</h2>
+<div class="cgrid">
+  <div class="cc" data-to="basic-math" data-tip="Distance between two points, squared. Compare squared distances and you never need sqrt or real numbers. Use long long.">
+<pre data-part="global"><code class="cpp">
+long long dist2(long long x1, long long y1,
+        long long x2, long long y2) {
+    long long dx = x1 - x2, dy = y1 - y2;
+    return dx * dx + dy * dy;
+}
+</code></pre>
+    <div class="fx">real distance: <code>sqrt((double)dist2(x1, y1, x2, y2))</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Cross product: on which side of the line from A to B is the point C? Positive: left (counter-clockwise). Negative: right. Zero: the three points are on one line. Safe for coordinates up to 10^9.">
+<pre data-part="global"><code class="cpp">
+long long cross(long long ax, long long ay,
+        long long bx, long long by,
+        long long cx, long long cy) {
+    return (bx - ax) * (cy - ay)
+         - (by - ay) * (cx - ax);
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Area of the triangle ABC from the cross product on this sheet. Twice the area is always an integer, so keep it doubled as long as you can.">
+    <div class="fx">twice the area: <code>abs(cross(ax, ay, bx, by, cx, cy))</code></div>
+    <div class="fx">area: <code>abs(cross(ax, ay, bx, by, cx, cy)) / 2.0</code></div>
+    <div class="fx">on one line: <code>cross(ax, ay, bx, by, cx, cy) == 0</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Can three lengths make a triangle, and is it a right triangle. Sort first so that c is the longest side.">
+    <div class="fx">a triangle: <code>a + b &gt; c</code></div>
+    <div class="fx">right angle: <code>a * a + b * b == c * c</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="A rectangle with sides parallel to the axes, from corner (x1, y1) to corner (x2, y2), with x1 &lt;= x2 and y1 &lt;= y2.">
+    <div class="fx">area: <code>(x2 - x1) * (y2 - y1)</code></div>
+    <div class="fx">border length: <code>2 * ((x2 - x1) + (y2 - y1))</code></div>
+    <div class="fx">point inside: <code>x1 &lt;= x &amp;&amp; x &lt;= x2 &amp;&amp; y1 &lt;= y &amp;&amp; y &lt;= y2</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Area shared by two rectangles A and B (sides parallel to the axes). It is the overlap of the x ranges times the overlap of the y ranges.">
+<pre data-part="main"><code class="cpp">
+long long w = min(ax2, bx2) - max(ax1, bx1);
+long long h = min(ay2, by2) - max(ay1, by1);
+long long area = 0;
+if (w &gt; 0 &amp;&amp; h &gt; 0) area = w * h;
+</code></pre>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Is the point (x, y) inside or on a circle with centre (cx, cy) and radius r? Compare squared values, no sqrt. Use long long.">
+    <div class="fx">inside or on: <code>(x - cx) * (x - cx) + (y - cy) * (y - cy) &lt;= r * r</code></div>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="How many points with integer coordinates are on the line segment between two integer points, both ends counted.">
+    <div class="fx">points on the segment: <code>gcd(abs(x1 - x2), abs(y1 - y2)) + 1</code></div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Do two directions (dx1, dy1) and (dx2, dy2) have the same slope? Multiply across; never divide, because division loses precision and dx can be 0.">
+    <div class="fx">same slope: <code>dy1 * dx2 == dy2 * dx1</code></div>
+    <div class="fx">pi: <code>const double PI = acos(-1.0)</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s4" id="cs-io" style="scroll-margin-top:64px">
+<h2>Input and output</h2>
+<div class="cgrid">
+  <div class="cc" data-to="cpp-template" data-tip="Print YES or NO from a true/false value. The brackets around the ? : part are needed.">
+<pre data-part="main"><code class="cpp">
+cout &lt;&lt; (ok ? "YES" : "NO") &lt;&lt; "\n";
+</code></pre>
+  </div>
+  <div class="cc" data-to="cpp-template" data-tip="Print a real number with a fixed number of digits after the point. Without fixed, big values print like 1e+09 and you get Wrong Answer.">
+<pre data-part="main"><code class="cpp">
+cout &lt;&lt; fixed &lt;&lt; setprecision(9);
+cout &lt;&lt; x &lt;&lt; "\n";
+</code></pre>
+  </div>
+  <div class="cc" data-to="cpp-template" data-tip="Print all elements on one line with spaces between them. A space at the end of the line is accepted on Codeforces.">
+<pre data-part="main"><code class="cpp">
+for (long long x : a) cout &lt;&lt; x &lt;&lt; " ";
+cout &lt;&lt; "\n";
+</code></pre>
+  </div>
+  <div class="cc" data-to="interactive" data-tip="Both end the line. endl also sends the output at once (flush), which is slow when you print many lines. Use endl only in interactive problems.">
+    <div class="fx">fast: <code>cout &lt;&lt; x &lt;&lt; "\n"</code></div>
+    <div class="fx">slow, flushes: <code>cout &lt;&lt; x &lt;&lt; endl</code></div>
+  </div>
+  <div class="cc" data-to="cpp-template" data-tip="Read numbers until the input ends, when the statement does not tell you how many there are.">
+<pre data-part="main"><code class="cpp">
+long long x, sum = 0;
+while (cin &gt;&gt; x) sum += x;
+</code></pre>
+  </div>
+  <div class="cc" data-to="cpp-template" data-tip="Print several values on one line, and print one character from a number. Without char( ) you would print the number 99 and not the letter c.">
+    <div class="fx">two values: <code>cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; "\n"</code></div>
+    <div class="fx">a letter: <code>cout &lt;&lt; char('a' + i)</code></div>
+  </div>
+  <div class="cc" data-to="cpp-template" data-tip="The printf way. %d is for int and %lld for long long. %.6f prints a real number with 6 digits. %02d prints two digits with a leading zero. Do not mix printf with cout after sync_with_stdio(false).">
+    <div class="fx">long long: <code>printf("%lld\n", x)</code></div>
+    <div class="fx">real number: <code>printf("%.6f\n", d)</code></div>
+    <div class="fx">clock time: <code>printf("%02d:%02d\n", h, m)</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s0" id="cs-safety" style="scroll-margin-top:64px">
+<h2>Overflow and other traps</h2>
+<div class="cgrid">
+  <div class="cc" data-to="overflow" data-tip="Quick size check before you choose a type: multiply or add the biggest values from the limits.">
+    <div class="fx">\( 10^5 \cdot 10^5 = 10^{10} \) → <code>long long</code></div>
+    <div class="fx">\( 2 \cdot 10^5 \cdot 10^9 = 2 \cdot 10^{14} \) → <code>long long</code></div>
+    <div class="fx">\( 10^9 \cdot 10^9 = 10^{18} \) → <code>long long</code>, it fits</div>
+    <div class="fx">\( 10^9 \cdot 10^9 \cdot 10^9 \) → too big, use % or divide</div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="Two ints are multiplied as int, and the result is already broken before it is stored. Put 1LL first so the product is computed as long long.">
+    <div class="fx">wrong: <code>long long p = a * b</code></div>
+    <div class="fx">right: <code>long long p = 1LL * a * b</code></div>
+    <div class="fx">in a loop test: <code>1LL * i * i &lt;= n</code></div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="Compare a product with a limit when the product itself can overflow: divide the limit. For a &gt;= 0, b &gt; 0, c &gt;= 0.">
+    <div class="fx"><code>a * b &gt; c</code> → <code>a &gt; c / b</code></div>
+    <div class="fx"><code>a * b &lt;= c</code> → <code>a &lt;= c / b</code></div>
+    <div class="fx"><code>a * b &gt;= c</code> → <code>a &gt;= c / b + (c % b != 0)</code></div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="Will a + b pass the long long maximum? Test it with a subtraction, which cannot overflow. For b &gt;= 0.">
+    <div class="fx">a + b is too big: <code>a &gt; LLONG_MAX - b</code></div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="The biggest and smallest values of int and long long, as ready names.">
+    <div class="fx"><code>INT_MAX</code> = <code>2147483647</code></div>
+    <div class="fx"><code>INT_MIN</code> = <code>-2147483648</code></div>
+    <div class="fx"><code>LLONG_MAX</code> = <code>9223372036854775807</code></div>
+    <div class="fx"><code>LLONG_MIN</code></div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="A value that means infinity. Do not use INT_MAX or LLONG_MAX for it: adding anything to them overflows. These two leave room for one addition.">
+    <div class="fx">for int: <code>const int INF = 1e9</code></div>
+    <div class="fx">for long long: <code>const long long INF = 1e18</code></div>
+  </div>
+  <div class="cc" data-to="debugging" data-tip="size() has no sign. For an empty vector, a.size() - 1 is not -1 but a huge number, and the loop runs into memory it must not touch. Cast to int first.">
+    <div class="fx">wrong: <code>a.size() - 1</code></div>
+    <div class="fx">right: <code>(int)a.size() - 1</code></div>
+    <div class="fx">loop: <code>for (int i = 0; i + 1 &lt; (int)a.size(); i++)</code></div>
+  </div>
+  <div class="cc" data-to="binary-search" data-tip="The middle of lo and hi. For 0 &lt;= lo &lt;= hi the first form never overflows. The second overflows when lo + hi is too big.">
+    <div class="fx">safe: <code>lo + (hi - lo) / 2</code></div>
+    <div class="fx">can overflow: <code>(lo + hi) / 2</code></div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="A double holds every integer exactly only up to 2^53, about 9·10^15. Above that, digits are lost. Keep big integers in long long.">
+    <div class="fx">\( 2^{53} \approx 9 \cdot 10^{15} \)</div>
+    <div class="fx">\( x = 10^{18} \): <code>(double)(x + 1) == (double)x</code> is <code>true</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="A shift of the int 1 breaks at k = 31. Make the 1 a long long.">
+    <div class="fx">wrong for \( k \ge 31 \): <code>1 &lt;&lt; k</code></div>
+    <div class="fx">right for \( k \le 62 \): <code>1LL &lt;&lt; k</code></div>
+  </div>
+  <div class="cc" data-to="debugging" data-tip="An array has indexes 0 .. n-1. Reading or writing outside is not an error message: it gives random results. Make arrays a little bigger than the limit.">
+    <div class="fx">last element: <code>a[n - 1]</code></div>
+    <div class="fx">not an element: <code>a[n]</code></div>
+    <div class="fx">size with room: <code>const int MAXN = 200000 + 5</code></div>
+  </div>
+</div>
+</section>
+
+<section class="s1" id="cs-numtheory" style="scroll-margin-top:64px">
+<h2>Divisors and primes</h2>
+<div class="cgrid">
+  <div class="cc" data-to="number-theory" data-tip="Greatest common divisor and least common multiple. In the lcm, divide before you multiply to avoid overflow.">
+    <div class="fx">\( \gcd(a, b) = \gcd(b, a \bmod b) \), \( \gcd(a, 0) = a \)</div>
     <div class="fx">\( \text{lcm}(a, b) = \frac{a}{\gcd(a, b)} \cdot b \)</div>
     <div class="fx">C++: <code>gcd(a, b)</code>, <code>lcm(a, b)</code>, <code>__gcd(a, b)</code></div>
+    <div class="fx">no common divisor: <code>gcd(a, b) == 1</code></div>
   </div>
-  <div class="cc" data-to="number-theory" data-tip="Is n prime? Try divisors up to the square root. O(√n).">
+  <div class="cc" data-to="number-theory" data-tip="The gcd of a whole array: start from 0, because gcd(0, x) is x.">
+<pre data-part="main"><code class="cpp">
+long long g = 0;
+for (long long x : a) g = gcd(g, x);
+</code></pre>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="Is n prime? Try divisors up to the square root. O(√n), fine for n up to about 10^14.">
 <pre data-part="global"><code class="cpp">
 bool isPrime(long long n) {
     if (n &lt; 2) return false;
@@ -90,7 +1202,7 @@ bool isPrime(long long n) {
 }
 </code></pre>
   </div>
-  <div class="cc" data-to="number-theory" data-tip="All divisors of n in O(√n): they come in pairs (i, n / i).">
+  <div class="cc" data-to="number-theory" data-tip="All divisors of n in O(√n): they come in pairs (i, n / i). The list d is not sorted.">
 <pre data-part="main"><code class="cpp">
 for (long long i = 1; i * i &lt;= n; i++)
     if (n % i == 0) {
@@ -99,28 +1211,50 @@ for (long long i = 1; i * i &lt;= n; i++)
     }
 </code></pre>
   </div>
+  <div class="cc" data-to="number-theory" data-tip="Break n into prime factors, small to big, with repeats: 12 gives 2, 2, 3. O(√n). What is left above 1 at the end is one more prime.">
+<pre data-part="global"><code class="cpp">
+vector&lt;long long&gt; factorize(long long n) {
+    vector&lt;long long&gt; f;
+    for (long long p = 2; p * p &lt;= n; p++)
+        while (n % p == 0) {
+            f.push_back(p);
+            n /= p;
+        }
+    if (n &gt; 1) f.push_back(n);
+    return f;
+}
+</code></pre>
+  </div>
   <div class="cc" data-to="number-theory" data-tip="Sieve: find all primes up to N at once. O(N log log N). Good for N up to about 10^7.">
 <pre data-part="global"><code class="cpp">
 const int N = 1000000;
 vector&lt;bool&gt; prime(N + 1, true);
 void sieve() {
     prime[0] = prime[1] = false;
-    for (int i = 2; 1LL * i * i &lt;= N; i++)
-        if (prime[i])
-            for (int j = i * i; j &lt;= N; j += i)
-                prime[j] = false;
+    for (int i = 2; 1LL * i * i &lt;= N; i++) {
+        if (!prime[i]) continue;
+        for (int j = i * i; j &lt;= N; j += i)
+            prime[j] = false;
+    }
 }
 </code></pre>
   </div>
-  <div class="cc" data-to="modular" data-tip="Rules for answers 'modulo 10^9+7'. Take % after every step. Never divide normally under mod.">
-    <div class="fx"><code>(a + b) % m</code></div>
-    <div class="fx"><code>((a - b) % m + m) % m</code></div>
-    <div class="fx"><code>(1LL * a * b) % m</code></div>
-    <div class="fx">\( a / b \to a \cdot b^{m-2} \bmod m \) &nbsp;(\( m \) prime)</div>
+</div>
+</section>
+
+<section class="s2" id="cs-mod" style="scroll-margin-top:64px">
+<h2>Modulo and counting formulas</h2>
+<div class="cgrid">
+  <div class="cc" data-to="modular" data-tip="Rules for answers modulo 10^9+7, with a and b already in 0 .. m-1. Take % after every step. Never divide normally under mod.">
+    <div class="fx">add: <code>(a + b) % m</code></div>
+    <div class="fx">subtract: <code>((a - b) % m + m) % m</code></div>
+    <div class="fx">multiply: <code>(1LL * a * b) % m</code></div>
+    <div class="fx">divide: \( a / b \to a \cdot b^{m-2} \bmod m \) (\( m \) prime)</div>
   </div>
-  <div class="cc" data-to="modular" data-tip="Fast power: a^b mod m in O(log b) steps by squaring.">
+  <div class="cc" data-to="modular" data-tip="Fast power: a^b mod m in O(log b) steps by squaring. Needs m below about 3·10^9 so that the products fit in long long.">
 <pre data-part="global"><code class="cpp">
-long long power(long long a, long long b, long long m) {
+long long power(long long a, long long b,
+                long long m) {
     long long r = 1 % m; a %= m;
     while (b &gt; 0) {
         if (b &amp; 1) r = r * a % m;
@@ -135,9 +1269,9 @@ long long power(long long a, long long b, long long m) {
     <div class="fx">\( n! = 1 \cdot 2 \cdot \dots \cdot n \)</div>
     <div class="fx">\( C(n, r) = \frac{n!}{r! \cdot (n-r)!} \)</div>
     <div class="fx">\( C(n, r) = C(n-1, r-1) + C(n-1, r) \)</div>
-    <div class="fx">pairs: \( \frac{n(n-1)}{2} \) &nbsp; subsets: \( 2^n \)</div>
+    <div class="fx">pairs: \( \frac{n(n-1)}{2} \) · subsets: \( 2^n \)</div>
   </div>
-  <div class="cc" data-to="combinatorics" data-tip="nCr mod a prime, many times: precompute factorials and inverse factorials once, then each answer is O(1).">
+  <div class="cc span2" data-to="combinatorics" data-tip="nCr mod a prime, many times: precompute factorials and inverse factorials once with init(), then each answer is O(1).">
 <pre data-part="global"><code class="cpp">
 const int MOD = 1e9 + 7, MAXN = 200005;
 long long fact[MAXN], inv[MAXN];
@@ -159,48 +1293,68 @@ long long C(int n, int r) {
 }
 </code></pre>
   </div>
-  <div class="cc" data-to="bits" data-tip="Bit tricks. Use 1LL &lt;&lt; k when k can be 31 or more. Always put brackets around &amp; | ^.">
-    <div class="fx">bit k on? &nbsp;<code>(x &gt;&gt; k) &amp; 1</code></div>
-    <div class="fx">set: <code>x | (1 &lt;&lt; k)</code> &nbsp; clear: <code>x &amp; ~(1 &lt;&lt; k)</code></div>
+</div>
+</section>
+
+<section class="s3" id="cs-bits" style="scroll-margin-top:64px">
+<h2>Bits</h2>
+<div class="cgrid">
+  <div class="cc" data-to="bits" data-tip="Read and change bit k of x. Use 1LL &lt;&lt; k when k can be 31 or more. Always put brackets around &amp; | ^ in a comparison.">
+    <div class="fx">bit k on? <code>(x &gt;&gt; k) &amp; 1</code></div>
+    <div class="fx">set: <code>x | (1 &lt;&lt; k)</code></div>
+    <div class="fx">clear: <code>x &amp; ~(1 &lt;&lt; k)</code></div>
     <div class="fx">flip: <code>x ^ (1 &lt;&lt; k)</code></div>
-    <div class="fx">power of 2? &nbsp;<code>x &gt; 0 &amp;&amp; (x &amp; (x - 1)) == 0</code></div>
-    <div class="fx">count ones: <code>__builtin_popcountll(x)</code></div>
-    <div class="fx"><code>a ^ a</code> is 0 &nbsp; <code>a ^ 0</code> is <code>a</code></div>
   </div>
-  <div class="cc" data-to="bits" data-tip="Try every subset of n items (n ≤ 20). Bit i of mask says if item i is taken.">
+  <div class="cc" data-to="bits" data-tip="Count the bits that are on, and find the lowest one. The ll at the end is for long long. ctz is not defined for x = 0.">
+    <div class="fx">count ones: <code>__builtin_popcountll(x)</code></div>
+    <div class="fx">lowest bit, as a value: <code>x &amp; -x</code></div>
+    <div class="fx">lowest bit, its position: <code>__builtin_ctzll(x)</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="XOR facts: a value XOR itself is 0, XOR with 0 changes nothing, and the order does not matter. So equal values cancel in pairs.">
+    <div class="fx"><code>a ^ a</code> is <code>0</code> · <code>a ^ 0</code> is <code>a</code></div>
+    <div class="fx"><code>(a ^ b) ^ b</code> is <code>a</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="A set of small numbers 0 .. n-1 stored in one int (a mask). Rows: the full set, the common part, the union, and a test that set a is inside set b.">
+    <div class="fx">all n bits on: <code>(1 &lt;&lt; n) - 1</code></div>
+    <div class="fx">in both: <code>a &amp; b</code> · in a or b: <code>a | b</code></div>
+    <div class="fx">a is inside b: <code>(a &amp; b) == a</code></div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="Try every subset of n items (n &lt;= 20). Bit i of mask says if item i is taken.">
 <pre data-part="main"><code class="cpp">
 for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++)
     for (int i = 0; i &lt; n; i++)
-        if ((mask &gt;&gt; i) &amp; 1) { /* item i is in */ }
+        if ((mask &gt;&gt; i) &amp; 1)    // i is in
+            sum[mask] += a[i];
 </code></pre>
   </div>
 </div>
 </section>
 
-<section class="s2">
-<h2>STL and core tools</h2>
+<section class="s4" id="cs-stl" style="scroll-margin-top:64px">
+<h2>STL</h2>
 <div class="cgrid">
-  <div class="cc" data-to="stl-basics" data-tip="Everyday tools on a vector: sort, reverse, biggest, smallest, sum, remove duplicates.">
+  <div class="cc" data-to="stl-basics" data-tip="Everyday tools on a vector: sort, sort from big to small, reverse, biggest, smallest, sum.">
 <pre data-part="main"><code class="cpp">
 sort(a.begin(), a.end());
-sort(a.rbegin(), a.rend());            // big to small
+sort(a.rbegin(), a.rend());  // big to small
 reverse(a.begin(), a.end());
 int mx = *max_element(a.begin(), a.end());
 int mn = *min_element(a.begin(), a.end());
-long long s = accumulate(a.begin(), a.end(), 0LL);
-a.erase(unique(a.begin(), a.end()), a.end());  // after sort
+long long s =
+    accumulate(a.begin(), a.end(), 0LL);
 </code></pre>
   </div>
-  <div class="cc" data-to="sorting" data-tip="Sort by your own rule. The rule must use strict &lt; and never &lt;=.">
+  <div class="cc" data-to="sorting" data-tip="Sort by your own rule: here by the second number, and for equal second numbers the bigger first number comes first. The rule must use strict &lt; or &gt;, never &lt;=.">
 <pre data-part="main"><code class="cpp">
-sort(v.begin(), v.end(), [](const pair&lt;int,int&gt; &amp;x,
-                            const pair&lt;int,int&gt; &amp;y) {
-    if (x.second != y.second) return x.second &lt; y.second;
+sort(v.begin(), v.end(),
+     [](pair&lt;int,int&gt; x, pair&lt;int,int&gt; y) {
+    if (x.second != y.second)
+        return x.second &lt; y.second;
     return x.first &gt; y.first;
 });
 </code></pre>
   </div>
-  <div class="cc" data-to="stl-containers" data-tip="Which container for which job. set/map cost O(log n) per step; stack/queue cost O(1).">
+  <div class="cc" data-to="stl-containers" data-tip="Which container for which job. set and map cost O(log n) per step; stack and queue cost O(1).">
     <table>
       <tr><td>unique + sorted</td><td>set</td></tr>
       <tr><td>sorted, repeats</td><td>multiset</td></tr>
@@ -211,15 +1365,40 @@ sort(v.begin(), v.end(), [](const pair&lt;int,int&gt; &amp;x,
       <tr><td>always the max / min</td><td>priority_queue</td></tr>
     </table>
   </div>
-  <div class="cc" data-to="stl-containers" data-tip="The most used lines for set, map, multiset and priority_queue.">
+  <div class="cc" data-to="stl-containers" data-tip="set: sorted, no repeats, O(log n) per line. lower_bound gives s.end() when no element is &gt;= x; do not read *it then.">
 <pre data-part="main"><code class="cpp">
-set&lt;int&gt; s; s.insert(x); s.count(x); s.erase(x);
-auto it = s.lower_bound(x);        // first &gt;= x
-map&lt;int,int&gt; m; m[x]++;
-for (auto [key, val] : m) { }
-multiset&lt;int&gt; ms; ms.erase(ms.find(x));   // one copy
-priority_queue&lt;int&gt; pq;            // max on top
-priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; mn;
+set&lt;int&gt; s;
+s.insert(x);
+if (s.count(x)) found = true;  // x inside?
+auto it = s.lower_bound(x);    // first &gt;= x
+s.erase(x);
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-containers" data-tip="map: one value for every key, sorted by key. m[key] creates the key with value 0 when it is missing, so test with count.">
+<pre data-part="main"><code class="cpp">
+map&lt;string, int&gt; m;
+m[key]++;                     // starts at 0
+if (m.count(key)) found = true;
+for (auto [k, v] : m) total += v;  // sorted
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-containers" data-tip="multiset: sorted, repeats allowed. erase(x) removes ALL copies of x. To remove one copy, erase what find gives; x must be inside.">
+<pre data-part="main"><code class="cpp">
+multiset&lt;int&gt; ms;
+ms.insert(x); ms.insert(x);
+int smallest = *ms.begin();
+int biggest = *ms.rbegin();
+ms.erase(ms.find(x));        // one copy
+ms.erase(x);                 // all copies
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-containers" data-tip="priority_queue: the biggest element is always on top. The long form with greater keeps the smallest on top. top and pop need a queue that is not empty.">
+<pre data-part="main"><code class="cpp">
+priority_queue&lt;int&gt; pq;    // biggest on top
+pq.push(x); int top = pq.top(); pq.pop();
+priority_queue&lt;int, vector&lt;int&gt;,
+               greater&lt;int&gt;&gt; mn; // smallest
+mn.push(x);
 </code></pre>
   </div>
   <div class="cc" data-to="counting" data-tip="Count how many times each value appears. Array for small values, map for big values.">
@@ -228,28 +1407,64 @@ int cnt[26] = {};
 for (char c : s) cnt[c - 'a']++;
 map&lt;long long, long long&gt; f;
 for (auto x : a) f[x]++;
-// pairs among k equal items: k * (k - 1) / 2
+// k equal items: k * (k - 1) / 2 pairs
 </code></pre>
   </div>
-  <div class="cc" data-to="prefix-sums" data-tip="Sum of any part of an array in O(1) after one O(n) pass.">
-    <div class="fx"><code>pre[0] = 0, pre[i+1] = pre[i] + a[i]</code></div>
+  <div class="cc" data-to="counting" data-tip="Number of pairs of equal elements in an array: every value that appears k times gives k(k-1)/2 pairs.">
+<pre data-part="main"><code class="cpp">
+map&lt;long long, long long&gt; f;
+for (long long x : a) f[x]++;
+long long pairs = 0;
+for (auto [value, k] : f)
+    pairs += k * (k - 1) / 2;
+</code></pre>
+  </div>
+  <div class="cc" data-to="counting" data-tip="The value that appears most often, and how many times. For a tie this keeps the smallest value, because a map walks its keys from small to big.">
+<pre data-part="main"><code class="cpp">
+map&lt;long long, int&gt; f;
+for (long long x : a) f[x]++;
+long long best = 0; int bestCount = 0;
+for (auto [value, k] : f)
+    if (k &gt; bestCount) {
+        bestCount = k; best = value;
+    }
+</code></pre>
+  </div>
+</div>
+</section>
+
+<section class="s0" id="cs-ranges" style="scroll-margin-top:64px">
+<h2>Prefix sums, two pointers, binary search</h2>
+<div class="cgrid">
+  <div class="cc" data-to="prefix-sums" data-tip="Sum of any part of an array in O(1) after one O(n) pass. pre has n + 1 elements.">
+    <div class="fx">build: <code>pre[0] = 0, pre[i+1] = pre[i] + a[i]</code></div>
     <div class="fx">sum of <code>a[l..r]</code> = <code>pre[r+1] - pre[l]</code></div>
   </div>
-  <div class="cc" data-to="prefix-sums" data-tip="Difference array: add v to a whole range [l..r] in O(1), many times. One prefix sum at the end gives the real values.">
-    <div class="fx"><code>d[l] += v, d[r+1] -= v</code></div>
+  <div class="cc" data-to="prefix-sums" data-tip="Difference array: add v to a whole range [l..r] in O(1), many times. One prefix sum at the end gives the real values. d has n + 1 elements.">
+    <div class="fx">add v on l..r: <code>d[l] += v, d[r+1] -= v</code></div>
     <div class="fx">then <code>a[i] = d[0] + ... + d[i]</code></div>
   </div>
-  <div class="cc" data-to="prefix-sums" data-tip="2D prefix sums: sum of any rectangle in O(1). Rows and columns are 1-indexed.">
-    <div class="fx"><code>P[i][j] = a[i][j] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]</code></div>
-    <div class="fx"><code>sum = P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1]</code></div>
+  <div class="cc span2" data-to="prefix-sums" data-tip="2D prefix sums: sum of any rectangle in O(1). Rows and columns are 1-indexed; row 0 and column 0 stay 0.">
+    <div class="fx">build: <code>P[i][j] = a[i][j] + P[i-1][j] + P[i][j-1] - P[i-1][j-1]</code></div>
+    <div class="fx">query: <code>sum = P[r2][c2] - P[r1-1][c2] - P[r2][c1-1] + P[r1-1][c1-1]</code></div>
   </div>
-  <div class="cc" data-to="two-pointers" data-tip="Sliding window: longest part with sum ≤ S (positive numbers). Each pointer only moves forward, so it is O(n).">
+  <div class="cc" data-to="two-pointers" data-tip="Sliding window: longest part with sum &lt;= S (positive numbers). Each pointer only moves forward, so it is O(n).">
 <pre data-part="main"><code class="cpp">
 long long sum = 0; int best = 0;
 for (int l = 0, r = 0; r &lt; n; r++) {
     sum += a[r];
     while (sum &gt; S) sum -= a[l++];
     best = max(best, r - l + 1);
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="two-pointers" data-tip="Two pointers from both ends of a SORTED array: is there a pair with sum equal to target? O(n).">
+<pre data-part="main"><code class="cpp">
+int i = 0, j = n - 1; bool found = false;
+while (i &lt; j) {
+    long long s = a[i] + a[j];
+    if (s == target) { found = true; break; }
+    if (s &lt; target) i++; else j--;
 }
 </code></pre>
   </div>
@@ -263,18 +1478,26 @@ while (hi - lo &gt; 1) {
 // answer = hi
 </code></pre>
   </div>
-  <div class="cc" data-to="binary-search" data-tip="Ready-made binary search on a sorted vector.">
+  <div class="cc" data-to="binary-search" data-tip="Ready-made binary search on a sorted vector. i is the first index with a[i] &gt;= x, j the first with a[j] &gt; x. Both are n when there is none.">
 <pre data-part="main"><code class="cpp">
-int i = lower_bound(a.begin(), a.end(), x) - a.begin(); // &gt;= x
-int j = upper_bound(a.begin(), a.end(), x) - a.begin(); // &gt;  x
-bool has = binary_search(a.begin(), a.end(), x);
+int i = lower_bound(a.begin(), a.end(), x)
+        - a.begin();
+int j = upper_bound(a.begin(), a.end(), x)
+        - a.begin();
+bool has =
+    binary_search(a.begin(), a.end(), x);
 </code></pre>
+  </div>
+  <div class="cc" data-to="binary-search" data-tip="Counting in a sorted vector with the two indexes of the card before: how many are equal to x, below x, above x.">
+    <div class="fx">equal to x: <code>j - i</code></div>
+    <div class="fx">smaller than x: <code>i</code></div>
+    <div class="fx">bigger than x: <code>n - j</code></div>
   </div>
 </div>
 </section>
 
-<section class="s3">
-<h2>Algorithms</h2>
+<section class="s1" id="cs-recdp" style="scroll-margin-top:64px">
+<h2>Recursion and DP</h2>
 <div class="cgrid">
   <div class="cc" data-to="recursion" data-tip="Recursion: try 'take' and 'skip' for every item. Visits all 2^n subsets.">
 <pre data-part="global"><code class="cpp">
@@ -288,10 +1511,12 @@ void go(int i) {
 }
 </code></pre>
   </div>
-  <div class="cc" data-to="recursion" data-tip="Every order of the elements (n ≤ 10). Sort first.">
+  <div class="cc" data-to="recursion" data-tip="Every order of the elements (n &lt;= 10). Sort first, or you miss some orders.">
 <pre data-part="main"><code class="cpp">
 sort(a.begin(), a.end());
-do { /* use a */ } while (next_permutation(a.begin(), a.end()));
+do {
+    /* use a */
+} while (next_permutation(a.begin(), a.end()));
 </code></pre>
   </div>
   <div class="cc" data-to="dp" data-tip="The four questions for every DP problem.">
@@ -308,6 +1533,12 @@ do { /* use a */ } while (next_permutation(a.begin(), a.end()));
     <div class="fx">LIS: <code>dp[i] = 1 + max(dp[j])</code> for <code>j &lt; i</code>, <code>a[j] &lt; a[i]</code></div>
     <div class="fx">LCS: <code>a[i] == b[j] ? dp[i-1][j-1] + 1 : max(dp[i-1][j], dp[i][j-1])</code></div>
   </div>
+</div>
+</section>
+
+<section class="s2" id="cs-graphs" style="scroll-margin-top:64px">
+<h2>Graphs and trees</h2>
+<div class="cgrid">
   <div class="cc" data-to="graphs-bfs-dfs" data-tip="Read a graph with n vertices and m edges into an adjacency list (1-indexed, two-way edges).">
 <pre data-part="main"><code class="cpp">
 vector&lt;vector&lt;int&gt;&gt; g(n + 1);
@@ -327,32 +1558,25 @@ void dfs(int v) {
 }
 </code></pre>
   </div>
-  <div class="cc" data-to="graphs-bfs-dfs" data-tip="BFS: shortest distance (number of edges) from s to every vertex. −1 means not reachable.">
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="BFS: shortest distance (number of edges) from s to every vertex. -1 means not reachable.">
 <pre data-part="global"><code class="cpp">
-vector&lt;int&gt; bfs(int s, const vector&lt;vector&lt;int&gt;&gt; &amp;g) {
+vector&lt;int&gt; bfs(int s,
+        const vector&lt;vector&lt;int&gt;&gt; &amp;g) {
     vector&lt;int&gt; dist(g.size(), -1);
     queue&lt;int&gt; q; q.push(s); dist[s] = 0;
     while (!q.empty()) {
         int v = q.front(); q.pop();
-        for (int u : g[v]) if (dist[u] == -1) {
-            dist[u] = dist[v] + 1;
-            q.push(u);
-        }
+        for (int u : g[v])
+            if (dist[u] == -1) {
+                dist[u] = dist[v] + 1;
+                q.push(u);
+            }
     }
     return dist;
 }
 </code></pre>
   </div>
-  <div class="cc" data-to="graphs-bfs-dfs" data-tip="Moving on a grid: the four neighbours of cell (x, y) and the check that a cell is inside.">
-<pre data-part="main"><code class="cpp">
-int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
-for (int d = 0; d &lt; 4; d++) {
-    int nx = x + dx[d], ny = y + dy[d];
-    if (nx &lt; 0 || ny &lt; 0 || nx &gt;= n || ny &gt;= m) continue;
-}
-</code></pre>
-  </div>
-  <div class="cc" data-to="dijkstra" data-tip="Dijkstra: shortest path when edges have weights ≥ 0. O((n + m) log n).">
+  <div class="cc span2" data-to="dijkstra" data-tip="Dijkstra: shortest path when edges have weights &gt;= 0. O((n + m) log n). A distance equal to INF means not reachable.">
 <pre data-part="global"><code class="cpp">
 const long long INF = 1e18;
 vector&lt;long long&gt; dijkstra(int s,
@@ -382,9 +1606,10 @@ vector&lt;long long&gt; dijkstra(int s,
       <tr><td>all pairs, \( n \le 500 \)</td><td>Floyd-Warshall</td></tr>
     </table>
   </div>
-  <div class="cc" data-to="trees" data-tip="One DFS on a tree: depth goes down from the parent, subtree size comes up from the children.">
+  <div class="cc" data-to="trees" data-tip="One DFS on a tree: depth goes down from the parent, subtree size comes up from the children. Call dfs(root, 0).">
 <pre data-part="global"><code class="cpp">
-vector&lt;vector&lt;int&gt;&gt; g; vector&lt;int&gt; depth, sz;
+vector&lt;vector&lt;int&gt;&gt; g;
+vector&lt;int&gt; depth, sz;
 void dfs(int v, int p) {
     sz[v] = 1;
     for (int u : g[v]) if (u != p) {
@@ -400,14 +1625,17 @@ void dfs(int v, int p) {
     <div class="fx">connected, no cycle</div>
     <div class="fx">one path between any two vertices</div>
   </div>
-  <div class="cc" data-to="dsu" data-tip="DSU: merge groups and ask 'are these two in the same group?'. Almost O(1) per call.">
+  <div class="cc" data-to="dsu" data-tip="DSU: merge groups and ask if two things are in the same group. Almost O(1) per call. Same group: find(a) == find(b).">
 <pre data-part="global"><code class="cpp">
 struct DSU {
     vector&lt;int&gt; p, sz;
     DSU(int n) : p(n + 1), sz(n + 1, 1) {
         iota(p.begin(), p.end(), 0);
     }
-    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
+    int find(int x) {
+        if (p[x] != x) p[x] = find(p[x]);
+        return p[x];
+    }
     bool unite(int a, int b) {
         a = find(a); b = find(b);
         if (a == b) return false;
@@ -418,7 +1646,7 @@ struct DSU {
 };
 </code></pre>
   </div>
-  <div class="cc" data-to="toposort" data-tip="Topological sort (Kahn): an order where every edge goes forward. If the order has fewer than n vertices, there is a cycle.">
+  <div class="cc span2" data-to="toposort" data-tip="Topological sort (Kahn): an order where every edge goes forward. If the order has fewer than n vertices, there is a cycle.">
 <pre data-part="global"><code class="cpp">
 vector&lt;int&gt; topo(int n, const vector&lt;vector&lt;int&gt;&gt; &amp;g) {
     vector&lt;int&gt; in(n + 1, 0), order;
@@ -436,7 +1664,7 @@ vector&lt;int&gt; topo(int n, const vector&lt;vector&lt;int&gt;&gt; &amp;g) {
   </div>
   <div class="cc" data-to="interactive" data-tip="Interactive problems: print a question, flush (endl does it), then read the reply.">
 <pre data-part="main"><code class="cpp">
-cout &lt;&lt; "? " &lt;&lt; mid &lt;&lt; endl;   // endl = flush
+cout &lt;&lt; "? " &lt;&lt; mid &lt;&lt; endl;   // flush
 string reply; cin &gt;&gt; reply;
 cout &lt;&lt; "! " &lt;&lt; answer &lt;&lt; endl;
 </code></pre>

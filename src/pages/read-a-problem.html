@@ -1,6 +1,13 @@
-<p class="idea">Most wrong answers come from reading too fast. Use the same reading steps for every problem.</p>
+<p class="idea"><span class="tr" data-ar="معظم الإجابات الخاطئة تأتي من القراءة السريعة. استخدم خطوات القراءة نفسها في كل مسألة.">Most wrong answers come from reading too fast. Use the same reading steps for every problem.</span></p>
 
-<section>
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know what a sample and a verdict are → <a href="#how-codeforces-works">How Codeforces works</a></li>
+  </ul>
+</aside>
+
+<section class="spot">
   <h2>The routine</h2>
   <ol>
     <li><b>Read the limits first.</b> Look at the <span class="term" data-t="constraints">constraints</span>, the <span class="term" data-t="time-limit">time limit</span> and the memory limit. They tell you how fast your code must be.</li>
@@ -10,55 +17,159 @@
     <li><b>Read the Note.</b> It is at the end. It often explains the samples.</li>
     <li><b>Look for trap words.</b> See the table below.</li>
   </ol>
-  <p class="tip-box">Do not write code before step 4 works. If your hand answer is different, you did not understand the task yet.</p>
+  <p class="tip-box"><span class="tr" data-ar="لا تكتب الكود قبل أن تنجح الخطوة 4. إذا اختلف جوابك اليدوي فأنت لم تفهم المهمة بعد.">Do not write code before step 4 works. If your hand answer is different, you did not understand the task yet.</span></p>
 </section>
 
 <section>
-  <h2>Example: problem 4A</h2>
-  <div class="way">
-    <h3><b>The task in short</b></h3>
-    <p>Two friends have one watermelon. It weighs <code>w</code> kilos (1 ≤ w ≤ 100). They cut it into two parts. Each part must weigh an <span class="term" data-t="even">even</span> number of kilos. The parts can be different. Print YES if this is possible, else NO.</p>
-    <table>
-      <tr><th>Step</th><th>What you find</th></tr>
-      <tr><td>Limits</td><td>w ≤ 100. Very small. Any solution is fast enough.</td></tr>
-      <tr><td>One sentence</td><td>"Can I write w as even + even?"</td></tr>
-      <tr><td>Sample by hand</td><td>w = 8 → 2 + 6 → YES.</td></tr>
-      <tr><td>Trap</td><td>Each part must be more than 0. So w = 2 is only 1 + 1 → NO.</td></tr>
-      <tr><td>Output</td><td>The word YES or NO.</td></tr>
-    </table>
-    <p>Now the answer is easy: YES when w is even <b>and</b> w &gt; 2.</p>
-  </div>
+  <h2>How to read the limits</h2>
+  <p>Limits are written with powers of 10. \( 10^5 \) means 1 followed by 5 zeros.</p>
+  <table>
+    <tr><th>You see</th><th>Say it as</th><th>The number</th></tr>
+    <tr><td>\( 10^3 \)</td><td>ten to the 3</td><td>1 000</td></tr>
+    <tr><td>\( 10^5 \)</td><td>ten to the 5</td><td>100 000</td></tr>
+    <tr><td>\( 2 \cdot 10^5 \)</td><td>2 times \( 10^5 \)</td><td>200 000</td></tr>
+    <tr><td>\( 10^9 \)</td><td>ten to the 9</td><td>1 000 000 000 (one billion)</td></tr>
+    <tr><td>\( 10^{18} \)</td><td>ten to the 18</td><td>1 with 18 zeros</td></tr>
+  </table>
+  <p>The sign \( \le \) means "less than or equal". So \( 1 \le n \le 2 \cdot 10^5 \) reads: <span class="tr" data-ar="n عدد صحيح من 1 إلى 200000، والطرفان مسموح بهما.">\( n \) is a whole number from 1 to 200 000, and both ends are allowed.</span></p>
+  <p>\( a_i \) means "the number at place \( i \) of the array <code>a</code>". The statement counts places from 1: \( a_1, a_2, \dots, a_n \).</p>
+  <p class="note">The biggest values are the ones that break code. The judge always has a test with them.</p>
 </section>
 
 <section>
-  <h2>Trap words</h2>
+  <h2>Words that change the task</h2>
+  <p>Four words look alike but mean different things. Here they are on the array 2, 3, 4, 5, 6.</p>
+  <figure class="viz" data-viz="array" aria-label="The array 2 3 4 5 6 three times. In the second row the cells 3 4 5 are chosen: a block with no gaps. In the third row the cells 2 4 6 are chosen: same order, with gaps.">
+    <script type="application/json">
+{
+  "label": "array", "values": [2, 3, 4, 5, 6],
+  "rows": [
+    { "label": "subarray", "values": [2, 3, 4, 5, 6], "states": ["dim", "done", "done", "done", "dim"] },
+    { "label": "subsequence", "values": [2, 3, 4, 5, 6], "states": ["done", "dim", "done", "dim", "done"] }
+  ],
+  "legend": { "done": "taken", "dim": "skipped" }
+}
+    </script>
+    <figcaption><span class="tr" data-ar="المصفوفة الجزئية قطعة متصلة بلا فراغات. المتتالية الجزئية تحافظ على الترتيب لكن الفراغات مسموحة.">A subarray is one block with no gaps. A subsequence keeps the order, but gaps are allowed.</span> So [3, 4, 5] is both. [2, 4, 6] is only a subsequence.</figcaption>
+  </figure>
+  <table>
+    <tr><th>Word</th><th>Meaning</th><th>Yes</th><th>No</th></tr>
+    <tr><td><span class="term" data-t="subarray">subarray</span></td><td>A block of neighbours, no gaps.</td><td>[3, 4, 5]</td><td>[2, 4] (gap), [4, 3] (order)</td></tr>
+    <tr><td><span class="term" data-t="subsequence">subsequence</span></td><td>Delete some items. Keep the order of the rest.</td><td>[2, 4, 6]</td><td>[4, 2] (order changed)</td></tr>
+    <tr><td><span class="term" data-t="substring">substring</span></td><td>A subarray of a string.</td><td><code>"ode"</code> in <code>"codes"</code></td><td><code>"cds"</code> in <code>"codes"</code> (gaps)</td></tr>
+    <tr><td><span class="term" data-t="permutation">permutation</span> of length \( n \)</td><td>The numbers 1 to \( n \), each exactly once, in any order.</td><td>[3, 1, 4, 2]</td><td>[3, 1, 3, 2], [1, 2, 5, 4]</td></tr>
+  </table>
+  <figure class="viz" data-viz="array" aria-label="Two arrays of length 4. The first, 3 1 4 2, is a permutation. The second, 3 1 3 2, is not: 3 appears twice and 4 is missing.">
+    <script type="application/json">
+{
+  "label": "yes", "values": [3, 1, 4, 2], "states": ["done", "done", "done", "done"], "start": 1,
+  "rows": [ { "label": "no", "values": [3, 1, 3, 2], "states": ["bad", "done", "bad", "done"] } ],
+  "legend": { "done": "fine", "bad": "3 twice, 4 missing" }
+}
+    </script>
+    <figcaption><span class="tr" data-ar="في التبديلة من الطول 4 يظهر كل عدد من 1 إلى 4 مرة واحدة بالضبط.">In a permutation of length 4, each number from 1 to 4 appears exactly once.</span></figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>More trap words</h2>
   <table>
     <tr><th>Word</th><th>Meaning</th></tr>
     <tr><td><span class="term" data-t="distinct">distinct</span></td><td>All different. No two are equal.</td></tr>
-    <tr><td>at least k / at most k</td><td>≥ k / ≤ k. Not &gt; and not &lt;.</td></tr>
-    <tr><td><span class="term" data-t="subarray">subarray</span>, <span class="term" data-t="substring">substring</span></td><td>A part with <b>no gaps</b>: [3, 4, 5] inside [2, 3, 4, 5, 6].</td></tr>
-    <tr><td><span class="term" data-t="subsequence">subsequence</span></td><td>Same order, but <b>gaps are allowed</b>: [2, 4, 6] inside [2, 3, 4, 5, 6].</td></tr>
-    <tr><td><span class="term" data-t="permutation">permutation</span></td><td>The numbers 1…n, each one time: [3, 1, 2].</td></tr>
+    <tr><td>at least \( k \) / at most \( k \)</td><td>\( \ge k \) / \( \le k \). The number \( k \) itself is allowed.</td></tr>
     <tr><td>"print any valid answer"</td><td>Many answers are correct. Yours can differ from the sample.</td></tr>
     <tr><td>1-indexed</td><td>The statement counts from 1. Your C++ array counts from 0.</td></tr>
-    <tr><td>non-negative / positive</td><td>≥ 0 / &gt; 0. Zero is not positive.</td></tr>
+    <tr><td>non-negative / positive</td><td>\( \ge 0 \) / \( &gt; 0 \). Zero is not positive.</td></tr>
   </table>
 </section>
 
-<section>
-  <h2>Many test cases</h2>
-  <p>Many problems begin with a number <code>t</code>. It is the number of <span class="term" data-t="test-case">test cases</span> in one input. You solve the task <code>t</code> times and print <code>t</code> answers.</p>
-  <p>Then you often see this line: <b>"the sum of n over all test cases does not exceed 2·10<sup>5</sup>"</b>.</p>
-  <p>It means: add the <code>n</code> of every test case. The total is at most 2·10<sup>5</sup>. So all the tests together are like <b>one</b> test with n = 2·10<sup>5</sup>. You do not multiply by <code>t</code>.</p>
-  <p class="note">If this line is missing, the worst case is t × n. Count your steps with that number.</p>
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> We read a whole statement, piece by piece. Here it is, in short.<br>
+  <i>You get \( t \) test cases. Each one is an array \( a_1, \dots, a_n \). Count the places \( i \) (\( 2 \le i \le n \)) where \( a_i &gt; a_{i-1} \).
+  Input: the first line has \( t \) (\( 1 \le t \le 10^4 \)). Each test case has \( n \) (\( 1 \le n \le 2 \cdot 10^5 \)), then \( n \) numbers \( a_i \) (\( 1 \le a_i \le 10^9 \)).
+  The sum of \( n \) over all test cases does not exceed \( 2 \cdot 10^5 \). Output: one number for each test case.</i></p>
+  <ol class="steps">
+    <li><b>The limits, piece by piece.</b>
+      <table>
+        <tr><th>Piece</th><th>What it tells you</th></tr>
+        <tr><td>\( 1 \le t \le 10^4 \)</td><td>Up to 10 000 test cases in one input. Solve each and print each answer.</td></tr>
+        <tr><td>\( 1 \le n \le 2 \cdot 10^5 \)</td><td>One array can have 200 000 numbers. Also \( n = 1 \) is allowed.</td></tr>
+        <tr><td>\( 1 \le a_i \le 10^9 \)</td><td>Each number is up to one billion. It fits in an <code>int</code>.</td></tr>
+        <tr><td class="hi">sum of \( n \le 2 \cdot 10^5 \)</td><td class="hi">All arrays together have at most 200 000 numbers.</td></tr>
+      </table>
+      <p><span class="tr" data-ar="سطر «مجموع n» يعني أن كل حالات الاختبار معًا تشبه حالة واحدة فيها n = 200000. لا تضرب في t.">The "sum of \( n \)" line means: all test cases together are like one test with 200 000 numbers. Do not multiply by \( t \).</span></p>
+    </li>
+    <li><b>The task in one sentence.</b> "How many times does the array go up from one number to the next?"</li>
+    <li><b>The sample by hand.</b> Input: <code>2</code>, then <code>5</code> and <code>1 3 2 4 5</code>, then <code>1</code> and <code>7</code>.
+      In 1, 3, 2, 4, 5 the steps up are 1→3, 2→4 and 4→5. So 3. The array 7 has no pair, so 0. Output: <code>3</code> then <code>0</code>.</li>
+    <li><b>Traps.</b> <span class="tr" data-ar="عندما n = 1 لا يوجد زوج، فالجواب 0. ولغة C++ تعدّ من 0، لذلك يبدأ i من 1 وينتهي عند n - 1.">With \( n = 1 \) there is no pair, so the answer is 0. C++ counts from 0, so <code>i</code> goes from 1 to <code>n - 1</code>.</span></li>
+    <li><b>Is it fast enough?</b> We look at each number once. That is 200 000 looks in total, for all tests together. This is tiny work for a computer.</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int t;
+    cin &gt;&gt; t;
+    while (t--) {                        // one round of the loop per test case
+        int n;
+        cin &gt;&gt; n;
+        vector&lt;int&gt; a(n);
+        for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+        int ups = 0;
+        for (int i = 1; i &lt; n; i++)      // a[i-1] exists only for i &gt;= 1
+            if (a[i] &gt; a[i - 1]) ups++;
+        cout &lt;&lt; ups &lt;&lt; "\n";
+    }
+}
+</code></pre>
+</section>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="مع 10^4 حالة اختبار و n حتى 2·10^5، العمل الكلّي هو حاصل ضربهما.">With \( 10^4 \) tests and \( n \) up to \( 2 \cdot 10^5 \), the total work is their product.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا قالت المسألة «مجموع n لا يتجاوز 2·10^5» فكل الحالات معًا فيها 2·10^5 عدد فقط.">If the statement says "the sum of \( n \) is at most \( 2 \cdot 10^5 \)", all tests together have only \( 2 \cdot 10^5 \) numbers.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="جوابي يختلف عن جواب المثال، إذن هو خاطئ.">My answer differs from the sample answer, so it is wrong.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا قالت المسألة «اطبع أيّ إجابة صحيحة» فقد يكون جوابك صحيحًا أيضًا.">If the statement says "print any valid answer", your answer can be right too.</span> Check it against the rules, not against the sample.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="المتتالية الجزئية والمصفوفة الجزئية شيء واحد.">A subsequence and a subarray are the same thing.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="المصفوفة الجزئية بلا فراغات. المتتالية الجزئية تسمح بالفراغات.">A subarray has no gaps. A subsequence may have gaps.</span> The task and the answer change completely.</p>
+    </li>
+  </ul>
 </section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>You skip the limits. Then you write a solution that is too slow.</li>
     <li>You print "Yes" when the statement asks for "YES". Copy the word from the statement.</li>
-    <li>You forget to read <code>t</code>, or you forget to clear your variables between test cases.</li>
-    <li>You see a different answer in the sample and think you are wrong. Check for "print any".</li>
+    <li>You forget to read <code>t</code>, so your program reads the wrong numbers.</li>
+    <li>You use <code>a[i - 1]</code> with <code>i = 0</code>. Start the loop at 1.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>How to count the steps of your code exactly.</b> Here we only said "200 000 looks is tiny". You learn to count in <a href="#big-o">How much does my code cost?</a> and <a href="#complexity">Limits → speed</a>.</li>
+    <li><b>When one billion does not fit in a number type.</b> Sums of many numbers can be too big for <code>int</code>. See <a href="#overflow">int or long long?</a></li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="ما هو العدد 3·10^5 مكتوبًا بالأرقام العادية؟">What is \( 3 \cdot 10^5 \) written as a normal number?</span>
+      <details><summary>Answer</summary><p>300 000. \( 10^5 \) is 100 000, and 3 times that is 300 000.</p></details></li>
+    <li><span class="tr" data-ar="هل [1, 3] مصفوفة جزئية من [1, 2, 3]؟ وهل هي متتالية جزئية منها؟">Is [1, 3] a subarray of [1, 2, 3]? Is it a subsequence?</span>
+      <details><summary>Answer</summary><p>Not a subarray: there is a gap where 2 was. It is a subsequence: 1 and 3 keep their order.</p></details></li>
+    <li><span class="tr" data-ar="هل [2, 1, 2] تبديلة من الطول 3؟">Is [2, 1, 2] a permutation of length 3?</span>
+      <details><summary>Answer</summary><p>No. 2 appears twice and 3 is missing. A permutation of length 3 has 1, 2 and 3, each once.</p></details></li>
+  </ol>
 </section>

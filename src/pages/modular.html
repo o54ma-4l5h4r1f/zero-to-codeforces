@@ -1,12 +1,21 @@
-<p class="idea">When the answer is too big for any type, keep only its remainder. Take the remainder after every step, and the numbers stay small.</p>
+<p class="idea"><span class="tr" data-ar="عندما تكون الإجابة أكبر من أي نوع، احتفظ بباقي القسمة فقط. خذ الباقي بعد كل جمع وضرب، فتبقى الأعداد صغيرة.">When the answer is too big for any type, keep only its remainder. Take the remainder after every \( + \) and \( \times \), and the numbers stay small.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You know <code>%</code>, the remainder of a division → <a href="#basic-math">Basic math</a></li>
+    <li>You know that <code>long long</code> holds up to about \( 9 \cdot 10^{18} \) → <a href="#overflow">int or long long?</a></li>
+    <li>You know that halving again and again takes few steps → <a href="#binary-search">Binary search</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> 10<sup>9</sup> + 7" (or 998244353).</li>
+    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> \( 10^9 + 7 \)" (or 998244353).</li>
     <li>You count the number of ways, and it grows very fast.</li>
-    <li>You need a<sup>b</sup> with a big b, like b = 10<sup>18</sup> → fast <span class="term" data-t="power">power</span>.</li>
-    <li>"The last digit of …" is the same thing: modulo 10.</li>
+    <li>You need \( a^b \) with a huge \( b \), like \( b = 10^{18} \). That is fast <span class="term" data-t="power">power</span>.</li>
+    <li>"The last digit of …" is the same idea, modulo 10.</li>
   </ul>
 </section>
 
@@ -15,40 +24,80 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — the clock</h3>
-    <p>It is 10 o'clock. What time is it after 5 hours? Not 15. The clock says 3, because (10 + 5) % 12 = 3. A clock keeps only the <span class="term" data-t="remainder">remainder</span>.</p>
-    <p>You can add hours one by one, or all together. The clock shows the same time. So you may take the remainder at any moment, and the final remainder does not change.</p>
-    <p class="note">Why does the judge ask for it? The real answer can have thousands of digits. The remainder by 10<sup>9</sup> + 7 fits in an <code>int</code>, and it still shows that your method is right.</p>
+    <p>It is 10 o'clock. What time is it after 5 hours? Not 15. The clock shows 3.</p>
+    <figure class="viz" data-viz="clock" aria-label="A clock with the numbers 0 to 11. The hand starts at 10, moves 5 hours and stops at 3.">
+      <script type="application/json">
+{ "mod": 12, "at": 15, "label": "15 mod 12 = 3", "states": { "10": "read", "3": "active" }, "legend": { "read": "start: 10", "active": "after 5 hours: 3" } }
+</script>
+      <figcaption>A clock keeps only the <span class="term" data-t="remainder">remainder</span>. 15 divided by 12 is 1, and 3 is left.</figcaption>
+    </figure>
+    <p>We write \( 15 \bmod 12 = 3 \). In C++ it is <code>15 % 12</code>. You can add the hours one by one, or all together. The clock shows the same time.</p>
+    <p class="note">Why does the judge ask for a remainder? The real answer can have thousands of digits. The remainder by \( 10^9 + 7 \) fits in an <code>int</code>. It still shows that your method is right.</p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — the rules, then 3<sup>13</sup> in 4 steps</h3>
+    <h3><b>2 · Picture</b> — what is safe, on small numbers</h3>
+    <p>Take \( m = 10 \). The remainder by 10 is the last digit. Compare "mod at the end" with "mod first".</p>
     <table>
-      <tr><th>you want</th><th>write</th><th>why</th></tr>
-      <tr><td>a + b</td><td><code>(a + b) % m</code></td><td>safe when a and b are already below m</td></tr>
-      <tr><td>a · b</td><td><code>a * b % m</code> with <code>long long</code></td><td>the product is up to 10<sup>18</sup>, too big for <code>int</code></td></tr>
-      <tr><td>a − b</td><td><code>((a - b) % m + m) % m</code></td><td>in C++ the result of <code>%</code> can be negative</td></tr>
-      <tr><td>a / b</td><td class="hi">not allowed</td><td>normal division gives a wrong answer</td></tr>
+      <tr><th></th><th>mod at the end</th><th>mod first, then again</th><th>same?</th></tr>
+      <tr><th>17 + 25</th><td>42 → 2</td><td>7 + 5 = 12 → 2</td><td class="hi">yes</td></tr>
+      <tr><th>17 · 25</th><td>425 → 5</td><td>7 · 5 = 35 → 5</td><td class="hi">yes</td></tr>
+      <tr><th>30 / 6, with \( m = 7 \)</th><td>5 → 5</td><td>2 / 6 → 0</td><td>no</td></tr>
     </table>
-    <p><b>Fast power.</b> 3<sup>13</sup> needs 12 multiplications if you go one by one. But 13 = 8 + 4 + 1 (13 is 1101 in <span class="term" data-t="binary">binary</span>), so 3<sup>13</sup> = 3<sup>8</sup> · 3<sup>4</sup> · 3<sup>1</sup>. And you get 3<sup>2</sup>, 3<sup>4</sup>, 3<sup>8</sup> by squaring again and again.</p>
-    <table>
-      <tr><th>step</th><th>b</th><th>b is odd?</th><th>result</th><th>a (then a = a · a)</th></tr>
-      <tr><td>start</td><td>13</td><td></td><td>1</td><td>3 = 3<sup>1</sup></td></tr>
-      <tr><td>1</td><td>13</td><td>yes → result · a</td><td>1 · 3 = 3</td><td>9 = 3<sup>2</sup></td></tr>
-      <tr><td>2</td><td>6</td><td>no</td><td>3</td><td>81 = 3<sup>4</sup></td></tr>
-      <tr><td>3</td><td>3</td><td>yes → result · a</td><td>3 · 81 = 243</td><td>6561 = 3<sup>8</sup></td></tr>
-      <tr><td>4</td><td>1</td><td>yes → result · a</td><td class="hi">243 · 6561 = 1594323</td><td>–</td></tr>
-    </table>
-    <p class="note">After each step <code>b = b / 2</code>. When b is 0 we stop. For b = 10<sup>18</sup> that is only about 60 steps. In real code every multiplication is followed by <code>% m</code>.</p>
+    <p><span class="tr" data-ar="مع الجمع والضرب يمكنك أخذ الباقي في أي لحظة، والنتيجة لا تتغيّر. مع القسمة لا يجوز ذلك.">With \( + \) and \( \times \) you may take the remainder at any moment. The result does not change. With division you may not.</span> Division needs another tool. See "Not now".</p>
+
+    <p><b>Negative numbers.</b> On a clock with 5 numbers, walk 7 steps back from 0. You stop at 3. But C++ prints something else:</p>
+<pre data-part="main"><code class="cpp">
+cout &lt;&lt; -7 % 5;                // prints -2, not 3
+cout &lt;&lt; ((-7 % 5) + 5) % 5;    // prints 3: add m, then take % again
+</code></pre>
+    <figure class="viz" data-viz="clock" aria-label="A clock with the numbers 0 to 4. Walking 7 steps back from 0 stops at 3.">
+      <script type="application/json">
+{ "mod": 5, "at": -7, "label": "7 steps back from 0: 3", "states": { "0": "read", "3": "active" }, "legend": { "read": "start: 0", "active": "the true remainder: 3" } }
+</script>
+      <figcaption>In C++ the result of <code>%</code> is negative when the number is negative. Add <code>m</code>, then take <code>%</code> again.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — power(a, b, m)</h3>
+    <h3><b>3 · Code</b> — fast power, \( 3^{13} \) in 4 steps</h3>
+    <p>\( 3^{13} \) means 13 threes multiplied: 12 multiplications one by one. For \( b = 10^{18} \) that is far too slow.</p>
+    <p>The trick: \( 13 = 8 + 4 + 1 \). So \( 3^{13} = 3^8 \cdot 3^4 \cdot 3^1 \). Writing 13 as a sum of 1, 2, 4, 8, … is writing it in <span class="term" data-t="binary">binary</span>: 13 is 1101. You get \( 3^2, 3^4, 3^8 \) by squaring again and again.</p>
+    <figure class="viz" data-viz="stepper" data-gen="mod-power" aria-label="Step by step: fast power computes 3 to the power 13. The bits of 13 are 1 1 0 1, and each bit says if a power of 3 is multiplied into the result.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"e","label":"13","index":false,"values":[1,1,0,1],"rows":[{"label":"worth","values":["3^8","3^4","3^2","3^1"]}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"the bit we look at","done":"1: multiply it in","dim":"0: skip it"},
+  "code": ["long long result = 1 % m;","a %= m;","while (b > 0) {","    if (b % 2 == 1)","        result = result * a % m;","    a = a * a % m;","    b /= 2;","}","return result;"],
+  "steps": [
+    {"line":[1,2],"e":{"states":{}},"v":{"items":[["b",13],["a","3"],["result","1"]]}},
+    {"line":[4,5,6,7],"e":{"states":{"3":"active"}},"v":{"items":[["b",6],["a","9"],["result","3"]]}},
+    {"line":[4,6,7],"e":{"states":{"2":"active","3":"done"}},"v":{"items":[["b",3],["a","81"],["result","3"]]}},
+    {"line":[4,5,6,7],"e":{"states":{"1":"active","2":"dim","3":"done"}},"v":{"items":[["b",1],["a","6561"],["result","243"]]}},
+    {"line":[4,5,6,7],"e":{"states":{"0":"active","1":"done","2":"dim","3":"done"}},"v":{"items":[["b",0],["a","43046721"],["result","1594323"]]}},
+    {"line":9,"e":{"states":{"0":"done","1":"done","2":"dim","3":"done"}},"v":{"items":[["b",0],["a","43046721"],["result","1594323"]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start: <code>a = 3</code>, <code>b = 13</code>, <code>result = 1</code>. The bits of 13 are 1101.</li>
+        <li><code>b = 13</code> is odd, so this bit is 1: <code>result = 3</code>. Then <code>a</code> becomes 9 and <code>b</code> becomes 6.</li>
+        <li>\( b = 6 \) is even, so this bit is 0 and the result stays. Then <code>a</code> becomes 81 and <code>b</code> becomes 3.</li>
+        <li><code>b = 3</code> is odd: <code>result</code> is \( 3 \cdot 81 = 243 \). Then <code>a</code> becomes 6561 and <code>b</code> becomes 1.</li>
+        <li><code>b = 1</code> is odd: <code>result</code> is \( 243 \cdot 6561 = 1594323 \). Now <code>b</code> becomes 0.</li>
+        <li>\( b = 0 \), so we stop: \( 3^{13} = 1594323 \). We needed 4 steps, not 12 multiplications.</li>
+      </ol>
+      <figcaption>Each step halves <code>b</code>. For \( b = 10^{18} \) that is only about 60 steps.</figcaption>
+    </figure>
 <pre data-part="global"><code class="cpp">
 long long power(long long a, long long b, long long m) {   // a^b % m
     long long result = 1 % m;              // 1 % m, so it is also right for m = 1
-    a %= m;                                // make a small first
+    a %= m;                                // make a small first, so a * a fits
     while (b &gt; 0) {
-        if (b % 2 == 1)                    // this power of a is needed
+        if (b % 2 == 1)                    // this bit of b is 1: we need this power
             result = result * a % m;
         a = a * a % m;                     // a, a^2, a^4, a^8, ...
         b /= 2;
@@ -56,12 +105,51 @@ long long power(long long a, long long b, long long m) {   // a^b % m
     return result;
 }
 </code></pre>
-    <p>A complete program: for each test print a<sup>b</sup> modulo 10<sup>9</sup> + 7.</p>
+    <p class="note"><span class="tr" data-ar="لماذا 1 % m وليس 1؟ عندما m = 1 يجب أن تكون الإجابة 0. ومع b = 0 لا تعمل الحلقة أبدًا.">Why <code>1 % m</code> and not 1? For \( m = 1 \) the answer must be 0. With \( b = 0 \) the loop never runs.</span> Both <code>a</code> and <code>result</code> stay below \( m \le 10^9 + 7 \). So <code>a * a</code> is below \( 2 \cdot 10^{18} \) and fits in <code>long long</code>.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p><span class="tr" data-ar="القاعدة الافتراضية: استخدم long long، وخذ % m بعد كل جمع وكل ضرب.">The default: use <code>long long</code>, and take <code>% m</code> after every \( + \) and every \( \times \).</span> Then each problem changes one line.</p>
+  <ul>
+    <li><b>The sum of many numbers, mod m.</b>
+<pre data-part="main"><code class="cpp">
+sum = (sum + a[i]) % m;                // sum stays below m
+</code></pre></li>
+    <li><b>The product of many numbers, mod m.</b> Take <code>a[i] % m</code> too, because <code>a[i]</code> can be big.
+<pre data-part="main"><code class="cpp">
+prod = prod * (a[i] % m) % m;          // both are below m, the product fits in long long
+</code></pre></li>
+    <li><b>A difference, mod m.</b> <code>x - y</code> can be negative. Add <code>m</code>, then take <code>%</code> again.
+<pre data-part="main"><code class="cpp">
+long long d = ((x - y) % m + m) % m;   // always from 0 to m - 1
+</code></pre></li>
+    <li><b>A big power, mod m.</b> Call <code>power(a, b, m)</code>. Never a loop of \( b \) multiplications.</li>
+    <li><b>The last digit.</b> The last digit is the remainder by 10. The last digit of \( 7^{100} \) is <code>power(7, 100, 10)</code>, which is 1.</li>
+  </ul>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> There are \( n \) lamps. Each lamp is on or off. In how many ways can you set them, so that at least one lamp is on? Print the answer modulo \( 10^9 + 7 \). Limits: \( 1 \le n \le 10^{18} \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The number of on/off settings with at least one lamp on, as a remainder.</li>
+    <li><b>A small example by hand.</b> For \( n = 2 \): off-off, off-on, on-off, on-on. Three of the four have a lamp on.
+      <table>
+        <tr><th>n</th><td>1</td><td>2</td><td>3</td></tr>
+        <tr><th>all settings</th><td>2</td><td>4</td><td>8</td></tr>
+        <tr><th>at least one on</th><td>1</td><td class="hi">3</td><td>7</td></tr>
+      </table>
+    </li>
+    <li><b>The idea.</b> Each lamp has 2 choices, so there are \( 2^n \) settings. Only one of them has all lamps off. The answer is \( 2^n - 1 \). Compute \( 2^n \bmod (10^9 + 7) \) with <code>power</code>. Then subtract 1 with the safe difference form.</li>
+    <li><b>Why is it fast enough?</b> \( n \) is up to \( 10^{18} \). <code>power</code> halves it each step: about 60 steps. A loop of \( 10^{18} \) multiplications would never finish.</li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-const long long MOD = 1000000007;          // 10^9 + 7, a prime
+const long long MOD = 1000000007;          // 10^9 + 7
 
 long long power(long long a, long long b, long long m) {
     long long result = 1 % m;
@@ -75,29 +163,66 @@ long long power(long long a, long long b, long long m) {
 }
 
 int main() {
-    int t;
-    cin &gt;&gt; t;
-    while (t--) {
-        long long a, b;
-        cin &gt;&gt; a &gt;&gt; b;
-        cout &lt;&lt; power(a, b, MOD) &lt;&lt; "\n";
-    }
+    long long n;
+    cin &gt;&gt; n;
+    long long all = power(2, n, MOD);              // 2^n % MOD
+    cout &lt;&lt; ((all - 1) % MOD + MOD) % MOD &lt;&lt; "\n"; // the safe form of all - 1
 }
 </code></pre>
-    <p class="tip-box">Division: you cannot write <code>(a / b) % m</code>. You multiply by the <span class="term" data-t="modular-inverse">modular inverse</span> of b. For a prime m it is <code>power(b, m - 2, m)</code>. See <a href="#combinatorics">Counting with nCr</a>.</p>
-  </div>
 </section>
 
-<p class="complexity">Speed: +, −, × with mod are O(1). Fast power is O(log b): about 60 steps for b = 10^18.</p>
+<p class="complexity">Speed: \( + \), \( - \) and \( \times \) with <code>%</code> are \( O(1) \). Fast power is \( O(\log b) \): about 60 steps for \( b = 10^{18} \).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="أستطيع أن آخذ باقي القسمة مرة واحدة في النهاية فقط.">I can take the remainder once, at the end.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="العدد يتجاوز حدود النوع قبل النهاية بكثير. خذ الباقي بعد كل جمع وكل ضرب.">The number <span class="term" data-t="overflow">overflows</span> long before the end. Take it after every \( + \) and every \( \times \).</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="ناتج % في C++ لا يكون سالبًا أبدًا.">In C++, <code>a % m</code> is never negative.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا كان a سالبًا فالناتج سالب أو صفر. مثلًا -7 % 5 يساوي -2.">If <code>a</code> is negative, the result is negative or 0. <code>-7 % 5</code> is -2.</span> Use <code>((a % m) + m) % m</code>.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="العدد الأكبر له باقٍ أكبر، فأستطيع مقارنة البواقي.">A bigger number has a bigger remainder, so I can compare remainders.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا. 12 باقيه 2، و 9 باقيه 9، عند القسمة على 10. لا تأخذ min أو max للبواقي.">No. With \( m = 10 \), 12 gives 2 but 9 gives 9. Never take <code>min</code> or <code>max</code> of remainders.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="القسمة تعمل مع الباقي مثل الجمع والضرب.">Division works with remainders like \( + \) and \( \times \).</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="لا. رأيت في الجدول أن 30 / 6 تعطي إجابة خاطئة بعد أخذ الباقي.">No. The table above shows 30 / 6 going wrong after the mod.</span> Division needs a different tool (see "Not now").</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>Taking the mod only at the end. The number <span class="term" data-t="overflow">overflows</span> long before. Take it after <b>every</b> + and ×.</li>
-    <li>Multiplying two <code>int</code> values: <code>a * b % m</code> overflows before the <code>%</code>. Use <code>long long</code>, or write <code>1LL * a * b % m</code>.</li>
-    <li>A negative result after subtraction. Write <code>((a - b) % m + m) % m</code>.</li>
-    <li>Comparing numbers after the mod. A bigger real number can have a smaller remainder. Never take min or max of remainders.</li>
+    <li>Two <code>int</code> values in <code>a * b % m</code>. The product overflows before the <code>%</code>. Use <code>long long</code>, or write <code>1LL * a * b % m</code>.</li>
+    <li>Writing <code>10^9 + 7</code> in C++. Here <code>^</code> is not a power: this prints 26. Write <code>1000000007</code>.</li>
+    <li>Forgetting <code>a %= m</code> at the start of <code>power</code>. With \( a = 10^{18} \), <code>a * a</code> overflows.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Division with remainders</b> (the <span class="term" data-t="modular-inverse">modular inverse</span>). It uses <code>power</code> from this page. You learn it in <a href="#combinatorics">Counting with nCr</a>.</li>
+    <li><b>Why \( 10^9 + 7 \) must be a prime.</b> It matters only for division. Same lesson: <a href="#combinatorics">Counting with nCr</a>.</li>
+    <li><b>Powers of a whole table of numbers</b> (matrix power). It is rare below 1600. Come back after the guide: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="ماذا تطبع C++ للتعبير -8 % 3؟ وما الباقي الصحيح من 0 إلى 2؟">What does C++ print for <code>-8 % 3</code>? What is the true remainder, from 0 to 2?</span>
+      <details><summary>Answer</summary><p>C++ prints -2. The true remainder is \( (-2 + 3) \bmod 3 = 1 \).</p></details></li>
+    <li><span class="tr" data-ar="ما هو الرقم الأخير من 3^13؟">What is the last digit of \( 3^{13} \)?</span>
+      <details><summary>Answer</summary><p>3. \( 3^{13} = 1594323 \), and the last digit is the remainder by 10. In code: <code>power(3, 13, 10)</code>.</p></details></li>
+    <li><span class="tr" data-ar="كم خطوة تحتاج power(2, b, m) عندما b = 10^9 تقريبًا؟">About how many steps does <code>power(2, b, m)</code> make for \( b = 10^9 \)?</span>
+      <details><summary>Answer</summary><p>About 30. Each step halves <code>b</code>, and halving \( 10^9 \) down to 0 takes about 30 steps.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -116,9 +241,9 @@ int main() {
 <section class="more">
   <h2>Learn more</h2>
   <ul>
-    <li><a href="https://cses.fi/problemset/task/1095">CSES: Exponentiation</a> — exactly the program on this page. Submit it there.</li>
+    <li><a href="https://cses.fi/problemset/task/1095">CSES: Exponentiation</a> — compute \( a^b \bmod (10^9 + 7) \). Submit your <code>power</code> there.</li>
     <li><a href="https://cp-algorithms.com/algebra/binary-exp.html">cp-algorithms: Binary Exponentiation</a> — fast power in more detail.</li>
     <li><a href="https://usaco.guide/gold/modular">USACO Guide: Modular Arithmetic</a> — the rules again, and the modular inverse.</li>
-    <li><a href="https://codeforces.com/blog/entry/72527">Codeforces blog: Modular Arithmetic for Beginners</a> — the same rules with more examples.</li>
+    <li><a href="https://codeforces.com/blog/entry/72527">Modular Arithmetic for Beginners</a> — a Codeforces blog with the same rules and more examples.</li>
   </ul>
 </section>

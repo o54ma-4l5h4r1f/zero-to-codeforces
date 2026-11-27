@@ -3,6 +3,14 @@
   var main = $('#main'), side = $('#nav'), tip = $('#tip');
   var flat = [];
   D.stages.forEach(function (st) { st.topics.forEach(function (t) { t.stage = st; flat.push(t); }); });
+  var extras = D.extras || [];          /* pages that are not lessons (src/extras.json): quick links in the sidebar */
+  function extraOf(slug) { return extras.filter(function (x) { return x.slug === slug; })[0]; }
+  var W = D.whys || { themes: [], stories: {}, used: {} };   /* "Why?" notes: src/whys/*.html, see AUTHORING.md */
+  function plain(html) {               /* a story title as plain text for a screen reader: \( 9 \cdot 10^{18} \) -> 9 · 10^18 */
+    var d = document.createElement('div'); d.innerHTML = html;
+    return d.textContent.replace(/\\[()]/g, '').replace(/\\cdot/g, '·').replace(/\\,/g, ' ').replace(/\\approx/g, '≈').replace(/\\sqrt\{([^}]*)\}/g, 'square root of $1')
+      .replace(/\\([a-z]+)/g, '$1').replace(/[{}]/g, '').replace(/\s+/g, ' ').trim();
+  }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   /* ----- progress (saved in this browser only) ----- */
@@ -151,6 +159,11 @@
       el.tabIndex = 0;   /* Arabic is shown only in the tooltip (hover, focus, tap), never inside the text */
     });
     root.querySelectorAll('.tr[data-ar]').forEach(function (el) { el.tabIndex = 0; });
+    root.querySelectorAll('button.why[data-why]').forEach(function (b) {      /* "why?" chips: the story opens in a card */
+      var w = W.stories[b.getAttribute('data-why')];
+      if (!w) { b.hidden = true; return; }
+      b.type = 'button'; b.setAttribute('aria-haspopup', 'dialog'); b.setAttribute('aria-label', 'Why? ' + plain(w.title));
+    });
     root.querySelectorAll('pre > code').forEach(function (c) {
       var src = c.textContent.replace(/^\n+|\s+$/g, '');
       c.innerHTML = hl(src);
@@ -200,6 +213,8 @@
       if (t.parentNode.classList.contains('tablewrap') || t.closest('.cc')) return;
       var w = document.createElement('div'); w.className = 'tablewrap'; t.replaceWith(w); w.appendChild(t);
     });
+    /* pictures and steppers (src/viz.js). Last, so the captions already have their math and tooltips. */
+    if (window.CFG_VIZ) window.CFG_VIZ.enhance(root, { hl: hl });
   }
 
   /* ----- pages ----- */
@@ -234,9 +249,10 @@
   function render() {
     var slug = (location.hash || '').slice(1) || 'home';
     var t = flat.filter(function (x) { return x.slug === slug; })[0];
-    hideTip(); document.body.classList.remove('open');
+    hideTip(); closeWhy(false); document.body.classList.remove('open');
     if (t) main.innerHTML = topic(t);
     else if (slug === 'cheatsheet') main.innerHTML = '<div class="col wide cheat"><div class="page-h"><div class="eyebrow">Everything on one page</div><h1>Cheat sheet</h1><p class="note">Point at a card (or tap it) to see what it does and open its lesson.</p></div>' + D.pages.cheatsheet + '</div>';
+    else if (extraOf(slug)) main.innerHTML = '<div class="col extra' + (extraOf(slug).wide ? ' wide' : '') + '"><div class="page-h"><div class="eyebrow">Reference</div><h1>' + esc(extraOf(slug).title) + '</h1></div>' + D.pages[slug] + (slug === 'why' ? whyPage() : '') + '</div>';
     else if (slug === 'glossary') main.innerHTML = glossary();
     else if (T && slug === 'training') main.innerHTML = trainHome();
     else if (T && /^train-/.test(slug) && (slug === 'train-mixed' || trackOf[slug.slice(6)])) main.innerHTML = trainTrack(slug.slice(6));
@@ -245,6 +261,55 @@
     document.querySelectorAll('.quick a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + slug); });
     window.scrollTo(0, 0);
   }
+
+  /* ----- "Why?" notes: a card for one story, and the #why page with all of them ----- */
+  function titleOf(slug) { var t = flat.filter(function (x) { return x.slug === slug; })[0]; return t ? t.title : slug === 'cheatsheet' ? 'Cheat sheet' : (extraOf(slug) || {}).title || slug; }
+  function whyPage() {
+    var h = '';
+    W.themes.forEach(function (th) {
+      h += '<section class="why-theme"><h2>' + th.title + '</h2><div class="why-list">';
+      th.keys.forEach(function (k) {
+        var w = W.stories[k], u = W.used[k] || [];
+        h += '<details class="why-item" id="why-' + k + '"><summary>' + w.title + '</summary><div class="why-body" data-key="' + k + '"></div>' +
+          (u.length ? '<p class="note why-used">Told in: ' + u.map(function (s) { return '<a href="#' + s + '">' + esc(titleOf(s)) + '</a>'; }).join(' · ') + '</p>' : '') + '</details>';
+      });
+      h += '</div></section>';
+    });
+    return h;
+  }
+  var card = $('#why-card'), scrim = $('#why-scrim'), whyFrom = null;
+  function openWhy(key, from) {
+    var w = W.stories[key]; if (!w || !card) return;
+    hideTip();
+    $('#why-title').innerHTML = w.title;
+    var b = $('.why-body', card); b.innerHTML = w.body; b.removeAttribute('data-math');
+    whyFrom = from || null; scrim.hidden = false; card.hidden = false; card.scrollTop = 0;
+    $('#why-title').removeAttribute('data-math'); mathify($('#why-title'));
+    enhance(b);
+    card.focus({ preventScroll: true });
+  }
+  function closeWhy(back) {
+    if (!card || card.hidden) return;
+    hideTip(); card.hidden = true; scrim.hidden = true;
+    var f = whyFrom; whyFrom = null;
+    if (back !== false && f && f.isConnected) f.focus({ preventScroll: true });
+  }
+  if (card) {
+    card.addEventListener('scroll', hideTip, { passive: true });
+    card.addEventListener('keydown', function (e) {            /* keep Tab inside the open card */
+      if (e.key !== 'Tab') return;
+      var f = [].filter.call(card.querySelectorAll('a[href], button, [tabindex="0"], summary, input'), function (x) { return x.offsetParent && !x.disabled; });
+      if (!f.length) return;
+      var a = f[0], z = f[f.length - 1], cur = document.activeElement;
+      if (e.shiftKey && (cur === a || cur === card)) { e.preventDefault(); z.focus(); }
+      else if (!e.shiftKey && cur === z) { e.preventDefault(); a.focus(); }
+    });
+  }
+  /* a story on the #why page draws its math and pictures when it is opened */
+  document.addEventListener('toggle', function (e) {
+    var d = e.target; if (!d.classList || !d.classList.contains('why-item') || !d.open) return;
+    var b = $('.why-body', d); if (!b.getAttribute('data-why-on')) { b.setAttribute('data-why-on', '1'); b.innerHTML = W.stories[b.getAttribute('data-key')].body; enhance(b); }
+  }, true);
 
   /* ----- tooltip ----- */
   var tipFor = null, hideT = 0;
@@ -259,8 +324,8 @@
       var ar = el.getAttribute('data-ar'); if (!ar) return;
       html = esc(ar); rtl = true;
     } else {
-      var to = el.getAttribute('data-to'), tt = flat.filter(function (x) { return x.slug === to; })[0];
-      html = esc(el.getAttribute('data-tip') || '') + (tt ? '<br><a href="#' + to + '">Open lesson: ' + esc(tt.title) + ' →</a>' : '');
+      var to = el.getAttribute('data-to'), tt = flat.filter(function (x) { return x.slug === to; })[0], te = extraOf(to);
+      html = esc(el.getAttribute('data-tip') || '') + (tt ? '<br><a href="#' + to + '">Open lesson: ' + esc(tt.title) + ' →</a>' : te ? '<br><a href="#' + to + '">Open: ' + esc(te.title) + ' →</a>' : '');
     }
     tipFor = el; tip.innerHTML = html; tip.className = rtl ? 'rtl' : ''; tip.hidden = false;
     var r = el.getBoundingClientRect(), w = tip.offsetWidth, hh = tip.offsetHeight, vw = document.documentElement.clientWidth;
@@ -272,7 +337,9 @@
   function later() { clearTimeout(hideT); hideT = setTimeout(hideTip, 220); }
   /* the innermost one wins: a .term inside a .tr shows the word, the rest of the sentence shows the sentence */
   function target(e) {
-    var t = e.target.closest && e.target.closest('.term, .tr[data-ar], .cc[data-tip]');
+    if (!e.target.closest || e.target.closest('button.why')) return null;    /* a "why?" chip opens its card, never a tooltip */
+    var t = e.target.closest('.term, .tr[data-ar], .cc[data-tip]');
+    if (t && card && !card.hidden && !card.contains(t)) return null;          /* while a card is open, only its own tooltips */
     if (t && trOff && t.classList.contains('tr')) t = t.parentNode.closest('.term, .cc[data-tip]');
     return t;
   }
@@ -280,9 +347,12 @@
   document.addEventListener('mouseout', function (e) { if (target(e) || (e.target.closest && e.target.closest('#tip'))) later(); });
   document.addEventListener('focusin', function (e) { var t = target(e); if (t) showTip(t); });
   document.addEventListener('focusout', function (e) { if (target(e)) later(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { hideTip(); document.body.classList.remove('open'); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { hideTip(); closeWhy(); document.body.classList.remove('open'); } });
 
   document.addEventListener('click', function (e) {
+    var wb = e.target.closest && e.target.closest('button.why[data-why]');
+    if (wb) { openWhy(wb.getAttribute('data-why'), wb); return; }
+    if (e.target.closest('.why-x') || e.target === scrim) { closeWhy(); return; }
     var t = target(e);
     if (t) { if (tipFor === t && e.detail === 0) hideTip(); else showTip(t); }
     else if (!e.target.closest('#tip')) hideTip();
@@ -308,6 +378,10 @@
     var q = e.target.value.toLowerCase();
     document.querySelectorAll('.gloss tbody tr').forEach(function (tr) { tr.hidden = tr.textContent.toLowerCase().indexOf(q) < 0; });
   });
+  (function () {                        /* quick links for the extra pages, beside "Cheat sheet" and "Words" */
+    var q = $('.quick'); if (!q) return;
+    extras.forEach(function (x) { var a = document.createElement('a'); a.className = 'btn'; a.href = '#' + x.slug; a.textContent = x.title; q.appendChild(a); });
+  })();
   window.addEventListener('hashchange', render);
   drawTr();
   render();

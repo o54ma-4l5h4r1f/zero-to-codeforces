@@ -1,0 +1,53 @@
+<h2>Codeforces itself</h2>
+
+<article data-key="cf-colours">
+<h3>Why do Codeforces ranks have colours and names?</h3>
+<p>Your rating is a number. It goes up when you do better than people with a similar rating, and down when you do worse.</p>
+<p><span class="tr" data-ar="هذه فكرة تصنيف لاعبي الشطرنج (نظام Elo): الفوز على لاعب قوي يعطيك نقاطًا أكثر.">This is the idea of chess ratings (the Elo system): beating a strong player gives you more points.</span></p>
+<p><span class="tr" data-ar="اللون يجعل المستوى ظاهرًا من النظرة الأولى، في كل مكان يظهر فيه اسمك.">The colour shows the level at a glance, everywhere your handle appears.</span></p>
+<table>
+<tr><th>rating</th><th>title</th><th>colour</th></tr>
+<tr><td>below 1200</td><td>Newbie</td><td>gray</td></tr>
+<tr><td>1200–1399</td><td>Pupil</td><td>green</td></tr>
+<tr><td>1400–1599</td><td>Specialist</td><td>cyan</td></tr>
+<tr><td>1600–1899</td><td>Expert</td><td>blue</td></tr>
+<tr><td>1900–2099</td><td>Candidate Master</td><td>violet</td></tr>
+<tr><td>2100–2399</td><td>Master, International Master</td><td>orange</td></tr>
+<tr><td>2400 and up</td><td>Grandmaster and higher</td><td>red</td></tr>
+</table>
+<p>Master, International Master and Grandmaster are titles borrowed from chess.</p>
+<p class="why-means"><b>What this means for you:</b> the goal of this guide, 1600, is Expert: blue.</p>
+</article>
+
+<article data-key="cf-words">
+<h3>What do "rated", "Div." and "hack" mean?</h3>
+<ul>
+<li><b>Rated:</b> the contest changes your rating. An unrated one does not.</li>
+<li><b>Div.</b> (division): <span class="tr" data-ar="مسابقة لمجال معيّن من التقييم، مثل الدوري في الرياضة.">a contest for one range of ratings, like a league in sports.</span>
+Div. 4 is rated below 1400, Div. 3 below 1600, Div. 2 below 2100, Div. 1 from 1900.</li>
+<li><b>Hack:</b> <span class="tr" data-ar="ترسل اختبارًا يكسر كود شخص آخر كان قد نجح.">you send a test that breaks someone else's passing code.</span></li>
+</ul>
+<p><span class="tr" data-ar="في Div. 1 و Div. 2 تقفل حلّك أولًا ثم تقرأ كود غرفتك: الاختراق الناجح +100 والفاشل ‎-50.">In Div. 1 and Div. 2 rounds, you lock your solution, then read code in your room: a good hack gives +100, a wrong one −50.</span></p>
+<p>Div. 3, Div. 4 and Educational rounds have 12 hours of hacking after the contest, with no points.</p>
+<p>A hacked solution fails, even if it passed during the contest.</p>
+<p class="why-means"><b>What this means for you:</b> passing during the contest is not the end. Test the edge cases yourself.</p>
+</article>
+
+<article data-key="tle">
+<h3>Why does "Time limit exceeded" not say how close you were?</h3>
+<p>The judge runs your program and stops it when the time limit ends.</p>
+<p><span class="tr" data-ar="هو لا ينتظر ليرى متى كان برنامجك سينتهي.">It does not wait to see when your program would finish.</span>
+You may have needed 1.1 seconds, or a whole year. The judge cannot tell.</p>
+<p>"Time limit exceeded on test 7" means: test 7 did not finish in time. The tests after it are not run.</p>
+<p><span class="tr" data-ar="لذلك لا تحاول تسريع فكرة n^2 قليلًا إذا كانت n = 2 · 10^5؛ احسب الخطوات أولًا.">So do not try to speed up an \( n^2 \) idea a little when \( n = 2 \cdot 10^5 \). Count the steps first.</span></p>
+<p class="why-means"><b>What this means for you:</b> after a TLE, count the steps for the biggest test. If they are far above \( 10^8 \), change the idea, not the details.</p>
+</article>
+
+<article data-key="samples">
+<h3>Why does passing the samples prove so little?</h3>
+<p>The samples are 1 to 3 small tests. They show you the input format and one or two answers.</p>
+<p><span class="tr" data-ar="الاختبارات الحقيقية كثيرة: أكبر n، وحالات الأطراف، وأعداد عشوائية.">The real tests are many: the biggest \( n \), edge cases and random numbers.</span>
+A problem often has dozens of tests.</p>
+<p><span class="tr" data-ar="الأمثلة لا تختبر غالبًا الطفح ولا السرعة ولا n = 1.">The samples almost never test overflow, speed or \( n = 1 \).</span></p>
+<p class="why-means"><b>What this means for you:</b> before you submit, try your own tests: the smallest, the biggest, and all values equal.</p>
+</article>

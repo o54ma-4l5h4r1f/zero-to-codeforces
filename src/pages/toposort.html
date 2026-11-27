@@ -1,12 +1,23 @@
-<p class="idea">Some tasks must come before others. Topological sort puts all tasks in one line so that every rule is respected.</p>
+<p class="idea"><span class="tr" data-ar="بعض المهام يجب أن تأتي قبل غيرها. الترتيب الطوبولوجي يضع كل المهام في صف واحد يحترم كل القواعد.">Some tasks must come before others. Topological sort puts all tasks in one line, so that every rule is respected.</span></p>
+
+<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="لا تحتاج الترتيب الطوبولوجي قبل التقييم 1600. اقرأ الدرس عندما تحتاجه مسألة. تخطّيه الآن لا يمنعك من فهم الدروس التي بعده.">You do not need topological sort below 1600. Read it when a problem needs it. Skipping it now will not block the lessons after it.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can store a graph in <code>adj</code> and run BFS with a <code>queue</code> → <a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a></li>
+    <li>You know <code>priority_queue</code> with <code>greater</code> → <a href="#stl-containers">map, set, stack, queue</a></li>
+    <li>You can fill a DP array in a good order → <a href="#dp">Dynamic programming</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
     <li>Rules like "a must be done before b": courses with a <span class="term" data-t="prerequisite">prerequisite</span>, tasks that depend on other tasks.</li>
     <li>You must print a correct order, or say that no order exists.</li>
-    <li>The graph is <span class="term" data-t="directed">directed</span> (edges are arrows) and you must check if it has a <span class="term" data-t="cycle">cycle</span>.</li>
-    <li>You want a DP on a directed graph: longest path, number of paths. First you need a good order.</li>
+    <li>The graph is <span class="term" data-t="directed">directed</span> (edges are arrows), and you must check if it has a <span class="term" data-t="cycle">cycle</span>.</li>
+    <li>You want a DP on a directed graph: the longest path, the number of paths. First you need a good order.</li>
   </ul>
 </section>
 
@@ -17,71 +28,79 @@
     <h3><b>1 · Story</b> — getting dressed</h3>
     <p>Socks before shoes. Trousers before shoes and before the belt. Shirt before the belt and before the jacket. Belt before the jacket.</p>
     <p>What can you put on <b>first</b>? Only a thing with no rule in front of it: socks, trousers or shirt. Put one on. Now cross out its rules. Maybe a new thing is free now. Repeat until you are dressed.</p>
-    <p>If the rules say "a before b" and also "b before a", then a and b are never free. Then no order exists.</p>
+    <p><span class="tr" data-ar="إذا قالت القواعد «a قبل b» وأيضًا «b قبل a»، فلن يصبح a ولا b حرًّا أبدًا. عندها لا يوجد أي ترتيب.">If the rules say "a before b" and also "b before a", then a and b are never free. Then no order exists.</span></p>
   </div>
 
   <div class="way">
     <h3><b>2 · Picture</b> — count the arrows that come in</h3>
-    <p>Draw each rule "a before b" as an arrow a → b.</p>
-    <svg viewBox="0 0 500 250" width="500" role="img" aria-label="Directed graph with 6 vertices: 1 to 3, 2 to 3, 2 to 5, 4 to 5, 5 to 6, 4 to 6">
-      <defs>
-        <marker id="ts-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
-        </marker>
-      </defs>
-      <g fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ts-arrow)">
-        <line x1="90" y1="43" x2="246" y2="66"/>
-        <line x1="89" y1="115" x2="247" y2="76"/>
-        <line x1="89" y1="125" x2="247" y2="164"/>
-        <line x1="90" y1="202" x2="246" y2="174"/>
-        <line x1="290" y1="170" x2="426" y2="170"/>
-        <path d="M89,210 Q280,262 429,181"/>
-      </g>
-      <g fill="var(--surface)" stroke="var(--accent)" stroke-width="2">
-        <circle cx="70" cy="40" r="18"/><circle cx="70" cy="120" r="18"/><circle cx="70" cy="205" r="18"/>
-        <circle cx="270" cy="70" r="18"/><circle cx="270" cy="170" r="18"/><circle cx="450" cy="170" r="18"/>
-      </g>
-      <g fill="currentColor" font-size="15" font-weight="bold" text-anchor="middle">
-        <text x="70" y="45">1</text><text x="70" y="125">2</text><text x="70" y="210">4</text>
-        <text x="270" y="75">3</text><text x="270" y="175">5</text><text x="450" y="175">6</text>
-      </g>
-      <g fill="var(--muted)" font-size="13" text-anchor="middle">
-        <text x="70" y="76">socks</text><text x="70" y="156">trousers</text><text x="70" y="241">shirt</text>
-        <text x="270" y="42">shoes</text><text x="270" y="142">belt</text><text x="450" y="142">jacket</text>
-      </g>
-    </svg>
-    <p>The <span class="term" data-t="in-degree">in-degree</span> of a vertex = how many arrows point to it = how many things must come before it. A vertex with in-degree 0 is free. Free vertices wait in a <span class="term" data-t="queue">queue</span>.</p>
-    <table>
-      <tr><th>step</th><th>take</th><th>arrows removed</th><th>in-degree of 1 2 3 4 5 6</th><th>queue after</th></tr>
-      <tr><td>start</td><td>–</td><td>–</td><td>0 0 2 0 2 2</td><td>1, 2, 4</td></tr>
-      <tr><td>1</td><td class="hi">1</td><td>1→3</td><td>– 0 1 0 2 2</td><td>2, 4</td></tr>
-      <tr><td>2</td><td class="hi">2</td><td>2→3, 2→5</td><td>– – 0 0 1 2</td><td>4, 3</td></tr>
-      <tr><td>3</td><td class="hi">4</td><td>4→5, 4→6</td><td>– – 0 – 0 1</td><td>3, 5</td></tr>
-      <tr><td>4</td><td class="hi">3</td><td>none</td><td>– – – – 0 1</td><td>5</td></tr>
-      <tr><td>5</td><td class="hi">5</td><td>5→6</td><td>– – – – – 0</td><td>6</td></tr>
-      <tr><td>6</td><td class="hi">6</td><td>none</td><td>– – – – – –</td><td>empty</td></tr>
-    </table>
-    <p class="note">The <span class="term" data-t="topological-order">topological order</span> is 1 2 4 3 5 6: socks, trousers, shirt, shoes, belt, jacket. Every arrow goes from left to right. Other correct orders exist too, for example 4 2 5 6 1 3.</p>
+    <p>Draw each rule "a before b" as an arrow a → b. Here 1 = socks, 2 = trousers, 3 = shoes, 4 = shirt, 5 = belt, 6 = jacket.</p>
+    <p>The <span class="term" data-t="in-degree">in-degree</span> of a vertex is the number of arrows that point to it. It counts the things that must come before it. <span class="tr" data-ar="الرأس الذي درجة دخوله 0 يكون حرًّا، فيدخل إلى الطابور.">A vertex with in-degree 0 is free, so it goes into the queue.</span> This method is called Kahn's algorithm.</p>
+    <figure class="viz" data-viz="stepper" data-gen="kahn" aria-label="Step by step: Kahn's algorithm on 6 vertices with the arrows 1 to 3, 2 to 3, 2 to 5, 4 to 5, 4 to 6 and 5 to 6. Each vertex shows its in-degree. The queue and the order grow under the picture.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"graph","id":"g","unit":84,"directed":true,"nodes":[{"id":1,"x":0,"y":0,"at":"above"},{"id":2,"x":0,"y":1.1,"at":"below"},{"id":3,"x":2,"y":0.4,"at":"above"},{"id":4,"x":0,"y":2.2,"at":"below"},{"id":5,"x":2,"y":1.5,"at":"below"},{"id":6,"x":3.6,"y":2.3,"at":"below"}],"edges":[{"from":1,"to":3},{"from":2,"to":3},{"from":2,"to":5},{"from":4,"to":5},{"from":4,"to":6},{"from":5,"to":6}]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"v: taken now","queued":"free, in the queue","done":"in the order","dim":"arrow removed"},
+  "code": ["for (int v = 1; v <= n; v++)","    if (indeg[v] == 0) q.push(v);","while (!q.empty()) {","    int v = q.front();  q.pop();","    order.push_back(v);","    for (int to : adj[v]) {","        indeg[to]--;","        if (indeg[to] == 0) q.push(to);","    }","}","// order.size() < n  ->  a cycle"],
+  "steps": [
+    {"line":[1,2],"g":{"states":{"1":"queued","2":"queued","3":"","4":"queued","5":"","6":""},"notes":{"1":"in 0","2":"in 0","3":"in 2","4":"in 0","5":"in 2","6":"in 2"},"edgeStates":{}},"v":{"items":[["v",""],["queue",[1,2,4]],["order",[]]]}},
+    {"line":[4,5,7],"g":{"states":{"1":"active","2":"queued","3":"","4":"queued","5":"","6":""},"notes":{"1":"in 0","2":"in 0","3":"in 1","4":"in 0","5":"in 2","6":"in 2"},"edgeStates":{"1-3":"active"}},"v":{"items":[["v",1],["queue",[2,4]],["order",[1]]]}},
+    {"line":[4,5,7,8],"g":{"states":{"1":"done","2":"active","3":"queued","4":"queued","5":"","6":""},"notes":{"1":"in 0","2":"in 0","3":"in 0","4":"in 0","5":"in 1","6":"in 2"},"edgeStates":{"1-3":"dim","2-3":"active","2-5":"active"}},"v":{"items":[["v",2],["queue",[4,3]],["order",[1,2]]]}},
+    {"line":[4,5,7,8],"g":{"states":{"1":"done","2":"done","3":"queued","4":"active","5":"queued","6":""},"notes":{"1":"in 0","2":"in 0","3":"in 0","4":"in 0","5":"in 0","6":"in 1"},"edgeStates":{"1-3":"dim","2-3":"dim","2-5":"dim","4-5":"active","4-6":"active"}},"v":{"items":[["v",4],["queue",[3,5]],["order",[1,2,4]]]}},
+    {"line":[4,5],"g":{"states":{"1":"done","2":"done","3":"active","4":"done","5":"queued","6":""},"notes":{"1":"in 0","2":"in 0","3":"in 0","4":"in 0","5":"in 0","6":"in 1"},"edgeStates":{"1-3":"dim","2-3":"dim","2-5":"dim","4-5":"dim","4-6":"dim"}},"v":{"items":[["v",3],["queue",[5]],["order",[1,2,4,3]]]}},
+    {"line":[4,5,7,8],"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"active","6":"queued"},"notes":{"1":"in 0","2":"in 0","3":"in 0","4":"in 0","5":"in 0","6":"in 0"},"edgeStates":{"1-3":"dim","2-3":"dim","2-5":"dim","4-5":"dim","4-6":"dim","5-6":"active"}},"v":{"items":[["v",5],["queue",[6]],["order",[1,2,4,3,5]]]}},
+    {"line":[4,5],"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"done","6":"active"},"notes":{"1":"in 0","2":"in 0","3":"in 0","4":"in 0","5":"in 0","6":"in 0"},"edgeStates":{"1-3":"dim","2-3":"dim","2-5":"dim","4-5":"dim","4-6":"dim","5-6":"dim"}},"v":{"items":[["v",6],["queue",[]],["order",[1,2,4,3,5,6]]]}},
+    {"line":11,"g":{"states":{"1":"done","2":"done","3":"done","4":"done","5":"done","6":"done"},"notes":{"1":"in 0","2":"in 0","3":"in 0","4":"in 0","5":"in 0","6":"in 0"},"edgeStates":{"1-3":"dim","2-3":"dim","2-5":"dim","4-5":"dim","4-6":"dim","5-6":"dim"}},"v":{"items":[["v",""],["queue",[]],["order",[1,2,4,3,5,6]]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Count the arrows that come in. Vertices 1, 2 and 4 have <code>in 0</code>, so they go into the queue.</li>
+        <li>Take 1 into the order and remove its arrow 1 → 3. Now vertex 3 has <code>in 1</code>.</li>
+        <li>Take 2 and remove 2 → 3 and 2 → 5. Vertex 3 reaches <code>in 0</code>, so it joins the queue.</li>
+        <li>Take 4 and remove 4 → 5 and 4 → 6. Vertex 5 is free now.</li>
+        <li>Take 3. It has no arrow going out.</li>
+        <li>Take 5 and remove 5 → 6. Vertex 6 is free now.</li>
+        <li>Take 6. Nothing is left to remove.</li>
+        <li>The queue is empty. The order has all 6 vertices, so there is no cycle.</li>
+      </ol>
+      <figcaption>The order is 1 2 4 3 5 6: socks, trousers, shirt, shoes, belt, jacket. Every arrow goes from left to right in it. Other correct orders exist too, for example 4 2 5 6 1 3.</figcaption>
+    </figure>
+    <p>Now a graph with a cycle: 2 → 3 → 4 → 2.</p>
+    <figure class="viz" data-viz="graph" data-gen="kahn-cycle" aria-label="A directed graph with 4 vertices and the arrows 1 to 2, 2 to 3, 3 to 4 and 4 to 2. After Kahn's algorithm only vertex 1 is in the order. Vertices 2, 3 and 4 each still have in-degree 1.">
+      <script type="application/json">
+{
+  "directed": true,
+  "unit": 84,
+  "nodes": [
+    {"id":1,"x":0,"y":0.5,"at":"above"},
+    {"id":2,"x":1.4,"y":0.5,"at":"above"},
+    {"id":3,"x":2.6,"y":0,"at":"above"},
+    {"id":4,"x":2.6,"y":1,"at":"below"}
+  ],
+  "edges": [
+    {"from":1,"to":2},
+    {"from":2,"to":3},
+    {"from":3,"to":4},
+    {"from":4,"to":2}
+  ],
+  "states": {"1":"done","2":"bad","3":"bad","4":"bad"},
+  "notes": {"1":"in 0","2":"in 1","3":"in 1","4":"in 1"},
+  "edgeStates": {"1-2":"dim"},
+  "legend": {"done":"in the order","bad":"never free","dim":"arrow removed"}
+}
+</script>
+      <figcaption><span class="tr" data-ar="بعد أخذ 1 ما زالت درجة دخول 2 تساوي 1، فيفرغ الطابور مبكرًا. الترتيب فيه رأس واحد من أربعة.">After taking 1, vertex 2 still has <code>in 1</code>, so the queue empties early.</span> The order has only 1 of 4 vertices. That is how the code finds a cycle.</figcaption>
+    </figure>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — Kahn's algorithm</h3>
-    <p>Input: n tasks, m rules. Each rule is "a b" = a must come before b.</p>
-<pre><code class="cpp">
-#include &lt;bits/stdc++.h&gt;
-using namespace std;
-
-int main() {
-    int n, m;
-    cin &gt;&gt; n &gt;&gt; m;
-    vector&lt;vector&lt;int&gt;&gt; adj(n + 1);         // adj[a] = all b with an arrow a -&gt; b
-    vector&lt;int&gt; indeg(n + 1, 0);            // indeg[b] = arrows that point to b
-    for (int i = 0; i &lt; m; i++) {
-        int a, b;
-        cin &gt;&gt; a &gt;&gt; b;
-        adj[a].push_back(b);
-        indeg[b]++;
-    }
+    <p><code>adj[a]</code> holds every b with an arrow a → b. <code>indeg[b]</code> counts the arrows into b. Vertices are 1 to <code>n</code>.</p>
+<pre data-part="global"><code class="cpp">
+vector&lt;int&gt; topoOrder(int n, vector&lt;vector&lt;int&gt;&gt;&amp; adj, vector&lt;int&gt; indeg) {
     queue&lt;int&gt; q;
     for (int v = 1; v &lt;= n; v++)
         if (indeg[v] == 0) q.push(v);       // free at the start
@@ -94,7 +113,90 @@ int main() {
             if (indeg[to] == 0) q.push(to); // "to" is free now
         }
     }
-    if ((int)order.size() &lt; n) {            // some tasks never became free
+    return order;                           // fewer than n vertices = a cycle
+}
+</code></pre>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p>The plain <code>queue</code> above is the DEFAULT. Use it unless the problem asks for one of these.</p>
+  <ul>
+    <li><b>"Print IMPOSSIBLE if there is a cycle."</b> Some vertices never became free. So the order is shorter than n.
+<pre data-part="main"><code class="cpp">
+if ((int)order.size() &lt; n) cout &lt;&lt; "IMPOSSIBLE\n";
+</code></pre></li>
+    <li><b>"Print the smallest order"</b> (smallest first number, then smallest second…). Always take the smallest free vertex. Use a <code>priority_queue</code> with <code>greater</code>. <span class="tr" data-ar="الطابور ذو الأولوية ليس فيه q.front()، لذلك اكتب q.top().">A <code>priority_queue</code> has no <code>q.front()</code>, so write <code>q.top()</code>.</span>
+<pre data-part="main"><code class="cpp">
+priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; q;   // was: queue&lt;int&gt; q;
+int v = q.top(); q.pop();                              // was: q.front()
+</code></pre></li>
+    <li><b>"The longest chain of tasks"</b> (longest path). Go through <code>order</code> from left to right. When you reach v, all vertices before v are finished. <code>best[v]</code> = the most arrows on a path that ends at v.
+<pre data-part="main"><code class="cpp">
+vector&lt;int&gt; best(n + 1, 0);
+for (int v : order)
+    for (int to : adj[v]) best[to] = max(best[to], best[v] + 1);
+</code></pre></li>
+  </ul>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> There are \( n \) courses and \( m \) rules. A rule "a b" means: course a must come before course b. Print an order of all courses, or IMPOSSIBLE if none exists. Limits: \( 1 \le n \le 10^5 \) and \( 1 \le m \le 2 \cdot 10^5 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> One order that respects every rule. Rules "before" are arrows. So this is topological sort, with a cycle check.</li>
+    <li><b>A small example by hand.</b> Take \( n = 5 \) and the rules 1 2, 3 1, 4 5. The in-degrees of 1 … 5 are 1, 1, 0, 0, 1.
+      <table>
+        <tr><th>take</th><th>arrows removed</th><th>now free</th><th>queue after</th></tr>
+        <tr><td>start</td><td>–</td><td>3, 4</td><td>3, 4</td></tr>
+        <tr><td>3</td><td>3 → 1</td><td>1</td><td>4, 1</td></tr>
+        <tr><td>4</td><td>4 → 5</td><td>5</td><td>1, 5</td></tr>
+        <tr><td>1</td><td>1 → 2</td><td>2</td><td>5, 2</td></tr>
+        <tr><td>5</td><td>none</td><td>–</td><td>2</td></tr>
+        <tr><td>2</td><td>none</td><td>–</td><td>empty</td></tr>
+      </table>
+      <p>The order is 3 4 1 5 2. It has 5 courses, so no cycle.</p>
+    </li>
+    <li><b>The idea.</b> Read the rules into <code>adj</code> and <code>indeg</code>. Call <code>topoOrder</code>. If the order is shorter than n, print IMPOSSIBLE. Otherwise print the order.</li>
+    <li><b>Why is it fast enough?</b> Every vertex enters the queue once. Every arrow is removed once. So the work is about
+      \[ n + m = 3 \cdot 10^5 \text{ steps} \]
+      <p>That is far below \( 10^8 \).</p>
+    </li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+vector&lt;int&gt; topoOrder(int n, vector&lt;vector&lt;int&gt;&gt;&amp; adj, vector&lt;int&gt; indeg) {
+    queue&lt;int&gt; q;
+    for (int v = 1; v &lt;= n; v++)
+        if (indeg[v] == 0) q.push(v);
+    vector&lt;int&gt; order;
+    while (!q.empty()) {
+        int v = q.front(); q.pop();
+        order.push_back(v);
+        for (int to : adj[v]) {
+            indeg[to]--;
+            if (indeg[to] == 0) q.push(to);
+        }
+    }
+    return order;
+}
+
+int main() {
+    int n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+    vector&lt;vector&lt;int&gt;&gt; adj(n + 1);         // adj[a] = all b with an arrow a -&gt; b
+    vector&lt;int&gt; indeg(n + 1, 0);            // indeg[b] = arrows that point to b
+    for (int i = 0; i &lt; m; i++) {
+        int a, b;
+        cin &gt;&gt; a &gt;&gt; b;                      // a must come before b
+        adj[a].push_back(b);
+        indeg[b]++;
+    }
+    vector&lt;int&gt; order = topoOrder(n, adj, indeg);
+    if ((int)order.size() &lt; n) {            // some courses never became free
         cout &lt;&lt; "IMPOSSIBLE\n";             // -&gt; there is a cycle
     } else {
         for (int v : order) cout &lt;&lt; v &lt;&lt; " ";
@@ -102,26 +204,61 @@ int main() {
     }
 }
 </code></pre>
-    <p class="tip-box">DP on the order: go through <code>order</code> from left to right. When you reach v, all vertices before v are finished. So <code>best[to] = max(best[to], best[v] + 1)</code> gives the longest path. Need the smallest order in the dictionary? Use a <code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt;</code> in place of the queue, and <code>q.top()</code> in place of <code>q.front()</code>.</p>
-  </div>
 </section>
 
-<p class="complexity">Speed: O(n + m). Every vertex enters the queue once, every arrow is removed once.</p>
+<p class="complexity">Speed: \( O(n + m) \) for \( n \) vertices and \( m \) arrows. With a <code>priority_queue</code>: \( O(n \log n + m) \).</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يوجد ترتيب صحيح واحد فقط، ويجب أن يطابق ناتجي المثال.">There is only one correct order, and my output must match the sample.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="غالبًا توجد ترتيبات صحيحة كثيرة. إذا اختلف ناتجك عن المثال فقد يكون صحيحًا.">Often many orders are correct. If your output differs from the sample, it can still be right.</span> Only "print the smallest order" has one answer.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="عندما يفرغ الطابور تكون كل الرؤوس قد انتهت.">When the queue is empty, all vertices are done.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="في مخطّط فيه دورة يفرغ الطابور مبكرًا. قارن دائمًا order.size() مع n.">With a cycle the queue empties early. Always compare <code>order.size()</code> with n.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الترتيب الطوبولوجي يعمل على أي مخطّط.">Topological sort works on any graph.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="يعمل فقط على المخطّطات الموجّهة. وإذا كانت فيها دورة فلا يوجد أي ترتيب.">Only on directed graphs. And if there is a cycle, no order exists.</span></p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
     <li>The arrow in the wrong direction. "b needs a" means a → b. Read the statement twice.</li>
-    <li>No cycle check. Always compare <code>order.size()</code> with n before you print.</li>
-    <li>Using it on a graph without directions. Topological sort is only for directed graphs.</li>
-    <li>Thinking the order is unique. Often many orders are correct. If your output differs from the sample, it can still be right.</li>
+    <li><code>q.front()</code> on a <code>priority_queue</code>. It does not compile: write <code>q.top()</code>.</li>
+    <li>Many test cases: <code>adj</code> and <code>indeg</code> are not cleared. Make them new inside the test loop.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Topological sort with DFS.</b> It gives an order too, but it is a second way to do the same thing. Use Kahn's queue. The DFS way is in <a href="#what-next">After 1600</a>.</li>
+    <li><b>Groups of vertices that all reach each other</b> (strongly connected components). A cycle becomes one vertex. It is rare below 1600: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="القواعد هي 3 → 1 و 1 → 2. اكتب ترتيبًا صحيحًا.">The rules are 3 → 1 and 1 → 2. Write a correct order.</span>
+      <details><summary>Answer</summary><p>3 1 2. Here it is the only one: 3 must be first and 2 must be last.</p></details></li>
+    <li><span class="tr" data-ar="الحواف هي 1 → 2 و 1 → 3 و 2 → 3. ما درجات الدخول؟ وأي رأس يدخل الطابور أولًا؟">The arrows are 1 → 2, 1 → 3 and 2 → 3. What are the in-degrees? Which vertex enters the queue first?</span>
+      <details><summary>Answer</summary><p>Vertex 1 has 0, vertex 2 has 1, vertex 3 has 2. Only vertex 1 is free at the start.</p></details></li>
+    <li><span class="tr" data-ar="في مخطّط فيه 6 رؤوس انتهى البرنامج والترتيب فيه 4 رؤوس فقط. ماذا يعني ذلك؟">A graph has 6 vertices. At the end the order has only 4. What does that mean?</span>
+      <details><summary>Answer</summary><p>There is a cycle. Two vertices never reached in-degree 0, so no correct order exists.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
   <h2>Practice ladder</h2>
   <ol>
-    <li><a href="https://cses.fi/problemset/task/1679">CSES: Course Schedule</a><span class="r">CSES</span> — start here. It is exactly the program above.</li>
+    <li><a href="https://cses.fi/problemset/task/1679">CSES: Course Schedule</a><span class="r">CSES</span> — start here. It is exactly the program of "Solve one together".</li>
     <li><a class="cf" data-p="1851E">Nastya and Potions</a><span class="r">1500</span></li>
     <li><a class="cf" data-p="510C">Fox And Names</a><span class="r">1600</span></li>
     <li><a class="cf" data-p="1593E">Gardener and Tree</a><span class="r">1600</span></li>
@@ -135,8 +272,8 @@ int main() {
 <section class="more">
   <h2>Learn more</h2>
   <ul>
-    <li><a href="https://usaco.guide/gold/toposort">USACO Guide: Topological Sort</a> — Shows the DFS way too.</li>
-    <li><a href="https://cp-algorithms.com/graph/topological-sort.html">cp-algorithms: Topological Sorting</a> — Short text and code.</li>
+    <li><a href="https://usaco.guide/gold/toposort">USACO Guide: Topological Sort</a> — more examples. It also shows the DFS way, which you can skip.</li>
+    <li><a href="https://cp-algorithms.com/graph/topological-sort.html">cp-algorithms: Topological Sorting</a> — short text and code.</li>
     <li><a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> — read it first if <code>adj</code> and the queue are new for you.</li>
   </ul>
 </section>

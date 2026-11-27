@@ -12,10 +12,10 @@ const allow = new Set(('codeforces programming competitive participation interac
 // A formula \( ... \) or a piece of code counts as one word.
 function sentences(html) {
   const text = html
-    .replace(/<pre[\s\S]*?<\/pre>/g, ' ').replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<code[\s\S]*?<\/code>/g, ' X ')
+    .replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<pre[\s\S]*?<\/pre>/g, ' ').replace(/<svg[\s\S]*?<\/svg>/g, ' ').replace(/<code[\s\S]*?<\/code>/g, ' X ')
     .replace(/\\\[[\s\S]*?\\\]/g, ' X. ').replace(/\\\([\s\S]*?\\\)/g, ' X ')
     .replace(/<section class="(practice|more)"[\s\S]*?<\/section>/g, ' ')
-    .replace(/<\/(p|li|td|th|h2|h3|div|summary)>|<(ul|ol|table|details)\b[^>]*>/g, '. ').replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ');
+    .replace(/<\/(p|li|td|th|h2|h3|div|summary|figcaption)>|<(ul|ol|table|details)\b[^>]*>/g, '. ').replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ');
   const out = [];
   for (const s of text.split(/(?<=[.!?:]["”)]?)\s+/)) {
     const words = s.trim().split(/\s+/).filter(w => /[a-zA-Z]/.test(w));

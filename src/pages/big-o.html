@@ -1,0 +1,434 @@
+<p class="idea"><span class="tr" data-ar="عُدَّ كم خطوة ينفّذها الكود عندما يكون الإدخال كبيرًا. الرمز O(…) هو الاسم المختصر لطريقة نموّ هذا العدد.">Count how many steps your code does when the input is big. \( O(\dots) \) is the short name for how that count grows.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can read a <code>for</code> loop and a <code>vector</code> → <a href="#cpp-template">Your C++ template</a></li>
+    <li>You know where the limits and "the sum of \( n \)" are written → <a href="#read-a-problem">How to read a problem</a></li>
+    <li>You know the verdict "Time limit exceeded" → <a href="#how-codeforces-works">How Codeforces works</a></li>
+  </ul>
+</aside>
+
+<section>
+  <h2>First, count with real numbers</h2>
+  <p>A <b>step</b> is one small action: add two numbers, compare two numbers, read one array cell. The <span class="term" data-t="cost">cost</span> of a code is how many steps it does.</p>
+  <p>This loop adds up an array of 10 numbers. The line <code>sum += a[i]</code> runs 10 times: 10 steps.</p>
+<pre data-part="main"><code class="cpp">
+long long sum = 0;
+for (int i = 0; i &lt; n; i++) sum += a[i];        // runs n times
+</code></pre>
+  <p>Now put a loop inside a loop. For every <code>i</code>, the inner loop runs over all <code>j</code>.</p>
+<pre data-part="main"><code class="cpp">
+int same = 0;
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++)                  // runs n times for EACH i
+        if (a[i] == a[j]) same++;
+</code></pre>
+  <p>Count both for three sizes of the array:</p>
+  <table>
+    <tr><th>Array size</th><th>One loop</th><th>Loop inside a loop</th></tr>
+    <tr><td>10</td><td>10</td><td>100</td></tr>
+    <tr><td>100</td><td>100</td><td>10 000</td></tr>
+    <tr><td>1000</td><td>1000</td><td class="hi">1 000 000</td></tr>
+  </table>
+  <p><span class="tr" data-ar="عندما يكبر حجم المصفوفة 10 مرات، تكبر الحلقة الواحدة 10 مرات، أما الحلقة داخل الحلقة فتكبر 100 مرة.">The size grows 10 times. One loop grows 10 times. The loop inside a loop grows 100 times.</span> Watch it happen, one run at a time:</p>
+  <figure class="viz" data-viz="stepper" data-gen="bigo-loops" aria-label="Step by step: one loop over 4 numbers, then a loop inside a loop over 4 numbers, with a live counter of the steps.">
+    <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"one","label":"loop 1","values":["","","",""]},
+    {"type":"table","id":"two","corner":"i \\ j","colLabels":[0,1,2,3],"rowLabels":["0","1","2","3"],"rows":[["","","",""],["","","",""],["","","",""],["","","",""]]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"this run of steps++","done":"already counted"},
+  "code": ["int steps = 0;","for (int i = 0; i < n; i++)","    steps++;              // loop 1","for (int i = 0; i < n; i++)","    for (int j = 0; j < n; j++)","        steps++;          // loop 2"],
+  "steps": [
+    {"line":1,"one":{"values":["","","",""],"states":{}},"two":{"rows":[["","","",""],["","","",""],["","","",""],["","","",""]],"states":{}},"v":{"items":[["n",4],["i",""],["j",""],["steps",0]]}},
+    {"line":3,"one":{"values":[1,"","",""],"states":{"0":"active"}},"two":{"rows":[["","","",""],["","","",""],["","","",""],["","","",""]],"states":{}},"v":{"items":[["n",4],["i",0],["j",""],["steps",1]]}},
+    {"line":3,"one":{"values":[1,2,"",""],"states":{"0":"done","1":"active"}},"two":{"rows":[["","","",""],["","","",""],["","","",""],["","","",""]],"states":{}},"v":{"items":[["n",4],["i",1],["j",""],["steps",2]]}},
+    {"line":3,"one":{"values":[1,2,3,4],"states":{"0":"done","1":"done","2":"done","3":"active"}},"two":{"rows":[["","","",""],["","","",""],["","","",""],["","","",""]],"states":{}},"v":{"items":[["n",4],["i",3],["j",""],["steps",4]]}},
+    {"line":6,"one":{"values":[1,2,3,4],"states":{"0":"done","1":"done","2":"done","3":"done"}},"two":{"rows":[[5,"","",""],["","","",""],["","","",""],["","","",""]],"states":{"0,0":"active"}},"v":{"items":[["n",4],["i",0],["j",0],["steps",5]]}},
+    {"line":6,"one":{"values":[1,2,3,4],"states":{"0":"done","1":"done","2":"done","3":"done"}},"two":{"rows":[[5,6,"",""],["","","",""],["","","",""],["","","",""]],"states":{"0,0":"done","0,1":"active"}},"v":{"items":[["n",4],["i",0],["j",1],["steps",6]]}},
+    {"line":6,"one":{"values":[1,2,3,4],"states":{"0":"done","1":"done","2":"done","3":"done"}},"two":{"rows":[[5,6,7,8],["","","",""],["","","",""],["","","",""]],"states":{"0,0":"done","0,1":"done","0,2":"done","0,3":"active"}},"v":{"items":[["n",4],["i",0],["j",3],["steps",8]]}},
+    {"line":6,"one":{"values":[1,2,3,4],"states":{"0":"done","1":"done","2":"done","3":"done"}},"two":{"rows":[[5,6,7,8],[9,10,11,12],["","","",""],["","","",""]],"states":{"0,0":"done","0,1":"done","0,2":"done","0,3":"done","1,0":"done","1,1":"done","1,2":"done","1,3":"active"}},"v":{"items":[["n",4],["i",1],["j",3],["steps",12]]}},
+    {"line":6,"one":{"values":[1,2,3,4],"states":{"0":"done","1":"done","2":"done","3":"done"}},"two":{"rows":[[5,6,7,8],[9,10,11,12],[13,14,15,16],["","","",""]],"states":{"0,0":"done","0,1":"done","0,2":"done","0,3":"done","1,0":"done","1,1":"done","1,2":"done","1,3":"done","2,0":"done","2,1":"done","2,2":"done","2,3":"active"}},"v":{"items":[["n",4],["i",2],["j",3],["steps",16]]}},
+    {"line":6,"one":{"values":[1,2,3,4],"states":{"0":"done","1":"done","2":"done","3":"done"}},"two":{"rows":[[5,6,7,8],[9,10,11,12],[13,14,15,16],[17,18,19,20]],"states":{"0,0":"done","0,1":"done","0,2":"done","0,3":"done","1,0":"done","1,1":"done","1,2":"done","1,3":"done","2,0":"done","2,1":"done","2,2":"done","2,3":"done","3,0":"done","3,1":"done","3,2":"done","3,3":"active"}},"v":{"items":[["n",4],["i",3],["j",3],["steps",20]]}}
+  ]
+}
+</script>
+    <ol class="viz-steps">
+      <li>Start: <code>steps = 0</code> and the size is \( n = 4 \).</li>
+      <li>Loop 1 with <code>i = 0</code>: <code>steps++</code> runs once. Now <code>steps = 1</code>.</li>
+      <li><code>i = 1</code>: one more run. Now <code>steps = 2</code>.</li>
+      <li><span class="tr" data-ar="انتهت الحلقة الأولى بعد 4 تكرارات، أي n تكرار بالضبط.">Loop 1 ends after 4 runs: exactly \( n \) runs.</span> Now <code>steps = 4</code>.</li>
+      <li>Loop 2 starts with <code>i = 0</code> and <code>j = 0</code>. Now <code>steps = 5</code>.</li>
+      <li><span class="tr" data-ar="الحلقة الداخلية تتحرّك إلى j = 1، بينما تبقى i = 0.">The inner loop moves to <code>j = 1</code>. <code>i</code> stays 0.</span></li>
+      <li>The inner loop finished one full row: 4 runs for <code>i = 0</code>.</li>
+      <li>Row <code>i = 1</code> adds 4 more runs. Now <code>steps = 12</code>.</li>
+      <li>Row <code>i = 2</code> adds 4 more. Now <code>steps = 16</code>.</li>
+      <li><span class="tr" data-ar="الحلقة الثانية نفّذت 4 × 4 = 16 تكرارًا. المجموع 4 + 16 = 20.">Loop 2 did \( 4 \cdot 4 = 16 \) runs. The total is \( 4 + 16 = 20 \).</span></li>
+    </ol>
+    <figcaption>Press <b>Next</b>. Each cell of the grid is one run of <code>steps++</code>. Loop 1 fills one row of 4 cells. Loop 2 fills a square of \( 4 \cdot 4 \) cells.</figcaption>
+  </figure>
+
+  <h3>Now the short name: \( O(\dots) \)</h3>
+  <p>The letter \( n \) is the <b>size of the input</b>: how many numbers in the array, or how long the string is.</p>
+  <p>One loop does \( n \) steps. We write \( O(n) \). The loop inside a loop does \( n \cdot n = n^2 \) steps. We write \( O(n^2) \). Say it "big O of n squared". <button type="button" class="why" data-why="big-o-name">why?</button></p>
+  <p class="tip-box"><span class="tr" data-ar="الرمز O(…) لا يعطي عدد الخطوات بالضبط. إنه يقول كيف يكبر عدد الخطوات عندما تكبر n.">\( O(\dots) \) is not the exact number of steps. It says how the steps grow when \( n \) grows.</span> This is the <span class="term" data-t="complexity">complexity</span> of the code.</p>
+  <p>A problem can have <b>two sizes</b>. Example: a grid with \( n \) rows and \( m \) columns. Reading it takes \( n \cdot m \) steps: \( O(n \cdot m) \). For \( n = 1000 \) and \( m = 2000 \) that is \( 2 \cdot 10^6 \).</p>
+</section>
+
+<section>
+  <h2>Read the cost from the code</h2>
+  <p>Each rule below has a tiny code, its count for one \( n \), and its \( O(\dots) \).</p>
+
+  <h3>1. One loop → \( O(n) \)</h3>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++) cnt += (a[i] % 2 == 0);   // n = 1000: 1000 steps
+</code></pre>
+
+  <h3>2. A loop inside a loop → multiply → \( O(n^2) \)</h3>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) total += a[i] * a[j];  // n = 1000: 1000 * 1000 = 10^6
+</code></pre>
+  <p>Two different sizes multiply the same way: an outer loop to \( n \) and an inner loop to \( m \) give \( O(n \cdot m) \).</p>
+
+  <h3>3. Loops one after another → add → keep the bigger</h3>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];             // n steps
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++) total += a[i] * a[j];  // n * n steps
+</code></pre>
+  <p>For \( n = 1000 \): \( 1000 + 10^6 \) = 1 001 000. <span class="tr" data-ar="الجزء الصغير لا يغيّر شيئًا تقريبًا، فنحتفظ بالجزء الأكبر فقط.">The small part changes almost nothing, so keep only the bigger part:</span> \( O(n^2) \).</p>
+
+  <h3>4. The inner loop stops at <code>i</code> → about half → still \( O(n^2) \)</h3>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; i; j++) pairs += (a[j] == a[i]);  // 0 + 1 + 2 + ... + (n-1)
+</code></pre>
+  <table>
+    <tr><th>\( n \)</th><td>10</td><td>100</td><td>1000</td></tr>
+    <tr><th>steps</th><td>45</td><td>4950</td><td>499 500</td></tr>
+    <tr><th>\( n^2 / 2 \)</th><td>50</td><td>5000</td><td>500 000</td></tr>
+  </table>
+  <p>It is about \( n^2 / 2 \). Half of \( n^2 \) still grows like \( n^2 \): \( O(n^2) \).</p>
+
+  <h3>5. Halve or double each round → \( O(\log n) \)</h3>
+<pre data-part="main"><code class="cpp">
+int rounds = 0;
+for (int i = n; i &gt; 1; i /= 2) rounds++;      // i: n, n/2, n/4, ... down to 1
+</code></pre>
+  <table>
+    <tr><th>\( n \)</th><td>10</td><td>100</td><td>1000</td><td>\( 10^6 \)</td><td>\( 10^9 \)</td></tr>
+    <tr><th>rounds</th><td>3</td><td>6</td><td>9</td><td>19</td><td>29</td></tr>
+  </table>
+  <p><span class="tr" data-ar="العدد n يكبر مليون مرة، لكن عدد الدورات يزيد بحوالي 20 فقط.">\( n \) grows a million times, but the rounds grow by only about 20.</span> The number of halvings from \( n \) down to 1 is called the <span class="term" data-t="logarithm">logarithm</span>, \( \log n \). Example: \( \log 8 = 3 \), because 8 → 4 → 2 → 1.</p>
+  <p>Doubling is the same count from the other side. <code>for (int i = 1; i &lt; n; i *= 2)</code> runs 30 times for \( n = 10^9 \).</p>
+  <figure class="viz" data-viz="stepper" data-gen="bigo-halve" aria-label="Step by step: a loop that halves i from 16 down to 1, with a counter of the rounds.">
+    <script type="application/json">
+{
+  "scenes": [
+    {"type":"numberline","id":"h","min":0,"max":16,"step":1,"labelStep":2},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"i now","done":"i in an earlier round"},
+  "code": ["int rounds = 0;","for (int i = n; i > 1; i /= 2)","    rounds++;"],
+  "steps": [
+    {"line":[1,2],"h":{"states":{"16":"active"},"range":[1,16],"pointers":{"i":16}},"v":{"items":[["n",16],["i",16],["rounds",0],["i > 1 ?","yes"]]}},
+    {"line":[3,2],"h":{"states":{"8":"active","16":"done"},"range":[1,8],"pointers":{"i":8}},"v":{"items":[["n",16],["i",8],["rounds",1],["i > 1 ?","yes"]]}},
+    {"line":[3,2],"h":{"states":{"4":"active","8":"done","16":"done"},"range":[1,4],"pointers":{"i":4}},"v":{"items":[["n",16],["i",4],["rounds",2],["i > 1 ?","yes"]]}},
+    {"line":[3,2],"h":{"states":{"2":"active","4":"done","8":"done","16":"done"},"range":[1,2],"pointers":{"i":2}},"v":{"items":[["n",16],["i",2],["rounds",3],["i > 1 ?","yes"]]}},
+    {"line":[3,2],"h":{"states":{"1":"active","2":"done","4":"done","8":"done","16":"done"},"range":[1,1],"pointers":{"i":1}},"v":{"items":[["n",16],["i",1],["rounds",4],["i > 1 ?","no: stop"]]}}
+  ]
+}
+</script>
+    <ol class="viz-steps">
+      <li>Start: <code>i = 16</code> and <code>rounds = 0</code>. The bar shows the numbers still left.</li>
+      <li>Round 1: <code>i</code> becomes 8. Half of the numbers are gone.</li>
+      <li>Round 2: <code>i</code> becomes 4.</li>
+      <li>Round 3: <code>i</code> becomes 2.</li>
+      <li><span class="tr" data-ar="الآن i = 1، فالشرط «i أكبر من 1» خاطئ وتتوقّف الحلقة: 4 دورات فقط لـ n = 16.">Now <code>i = 1</code>, so <code>i &gt; 1</code> is false and the loop stops: 4 rounds for \( n = 16 \).</span></li>
+    </ol>
+    <figcaption>Press <b>Next</b>. A loop from 1 to 16 would run 16 times. This loop runs 4 times, because \( \log 16 = 4 \).</figcaption>
+  </figure>
+
+  <h3>6. Loop while <code>i * i &lt;= n</code> → \( O(\sqrt{n}) \)</h3>
+<pre data-part="main"><code class="cpp">
+for (long long i = 1; i * i &lt;= n; i++) cnt++;   // n = 10^12: 10^6 rounds
+</code></pre>
+  <p>The loop stops when \( i \) passes the <span class="term" data-t="square-root">square root</span> of \( n \). For \( n = 100 \) it runs 10 times, because \( \sqrt{100} = 10 \). For \( n = 10^{12} \) it runs \( 10^6 \) times.</p>
+
+  <h3>7. A loop over \( n \) with a halving loop inside → \( O(n \log n) \)</h3>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = n; j &gt; 1; j /= 2) cnt++;      // n = 1000: 1000 * 9 = 9000 steps
+</code></pre>
+  <p>Multiply again: \( n \) rounds outside, \( \log n \) rounds inside.</p>
+
+  <h3>8. A function that calls itself two times → \( O(2^n) \)</h3>
+<pre data-part="global"><code class="cpp">
+long long f(int n) {
+    if (n == 0) return 1;
+    return f(n - 1) + f(n - 1);   // two calls, each with n - 1
+}
+</code></pre>
+  <p>Count the calls: <code>f(10)</code> makes 2047 calls. <code>f(20)</code> makes 2 097 151. <code>f(30)</code> makes 2 147 483 647. Every \( +1 \) on \( n \) doubles the work. <span class="tr" data-ar="هنا الفكرة فقط. الدوال التي تستدعي نفسها تتعلّمها في درس لاحق.">Only the idea here. Functions that call themselves come in a later lesson.</span></p>
+
+  <h3>9. No loop → \( O(1) \)</h3>
+<pre data-part="main"><code class="cpp">
+long long total = n * (n + 1) / 2;    // n is long long: 1 step for any n
+cout &lt;&lt; a[0] + a[n - 1] &lt;&lt; "\n";   // 1 step, for n = 10 or n = 10^9
+</code></pre>
+  <p>\( O(1) \) means the steps do not grow with \( n \).</p>
+</section>
+
+<section>
+  <h2>Hidden costs: one line, many steps</h2>
+  <p><span class="tr" data-ar="بعض الأسطر تبدو كخطوة واحدة، لكن بداخلها حلقة مخفية.">Some lines look like one step. Inside, they hide a loop.</span> Here \( n \) is the size of the <code>vector</code> or string. Some of these tools come in later lessons. Learn their cost now.</p>
+  <table>
+    <tr><th>This line</th><th>Cost</th><th>Why</th></tr>
+    <tr><td><code>v[i]</code>, <code>v.size()</code>, <code>s.size()</code></td><td>\( O(1) \)</td><td>The value is stored, nothing is searched.</td></tr>
+    <tr><td><code>v.push_back(x)</code>, <code>s += c</code></td><td>\( O(1) \)</td><td>On average. Adds at the end.</td></tr>
+    <tr><td><code>sort(v.begin(), v.end())</code></td><td>\( O(n \log n) \)</td><td>Puts the numbers in order.</td></tr>
+    <tr><td><code>insert</code>, <code>find</code>, <code>erase</code>, <code>count</code> of a <code>set</code> or <code>map</code>; <code>mp[key]</code></td><td>\( O(\log n) \)</td><td>Here \( n \) is the size of the <code>set</code> or <code>map</code>.</td></tr>
+    <tr><td><code>v.insert(v.begin(), x)</code>, <code>v.erase(v.begin())</code></td><td>\( O(n) \)</td><td>Every other element moves one place.</td></tr>
+    <tr><td><code>s.substr(i, k)</code></td><td>\( O(k) \)</td><td>Copies \( k \) letters. <code>s.substr(i)</code> copies up to \( n \).</td></tr>
+    <tr><td><code>s + t</code>, <code>s = s + c</code></td><td>\( O(n) \)</td><td>Builds a new string. In a loop, use <code>s += c</code>.</td></tr>
+    <tr><td><code>find(v.begin(), v.end(), x)</code>, <code>s.find(c)</code></td><td>\( O(n) \)</td><td>Looks at the elements one by one.</td></tr>
+    <tr><td><code>count(v.begin(), v.end(), x)</code></td><td>\( O(n) \)</td><td>Looks at every element.</td></tr>
+    <tr><td><code>reverse(...)</code>, <code>max_element(...)</code>, <code>min_element(...)</code></td><td>\( O(n) \)</td><td>Looks at every element.</td></tr>
+    <tr><td><code>vector&lt;int&gt; c(n)</code>, a copy <code>b = v</code></td><td>\( O(n) \)</td><td>Writes \( n \) values.</td></tr>
+    <tr><td><code>void f(vector&lt;int&gt; v)</code>, then <code>f(v)</code></td><td>\( O(n) \) per call</td><td>Copies the whole <code>vector</code>. Write <code>const vector&lt;int&gt;&amp; v</code>: \( O(1) \).</td></tr>
+    <tr><td><code>cout &lt;&lt; x &lt;&lt; endl</code></td><td>slow</td><td><code>endl</code> does a <span class="term" data-t="flush">flush</span> each time. Use <code>"\n"</code>.</td></tr>
+  </table>
+  <p class="note">Measured: \( 2 \cdot 10^5 \) calls of <code>v.insert(v.begin(), x)</code> took 1.3 seconds. \( 2 \cdot 10^5 \) calls of <code>push_back</code> took less than 0.001 seconds. Printing \( 10^6 \) lines took 1.3 seconds with <code>endl</code> and 0.05 seconds with <code>"\n"</code>. <code>s.find(t)</code> with a longer string <code>t</code> of length \( m \) can cost up to \( n \cdot m \).</p>
+  <p class="tip-box"><span class="tr" data-ar="خطوة O(n) داخل حلقة من n دورة تعطي O(n^2)، حتى لو كان الكود سطرين فقط.">An \( O(n) \) line inside a loop of \( n \) rounds gives \( O(n^2) \), even if the code is two lines.</span></p>
+</section>
+
+<section>
+  <h2>Why we drop the small parts</h2>
+  <p>Take a code that does \( n^2 + 100 n \) steps. Look at both parts:</p>
+  <table>
+    <tr><th>\( n \)</th><th>\( n^2 \)</th><th>\( 100 n \)</th><th>Share of \( 100 n \)</th></tr>
+    <tr><td>10</td><td>100</td><td>1000</td><td>91%</td></tr>
+    <tr><td>1000</td><td>\( 10^6 \)</td><td>\( 10^5 \)</td><td>9%</td></tr>
+    <tr><td class="hi">\( 10^5 \)</td><td class="hi">\( 10^{10} \)</td><td class="hi">\( 10^7 \)</td><td class="hi">0.1%</td></tr>
+  </table>
+  <p>For small \( n \) the small part matters. But the judge tests the <b>biggest</b> \( n \). There the biggest part is almost everything. So \( n^2 + 100 n \) is \( O(n^2) \).</p>
+  <p>Numbers in front are dropped too. \( 3 n \) and \( n \) are both \( O(n) \). <span class="tr" data-ar="هذا تقدير آمن وليس قانونًا دقيقًا: كودان من النوع O(n) قد يختلفان في الوقت 10 مرات.">This is a safe estimate, not an exact law: two \( O(n) \) codes can differ 10 times in time.</span></p>
+</section>
+
+<section>
+  <h2>From cost to verdict</h2>
+  <p>The judge does about \( 10^8 \) simple steps in one second. This is a safe estimate, not an exact law. <button type="button" class="why" data-why="ten-to-eight">why?</button></p>
+  <ol>
+    <li>Find the biggest \( n \) in the limits.</li>
+    <li>Put it into your \( O(\dots) \).</li>
+    <li><span class="tr" data-ar="إذا كان الناتج حوالي 10^8 أو أقل لكل ثانية من حدّ الوقت فالكود يمرّ. إذا كان 10^9 أو أكثر فهو بطيء جدًا.">About \( 10^8 \) or less per second of time limit: it passes. \( 10^9 \) or more: too slow.</span></li>
+  </ol>
+  <p><b>Example.</b> \( n \le 10^5 \) and the time limit is 1 second.</p>
+  <ul>
+    <li>Your code is \( O(n \log n) \): \( 10^5 \cdot 17 \approx 1.7 \cdot 10^6 \). Far below \( 10^8 \). It passes.</li>
+    <li>Your code is \( O(n^2) \): \( 10^{10} \) steps, about 100 seconds. "Time limit exceeded".</li>
+  </ul>
+  <p class="note">Here \( \log 10^5 \approx 17 \): you halve \( 10^5 \) about 17 times to reach 1. The next lesson turns this around: from the limits to the speed you need.</p>
+</section>
+
+<section>
+  <h2>Many test cases</h2>
+  <p>With \( t \) test cases, the cost of <code>solve()</code> is paid once per test. Add the costs of all tests.</p>
+  <p><span class="tr" data-ar="إذا قالت المسألة «مجموع n على كل الاختبارات لا يتجاوز 2·10^5» فضع هذا المجموع في O(…) بدلًا من n.">The statement says "the sum of \( n \) over all test cases is at most \( 2 \cdot 10^5 \)". Put that sum into your \( O(\dots) \).</span> An \( O(n) \) <code>solve()</code> then does about \( 2 \cdot 10^5 \) steps in total.</p>
+  <p><b>The classic trap:</b> work that does not depend on \( n \) runs in every test.</p>
+<pre data-part="main"><code class="cpp">
+// inside solve(): the numbers are at most 10^6
+vector&lt;int&gt; cnt(1000001, 0);     // 10^6 steps in EVERY test
+</code></pre>
+  <p>With \( t = 10^4 \) tests that is \( 10^4 \cdot 10^6 = 10^{10} \) steps, even if every \( n \) is tiny. <span class="tr" data-ar="الحل: اجعل حجم العمل في كل اختبار يعتمد على n فقط.">The fix: make the work of each test depend on its \( n \) only.</span> If the numbers are at most \( n \), write <code>vector&lt;int&gt; cnt(n + 1, 0);</code>. The same trap is a big global array cleared fully in each test.</p>
+</section>
+
+<section>
+  <h2>Memory: count the bytes</h2>
+  <p>Memory is counted in <span class="term" data-t="byte">bytes</span>. Each type takes a fixed number of bytes:</p>
+  <table>
+    <tr><th>Type</th><td><code>char</code></td><td><code>bool</code></td><td><code>int</code></td><td><code>long long</code></td><td><code>double</code></td></tr>
+    <tr><th>Bytes</th><td>1</td><td>1</td><td>4</td><td>8</td><td>8</td></tr>
+  </table>
+  <p>An array of \( n \) values takes \( n \times \) (bytes of one value). 1 MB is about \( 10^6 \) bytes. The <span class="term" data-t="memory-limit">memory limit</span> is often 256 MB. <button type="button" class="why" data-why="memory-256">why?</button> Read it in the statement.</p>
+  <table>
+    <tr><th>Array</th><th>Bytes</th><th>Fits in 256 MB?</th></tr>
+    <tr><td><code>int a[1000000]</code></td><td>\( 4 \cdot 10^6 \): 4 MB</td><td>yes</td></tr>
+    <tr><td><code>long long a[10000000]</code></td><td>\( 8 \cdot 10^7 \): 80 MB</td><td>yes</td></tr>
+    <tr><td><code>int a[5000][5000]</code></td><td>\( 2.5 \cdot 10^7 \cdot 4 = 10^8 \): 100 MB</td><td>yes</td></tr>
+    <tr><td><code>long long a[5000][5000]</code></td><td>200 MB</td><td>yes, but close</td></tr>
+    <tr><td class="hi"><code>int a[10000][10000]</code></td><td class="hi">\( 10^8 \cdot 4 \): 400 MB</td><td class="hi">no: "Memory limit exceeded"</td></tr>
+  </table>
+  <p>A 2D array of \( n \) rows and \( m \) columns holds \( n \cdot m \) values. Its memory is \( O(n \cdot m) \).</p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> A friend wrote the code below. It reads \( n \) numbers and a number \( k \). It counts the pairs of numbers that differ by at most \( k \). Limits: \( 1 \le n \le 5000 \), numbers and \( k \) from 0 to \( 10^9 \), time limit 1 second. Will it pass?</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> The cost of this code for the biggest \( n \), and a verdict. <code>sort</code> puts the numbers in order, from small to big.
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, k;
+    cin &gt;&gt; n &gt;&gt; k;
+    vector&lt;int&gt; a(n);
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];   // part 1
+
+    sort(a.begin(), a.end());                  // part 2
+
+    long long pairs = 0;
+    for (int i = 0; i &lt; n; i++)                // part 3
+        for (int j = i + 1; j &lt; n; j++) {
+            if (a[j] - a[i] &gt; k) break;        // the next ones are even bigger
+            pairs++;
+        }
+    cout &lt;&lt; pairs &lt;&lt; "\n";
+}
+</code></pre></li>
+    <li><b>A small example by hand.</b> Input 4 1 / 3 1 10 2. After <code>sort</code>: 1 2 3 10. Count the checks of part 3:
+      <table>
+        <tr><th><code>i</code></th><th>checks</th><th>why it stops</th></tr>
+        <tr><td>0 (value 1)</td><td>2</td><td>\( 3 - 1 = 2 &gt; 1 \): <code>break</code></td></tr>
+        <tr><td>1 (value 2)</td><td>2</td><td>\( 10 - 2 &gt; 1 \): <code>break</code></td></tr>
+        <tr><td>2 (value 3)</td><td>1</td><td>\( 10 - 3 &gt; 1 \): <code>break</code></td></tr>
+      </table>
+      The answer is 2 pairs: (1, 2) and (2, 3).</li>
+    <li><b>The idea.</b> Cost each part, then add.
+      <ul>
+        <li>Part 1: one loop, \( O(n) \).</li>
+        <li>Part 2: <code>sort</code>, \( O(n \log n) \).</li>
+        <li>Part 3: the <code>break</code> can stop early. <span class="tr" data-ar="لكن في أسوأ حالة، عندما تكون كل الأرقام متساوية، لا يحدث break أبدًا.">But in the <span class="term" data-t="worst-case">worst case</span>, all numbers are equal and the <code>break</code> never happens.</span> Then it checks every pair: about \( n^2 / 2 \), so \( O(n^2) \).</li>
+      </ul>
+      Keep the bigger part: the whole code is \( O(n^2) \).</li>
+    <li><b>Why is it fast enough?</b> Put in \( n = 5000 \):
+      \[ 5000 + 5000 \cdot 12 + \frac{5000 \cdot 4999}{2} \approx 1.3 \cdot 10^7 \]
+      Here \( \log 5000 \approx 12 \). The total is below \( 10^8 \). <b>It passes.</b> With \( n \le 2 \cdot 10^5 \) part 3 alone is \( 2 \cdot 10^{10} \) steps: "Time limit exceeded".</li>
+  </ol>
+</section>
+
+<p class="complexity">Rule: nested loops multiply, loops in a row add. Keep the biggest part. Then put in the biggest \( n \).</p>
+
+<section>
+  <h2>Practice: what does this code cost?</h2>
+  <p><span class="tr" data-ar="لكل كود: عُدَّ الخطوات لقيمة كبيرة من n، ثم اكتب O(…). الإجابات مخفية.">For each code: count the steps for a big \( n \), then write its \( O(\dots) \).</span> They go from easy to tricky.</p>
+  <ol>
+    <li>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+for (int i = 0; i &lt; n; i++) sum += a[i];
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n) \). Loops one after another add: \( n + n = 2n \).</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; 5; j++) total += a[i] * j;
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n) \). The inner loop always runs 5 times, for any \( n \). That is \( 5n \) steps.</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; n; j++)
+        if (a[i] + a[j] == x) found = true;
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n^2) \). For \( n = 1000 \): \( 10^6 \) steps.</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; i; j++)
+        if (a[j] &gt; a[i]) bigger++;
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n^2) \). About \( n^2 / 2 \) steps: 499 500 for \( n = 1000 \).</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+int cnt = 0;
+for (int i = 1; i &lt; n; i *= 2) cnt++;
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(\log n) \). <code>i</code> doubles each round. For \( n = 10^9 \): 30 rounds.</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++)
+    for (int j = 0; j &lt; m; j++) cin &gt;&gt; g[i][j];
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n \cdot m) \), not \( O(n^2) \). For \( n = 1000 \), \( m = 2000 \): \( 2 \cdot 10^6 \) steps.</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+int pos = -1;
+for (int i = 0; i &lt; n; i++)
+    if (a[i] == x) { pos = i; break; }
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n) \). The <code>break</code> can stop early. In the worst case <code>x</code> is not there, and the loop does all \( n \) rounds.</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+int cnt = 0;                          // s has length n
+for (int i = 0; i &lt; n; i++)
+    if (s.substr(i) == t) cnt++;
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n^2) \). <code>s.substr(i)</code> copies \( n - i \) letters each round. For \( n = 10^5 \): about \( 5 \cdot 10^9 \) steps.</p></details></li>
+    <li>
+<pre data-part="main"><code class="cpp">
+for (int q = 0; q &lt; n; q++) {
+    sort(a.begin(), a.end());         // a has n numbers
+    cout &lt;&lt; a[q] &lt;&lt; "\n";
+}
+</code></pre>
+      <details><summary>Cost</summary><p>\( O(n \cdot n \log n) \). A <code>sort</code> of \( n \log n \) steps runs \( n \) times. Sort once, before the loop: then it is \( O(n \log n) \).</p></details></li>
+  </ol>
+</section>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="كلما زادت الأسطر كان الكود أبطأ.">More lines of code means a slower program.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="المهم هو كم مرة يُنفَّذ كل سطر، لا عدد الأسطر.">What matters is how many times each line runs, not how many lines there are.</span> Three lines with a hidden <code>substr</code> can be slower than 30 lines with no loop.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="حلقتان في الكود تعني دائمًا n^2.">Two loops always mean \( n^2 \).</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="حلقتان متتاليتان تُجمعان: n + n. والحلقات المتداخلة على حجمين مختلفين تعطي n × m وليس n × n.">Two loops one after another add: \( n + n \). Nested loops over two different sizes give \( n \cdot m \), not \( n \cdot n \).</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الحل O(n) سريع كفاية دائمًا.">An \( O(n) \) solution is always fast enough.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="ليس إذا كانت n تصل إلى 10^12، وليس إذا تكرّر عمل O(n) مع كل سؤال من q سؤال.">Not when \( n \) can be \( 10^{12} \). Not when the \( O(n) \) work runs again for each of \( q \) questions.</span> That is \( O(n \cdot q) \).</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الرمز O(…) يخبرني بالوقت الدقيق للكود.">Big-O tells me the exact running time.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="هو يتجاهل الأرقام الثابتة، فكودان O(n) قد يختلفان في الوقت 10 مرات.">It drops the numbers in front, so two \( O(n) \) codes can differ 10 times.</span> Near \( 10^8 \) steps, be careful. Far from it, Big-O decides.</p>
+    </li>
+  </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Which speed do the limits ask for?</b> The next lesson gives a table from \( n \) to the \( O(\dots) \) you need: <a href="#complexity">Limits → speed</a>.</li>
+    <li><b>Functions that call themselves</b>, and why they can cost \( O(2^n) \). You learn them in <a href="#recursion">Recursion</a>.</li>
+    <li><b>How <code>sort</code>, <code>set</code> and <code>map</code> work inside.</b> For now remember only their cost. You learn them in <a href="#sorting">Sorting</a> and <a href="#stl-containers">map, set, stack, queue</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="n ≤ 10^6، وكودك يعمل بسرعة O(n log n). هل يمرّ في ثانية واحدة؟">\( n \le 10^6 \) and your code is \( O(n \log n) \). Does it pass in 1 second?</span>
+      <details><summary>Answer</summary><p>Yes. \( \log 10^6 \approx 20 \), so about \( 2 \cdot 10^7 \) steps. That is below \( 10^8 \).</p></details></li>
+    <li><span class="tr" data-ar="هناك t ≤ 10^4 اختبار، ومجموع n لا يتجاوز 2·10^5. كل اختبار ينشئ vector بحجم 10^6. كم خطوة في المجموع؟">There are \( t \le 10^4 \) tests and the sum of \( n \) is at most \( 2 \cdot 10^5 \). Each test makes a <code>vector</code> of size \( 10^6 \). About how many steps?</span>
+      <details><summary>Answer</summary><p>About \( 10^4 \cdot 10^6 = 10^{10} \). Too slow. Make the <code>vector</code> of size \( n + 1 \) instead.</p></details></li>
+    <li><span class="tr" data-ar="هل تتّسع المصفوفة int a[20000][20000] في حدّ ذاكرة 256 MB؟">Does <code>int a[20000][20000]</code> fit in a memory limit of 256 MB?</span>
+      <details><summary>Answer</summary><p>No. \( 4 \cdot 10^8 \) values of 4 bytes are \( 1.6 \cdot 10^9 \) bytes: about 1600 MB.</p></details></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/bronze/time-comp">USACO Guide: Time Complexity</a> — the same rules with more code examples.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 2 "Time complexity".</li>
+  </ul>
+</section>

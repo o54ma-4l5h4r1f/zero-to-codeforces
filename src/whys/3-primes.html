@@ -1,0 +1,52 @@
+<h2>Remainders and primes</h2>
+
+<article data-key="mod-1e9-7">
+<h3>Why \( 10^9 + 7 \)?</h3>
+<p>Some answers are huge, like the number of ways to do something. So the problem asks only for the remainder after dividing by 1 000 000 007.</p>
+<p>This number is chosen for four reasons. All four are checked with real code.</p>
+<ul>
+<li><span class="tr" data-ar="هو عدد أوّلي، وهذا يجعل القسمة ممكنة بطريقة خاصة ستتعلّمها لاحقًا.">It is a prime. That makes division possible in a special way you learn later.</span></li>
+<li>It is below \( 2^{30} = 1\,073\,741\,824 \), so every remainder fits in an <code>int</code>.</li>
+<li><span class="tr" data-ar="مجموع باقيين لا يتجاوز 2000000012، وهذا أقل من حدّ int.">The sum of two remainders is at most 2 000 000 012. That is below the <code>int</code> limit 2 147 483 647.</span></li>
+<li>The product of two remainders is below \( 1.0000001 \cdot 10^{18} \). That fits in <code>long long</code>.</li>
+</ul>
+<p><span class="tr" data-ar="انتبه: مجموع ثلاثة بواقٍ قد يتجاوز int.">Careful: the sum of three remainders can pass the <code>int</code> limit.</span></p>
+<p class="why-means"><b>What this means for you:</b> take <code>% MOD</code> after every addition and every multiplication. Multiply in <code>long long</code>.</p>
+</article>
+
+<article data-key="mod-998">
+<h3>Why does 998 244 353 appear too?</h3>
+<p>998 244 353 is also a prime below \( 2^{30} \). So everything in the \( 10^9 + 7 \) story is true for it too.</p>
+<p><span class="tr" data-ar="له شكل خاص: 119 · 2^23 + 1. هذا الشكل يفيد خدعة سريعة لضرب كثيرات الحدود.">It has a special form: \( 119 \cdot 2^{23} + 1 \). This form helps a fast trick for multiplying polynomials.</span></p>
+<p><span class="tr" data-ar="لا تحتاج إلى هذه الخدعة الآن.">You do not need that trick now.</span></p>
+<p class="why-means"><b>What this means for you:</b> treat 998 244 353 exactly like \( 10^9 + 7 \).</p>
+</article>
+
+<article data-key="sqrt-divisors">
+<h3>Why stop at \( \sqrt{n} \) when you look for divisors?</h3>
+<p>Divisors come in pairs. For 36: \( 1 \cdot 36 \), \( 2 \cdot 18 \), \( 3 \cdot 12 \), \( 4 \cdot 9 \), \( 6 \cdot 6 \).</p>
+<p><span class="tr" data-ar="في كل زوج يكون أحد العددين على الأكثر 6، وهو الجذر التربيعي للعدد 36.">In every pair, one number is at most 6, and \( \sqrt{36} = 6 \).</span>
+So if you find no divisor up to \( \sqrt{n} \), there is none above it either.</p>
+<p>For \( n = 10^9 \), that is about 31 600 checks, not \( 10^9 \).</p>
+<p><span class="tr" data-ar="اكتب الشرط d * d &lt;= n بدل sqrt، فهكذا تبقى في الأعداد الصحيحة.">Write the test as <code>d * d &lt;= n</code>, not with <code>sqrt</code>. So you stay with whole numbers.</span></p>
+<p class="why-means"><b>What this means for you:</b> checking one number up to \( 10^9 \) or \( 10^{12} \) is fast. Use <code>long long d</code> when \( n \) is big.</p>
+</article>
+
+<article data-key="sieve-history">
+<h3>How old is the sieve of Eratosthenes?</h3>
+<p>It is named after Eratosthenes, a Greek scholar who lived about 2200 years ago, in the 3rd century BC.</p>
+<p>He worked in Alexandria, in Egypt. He is also famous for measuring the size of the Earth.</p>
+<p><span class="tr" data-ar="نحن نعرف الطريقة من كتاب كتبه نيقوماخوس بعده بحوالي 300 سنة.">We know the method from a later book by Nicomachus, written about 300 years after him.</span></p>
+<p><span class="tr" data-ar="الفكرة: اشطب مضاعفات كل عدد أوّلي، وما يبقى هو الأعداد الأوّلية.">The idea: cross out the multiples of each prime. What stays is prime.</span></p>
+<p class="why-means"><b>What this means for you:</b> an idea this old is still the simple, fast way to list all primes up to about \( 10^7 \).</p>
+</article>
+
+<article data-key="euclid">
+<h3>Why is Euclid's algorithm still used after 2300 years?</h3>
+<p>Euclid's book "Elements" was written around 300 BC. It describes a way to find the greatest common divisor (gcd) of two numbers.</p>
+<p>Today we write it like this: \( \gcd(a, b) = \gcd(b, a \bmod b) \), until the second number is 0.</p>
+<p>For 48 and 18: \( 48 \bmod 18 = 12 \), \( 18 \bmod 12 = 6 \), \( 12 \bmod 6 = 0 \). The gcd is 6.</p>
+<p><span class="tr" data-ar="يعدّها كثيرون أقدم خوارزمية حقيقية ما زالت تُستعمل حتى اليوم.">Many people call it the oldest real algorithm still in use today.</span></p>
+<p><span class="tr" data-ar="وهي سريعة جدًا: عدد الخطوات ينمو مثل log وليس مثل العدد نفسه.">It is very fast: the number of steps grows like a log, not like the numbers.</span></p>
+<p class="why-means"><b>What this means for you:</b> C++ <code>gcd(a, b)</code> is this method. Call it without fear, even inside a loop.</p>
+</article>

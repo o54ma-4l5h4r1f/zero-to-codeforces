@@ -1,12 +1,21 @@
-<p class="idea">Your program talks with the judge. You print a question, the judge answers, and you use the answer to choose the next question.</p>
+<p class="idea"><span class="tr" data-ar="برنامجك يتحاور مع الحَكَم. تطبع سؤالًا، فيجيب الحكم، وتستخدم الإجابة لتختار السؤال التالي.">Your program talks with the judge. You print a question, the judge answers, and you use the answer to choose the next question.</span></p>
+
+<p class="tip-box"><b>Optional at this level.</b> <span class="tr" data-ar="المسائل التفاعلية ليست ضرورية قبل التقييم 1600. اقرأ الدرس عندما تقابل مسألة منها. تخطّيه الآن لا يمنعك من فهم الدروس التي بعده.">Interactive problems are not needed below 1600. Read this when you meet one. Skipping it now will not block the lessons after it.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can write the binary search loop with <code>lo</code> and <code>hi</code> → <a href="#binary-search">Binary search</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
     <li>The statement says "This is an <span class="term" data-t="interactive">interactive</span> problem".</li>
     <li>Something is hidden: a number, an array, a position. You do not get it in the input.</li>
-    <li>You may ask questions in a fixed format, like <code>? x</code>, and print the answer like <code>! x</code>.</li>
-    <li>There is a limit: "at most 7 questions", "at most 20 <span class="term" data-t="query">queries</span>".</li>
+    <li>You ask questions in a fixed format, like <code>? x</code>, and print the answer like <code>! x</code>.</li>
+    <li>There is a limit: "at most 30 <span class="term" data-t="query">queries</span>".</li>
   </ul>
 </section>
 
@@ -16,63 +25,182 @@
   <div class="way">
     <h3><b>1 · Story</b> — the guessing game with a real person</h3>
     <p>Remember the guessing game from <a href="#binary-search">Binary search</a>. Now your friend really sits in front of you. You say a number. You <b>wait</b>. Your friend answers. Only then you say the next number.</p>
-    <p>One danger: you write your question on paper but keep the paper in your pocket. Your friend waits for you, you wait for your friend, for ever. In C++ the "pocket" is the output buffer. To <span class="term" data-t="flush">flush</span> = to give the paper to your friend now.</p>
+    <p>One danger: you write your question on paper but keep the paper in your pocket. Your friend waits for you, and you wait for your friend, for ever. In C++ the pocket is the <span class="term" data-t="output-buffer">output buffer</span>. To <span class="term" data-t="flush">flush</span> means to give the paper to your friend now.</p>
   </div>
 
   <div class="way">
     <h3><b>2 · Picture</b> — one dialogue</h3>
-    <p>The judge hides a number from 1 to 100 (here: 37). You print <code>? q</code>. The judge answers <code>1</code> if the hidden number is ≥ q, and <code>0</code> if it is smaller. You have 7 questions.</p>
-    <table>
-      <tr><th>#</th><th>you print</th><th>judge answers</th><th>what you know now</th></tr>
-      <tr><td>1</td><td><code>? 51</code></td><td>0</td><td>1 … 50</td></tr>
-      <tr><td>2</td><td><code>? 26</code></td><td>1</td><td>26 … 50</td></tr>
-      <tr><td>3</td><td><code>? 38</code></td><td>0</td><td>26 … 37</td></tr>
-      <tr><td>4</td><td><code>? 32</code></td><td>1</td><td>32 … 37</td></tr>
-      <tr><td>5</td><td><code>? 35</code></td><td>1</td><td>35 … 37</td></tr>
-      <tr><td>6</td><td><code>? 36</code></td><td>1</td><td>36 … 37</td></tr>
-      <tr><td>7</td><td><code>? 37</code></td><td>1</td><td>37 … 37</td></tr>
-      <tr><td>end</td><td class="hi"><code>! 37</code></td><td>–</td><td>finished; the last line is not a question</td></tr>
-    </table>
-    <p class="note">Each question cuts the range in half. 100 → 50 → 25 → 13 → 7 → 4 → 2 → 1: 7 questions are enough. In general you need about log<sub>2</sub>(range) questions. Count this <b>before</b> you code and compare with the limit.</p>
+    <p>The judge hides a number from 1 to 16 (here: 11). You print <code>? q</code>. <span class="tr" data-ar="يجيب الحكم 1 إذا كان الرقم المخفي ≥ q، ويجيب 0 إذا كان أصغر.">The judge answers 1 if the hidden number is at least q, and 0 if it is smaller.</span></p>
+    <figure class="viz" data-viz="stepper" data-gen="guess" aria-label="Step by step: a dialogue with the judge. The hidden number is 11, between 1 and 16. Each question and answer makes the possible range on the number line smaller, until only 11 is left.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"numberline","id":"T","min":1,"max":17},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"mid: we ask about it","dim":"not possible any more"},
+  "code": ["int lo = 1;   // hidden >= 1: yes","int hi = 17;  // hidden >= 17: no","while (hi - lo > 1) {","    int mid = lo + (hi - lo) / 2;","    cout << \"? \" << mid << endl;","    int reply;","    cin >> reply;","    if (reply == -1) return 0;","    if (reply == 1) lo = mid;","    else            hi = mid;","}","cout << \"! \" << lo << endl;"],
+  "steps": [
+    {"line":[1,2],"T":{"range":[1,16],"pointers":{"lo":1,"hi":17,"mid":null},"states":{"17":"dim"}},"v":{"items":[["you print",""],["judge answers",""],["questions",0]]}},
+    {"line":[4,5,6,7],"T":{"range":[1,16],"pointers":{"lo":1,"hi":17,"mid":9},"states":{"9":"active","17":"dim"}},"v":{"items":[["you print","? 9"],["judge answers",1],["questions",1]]}},
+    {"line":9,"T":{"range":[9,16],"pointers":{"lo":9,"hi":17,"mid":null},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","17":"dim"}},"v":{"items":[["you print","? 9"],["judge answers",1],["questions",1]]}},
+    {"line":[4,5,6,7],"T":{"range":[9,16],"pointers":{"lo":9,"hi":17,"mid":13},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","13":"active","17":"dim"}},"v":{"items":[["you print","? 13"],["judge answers",0],["questions",2]]}},
+    {"line":10,"T":{"range":[9,12],"pointers":{"lo":9,"hi":13,"mid":null},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","13":"dim","14":"dim","15":"dim","16":"dim","17":"dim"}},"v":{"items":[["you print","? 13"],["judge answers",0],["questions",2]]}},
+    {"line":[4,5,6,7],"T":{"range":[9,12],"pointers":{"lo":9,"hi":13,"mid":11},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","11":"active","13":"dim","14":"dim","15":"dim","16":"dim","17":"dim"}},"v":{"items":[["you print","? 11"],["judge answers",1],["questions",3]]}},
+    {"line":9,"T":{"range":[11,12],"pointers":{"lo":11,"hi":13,"mid":null},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","9":"dim","10":"dim","13":"dim","14":"dim","15":"dim","16":"dim","17":"dim"}},"v":{"items":[["you print","? 11"],["judge answers",1],["questions",3]]}},
+    {"line":[4,5,6,7],"T":{"range":[11,12],"pointers":{"lo":11,"hi":13,"mid":12},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","9":"dim","10":"dim","12":"active","13":"dim","14":"dim","15":"dim","16":"dim","17":"dim"}},"v":{"items":[["you print","? 12"],["judge answers",0],["questions",4]]}},
+    {"line":10,"T":{"range":[11,11],"pointers":{"lo":11,"hi":12,"mid":null},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","9":"dim","10":"dim","12":"dim","13":"dim","14":"dim","15":"dim","16":"dim","17":"dim"}},"v":{"items":[["you print","? 12"],["judge answers",0],["questions",4]]}},
+    {"line":12,"T":{"range":[11,11],"pointers":{"lo":11,"hi":12,"mid":null},"states":{"1":"dim","2":"dim","3":"dim","4":"dim","5":"dim","6":"dim","7":"dim","8":"dim","9":"dim","10":"dim","12":"dim","13":"dim","14":"dim","15":"dim","16":"dim","17":"dim"}},"v":{"items":[["you print","! 11"],["judge answers",""],["questions",4]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>At the start, every number from 1 to 16 is possible. <code>hi = 17</code> stands one step outside.</li>
+        <li>You print <code>? 9</code>. The hidden number is at least 9, so the judge answers 1.</li>
+        <li>Answer 1: move <code>lo</code> to 9. Now only 9 to 16 is possible.</li>
+        <li>You print <code>? 13</code>. The judge answers 0: the number is smaller than 13.</li>
+        <li>Answer 0: move <code>hi</code> to 13. Now only 9 to 12 is possible.</li>
+        <li>You print <code>? 11</code>. The judge answers 1.</li>
+        <li>Move <code>lo</code> to 11. Only 11 and 12 are left.</li>
+        <li>You print <code>? 12</code>. The judge answers 0.</li>
+        <li>Move <code>hi</code> to 12. Only 11 is left, so the loop stops.</li>
+        <li>You print <code>! 11</code>. This line is not a question, so you wait for no reply.</li>
+      </ol>
+      <figcaption>Each question cuts the range in half: 16 → 8 → 4 → 2 → 1. So 4 questions are enough for 16 numbers.</figcaption>
+    </figure>
+    <p><span class="tr" data-ar="احسب عدد الأسئلة قبل أن تكتب الكود، وقارنه بالحدّ المسموح.">Count the questions <b>before</b> you code, and compare with the limit.</span> For a range of size n you need \( \lceil \log_2 n \rceil \) questions. Here \( \lceil x \rceil \) means "round up". For 100 numbers: \( 2^6 = 64 \) is too small and \( 2^7 = 128 \) is enough, so 7 questions.</p>
   </div>
 
   <div class="way">
-    <h3><b>3 · Code</b> — binary search that asks the judge</h3>
+    <h3><b>3 · Code</b> — one function that asks</h3>
+    <p>Put the dialogue in one function. Then the rest is the binary search you know.</p>
+<pre data-part="global"><code class="cpp">
+int ask(int q) {
+    cout &lt;&lt; "? " &lt;&lt; q &lt;&lt; endl;     // endl = new line + flush
+    int reply;
+    cin &gt;&gt; reply;                    // wait for the judge
+    if (reply == -1) exit(0);        // we broke a rule: stop at once
+    return reply;
+}
+</code></pre>
+    <p class="tip-box"><b>Flush.</b> Write <code>endl</code> after every line you print here. This is the one place where <code>endl</code> is better than <code>"\n"</code>. Keep the two fast-input lines of your template. The <code>endl</code> still flushes with them.</p>
+    <p><b>Test it at home: you are the judge.</b> Write a hidden number on paper. Run the program. When it prints <code>? 9</code>, type the true reply and press Enter. Count the questions, and check that the final answer is your number. Try the smallest and the biggest number too.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Change it to fit</h2>
+  <p>The DEFAULT is the program in "Solve one together". Most problems change only <code>ask</code> or one line.</p>
+  <ul>
+    <li><b>Another reply format.</b> The judge answers with text, like <code>&lt;</code> or <code>&gt;=</code>. Change only the reading inside <code>ask</code>:
+<pre data-part="main"><code class="cpp">
+string s;
+cin &gt;&gt; s;
+return s == "&gt;=" ? 1 : 0;           // was: cin &gt;&gt; reply; ... return reply;
+</code></pre></li>
+    <li><b>Find a position, not a value.</b> A hidden row of 0s and then 1s, positions 1 to n, with at least one 1. <code>? i</code> gives the value at position i. Find the first 1. It is the first "yes", as in the binary search lesson.
+<pre data-part="main"><code class="cpp">
+int lo = 0, hi = n;                  // position 0: a "no"; position n: a "yes"
+while (hi - lo &gt; 1) {
+    int mid = lo + (hi - lo) / 2;
+    if (ask(mid) == 1) hi = mid; else lo = mid;
+}
+cout &lt;&lt; "! " &lt;&lt; hi &lt;&lt; endl;
+</code></pre></li>
+    <li><b>A limit on the questions.</b> First compute \( \lceil \log_2 n \rceil \). <span class="tr" data-ar="إذا كان الحدّ أصغر من هذا العدد، فالبحث الثنائي وحده لا يكفي، وتحتاج فكرة أخرى.">If the limit is smaller, binary search alone is not enough. You need another idea.</span> For \( n = 10^9 \): \( 2^{30} \approx 1.07 \cdot 10^9 \), so 30 questions.</li>
+  </ul>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem.</b> The judge hides a number x from 1 to n. First you read n. You may print <code>? q</code>. The judge answers 1 if \( x \ge q \), else 0. Print <code>! x</code> at the end. You may ask at most 30 questions. Limits: \( 1 \le n \le 10^9 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> Find x with few questions. The answers are 1 1 1 … for small q, then 0 0 0 …. That is a binary search.</li>
+    <li><b>A small example by hand.</b> Take \( n = 8 \) and \( x = 3 \).
+      <table>
+        <tr><th>you print</th><th>judge answers</th><th>still possible</th></tr>
+        <tr><td><code>? 5</code></td><td>0</td><td>1 … 4</td></tr>
+        <tr><td><code>? 3</code></td><td>1</td><td>3 … 4</td></tr>
+        <tr><td><code>? 4</code></td><td>0</td><td>3</td></tr>
+        <tr><td><code>! 3</code></td><td>–</td><td>finished</td></tr>
+      </table>
+    </li>
+    <li><b>The idea.</b> <code>lo = 1</code> is surely a "1", because \( x \ge 1 \). <code>hi = n + 1</code> is surely a "0". <span class="tr" data-ar="نسأل عن الوسط وننقل lo أو hi، حتى يصبحا متجاورين. الجواب هو lo.">Ask about the middle and move <code>lo</code> or <code>hi</code> until they are neighbours. The answer is <code>lo</code>.</span></li>
+    <li><b>Count the questions.</b> \( 2^{30} \approx 1.07 \cdot 10^9 \), which is at least \( 10^9 \). So \( \lceil \log_2 10^9 \rceil = 30 \) questions are enough. The time is tiny.</li>
+  </ol>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
 
+int ask(int q) {
+    cout &lt;&lt; "? " &lt;&lt; q &lt;&lt; endl;            // endl = new line + flush
+    int reply;
+    cin &gt;&gt; reply;                           // wait for the judge
+    if (reply == -1) exit(0);               // we broke a rule: stop at once
+    return reply;
+}
+
 int main() {
-    int lo = 1;                             // hidden &gt;= 1 is true for sure
-    int hi = 101;                           // hidden &gt;= 101 is false for sure
+    int n;
+    cin &gt;&gt; n;
+    int lo = 1;                             // x &gt;= 1 is true for sure
+    int hi = n + 1;                         // x &gt;= n + 1 is false for sure
     while (hi - lo &gt; 1) {
         int mid = lo + (hi - lo) / 2;
-        cout &lt;&lt; "? " &lt;&lt; mid &lt;&lt; endl;        // endl = new line + flush
-        int reply;
-        cin &gt;&gt; reply;                       // wait for the judge
-        if (reply == -1) return 0;          // we broke a rule: stop at once
-        if (reply == 1) lo = mid;           // hidden &gt;= mid
-        else            hi = mid;           // hidden &lt; mid
+        if (ask(mid) == 1) lo = mid;        // x &gt;= mid
+        else               hi = mid;        // x &lt; mid
     }
     cout &lt;&lt; "! " &lt;&lt; lo &lt;&lt; endl;             // the final answer, also with flush
-    return 0;
 }
 </code></pre>
-    <p>Test it yourself: run the program, think of a number, and type the replies by hand. You are the judge.</p>
-    <p class="tip-box"><b>Four rules.</b> 1) Flush after every line you print: use <code>endl</code>. This is the one place where <code>endl</code> is better than <code>"\n"</code>. 2) Read the reply before you print the next question. 3) Count your questions. One too many = Wrong answer. 4) If the judge replies <code>-1</code> (or what the statement says), exit at once.</p>
-  </div>
 </section>
 
-<p class="complexity">Speed: time is almost never the problem. The real limit is the number of questions.</p>
+<p class="complexity">Speed: the time is almost never the problem. The real limit is the number of questions: \( \lceil \log_2 n \rceil \) for a range of size n.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الأمثلة في نص المسألة ملف إدخال عادي.">The samples in the statement are a normal input file.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إنها تعرض حوارًا واحدًا فقط. يجب أن يعمل برنامجك لأي رقم مخفي.">They show one dialogue only. Your program must work for any hidden value.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="يكفي أن أكتب &quot;\n&quot;، والتفريغ ليس مهمًّا.">Writing "\n" is enough. The flush does not matter.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="بدون تفريغ يبقى السؤال عندك، فتحصل على Idleness limit exceeded.">Without a flush the question stays in your pocket. The verdict is "Idleness limit exceeded".</span> Use <code>endl</code>.</p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="سؤال زائد واحد لا يضرّ إذا كانت الإجابة النهائية صحيحة.">One extra question is fine if the final answer is right.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="سؤال واحد فوق الحدّ يعطي Wrong answer، حتى لو كانت الإجابة صحيحة.">One question over the limit gives "Wrong answer", even with the right final answer.</span> Count them before you code.</p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>No flush. The verdict is "Idleness limit exceeded": the judge waited for a question that never came.</li>
-    <li>Wrong format: <code>?51</code> without the space, or a missing <code>!</code> before the answer. Copy the format from the statement.</li>
+    <li>Wrong format: <code>?9</code> without the space, or no <code>!</code> before the answer. Copy the format from the statement.</li>
     <li>Many test cases: after <code>! x</code> some problems send one more reply to read. Check the statement.</li>
-    <li>Thinking the samples are a normal input file. They show a dialogue. Your program must work for any hidden value.</li>
+    <li>Printing the next question before you read the reply to the last one.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>Interactive problems that are not a binary search</b> (clever questions, a judge that changes x while you ask). These are mostly above 1600: <a href="#what-next">After 1600</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="الرقم المخفي بين 1 و 1000، والحدّ 10 أسئلة. هل يكفي البحث الثنائي؟">The hidden number is from 1 to 1000. The limit is 10 questions. Is binary search enough?</span>
+      <details><summary>Answer</summary><p>Yes. \( 2^{10} = 1024 \), which is at least 1000. So \( \lceil \log_2 1000 \rceil = 10 \).</p></details></li>
+    <li><span class="tr" data-ar="برنامجك صحيح، لكن الحكم يعطي Idleness limit exceeded. ما السبب غالبًا؟">Your program is correct, but the verdict is "Idleness limit exceeded". What is the likely reason?</span>
+      <details><summary>Answer</summary><p>No flush. The question stayed in the buffer, so the judge never saw it. Use <code>endl</code>.</p></details></li>
+    <li><span class="tr" data-ar="كيف تختبر برنامجًا تفاعليًّا على جهازك دون حكم؟">How do you test an interactive program at home, with no judge?</span>
+      <details><summary>Answer</summary><p>Be the judge. Pick a hidden number, run the program, and type the true reply to each question.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">
@@ -90,7 +218,7 @@ int main() {
 <section class="more">
   <h2>Learn more</h2>
   <ul>
-    <li><a href="https://codeforces.com/blog/entry/45307">Codeforces: guide for interactive problems</a> — the official short guide, with flush commands for every language.</li>
+    <li><a href="https://codeforces.com/blog/entry/45307">Interactive Problems: Guide for Participants</a> — the official short guide on Codeforces, with flush commands for every language.</li>
     <li><a href="#binary-search">Binary search</a> — most interactive problems at this level are a binary search.</li>
   </ul>
 </section>

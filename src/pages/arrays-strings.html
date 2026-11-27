@@ -1,9 +1,17 @@
-<p class="idea">An array is a row of numbered boxes. A string is a row of boxes with one letter in each.</p>
+<p class="idea"><span class="tr" data-ar="المصفوفة صفّ من صناديق مرقّمة تبدأ من 0. والنص صفّ من صناديق، في كل صندوق حرف واحد.">An array is a row of numbered boxes, starting at 0. A string is a row of boxes with one letter in each.</span></p>
+
+<aside class="before">
+  <h2>Before this lesson</h2>
+  <ul>
+    <li>You can trace a loop by hand → <a href="#simulation">Do what the statement says</a></li>
+    <li>You can count the steps of one loop: \( O(n) \) → <a href="#big-o">How much does my code cost?</a></li>
+  </ul>
+</aside>
 
 <section class="spot">
   <h2>Spot it</h2>
   <ul>
-    <li>The input is "n, then n numbers". Store them in a <code>vector&lt;int&gt;</code>.</li>
+    <li>The input is "\( n \), then \( n \) numbers". Store them in a <code>vector&lt;int&gt;</code>.</li>
     <li>The input is a word or a line of letters. Store it in a <code>string</code>.</li>
     <li>You must find the biggest, the smallest, the sum, or the position of something.</li>
     <li>You must look at letters one by one: count them, change them, compare neighbours.</li>
@@ -15,19 +23,62 @@
 
   <div class="way">
     <h3><b>1 · Story</b> — a street of houses</h3>
-    <p>Think of a street with n houses. Each house has a number on the door and one thing inside. The door number is the <span class="term" data-t="index">index</span>. The thing inside is the value.</p>
-    <p>In C++ the first house has number <b>0</b>, not 1. So the last house has number <b>n − 1</b>. House number n does not exist.</p>
+    <p>A street has 5 houses. Each house has a number on the door and one thing inside. The door number is the <span class="term" data-t="index">index</span>. The thing inside is the value.</p>
+    <p><span class="tr" data-ar="في C++ يحمل البيت الأول الرقم 0 وليس 1. لذلك يحمل البيت الأخير الرقم 4، ولا يوجد بيت رقمه 5.">In C++ the first house has number <b>0</b>, not 1. So the last house has number <b>4</b>, and house 5 does not exist.</span></p>
   </div>
 
   <div class="way">
-    <h3><b>2 · Picture</b> — the string "code"</h3>
-    <p>Each box holds one <span class="term" data-t="character">character</span>. Inside the computer a character is a small number. The letters <code>'a'</code>…<code>'z'</code> are 26 numbers in a row. So <code>s[i] - 'a'</code> tells you which letter it is: 0 for a, 1 for b, … 25 for z.</p>
+    <h3><b>2 · Picture</b> — boxes with numbers</h3>
+    <p>Here \( n = 5 \). The boxes are <code>a[0]</code> to <code>a[4]</code>.</p>
+    <figure class="viz" data-viz="array" aria-label="An array a with 5 values 3, 8, 2, 9, 5 at indexes 0 to 4. The pointer first is at 0, the pointer last is at 4, and the pointer n is at 5, an empty dotted box outside the array.">
+      <script type="application/json">
+{ "label": "a", "values": [3, 8, 2, 9, 5],
+  "pointers": { "first": 0, "last = n-1": 4, "n": 5 },
+  "states": { "0": "read", "4": "read" },
+  "legend": { "read": "the first and the last box" } }
+</script>
+      <figcaption>The dotted box at index 5 is not part of the array. <code>a[5]</code> does not exist.</figcaption>
+    </figure>
+    <p><span class="tr" data-ar="مع n صندوقًا تكون الفهارس من 0 إلى n − 1. الفهرس الأخير هو n − 1 وليس n.">With \( n \) boxes the indexes go from 0 to \( n - 1 \). The last index is \( n - 1 \), not \( n \).</span> <button type="button" class="why" data-why="zero-index">why?</button> A loop <code>for (int i = 0; i &lt; n; i++)</code> stops at the right place. With <code>i &lt;= n</code> it reads the dotted box. This kind of bug is called <span class="term" data-t="off-by-one">off-by-one</span>.</p>
+
+    <p>Now one loop finds the biggest value and its index. Press <b>Next</b>.</p>
+    <figure class="viz" data-viz="stepper" data-gen="arr-max" aria-label="Step by step: a loop over the array 3 8 2 9 5 with the pointer i. It keeps the biggest value so far in best and its index in pos.">
+      <script type="application/json">
+{
+  "scenes": [
+    {"type":"array","id":"a","label":"a","values":[3,8,2,9,5]},
+    {"type":"vars","id":"v","items":[]}
+  ],
+  "legend": {"active":"i: we look here","done":"the best so far","dim":"already looked at"},
+  "code": ["int best = a[0], pos = 0;","for (int i = 1; i < n; i++) {","    if (a[i] > best) {","        best = a[i]; pos = i;","    }","}"],
+  "steps": [
+    {"line":1,"a":{"states":{"0":"done"},"pointers":{"i":null}},"v":{"items":[["i",""],["a[i]",""],["best",3],["pos",0]]}},
+    {"line":[3,4],"a":{"states":{"0":"dim","1":"active"},"pointers":{"i":1}},"v":{"items":[["i",1],["a[i]",8],["best",8],["pos",1]]}},
+    {"line":3,"a":{"states":{"0":"dim","1":"done","2":"active"},"pointers":{"i":2}},"v":{"items":[["i",2],["a[i]",2],["best",8],["pos",1]]}},
+    {"line":[3,4],"a":{"states":{"0":"dim","1":"dim","2":"dim","3":"active"},"pointers":{"i":3}},"v":{"items":[["i",3],["a[i]",9],["best",9],["pos",3]]}},
+    {"line":3,"a":{"states":{"0":"dim","1":"dim","2":"dim","3":"done","4":"active"},"pointers":{"i":4}},"v":{"items":[["i",4],["a[i]",5],["best",9],["pos",3]]}},
+    {"line":2,"a":{"states":{"0":"dim","1":"dim","2":"dim","3":"done","4":"dim"},"pointers":{"i":5}},"v":{"items":[["i",5],["a[i]",""],["best",9],["pos",3]]}}
+  ]
+}
+</script>
+      <ol class="viz-steps">
+        <li>Start with the first box: <code>best = a[0] = 3</code> and <code>pos = 0</code>.</li>
+        <li><code>a[1] = 8</code> is bigger than 3. So <code>best = 8</code> and <code>pos = 1</code>.</li>
+        <li><code>a[2] = 2</code> is not bigger than 8. Nothing changes.</li>
+        <li><code>a[3] = 9</code> is bigger than 8. So <code>best = 9</code> and <code>pos = 3</code>.</li>
+        <li><code>a[4] = 5</code> is not bigger than 9. Nothing changes.</li>
+        <li><span class="tr" data-ar="الآن i = 5 = n، فالشرط i &lt; n خاطئ وتتوقف الحلقة. لا نقرأ a[5] أبدًا.">Now <code>i = 5 = n</code>, so <code>i &lt; n</code> is false and the loop stops. We never read <code>a[5]</code>.</span></li>
+      </ol>
+      <figcaption>The answer: the biggest value is 9, at index 3.</figcaption>
+    </figure>
+
+    <p><b>Characters are numbers.</b> Each box of a string holds one <span class="term" data-t="character">character</span>. Inside the computer a character is a small number. <button type="button" class="why" data-why="char-number">why?</button> The letters <code>'a'</code> to <code>'z'</code> are 26 numbers in a row:</p>
     <table>
-      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td></tr>
-      <tr><th>s[i]</th><td>'c'</td><td>'o'</td><td>'d'</td><td>'e'</td></tr>
-      <tr><th>s[i] - 'a'</th><td class="hi">2</td><td class="hi">14</td><td class="hi">3</td><td class="hi">4</td></tr>
+      <tr><th>c</th><td><code>'a'</code></td><td><code>'b'</code></td><td><code>'c'</code></td><td><code>'d'</code></td><td>…</td><td><code>'z'</code></td></tr>
+      <tr><th>the number inside</th><td>97</td><td>98</td><td>99</td><td>100</td><td>…</td><td>122</td></tr>
+      <tr><th><code>c - 'a'</code></th><td class="hi">0</td><td class="hi">1</td><td class="hi">2</td><td class="hi">3</td><td>…</td><td class="hi">25</td></tr>
     </table>
-    <p class="note"><code>s.size()</code> is 4. The last character is <code>s[3]</code>. The same trick works for digits: <code>'7' - '0'</code> is the number 7.</p>
+    <p>You never need to remember 97. Subtract <code>'a'</code> and you get the place of the letter, from 0 to 25. Digits work the same: <code>'0'</code> is 48, so <code>'7' - '0'</code> is the number 7.</p>
     <table>
       <tr><th>I want…</th><th>write…</th></tr>
       <tr><td>length</td><td><code>s.size()</code></td></tr>
@@ -40,13 +91,12 @@
       <tr><td>which comes first in a dictionary?</td><td><code>s &lt; t</code></td></tr>
       <tr><td>join two strings / add one character</td><td><code>s + t</code> / <code>s += c;</code></td></tr>
       <tr><td>a piece: start at <code>pos</code>, take <code>len</code> characters</td><td><code>s.substr(pos, len)</code></td></tr>
-      <tr><td>turn it around</td><td><code>reverse(s.begin(), s.end());</code></td></tr>
     </table>
   </div>
 
   <div class="way">
     <h3><b>3 · Code</b> — one loop does almost everything</h3>
-    <p><b>Array:</b> read n numbers. Print the sum, the <span class="term" data-t="maximum">maximum</span>, and the position of the maximum (counting from 1).</p>
+    <p><b>Array:</b> read \( n \) numbers. Print the sum, the <span class="term" data-t="maximum">maximum</span>, and its position counted from 1.</p>
 <pre><code class="cpp">
 #include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -91,19 +141,102 @@ int main() {
     cout &lt;&lt; s &lt;&lt; " " &lt;&lt; different &lt;&lt; "\n"; // Hello -&gt; hello 4
 }
 </code></pre>
+    <p class="note">Why <code>(int)s.size()</code>? The next lesson shows the reason with real output. For now, always write it.</p>
   </div>
 </section>
 
-<p class="complexity">Speed: one loop over n boxes is O(n). Fine for n up to 10^6 and more.</p>
+<section>
+  <h2>Change it to fit</h2>
+  <p>Almost every array problem is the same loop with a small change. <span class="tr" data-ar="الشكل الافتراضي هو الحلقة إلى الأمام. غيّر سطر الحلقة فقط عندما تطلب المسألة ذلك.">The default is the forward loop. Change only the loop line when the problem asks for it.</span></p>
+  <table>
+    <tr><th>The problem says…</th><th>Write this loop</th><th>\( i \) takes (for \( n = 5 \))</th></tr>
+    <tr><td>look at every box (DEFAULT)</td><td><code>for (int i = 0; i &lt; n; i++)</code></td><td>0, 1, 2, 3, 4</td></tr>
+    <tr><td>start from the end (print reversed, find the last …)</td><td><code>for (int i = n - 1; i &gt;= 0; i--)</code></td><td>4, 3, 2, 1, 0</td></tr>
+    <tr><td>compare each box with its right neighbour</td><td><code>for (int i = 0; i + 1 &lt; n; i++)</code></td><td>0, 1, 2, 3: pairs (0,1) … (3,4)</td></tr>
+  </table>
+  <p>In the neighbour loop we read <code>a[i + 1]</code>, so <code>i</code> must stop at \( n - 2 \). The condition <code>i + 1 &lt; n</code> does exactly that.</p>
+</section>
+
+<section class="worked">
+  <h2>Solve one together</h2>
+  <p class="statement"><b>Problem</b> (266A, Stones on the Table). \( n \) stones stand in a row. Each is red, green or blue: the string <code>s</code> uses the letters <code>R</code>, <code>G</code>, <code>B</code>. Remove the fewest stones so that no two neighbours have the same colour. Limits: \( 1 \le n \le 50 \).</p>
+  <ol class="steps">
+    <li><b>What is asked?</b> One number: how many stones to remove.</li>
+    <li><b>A small example by hand.</b> <code>s = RRGGGB</code>. Compare each stone with its right neighbour.
+      <table>
+        <tr><th>pair (i, i+1)</th><td>(0,1)</td><td>(1,2)</td><td>(2,3)</td><td>(3,4)</td><td>(4,5)</td></tr>
+        <tr><th>colours</th><td>R R</td><td>R G</td><td>G G</td><td>G G</td><td>G B</td></tr>
+        <tr><th>same?</th><td class="hi">yes</td><td>no</td><td class="hi">yes</td><td class="hi">yes</td><td>no</td></tr>
+      </table>
+      <p>Three pairs are the same. Remove 3 stones: one R and two G. The answer is 3.</p>
+    </li>
+    <li><b>The idea.</b> <span class="tr" data-ar="كل زوج متجاور له نفس اللون يكلّف حجرًا واحدًا بالضبط.">Each pair of equal neighbours costs exactly one stone.</span> Count those pairs with the neighbour loop.</li>
+    <li><b>Why is it fast enough?</b> One loop: \( O(n) \), at most 49 pairs.</li>
+  </ol>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    string s;
+    cin &gt;&gt; n &gt;&gt; s;
+    int removed = 0;
+    for (int i = 0; i + 1 &lt; n; i++) {    // pairs (i, i+1); the last i is n-2
+        if (s[i] == s[i + 1]) removed++;
+    }
+    cout &lt;&lt; removed &lt;&lt; "\n";
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: one loop over \( n \) boxes is \( O(n) \). Fine for \( n \) up to \( 10^6 \) and more.</p>
+
+<section class="myths">
+  <h2>Wrong ideas people get</h2>
+  <ul>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="العنصر الأخير هو a[n]، وإذا أخطأت فسيخبرني C++ بذلك.">The last element is <code>a[n]</code>. If I am wrong, C++ will tell me.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="العنصر الأخير هو a[n − 1]. قراءة a[n] لا تعطي رسالة خطأ: قد تقرأ قيمة عشوائية أو يتوقف البرنامج.">The last element is <code>a[n - 1]</code>. Reading <code>a[n]</code> gives no error message: you may get garbage or a crash.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="البداية best = 0 آمنة دائمًا عند البحث عن الأكبر.">Starting with <code>best = 0</code> is always safe for the maximum.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="إذا كانت كل الأعداد سالبة فالإجابة 0 خاطئة. ابدأ بـ a[0].">If all numbers are negative, the answer 0 is wrong. Start with <code>a[0]</code>.</span></p>
+    </li>
+    <li>
+      <p class="think"><b>You may think:</b> <span class="tr" data-ar="الحرف '5' هو العدد 5.">The character <code>'5'</code> is the number 5.</span></p>
+      <p class="truth"><b>The truth:</b> <span class="tr" data-ar="الحرف '5' بداخله العدد 53. اكتب c - '0' لتحصل على 5.">The character <code>'5'</code> holds the number 53. Write <code>c - '0'</code> to get 5.</span></p>
+    </li>
+  </ul>
+</section>
 
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li>You use <code>a[n]</code> or <code>a[i + 1]</code> at the last box. It does not exist. The program crashes or prints garbage.</li>
     <li>The statement counts from 1, your code counts from 0. Add 1 when you print a position.</li>
     <li><code>cout &lt;&lt; tolower(c)</code> prints a number like 104. Save it first: <code>char d = tolower(c);</code> then print <code>d</code>.</li>
-    <li><code>'5'</code> is not <code>5</code>. The character <code>'5'</code> is the number 53. Use <code>c - '0'</code>.</li>
+    <li>The neighbour loop written as <code>i &lt; n</code>. At the last step it reads <code>a[n]</code>. Write <code>i + 1 &lt; n</code>.</li>
   </ul>
+</section>
+
+<aside class="notnow">
+  <h2>Not now</h2>
+  <ul>
+    <li><b>How many times each value appears.</b> The <code>seen</code> array above is the start of a bigger idea. You learn it in <a href="#counting">Counting</a>.</li>
+    <li><b>The sum of many pieces of an array.</b> One loop per question is too slow when there are many questions. You learn the fix in <a href="#prefix-sums">Prefix sums</a>.</li>
+  </ul>
+</aside>
+
+<section class="check">
+  <h2>Check yourself</h2>
+  <ol>
+    <li><span class="tr" data-ar="مصفوفة فيها 8 عناصر. ما هو فهرس العنصر الأخير؟">An array has 8 elements. What is the index of the last one?</span>
+      <details><summary>Answer</summary><p>7. The indexes go from 0 to \( n - 1 = 7 \).</p></details></li>
+    <li><span class="tr" data-ar="ما قيمة 'e' - 'a'؟ وما قيمة '9' - '0'؟">What is <code>'e' - 'a'</code>? And <code>'9' - '0'</code>?</span>
+      <details><summary>Answer</summary><p>4 and 9. The letter e is the fifth letter, so it is number 4 when we count from 0.</p></details></li>
+    <li><span class="tr" data-ar="ما الخطأ في هذه الحلقة: for (int i = 0; i &lt; n; i++) if (a[i] == a[i + 1]) ...؟">What is wrong here: <code>for (int i = 0; i &lt; n; i++) if (a[i] == a[i + 1])</code>?</span>
+      <details><summary>Answer</summary><p>When <code>i = n - 1</code>, it reads <code>a[n]</code>, which does not exist. Write <code>i + 1 &lt; n</code>.</p></details></li>
+  </ol>
 </section>
 
 <section class="practice">

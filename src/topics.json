@@ -19,6 +19,10 @@
         "title": "Your C++ template"
       },
       {
+        "slug": "big-o",
+        "title": "How much does my code cost?"
+      },
+      {
         "slug": "complexity",
         "title": "Limits → speed"
       },
