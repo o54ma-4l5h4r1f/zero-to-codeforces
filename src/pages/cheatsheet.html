@@ -1,0 +1,445 @@
+<section class="s0">
+<h2>Limits and types</h2>
+<div class="cgrid">
+  <div class="cc" data-to="complexity" data-tip="About 10^8 simple steps run in 1 second. Read n from the limits, then pick the speed you need.">
+    <table>
+      <tr><th>n ≤</th><th>speed</th></tr>
+      <tr><td>10</td><td>O(n!)</td></tr>
+      <tr><td>20</td><td>O(2ⁿ)</td></tr>
+      <tr><td>500</td><td>O(n³)</td></tr>
+      <tr><td>5000</td><td>O(n²)</td></tr>
+      <tr><td>2·10⁵ – 10⁶</td><td>O(n log n), O(n)</td></tr>
+      <tr><td>10¹²</td><td>O(√n)</td></tr>
+      <tr><td>10¹⁸</td><td>O(log n), O(1)</td></tr>
+    </table>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="How big a number each type can hold. If a sum or product can pass 2·10^9, use long long.">
+    <div class="fx">int ≈ ±2·10⁹ (2³¹−1)</div>
+    <div class="fx">long long ≈ ±9·10¹⁸ (2⁶³−1)</div>
+    <div class="fx">1 second ≈ 10⁸ steps</div>
+    <div class="fx">256 MB ≈ 6·10⁷ ints</div>
+  </div>
+  <div class="cc" data-to="overflow" data-tip="Multiply two ints safely: start with 1LL so the whole product is computed as long long.">
+<pre data-part="main"><code class="cpp">
+long long p = 1LL * a * b;
+long long big = 1e18;   const int MOD = 1e9 + 7;
+</code></pre>
+  </div>
+  <div class="cc span2" data-to="cpp-template" data-tip="The start of every solution: fast input/output and a loop over the test cases.">
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+void solve() {
+    int n; cin &gt;&gt; n;
+    vector&lt;long long&gt; a(n);
+    for (auto &amp;x : a) cin &gt;&gt; x;
+    cout &lt;&lt; (n &gt; 0 ? "YES" : "NO") &lt;&lt; "\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false); cin.tie(nullptr);
+    int t; cin &gt;&gt; t;
+    while (t--) solve();
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="debugging" data-tip="Check these first when you get Wrong Answer.">
+    <div class="fx">n = 1 · all equal · max values</div>
+    <div class="fx">overflow? · index out of range?</div>
+    <div class="fx">reset between test cases?</div>
+    <div class="fx">output format · YES/NO</div>
+  </div>
+</div>
+</section>
+
+<section class="s1">
+<h2>Math</h2>
+<div class="cgrid">
+  <div class="cc" data-to="basic-math" data-tip="Sums you should know by heart. Use long long.">
+    <div class="fx">1 + 2 + … + n = n(n+1)/2</div>
+    <div class="fx">1 + 3 + … + (2n−1) = n²</div>
+    <div class="fx">1² + … + n² = n(n+1)(2n+1)/6</div>
+    <div class="fx">a + (a+d) + … (n terms) = n(first+last)/2</div>
+    <div class="fx">1 + 2 + 4 + … + 2ᵏ = 2ᵏ⁺¹ − 1</div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Integer division tricks: round up, count multiples in a range, even/odd test.">
+    <div class="fx">ceil(a / b) = (a + b − 1) / b</div>
+    <div class="fx">multiples of k in [1..n] = n / k</div>
+    <div class="fx">in [l..r] = r/k − (l−1)/k</div>
+    <div class="fx">odd: x % 2 != 0 &nbsp; even: x % 2 == 0</div>
+    <div class="fx">numbers in [l..r] = r − l + 1</div>
+  </div>
+  <div class="cc" data-to="basic-math" data-tip="Walk over the digits of a number from the last digit to the first.">
+<pre data-part="main"><code class="cpp">
+while (x &gt; 0) { int d = x % 10; x /= 10; }
+</code></pre>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="Greatest common divisor and least common multiple. Divide before you multiply to avoid overflow.">
+    <div class="fx">gcd(a, b) = gcd(b, a % b), gcd(a, 0) = a</div>
+    <div class="fx">lcm(a, b) = a / gcd(a, b) · b</div>
+    <div class="fx">C++: gcd(a, b), lcm(a, b), __gcd(a, b)</div>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="Is n prime? Try divisors up to the square root. O(√n).">
+<pre data-part="global"><code class="cpp">
+bool isPrime(long long n) {
+    if (n &lt; 2) return false;
+    for (long long i = 2; i * i &lt;= n; i++)
+        if (n % i == 0) return false;
+    return true;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="All divisors of n in O(√n): they come in pairs (i, n / i).">
+<pre data-part="main"><code class="cpp">
+for (long long i = 1; i * i &lt;= n; i++)
+    if (n % i == 0) {
+        d.push_back(i);
+        if (i != n / i) d.push_back(n / i);
+    }
+</code></pre>
+  </div>
+  <div class="cc" data-to="number-theory" data-tip="Sieve: find all primes up to N at once. O(N log log N). Good for N up to about 10^7.">
+<pre data-part="global"><code class="cpp">
+const int N = 1000000;
+vector&lt;bool&gt; prime(N + 1, true);
+void sieve() {
+    prime[0] = prime[1] = false;
+    for (int i = 2; 1LL * i * i &lt;= N; i++)
+        if (prime[i])
+            for (int j = i * i; j &lt;= N; j += i)
+                prime[j] = false;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="modular" data-tip="Rules for answers 'modulo 10^9+7'. Take % after every step. Never divide normally under mod.">
+    <div class="fx">(a + b) % m</div>
+    <div class="fx">((a − b) % m + m) % m</div>
+    <div class="fx">(1LL * a * b) % m</div>
+    <div class="fx">a / b → a · b^(m−2) % m &nbsp;(m prime)</div>
+  </div>
+  <div class="cc" data-to="modular" data-tip="Fast power: a^b mod m in O(log b) steps by squaring.">
+<pre data-part="global"><code class="cpp">
+long long power(long long a, long long b, long long m) {
+    long long r = 1; a %= m;
+    while (b &gt; 0) {
+        if (b &amp; 1) r = r * a % m;
+        a = a * a % m;
+        b &gt;&gt;= 1;
+    }
+    return r;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="combinatorics" data-tip="Counting formulas: ways to order, ways to choose, number of pairs, number of subsets.">
+    <div class="fx">n! = 1·2·…·n</div>
+    <div class="fx">C(n, r) = n! / (r! · (n−r)!)</div>
+    <div class="fx">C(n, r) = C(n−1, r−1) + C(n−1, r)</div>
+    <div class="fx">pairs = n(n−1)/2 &nbsp; subsets = 2ⁿ</div>
+  </div>
+  <div class="cc" data-to="combinatorics" data-tip="nCr mod a prime, many times: precompute factorials and inverse factorials once, then each answer is O(1).">
+<pre data-part="global"><code class="cpp">
+const int MOD = 1e9 + 7, MAXN = 200005;
+long long fact[MAXN], inv[MAXN];
+long long pw(long long a, long long b) {
+    long long r = 1; a %= MOD;
+    for (; b &gt; 0; b &gt;&gt;= 1, a = a * a % MOD)
+        if (b &amp; 1) r = r * a % MOD;
+    return r;
+}
+void init() {
+    fact[0] = 1;
+    for (int i = 1; i &lt; MAXN; i++) fact[i] = fact[i-1] * i % MOD;
+    inv[MAXN-1] = pw(fact[MAXN-1], MOD - 2);
+    for (int i = MAXN - 1; i &gt; 0; i--) inv[i-1] = inv[i] * i % MOD;
+}
+long long C(int n, int r) {
+    if (r &lt; 0 || r &gt; n) return 0;
+    return fact[n] * inv[r] % MOD * inv[n-r] % MOD;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="bits" data-tip="Bit tricks. Use 1LL &lt;&lt; k when k can be 31 or more. Always put brackets around &amp; | ^.">
+    <div class="fx">bit k on? &nbsp;(x &gt;&gt; k) &amp; 1</div>
+    <div class="fx">set: x | (1 &lt;&lt; k) &nbsp; clear: x &amp; ~(1 &lt;&lt; k)</div>
+    <div class="fx">flip: x ^ (1 &lt;&lt; k)</div>
+    <div class="fx">power of 2? &nbsp;x &gt; 0 &amp;&amp; (x &amp; (x−1)) == 0</div>
+    <div class="fx">count ones: __builtin_popcountll(x)</div>
+    <div class="fx">a ^ a = 0 &nbsp; a ^ 0 = a</div>
+  </div>
+  <div class="cc" data-to="bits" data-tip="Try every subset of n items (n ≤ 20). Bit i of mask says if item i is taken.">
+<pre data-part="main"><code class="cpp">
+for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++)
+    for (int i = 0; i &lt; n; i++)
+        if (mask &gt;&gt; i &amp; 1) { /* item i is in */ }
+</code></pre>
+  </div>
+</div>
+</section>
+
+<section class="s2">
+<h2>STL and core tools</h2>
+<div class="cgrid">
+  <div class="cc" data-to="stl-basics" data-tip="Everyday tools on a vector: sort, reverse, biggest, smallest, sum, remove duplicates.">
+<pre data-part="main"><code class="cpp">
+sort(a.begin(), a.end());
+sort(a.rbegin(), a.rend());            // big to small
+reverse(a.begin(), a.end());
+int mx = *max_element(a.begin(), a.end());
+int mn = *min_element(a.begin(), a.end());
+long long s = accumulate(a.begin(), a.end(), 0LL);
+a.erase(unique(a.begin(), a.end()), a.end());  // after sort
+</code></pre>
+  </div>
+  <div class="cc" data-to="sorting" data-tip="Sort by your own rule. The rule must use strict &lt; and never &lt;=.">
+<pre data-part="main"><code class="cpp">
+sort(v.begin(), v.end(), [](const pair&lt;int,int&gt; &amp;x,
+                            const pair&lt;int,int&gt; &amp;y) {
+    if (x.second != y.second) return x.second &lt; y.second;
+    return x.first &gt; y.first;
+});
+</code></pre>
+  </div>
+  <div class="cc" data-to="stl-containers" data-tip="Which container for which job. set/map cost O(log n) per step; stack/queue cost O(1).">
+    <table>
+      <tr><td>unique + sorted</td><td>set</td></tr>
+      <tr><td>sorted, repeats</td><td>multiset</td></tr>
+      <tr><td>key → value</td><td>map</td></tr>
+      <tr><td>last in, first out</td><td>stack</td></tr>
+      <tr><td>first in, first out</td><td>queue</td></tr>
+      <tr><td>both ends</td><td>deque</td></tr>
+      <tr><td>always the max / min</td><td>priority_queue</td></tr>
+    </table>
+  </div>
+  <div class="cc" data-to="stl-containers" data-tip="The most used lines for set, map, multiset and priority_queue.">
+<pre data-part="main"><code class="cpp">
+set&lt;int&gt; s; s.insert(x); s.count(x); s.erase(x);
+auto it = s.lower_bound(x);        // first &gt;= x
+map&lt;int,int&gt; m; m[x]++;
+for (auto [key, val] : m) { }
+multiset&lt;int&gt; ms; ms.erase(ms.find(x));   // one copy
+priority_queue&lt;int&gt; pq;            // max on top
+priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; mn;
+</code></pre>
+  </div>
+  <div class="cc" data-to="counting" data-tip="Count how many times each value appears. Array for small values, map for big values.">
+<pre data-part="main"><code class="cpp">
+int cnt[26] = {};
+for (char c : s) cnt[c - 'a']++;
+map&lt;long long, long long&gt; f;
+for (auto x : a) f[x]++;
+// pairs among k equal items: k * (k - 1) / 2
+</code></pre>
+  </div>
+  <div class="cc" data-to="prefix-sums" data-tip="Sum of any part of an array in O(1) after one O(n) pass.">
+    <div class="fx">pre[0] = 0, pre[i+1] = pre[i] + a[i]</div>
+    <div class="fx">sum a[l..r] = pre[r+1] − pre[l]</div>
+  </div>
+  <div class="cc" data-to="prefix-sums" data-tip="Difference array: add v to a whole range [l..r] in O(1), many times. One prefix sum at the end gives the real values.">
+    <div class="fx">d[l] += v, d[r+1] −= v</div>
+    <div class="fx">then a[i] = d[0] + … + d[i]</div>
+  </div>
+  <div class="cc" data-to="prefix-sums" data-tip="2D prefix sums: sum of any rectangle in O(1). Rows and columns are 1-indexed.">
+    <div class="fx">P[i][j] = a[i][j] + P[i−1][j] + P[i][j−1] − P[i−1][j−1]</div>
+    <div class="fx">sum = P[r2][c2] − P[r1−1][c2] − P[r2][c1−1] + P[r1−1][c1−1]</div>
+  </div>
+  <div class="cc" data-to="two-pointers" data-tip="Sliding window: longest part with sum ≤ S (positive numbers). Each pointer only moves forward, so it is O(n).">
+<pre data-part="main"><code class="cpp">
+long long sum = 0; int best = 0;
+for (int l = 0, r = 0; r &lt; n; r++) {
+    sum += a[r];
+    while (sum &gt; S) sum -= a[l++];
+    best = max(best, r - l + 1);
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="binary-search" data-tip="Binary search for the first value where ok() is true. lo must be a 'no', hi must be a 'yes'.">
+<pre data-part="main"><code class="cpp">
+// ok: no no no YES YES YES
+while (hi - lo &gt; 1) {
+    long long mid = lo + (hi - lo) / 2;
+    if (ok(mid)) hi = mid; else lo = mid;
+}
+// answer = hi
+</code></pre>
+  </div>
+  <div class="cc" data-to="binary-search" data-tip="Ready-made binary search on a sorted vector.">
+<pre data-part="main"><code class="cpp">
+int i = lower_bound(a.begin(), a.end(), x) - a.begin(); // &gt;= x
+int j = upper_bound(a.begin(), a.end(), x) - a.begin(); // &gt;  x
+bool has = binary_search(a.begin(), a.end(), x);
+</code></pre>
+  </div>
+</div>
+</section>
+
+<section class="s3">
+<h2>Algorithms</h2>
+<div class="cgrid">
+  <div class="cc" data-to="recursion" data-tip="Recursion: try 'take' and 'skip' for every item. Visits all 2^n subsets.">
+<pre data-part="global"><code class="cpp">
+int n; vector&lt;int&gt; a, cur;
+void go(int i) {
+    if (i == n) { /* use cur */ return; }
+    go(i + 1);                 // skip a[i]
+    cur.push_back(a[i]);
+    go(i + 1);                 // take a[i]
+    cur.pop_back();            // undo
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="recursion" data-tip="Every order of the elements (n ≤ 10). Sort first.">
+<pre data-part="main"><code class="cpp">
+sort(a.begin(), a.end());
+do { /* use a */ } while (next_permutation(a.begin(), a.end()));
+</code></pre>
+  </div>
+  <div class="cc" data-to="dp" data-tip="The four questions for every DP problem.">
+    <div class="fx">1. dp[i] means … (in words)</div>
+    <div class="fx">2. dp[i] = formula from smaller ones</div>
+    <div class="fx">3. base cases</div>
+    <div class="fx">4. order of filling, where is the answer</div>
+  </div>
+  <div class="cc span2" data-to="dp" data-tip="Classic DP formulas: stairs, min coins, grid paths, knapsack, longest increasing subsequence, longest common subsequence.">
+    <div class="fx">stairs: dp[i] = dp[i−1] + dp[i−2]</div>
+    <div class="fx">coins: dp[x] = min(dp[x − c] + 1) for each coin c</div>
+    <div class="fx">grid: dp[i][j] = dp[i−1][j] + dp[i][j−1]</div>
+    <div class="fx">knapsack: for w = W..wt: dp[w] = max(dp[w], dp[w − wt] + val)</div>
+    <div class="fx">LIS: dp[i] = 1 + max(dp[j]) for j &lt; i, a[j] &lt; a[i]</div>
+    <div class="fx">LCS: a[i]==b[j] ? dp[i−1][j−1] + 1 : max(dp[i−1][j], dp[i][j−1])</div>
+  </div>
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="Read a graph with n vertices and m edges into an adjacency list (1-indexed, two-way edges).">
+<pre data-part="main"><code class="cpp">
+vector&lt;vector&lt;int&gt;&gt; g(n + 1);
+for (int i = 0; i &lt; m; i++) {
+    int u, v; cin &gt;&gt; u &gt;&gt; v;
+    g[u].push_back(v);
+    g[v].push_back(u);
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="DFS: visit everything you can reach from v. Call it once per unvisited vertex to count connected components.">
+<pre data-part="global"><code class="cpp">
+vector&lt;vector&lt;int&gt;&gt; g; vector&lt;bool&gt; vis;
+void dfs(int v) {
+    vis[v] = true;
+    for (int u : g[v]) if (!vis[u]) dfs(u);
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="BFS: shortest distance (number of edges) from s to every vertex. −1 means not reachable.">
+<pre data-part="global"><code class="cpp">
+vector&lt;int&gt; bfs(int s, const vector&lt;vector&lt;int&gt;&gt; &amp;g) {
+    vector&lt;int&gt; dist(g.size(), -1);
+    queue&lt;int&gt; q; q.push(s); dist[s] = 0;
+    while (!q.empty()) {
+        int v = q.front(); q.pop();
+        for (int u : g[v]) if (dist[u] == -1) {
+            dist[u] = dist[v] + 1;
+            q.push(u);
+        }
+    }
+    return dist;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="graphs-bfs-dfs" data-tip="Moving on a grid: the four neighbours of cell (x, y) and the check that a cell is inside.">
+<pre data-part="main"><code class="cpp">
+int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
+for (int d = 0; d &lt; 4; d++) {
+    int nx = x + dx[d], ny = y + dy[d];
+    if (nx &lt; 0 || ny &lt; 0 || nx &gt;= n || ny &gt;= m) continue;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="dijkstra" data-tip="Dijkstra: shortest path when edges have weights ≥ 0. O((n + m) log n).">
+<pre data-part="global"><code class="cpp">
+const long long INF = 1e18;
+vector&lt;long long&gt; dijkstra(int s,
+        const vector&lt;vector&lt;pair&lt;int,long long&gt;&gt;&gt; &amp;g) {
+    vector&lt;long long&gt; dist(g.size(), INF);
+    priority_queue&lt;pair&lt;long long,int&gt;,
+        vector&lt;pair&lt;long long,int&gt;&gt;, greater&lt;&gt;&gt; pq;
+    dist[s] = 0; pq.push({0, s});
+    while (!pq.empty()) {
+        auto [d, v] = pq.top(); pq.pop();
+        if (d &gt; dist[v]) continue;
+        for (auto [u, w] : g[v])
+            if (dist[v] + w &lt; dist[u]) {
+                dist[u] = dist[v] + w;
+                pq.push({dist[u], u});
+            }
+    }
+    return dist;
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="dijkstra" data-tip="Which shortest-path tool to use.">
+    <table>
+      <tr><td>no weights</td><td>BFS</td></tr>
+      <tr><td>weights ≥ 0</td><td>Dijkstra</td></tr>
+      <tr><td>negative weights</td><td>Bellman-Ford</td></tr>
+      <tr><td>all pairs, n ≤ 500</td><td>Floyd-Warshall</td></tr>
+    </table>
+  </div>
+  <div class="cc" data-to="trees" data-tip="One DFS on a tree: depth goes down from the parent, subtree size comes up from the children.">
+<pre data-part="global"><code class="cpp">
+vector&lt;vector&lt;int&gt;&gt; g; vector&lt;int&gt; depth, sz;
+void dfs(int v, int p) {
+    sz[v] = 1;
+    for (int u : g[v]) if (u != p) {
+        depth[u] = depth[v] + 1;
+        dfs(u, v);
+        sz[v] += sz[u];
+    }
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="trees" data-tip="Facts about every tree.">
+    <div class="fx">n vertices, n − 1 edges</div>
+    <div class="fx">connected, no cycle</div>
+    <div class="fx">one path between any two vertices</div>
+  </div>
+  <div class="cc" data-to="dsu" data-tip="DSU: merge groups and ask 'are these two in the same group?'. Almost O(1) per call.">
+<pre data-part="global"><code class="cpp">
+struct DSU {
+    vector&lt;int&gt; p, sz;
+    DSU(int n) : p(n + 1), sz(n + 1, 1) {
+        iota(p.begin(), p.end(), 0);
+    }
+    int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
+    bool unite(int a, int b) {
+        a = find(a); b = find(b);
+        if (a == b) return false;
+        if (sz[a] &lt; sz[b]) swap(a, b);
+        p[b] = a; sz[a] += sz[b];
+        return true;
+    }
+};
+</code></pre>
+  </div>
+  <div class="cc" data-to="toposort" data-tip="Topological sort (Kahn): an order where every edge goes forward. If the order has fewer than n vertices, there is a cycle.">
+<pre data-part="global"><code class="cpp">
+vector&lt;int&gt; topo(int n, const vector&lt;vector&lt;int&gt;&gt; &amp;g) {
+    vector&lt;int&gt; in(n + 1, 0), order;
+    for (int v = 1; v &lt;= n; v++) for (int u : g[v]) in[u]++;
+    queue&lt;int&gt; q;
+    for (int v = 1; v &lt;= n; v++) if (in[v] == 0) q.push(v);
+    while (!q.empty()) {
+        int v = q.front(); q.pop();
+        order.push_back(v);
+        for (int u : g[v]) if (--in[u] == 0) q.push(u);
+    }
+    return order;          // size &lt; n  =&gt;  cycle
+}
+</code></pre>
+  </div>
+  <div class="cc" data-to="interactive" data-tip="Interactive problems: print a question, flush (endl does it), then read the reply.">
+<pre data-part="main"><code class="cpp">
+cout &lt;&lt; "? " &lt;&lt; mid &lt;&lt; endl;   // endl = flush
+string reply; cin &gt;&gt; reply;
+cout &lt;&lt; "! " &lt;&lt; answer &lt;&lt; endl;
+</code></pre>
+  </div>
+</div>
+</section>

@@ -1,0 +1,140 @@
+<p class="idea">Keep items in groups. Two fast operations: "which group is x in?" and "join these two groups into one".</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>Things are joined step by step: roads are built, friends are added, groups <span class="term" data-t="merge">merge</span>. Nothing is ever removed.</li>
+    <li>The question is "are a and b in the same group?" or "how many groups are there now?"</li>
+    <li>You must count the <span class="term" data-t="connected-component">connected components</span> of a graph, or find the size of each one.</li>
+    <li>You must know if a new <span class="term" data-t="edge">edge</span> makes a <span class="term" data-t="cycle">cycle</span>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — companies and bosses</h3>
+    <p>There are n small companies. Each company has one person, and this person is the boss. Sometimes two companies join. Then the boss of the smaller company gets a new boss: the boss of the bigger company.</p>
+    <p>"Are Ali and Sara in the same company?" Ask Ali: "who is your boss?" Then ask that boss, and go up until you reach the top boss. Do the same for Sara. Same top boss → same company. The top boss is the <span class="term" data-t="leader">leader</span> of the group.</p>
+    <p><code>find(x)</code> = the top boss of x. <code>unite(a, b)</code> = join the two companies.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — the parent array for 5 items</h3>
+    <p><code>parent[x]</code> is the boss of x. A leader is its own boss: <code>parent[x] == x</code>. At the start everybody is alone.</p>
+    <table>
+      <tr><th>operation</th><th>parent[1]</th><th>parent[2]</th><th>parent[3]</th><th>parent[4]</th><th>parent[5]</th><th>groups</th></tr>
+      <tr><td>start</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>{1} {2} {3} {4} {5}</td></tr>
+      <tr><td>unite(1, 2)</td><td>1</td><td class="hi">1</td><td>3</td><td>4</td><td>5</td><td>{1,2} {3} {4} {5}</td></tr>
+      <tr><td>unite(3, 4)</td><td>1</td><td>1</td><td>3</td><td class="hi">3</td><td>5</td><td>{1,2} {3,4} {5}</td></tr>
+      <tr><td>unite(2, 4)</td><td>1</td><td>1</td><td class="hi">1</td><td>3</td><td>5</td><td>{1,2,3,4} {5}</td></tr>
+      <tr><td>find(4)</td><td>1</td><td>1</td><td>1</td><td class="hi">1</td><td>5</td><td>answer 1</td></tr>
+      <tr><td>unite(1, 4)</td><td>1</td><td>1</td><td>1</td><td>1</td><td>5</td><td>same leader → nothing to do</td></tr>
+    </table>
+    <p><code>unite(2, 4)</code> does not join 2 and 4. It joins their leaders: 1 and 3. So leader 3 gets the boss 1.</p>
+    <p class="note"><span class="term" data-t="path-compression">Path compression</span>: <code>find(4)</code> walks 4 → 3 → 1. On the way back it sets <code>parent[4] = 1</code>. Next time the walk is one step. This small trick makes DSU very fast.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — a small struct you can reuse</h3>
+<pre data-part="global"><code class="cpp">
+struct DSU {
+    vector&lt;int&gt; parent, sz;                 // sz[leader] = size of its group
+    DSU(int n) : parent(n + 1), sz(n + 1, 1) {
+        for (int i = 0; i &lt;= n; i++) parent[i] = i;   // everybody is alone
+    }
+    int find(int x) {                       // the leader of x
+        if (parent[x] == x) return x;
+        return parent[x] = find(parent[x]); // path compression
+    }
+    bool unite(int a, int b) {              // false = they were already together
+        a = find(a); b = find(b);
+        if (a == b) return false;
+        if (sz[a] &lt; sz[b]) swap(a, b);      // a is the bigger group
+        parent[b] = a;                      // small group goes under the big one
+        sz[a] += sz[b];
+        return true;
+    }
+};
+</code></pre>
+    <p>A full program. Input: n cities, m roads, then q questions "can you go from a to b?".</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct DSU {                                // the same struct as above
+    vector&lt;int&gt; parent, sz;
+    DSU(int n) : parent(n + 1), sz(n + 1, 1) {
+        for (int i = 0; i &lt;= n; i++) parent[i] = i;
+    }
+    int find(int x) { return parent[x] == x ? x : parent[x] = find(parent[x]); }
+    bool unite(int a, int b) {
+        a = find(a); b = find(b);
+        if (a == b) return false;
+        if (sz[a] &lt; sz[b]) swap(a, b);
+        parent[b] = a; sz[a] += sz[b];
+        return true;
+    }
+};
+
+int main() {
+    int n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+    DSU d(n);
+    int groups = n;                         // n cities, all alone
+    for (int i = 0; i &lt; m; i++) {
+        int a, b;
+        cin &gt;&gt; a &gt;&gt; b;
+        if (d.unite(a, b)) groups--;        // a real merge: one group less
+    }
+    cout &lt;&lt; groups &lt;&lt; "\n";                 // number of connected components
+    int q;
+    cin &gt;&gt; q;
+    while (q--) {
+        int a, b;
+        cin &gt;&gt; a &gt;&gt; b;
+        cout &lt;&lt; (d.find(a) == d.find(b) ? "YES" : "NO") &lt;&lt; "\n";
+    }
+}
+</code></pre>
+    <p class="tip-box">Cycle check: if <code>unite(a, b)</code> returns <code>false</code>, then a and b were already connected. So the new edge a–b closes a cycle. The size of the group of x is <code>d.sz[d.find(x)]</code>.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: almost O(1) for each find and unite. 10<sup>6</sup> operations are no problem.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Comparing <code>parent[a] == parent[b]</code>. The parent is not always the leader. Compare <code>find(a) == find(b)</code>.</li>
+    <li>Writing <code>parent[a] = b</code> in unite. You must join the leaders: <code>parent[find(b)] = find(a)</code>.</li>
+    <li>Reading <code>sz[x]</code> for any x. The size is correct only at the leader: <code>sz[find(x)]</code>.</li>
+    <li>Edges are removed in the problem. DSU cannot split a group. Try to read the operations from the end, so each removal becomes an add.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="217A">Ice Skating</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1249B2">Books Exchange (hard version)</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="1167C">News Distribution</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="277A">Learning Languages</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="771A">Bear and Friendship Condition</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="977E">Cyclic Components</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="722C">Destroying Array</a><span class="r">1600</span></li>
+    <li><a class="cf" data-p="25D">Roads not only in Berland</a><span class="r">1900</span></li>
+    <li><a href="https://cses.fi/problemset/task/1676">CSES: Road Construction</a><span class="r">CSES</span> — after each new road print the number of groups and the biggest size.</li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://codeforces.com/edu/course/2">Codeforces EDU</a> — free course, open "Disjoint Sets Union". Video, text and problems.</li>
+    <li><a href="https://usaco.guide/">USACO Guide</a> — Gold section, "Disjoint Set Union". Clear text with pictures.</li>
+    <li><a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> — another way to count components when all edges are known at the start.</li>
+    <li><a href="#what-next">After 1600</a> — DSU is the heart of Kruskal's algorithm (the cheapest set of roads that connects all cities).</li>
+  </ul>
+</section>

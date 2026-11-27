@@ -1,0 +1,131 @@
+<p class="idea">C++ has ready boxes for your data. Pick the right box and a hard problem becomes a few lines.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>"Did I see this value before?" or "how many <span class="term" data-t="distinct">distinct</span> values?" → <code>set</code>.</li>
+    <li>"How many times does each name / number appear?" and the values are big or are strings → <code>map</code>.</li>
+    <li>You add values and often need the smallest or biggest one → <code>priority_queue</code> or <code>multiset</code>.</li>
+    <li>Brackets, "undo", or "the last thing that is still open" → <code>stack</code>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — four things from real life</h3>
+    <p>A <span class="term" data-t="stack">stack</span> is a pile of plates. You put a plate on top. You take a plate from the top. Last in, first out.</p>
+    <p>A <span class="term" data-t="queue">queue</span> is a line in a shop. New people stand at the back. The person at the front leaves first. First in, first out.</p>
+    <p>A <code>set</code> is a guest list. Each name is there one time only, and the list stays in order. A <code>map</code> is a phone book. You give a name (the <span class="term" data-t="key">key</span>) and you get a number (the value).</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — which box do I need?</h3>
+    <table>
+      <tr><th>I need…</th><th>use…</th><th>main operations</th><th>cost of one</th></tr>
+      <tr><td>unique values, always sorted</td><td><code>set&lt;int&gt;</code></td><td><code>insert(x)</code>, <code>count(x)</code>, <code>erase(x)</code>, <code>*s.begin()</code>, <code>s.lower_bound(x)</code></td><td>O(log n)</td></tr>
+      <tr><td>sorted values, <span class="term" data-t="duplicate">duplicates</span> allowed</td><td><code>multiset&lt;int&gt;</code></td><td>same as set; erase <b>one</b> copy: <code>s.erase(s.find(x))</code></td><td>O(log n)</td></tr>
+      <tr><td>key → value (a counter, a phone book)</td><td><code>map&lt;string,int&gt;</code></td><td><code>m[x]++</code>, <code>m.count(x)</code>, loop in key order</td><td>O(log n)</td></tr>
+      <tr><td>last in, first out</td><td><code>stack&lt;int&gt;</code></td><td><code>push(x)</code>, <code>top()</code>, <code>pop()</code></td><td>O(1)</td></tr>
+      <tr><td>first in, first out</td><td><code>queue&lt;int&gt;</code></td><td><code>push(x)</code>, <code>front()</code>, <code>pop()</code></td><td>O(1)</td></tr>
+      <tr><td>add and remove at both ends</td><td><code>deque&lt;int&gt;</code></td><td><code>push_back</code>, <code>push_front</code>, <code>pop_back</code>, <code>pop_front</code>, <code>d[i]</code></td><td>O(1)</td></tr>
+      <tr><td>always get the biggest value</td><td><code>priority_queue&lt;int&gt;</code></td><td><code>push(x)</code>, <code>top()</code> = max, <code>pop()</code></td><td>O(log n)</td></tr>
+    </table>
+    <p class="note"><code>unordered_map</code> looks faster, but on Codeforces special tests can make it very slow (people hack it). Prefer <code>map</code>.</p>
+    <p>How a stack checks brackets in <code>([]{})</code>. An opening bracket goes on the stack. A closing bracket must match the top.</p>
+    <table>
+      <tr><th>read</th><td>(</td><td>[</td><td>]</td><td>{</td><td>}</td><td>)</td><td>end</td></tr>
+      <tr><th>action</th><td>push</td><td>push</td><td>top is [ → pop</td><td>push</td><td>top is { → pop</td><td>top is ( → pop</td><td></td></tr>
+      <tr><th>stack after</th><td>(</td><td>( [</td><td>(</td><td>( {</td><td>(</td><td>empty</td><td class="hi">empty → YES</td></tr>
+    </table>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — brackets with a stack, then short examples</h3>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    string s;
+    cin &gt;&gt; s;                              // for example ([]{})
+    stack&lt;char&gt; st;
+    bool good = true;
+    for (char c : s) {
+        if (c == '(' || c == '[' || c == '{') {
+            st.push(c);                    // opening bracket: remember it
+        } else {
+            if (st.empty()) { good = false; break; }   // nothing to close
+            char open = st.top();
+            st.pop();
+            if (c == ')' &amp;&amp; open != '(') good = false;
+            if (c == ']' &amp;&amp; open != '[') good = false;
+            if (c == '}' &amp;&amp; open != '{') good = false;
+        }
+    }
+    if (!st.empty()) good = false;         // some bracket was never closed
+    cout &lt;&lt; (good ? "YES" : "NO") &lt;&lt; "\n";
+}
+</code></pre>
+    <p><code>set</code>: unique and sorted.</p>
+<pre data-part="main"><code class="cpp">
+set&lt;int&gt; s;
+s.insert(5); s.insert(2); s.insert(5);     // s = {2, 5}, the second 5 is ignored
+if (s.count(5)) cout &lt;&lt; "5 is inside\n";
+cout &lt;&lt; s.size() &lt;&lt; "\n";                  // 2 = number of distinct values
+cout &lt;&lt; *s.begin() &lt;&lt; "\n";                // 2 = the smallest value
+auto it = s.lower_bound(3);                // first value &gt;= 3
+if (it != s.end()) cout &lt;&lt; *it &lt;&lt; "\n";    // 5
+</code></pre>
+    <p><code>map</code>: count words, then print them in order.</p>
+<pre data-part="main"><code class="cpp">
+map&lt;string, int&gt; cnt;
+string w;
+while (cin &gt;&gt; w) cnt[w]++;                 // a new key starts at 0
+for (auto [word, times] : cnt)             // keys come in sorted order
+    cout &lt;&lt; word &lt;&lt; " " &lt;&lt; times &lt;&lt; "\n";
+</code></pre>
+    <p><code>priority_queue</code>: the biggest on top, or the smallest on top.</p>
+<pre data-part="main"><code class="cpp">
+priority_queue&lt;int&gt; big;                               // max on top
+priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; small;  // min on top
+for (int x : {4, 9, 1}) { big.push(x); small.push(x); }
+cout &lt;&lt; big.top() &lt;&lt; " " &lt;&lt; small.top() &lt;&lt; "\n";       // 9 1
+big.pop();                                             // removes the 9
+</code></pre>
+  </div>
+</section>
+
+<p class="complexity">Speed: set, map, multiset, priority_queue: O(log n) per operation. stack, queue, deque: O(1). So n operations cost O(n log n) or O(n).</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li><code>m[x]</code> <b>creates</b> the key <code>x</code> with value 0 if it is missing. To only check, use <code>m.count(x)</code>.</li>
+    <li>In a <code>multiset</code>, <code>s.erase(x)</code> removes <b>all</b> copies of <code>x</code>. For one copy write <code>s.erase(s.find(x))</code>.</li>
+    <li><code>top()</code>, <code>front()</code> or <code>pop()</code> on an empty container crashes. Check <code>!st.empty()</code> first.</li>
+    <li><code>lower_bound(s.begin(), s.end(), x)</code> on a set is slow, O(n). Use the member: <code>s.lower_bound(x)</code>.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="443A">Anton and Letters</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="469A">I Wanna Be the Guy</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1325B">CopyCopyCopyCopyCopy</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1374C">Move Brackets</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="4C">Registration system</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="26B">Regular Bracket Sequence</a><span class="r">1400</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://en.cppreference.com/w/cpp/container">cppreference: containers</a> — the full list of every container and its functions.</li>
+    <li><a href="https://usaco.guide/bronze/intro-sets">USACO Guide: Sets and Maps</a> — short text with examples.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 4 "Data structures".</li>
+  </ul>
+</section>

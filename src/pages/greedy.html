@@ -1,0 +1,135 @@
+<p class="idea">At every step take the choice that looks best right now, and never go back. Very often this means: sort, then take.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The statement asks for the <span class="term" data-t="minimum">minimum</span> or <span class="term" data-t="maximum">maximum</span> number of something: coins, moves, items.</li>
+    <li>You build the answer step by step, and one <span class="term" data-t="choice">choice</span> is clearly the best: the biggest, the smallest, the earliest.</li>
+    <li>n is big (up to 2·10<sup>5</sup>), so you cannot try all possibilities. A sort and one loop must be enough.</li>
+    <li>Taking the best item now does not block a better answer later.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — one hour of homework</h3>
+    <p>You have one hour and many tasks. Each task needs some minutes. You want to finish as <b>many</b> tasks as you can.</p>
+    <p>Do the shortest task first, then the next shortest, and so on. A short task never hurts: it leaves the most time for the others. This is a <span class="term" data-t="greedy">greedy</span> rule: "smallest first".</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — pay 125 with the fewest bills</h3>
+    <p>Problem 996A: the bills are 100, 20, 10, 5 and 1. Take the biggest bill as many times as you can, then the next one.</p>
+    <table>
+      <tr><th>bill</th><th>left before</th><th>how many we take</th><th>left after</th><th>bills so far</th></tr>
+      <tr><td>100</td><td>125</td><td>125 / 100 = 1</td><td>25</td><td>1</td></tr>
+      <tr><td>20</td><td>25</td><td>25 / 20 = 1</td><td>5</td><td>2</td></tr>
+      <tr><td>10</td><td>5</td><td>5 / 10 = 0</td><td>5</td><td>2</td></tr>
+      <tr><td>5</td><td>5</td><td>5 / 5 = 1</td><td>0</td><td class="hi">3</td></tr>
+      <tr><td>1</td><td>0</td><td>0</td><td>0</td><td>3</td></tr>
+    </table>
+    <p class="note">Answer: 3 bills (100 + 20 + 5). "Left after" is just <code>left % bill</code>.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — biggest first</h3>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    int bills[5] = {100, 20, 10, 5, 1};    // from big to small
+    int count = 0;
+    for (int b : bills) {
+        count += n / b;                    // take this bill as many times as we can
+        n %= b;                            // what is still left to pay
+    }
+    cout &lt;&lt; count &lt;&lt; "\n";
+}
+</code></pre>
+    <p><b>Sort, then take.</b> Problem 160A: take the fewest coins so that your sum is <b>strictly more</b> than the sum of the coins you leave. Big coins help the most, so sort in <span class="term" data-t="descending">descending</span> order and take from the front.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n);
+    int total = 0;
+    for (int &amp;x : a) { cin &gt;&gt; x; total += x; }
+
+    sort(a.begin(), a.end(), greater&lt;int&gt;());   // biggest coin first
+    int mine = 0, taken = 0;
+    for (int x : a) {
+        if (mine &gt; total - mine) break;         // I already have more than the rest
+        mine += x;                              // take the biggest coin that is left
+        taken++;
+    }
+    cout &lt;&lt; taken &lt;&lt; "\n";
+}
+</code></pre>
+    <p class="note">Input <code>3</code> / <code>2 1 2</code> → output <code>2</code>: you take 2 + 2 = 4, and 1 is left.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: O(n log n) for the sort, then O(n) for one loop. Fast enough for n = 2·10^5.</p>
+
+<section>
+  <h2>Warning: greedy can be wrong</h2>
+  <p>Coins are 1, 3 and 4. Pay 6 with the fewest coins.</p>
+  <table>
+    <tr><th>Way</th><th>Coins</th><th>How many</th></tr>
+    <tr><td>Greedy (biggest first)</td><td>4 + 1 + 1</td><td>3</td></tr>
+    <tr><td>Best</td><td>3 + 3</td><td class="hi">2</td></tr>
+  </table>
+  <p>With bills 100, 20, 10, 5, 1 greedy is right. With coins 1, 3, 4 it is wrong. The code is the same, so you must check the idea before you trust it.</p>
+  <h3>How to trust a greedy</h3>
+  <ul>
+    <li><b>Try small cases by hand.</b> Does your rule give the best answer for every one of them?</li>
+    <li><b>Try to break it.</b> Look for a <span class="term" data-t="counterexample">counterexample</span>, like "1, 3, 4 and 6" above. One is enough to kill the idea.</li>
+    <li><b>The <span class="term" data-t="swap">swap</span> idea:</b> take any answer and swap two neighbour choices into your order. If this never makes the answer worse, your order is the best.</li>
+    <li><b>Limits help.</b> If n ≤ 20, the problem may want brute force. If n = 2·10<sup>5</sup> and a simple rule passes your small tests, greedy is likely.</li>
+  </ul>
+  <p class="tip-box">Not sure? Write a <a href="#brute-force">brute force</a> and compare it with your greedy on small random inputs. See "stress testing" in <a href="#debugging">How to find your bug</a>.</p>
+</section>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You trust the first rule you think of and do not test it on small cases.</li>
+    <li>You forget to sort, or you sort in the wrong direction (small first when you need big first).</li>
+    <li><b>More</b> or <b>at least</b>? In 160A the sum must be strictly more. <code>&gt;</code> and <code>&gt;=</code> give different answers.</li>
+    <li>The sum of many numbers is in an <code>int</code>. Use <code>long long</code> when it can pass 2·10<sup>9</sup>.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="996A">Hit the Lottery</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1399A">Remove Smallest</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1353B">Two Arrays And Swaps</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="160A">Twins</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="149A">Business trip</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="580A">Kefa and First Steps</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="230A">Dragons</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="158B">Taxi</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="492B">Vanya and Lanterns</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="545D">Queue</a><span class="r">1300</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/bronze/intro-greedy">USACO Guide: Introduction to Greedy</a> — short text, with examples where greedy fails.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 6 "Greedy algorithms": coins, scheduling, tasks and deadlines.</li>
+    <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — lessons by Mostafa Saad. Search the channel for "Greedy".</li>
+    <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — the section "Sorting and Searching" has many "sort, then take" problems.</li>
+  </ul>
+</section>

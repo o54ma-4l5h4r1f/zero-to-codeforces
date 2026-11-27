@@ -1,0 +1,114 @@
+<p class="idea">Inside the computer every number is a row of 0s and 1s. You can read and change each of them with very fast operators.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The statement uses AND, OR, <span class="term" data-t="xor">XOR</span> (written <code>&amp;</code>, <code>|</code>, <code>^</code> or ⊕).</li>
+    <li>Powers of two: 1, 2, 4, 8, … or "double it", "divide by 2".</li>
+    <li>n ≤ 20 and you must choose some of the items → try every <span class="term" data-t="subset">subset</span> with a <span class="term" data-t="mask">mask</span>.</li>
+    <li>"Every value appears twice, but one appears once" → XOR of everything.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — a row of light switches</h3>
+    <p>Think of a row of switches. Each one is on (1) or off (0). The first switch from the right is worth 1, the next 2, then 4, then 8. The number is the sum of the switches that are on.</p>
+    <p>The operators AND, OR and XOR look at each switch position alone. Nothing is carried to the next position, so they are simple and fast.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — 13 in <span class="term" data-t="binary">binary</span>, and the operators</h3>
+    <table>
+      <tr><th>bit number k</th><td>3</td><td>2</td><td>1</td><td>0</td></tr>
+      <tr><th>worth 2<sup>k</sup></th><td>8</td><td>4</td><td>2</td><td>1</td></tr>
+      <tr><th>13</th><td class="hi">1</td><td class="hi">1</td><td>0</td><td class="hi">1</td></tr>
+    </table>
+    <p class="note">13 = 8 + 4 + 1, so 13 is 1101. Each digit is one <span class="term" data-t="bit">bit</span>. Bits are counted from the right, from 0.</p>
+    <table>
+      <tr><th>operator</th><th>rule for one bit</th><th>a = 12 = 1100, b = 10 = 1010</th></tr>
+      <tr><td><code>a &amp; b</code> (AND)</td><td>1 if <b>both</b> are 1</td><td>1000 = 8</td></tr>
+      <tr><td><code>a | b</code> (OR)</td><td>1 if <b>at least one</b> is 1</td><td>1110 = 14</td></tr>
+      <tr><td><code>a ^ b</code> (XOR)</td><td>1 if they are <b>different</b></td><td>0110 = 6</td></tr>
+      <tr><td><code>~a</code> (NOT)</td><td>flips every bit</td><td>all 32 bits flip, so <code>~12</code> is −13</td></tr>
+      <tr><td><code>a &lt;&lt; 1</code></td><td>move all bits left = multiply by 2</td><td>11000 = 24</td></tr>
+      <tr><td><code>a &gt;&gt; 1</code></td><td>move all bits right = divide by 2</td><td>110 = 6</td></tr>
+    </table>
+    <p class="tip-box">XOR facts: <code>a ^ a = 0</code>, <code>a ^ 0 = a</code>, and the order does not matter. So if you XOR a list, equal values cancel in pairs.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — the tricks, then all subsets</h3>
+<pre data-part="main"><code class="cpp">
+int x = 13;                                // 1101
+bool on = (x &gt;&gt; 2) &amp; 1;                    // is bit 2 on?        -&gt; true
+int a = x | (1 &lt;&lt; 1);                      // set bit 1           -&gt; 1111 = 15
+int b = x &amp; ~(1 &lt;&lt; 0);                     // clear bit 0         -&gt; 1100 = 12
+int c = x ^ (1 &lt;&lt; 3);                      // flip bit 3          -&gt; 0101 = 5
+int ones = __builtin_popcount(x);          // how many 1 bits     -&gt; 3
+bool pow2 = x &gt; 0 &amp;&amp; (x &amp; (x - 1)) == 0;   // is x a power of two? -&gt; false
+long long big = 1LL &lt;&lt; 40;                 // for k &gt;= 31 you need 1LL
+</code></pre>
+    <p class="note">For a <code>long long</code> use <code>__builtin_popcountll(x)</code>.</p>
+    <p><b>A subset as a mask.</b> You have n items. A number from 0 to 2<sup>n</sup> − 1 is one choice: bit <code>i</code> is 1 → item <code>i</code> is taken. Example with n = 3: mask 5 = 101 means "take items 0 and 2".</p>
+    <p>Task: how many subsets of the array have sum exactly <code>x</code>? (n ≤ 20)</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    long long x;
+    cin &gt;&gt; n &gt;&gt; x;                              // n &lt;= 20
+    vector&lt;long long&gt; a(n);
+    for (auto &amp;v : a) cin &gt;&gt; v;
+    int ways = 0;
+    for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++) {   // every subset, one by one
+        long long sum = 0;
+        for (int i = 0; i &lt; n; i++)
+            if ((mask &gt;&gt; i) &amp; 1) sum += a[i];       // item i is in this subset
+        if (sum == x) ways++;
+    }
+    cout &lt;&lt; ways &lt;&lt; "\n";
+}
+</code></pre>
+    <p class="note">The same job can be done with <a href="#recursion">recursion</a> ("take it or skip it"). The mask loop is shorter to write.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: every operator is O(1). All subsets: O(2^n · n). Fine for n ≤ 20 (about 20 million steps), too slow for n = 30.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li><span class="term" data-t="precedence">Operator precedence</span>: <code>x &amp; 1 == 0</code> means <code>x &amp; (1 == 0)</code>. Always use brackets: <code>(x &amp; 1) == 0</code>.</li>
+    <li><code>1 &lt;&lt; k</code> with k ≥ 31 <span class="term" data-t="overflow">overflows</span>, because 1 is an <code>int</code>. Write <code>1LL &lt;&lt; k</code>.</li>
+    <li><code>^</code> is XOR, not power. <code>2 ^ 3</code> is 1, not 8. For 2<sup>k</sup> write <code>1 &lt;&lt; k</code>.</li>
+    <li><code>&amp;&amp;</code> and <code>&amp;</code> are different. <code>&amp;&amp;</code> is for conditions (true/false). <code>&amp;</code> works on the bits.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="1527A">And Then There Were K</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1559A">Mocha and Math</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="579A">Raising Bacteria</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="467B">Fedor and New Game</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="1420B">Rock and Lever</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1097B">Petr and a Combination Lock</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1669H">Maximal AND</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="550B">Preparing Olympiad</a><span class="r">1400</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 10 "Bit manipulation".</li>
+    <li><a href="https://usaco.guide/silver/intro-bitwise">USACO Guide: Intro to Bitwise Operators</a> — the operators with solved problems.</li>
+    <li><a href="https://cses.fi/problemset/task/1623">CSES: Apple Division</a> — a classic "try every subset" task with n ≤ 20.</li>
+  </ul>
+</section>

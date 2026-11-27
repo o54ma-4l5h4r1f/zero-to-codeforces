@@ -1,0 +1,131 @@
+<p class="idea">An array is a row of numbered boxes. A string is a row of boxes with one letter in each.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The input is "n, then n numbers". Store them in a <code>vector&lt;int&gt;</code>.</li>
+    <li>The input is a word or a line of letters. Store it in a <code>string</code>.</li>
+    <li>You must find the biggest, the smallest, the sum, or the position of something.</li>
+    <li>You must look at letters one by one: count them, change them, compare neighbours.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — a street of houses</h3>
+    <p>Think of a street with n houses. Each house has a number on the door and one thing inside. The door number is the <span class="term" data-t="index">index</span>. The thing inside is the value.</p>
+    <p>In C++ the first house has number <b>0</b>, not 1. So the last house has number <b>n − 1</b>. House number n does not exist.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — the string "code"</h3>
+    <p>Each box holds one <span class="term" data-t="character">character</span>. Inside the computer a character is a small number. The letters <code>'a'</code>…<code>'z'</code> are 26 numbers in a row. So <code>s[i] - 'a'</code> tells you which letter it is: 0 for a, 1 for b, … 25 for z.</p>
+    <table>
+      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td></tr>
+      <tr><th>s[i]</th><td>'c'</td><td>'o'</td><td>'d'</td><td>'e'</td></tr>
+      <tr><th>s[i] - 'a'</th><td class="hi">2</td><td class="hi">14</td><td class="hi">3</td><td class="hi">4</td></tr>
+    </table>
+    <p class="note"><code>s.size()</code> is 4. The last character is <code>s[3]</code>. The same trick works for digits: <code>'7' - '0'</code> is the number 7.</p>
+    <table>
+      <tr><th>I want…</th><th>write…</th></tr>
+      <tr><td>length</td><td><code>s.size()</code></td></tr>
+      <tr><td>first / last character</td><td><code>s[0]</code> / <code>s.back()</code></td></tr>
+      <tr><td>letter → number 0..25</td><td><code>c - 'a'</code> (small letters), <code>c - 'A'</code> (big letters)</td></tr>
+      <tr><td>digit character → number 0..9</td><td><code>c - '0'</code></td></tr>
+      <tr><td>number 0..25 → letter</td><td><code>char('a' + k)</code></td></tr>
+      <tr><td>make small / big</td><td><code>c = tolower(c);</code> / <code>c = toupper(c);</code></td></tr>
+      <tr><td>are two strings equal?</td><td><code>s == t</code></td></tr>
+      <tr><td>which comes first in a dictionary?</td><td><code>s &lt; t</code></td></tr>
+      <tr><td>join two strings / add one character</td><td><code>s + t</code> / <code>s += c;</code></td></tr>
+      <tr><td>a piece: start at <code>pos</code>, take <code>len</code> characters</td><td><code>s.substr(pos, len)</code></td></tr>
+      <tr><td>turn it around</td><td><code>reverse(s.begin(), s.end());</code></td></tr>
+    </table>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — one loop does almost everything</h3>
+    <p><b>Array:</b> read n numbers. Print the sum, the <span class="term" data-t="maximum">maximum</span>, and the position of the maximum (counting from 1).</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n);                 // n boxes: a[0] ... a[n-1]
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    long long sum = 0;
+    int best = a[0];                  // start with the first value, not with 0
+    int pos = 0;                      // where the maximum is
+    for (int i = 0; i &lt; n; i++) {
+        sum += a[i];
+        if (a[i] &gt; best) {
+            best = a[i];
+            pos = i;
+        }
+    }
+    cout &lt;&lt; sum &lt;&lt; " " &lt;&lt; best &lt;&lt; " " &lt;&lt; pos + 1 &lt;&lt; "\n";   // +1: people count from 1
+}
+</code></pre>
+    <p><b>String:</b> read a word. Make every letter small. Count how many different letters it has.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    string s;
+    cin &gt;&gt; s;                              // reads one word (stops at a space)
+    vector&lt;bool&gt; seen(26, false);          // seen[0] is for 'a', seen[25] is for 'z'
+    int different = 0;
+    for (int i = 0; i &lt; (int)s.size(); i++) {
+        s[i] = tolower(s[i]);              // 'H' becomes 'h'
+        int k = s[i] - 'a';                // 0..25
+        if (!seen[k]) {
+            seen[k] = true;
+            different++;
+        }
+    }
+    cout &lt;&lt; s &lt;&lt; " " &lt;&lt; different &lt;&lt; "\n"; // Hello -&gt; hello 4
+}
+</code></pre>
+  </div>
+</section>
+
+<p class="complexity">Speed: one loop over n boxes is O(n). Fine for n up to 10^6 and more.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You use <code>a[n]</code> or <code>a[i + 1]</code> at the last box. It does not exist. The program crashes or prints garbage.</li>
+    <li>The statement counts from 1, your code counts from 0. Add 1 when you print a position.</li>
+    <li><code>cout &lt;&lt; tolower(c)</code> prints a number like 104. Save it first: <code>char d = tolower(c);</code> then print <code>d</code>.</li>
+    <li><code>'5'</code> is not <code>5</code>. The character <code>'5'</code> is the number 53. Use <code>c - '0'</code>.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="71A">Way Too Long Words</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="281A">Word Capitalization</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="112A">Petya and Strings</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="266A">Stones on the Table</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="59A">Word</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="41A">Translation</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="110A">Nearly Lucky Number</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="136A">Presents</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="339A">Helpful Maths</a><span class="r">800</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/bronze/intro-ds">USACO Guide: Introduction to Data Structures</a> — arrays and vectors with examples.</li>
+    <li><a href="https://en.cppreference.com/w/cpp/string/basic_string">cppreference: string</a> — the full list of string tools. Use it like a dictionary.</li>
+    <li><a href="https://cses.fi/problemset/task/1069">CSES: Repetitions</a> — one loop over a string, comparing neighbours.</li>
+  </ul>
+</section>

@@ -1,0 +1,87 @@
+<p class="idea">Start every problem from the same small file. Then you think about the problem, not about the setup.</p>
+
+<section>
+  <h2>The template</h2>
+  <p>This <span class="term" data-t="template">template</span> is a full program. Here <code>solve()</code> reads an array and prints YES if its sum is even. For a new problem you change only <code>solve()</code>.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+void solve() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n);
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    long long sum = 0;
+    for (int x : a) sum += x;
+
+    if (sum % 2 == 0) cout &lt;&lt; "YES\n";
+    else              cout &lt;&lt; "NO\n";
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin &gt;&gt; t;
+    while (t--) solve();
+}
+</code></pre>
+  <p class="note">Input <code>2 / 3 / 1 2 3 / 2 / 1 2</code> (two test cases) gives <code>YES</code> then <code>NO</code>.</p>
+</section>
+
+<section>
+  <h2>Line by line</h2>
+  <table>
+    <tr><th>Line</th><th>What it does</th></tr>
+    <tr><td><code>#include &lt;bits/stdc++.h&gt;</code></td><td>Brings in all of standard C++ with one line.</td></tr>
+    <tr><td><code>using namespace std;</code></td><td>You write <code>cin</code>, not <code>std::cin</code>.</td></tr>
+    <tr><td><code>void solve()</code></td><td>Solves <b>one</b> test case. Its variables are new each time.</td></tr>
+    <tr><td><code>vector&lt;int&gt; a(n);</code></td><td>An <span class="term" data-t="array">array</span> of n numbers, positions 0 … n−1.</td></tr>
+    <tr><td><code>ios::sync_with_stdio(false);</code><br><code>cin.tie(nullptr);</code></td><td>Makes <code>cin</code> and <code>cout</code> fast. Needed for big <span class="term" data-t="input">input</span>.</td></tr>
+    <tr><td><code>while (t--) solve();</code></td><td>Runs <code>solve()</code> once for each test case.</td></tr>
+    <tr><td><code>"\n"</code></td><td>A new line. Fast.</td></tr>
+  </table>
+  <p class="tip-box">The problem has no <code>t</code>? Delete <code>cin &gt;&gt; t;</code> and write <code>int t = 1;</code>.</p>
+</section>
+
+<section>
+  <h2>Small pieces you use every day</h2>
+  <p>Read an array, the short way:</p>
+<pre data-part="main"><code class="cpp">
+int n;
+cin &gt;&gt; n;
+vector&lt;long long&gt; a(n);
+for (auto &amp;x : a) cin &gt;&gt; x;      // the &amp; is needed: it writes into the array
+</code></pre>
+  <p>Print YES or NO from a <code>bool</code>:</p>
+<pre data-part="main"><code class="cpp">
+bool ok = (n % 2 == 0);
+cout &lt;&lt; (ok ? "YES" : "NO") &lt;&lt; "\n";
+</code></pre>
+  <p>Print an array on one line:</p>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++) cout &lt;&lt; a[i] &lt;&lt; " ";
+cout &lt;&lt; "\n";
+</code></pre>
+</section>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You use <code>endl</code>. It is slow when you print many lines. Use <code>"\n"</code>.</li>
+    <li>You mix <code>scanf</code>/<code>printf</code> with <code>cin</code>/<code>cout</code> after <code>sync_with_stdio(false)</code>. The order of the input and output can break. Use only <code>cin</code> and <code>cout</code>.</li>
+    <li>You make a global array and forget to clear it for the next test case. Keep variables inside <code>solve()</code>.</li>
+    <li>You write <code>for (auto x : a) cin &gt;&gt; x;</code> without <code>&amp;</code>. The array stays empty.</li>
+  </ul>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/">USACO Guide</a> — open "General" for input, output and setup help.</li>
+    <li><a href="https://en.cppreference.com/w/cpp/container">cppreference: containers</a> — the full list of what <code>vector</code> and friends can do.</li>
+  </ul>
+</section>

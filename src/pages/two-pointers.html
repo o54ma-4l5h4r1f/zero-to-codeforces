@@ -1,0 +1,114 @@
+<p class="idea">Use two indexes that only move forward. Together they make at most 2n steps, so one pass replaces a slow double loop.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>"Find the longest (or shortest) <span class="term" data-t="subarray">subarray</span> with …": sum ≤ S, at most k <span class="term" data-t="distinct">distinct</span> values, max − min ≤ d.</li>
+    <li>The array is sorted (or you can sort it) and you look for a pair, for example with sum X.</li>
+    <li>You have two sorted lists and you walk through both at the same time.</li>
+    <li>n is up to 200 000, so trying every (l, r) is too slow.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — a window on the array</h3>
+    <p>Put a window on the array. You see only the elements from <code>l</code> to <code>r</code>. This is a <span class="term" data-t="sliding-window">sliding window</span>.</p>
+    <p>Move the right side one step: a new element comes in. If the window is now "too much", move the left side until it is fine again. The two sides never go back.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — longest subarray with sum ≤ 7</h3>
+    <table>
+      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+      <tr><th>a[i]</th><td>4</td><td class="hi">2</td><td class="hi">1</td><td class="hi">3</td><td class="hi">1</td><td>1</td><td>5</td></tr>
+    </table>
+    <table>
+      <tr><th>r</th><th>a[r] comes in</th><th>sum</th><th>too big? move l</th><th>l</th><th>sum now</th><th>length r − l + 1</th></tr>
+      <tr><td>0</td><td>4</td><td>4</td><td>no</td><td>0</td><td>4</td><td>1</td></tr>
+      <tr><td>1</td><td>2</td><td>6</td><td>no</td><td>0</td><td>6</td><td>2</td></tr>
+      <tr><td>2</td><td>1</td><td>7</td><td>no</td><td>0</td><td>7</td><td>3</td></tr>
+      <tr><td>3</td><td>3</td><td>10</td><td>yes: remove 4</td><td>1</td><td>6</td><td>3</td></tr>
+      <tr><td>4</td><td>1</td><td>7</td><td>no</td><td>1</td><td>7</td><td class="hi">4</td></tr>
+      <tr><td>5</td><td>1</td><td>8</td><td>yes: remove 2</td><td>2</td><td>6</td><td>4</td></tr>
+      <tr><td>6</td><td>5</td><td>11</td><td>yes: remove 1, then 3</td><td>4</td><td>7</td><td>3</td></tr>
+    </table>
+    <p class="note">Answer: 4 (the elements 2, 1, 3, 1). Look at the columns <code>r</code> and <code>l</code>: both only grow. That is why it is fast.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — the sliding window</h3>
+    <p>Task: n books, book i needs <code>a[i]</code> minutes. You have <code>t</code> minutes. You read books that stand next to each other. How many books can you read?</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    long long t;
+    cin &gt;&gt; n &gt;&gt; t;
+    vector&lt;long long&gt; a(n);
+    for (auto &amp;x : a) cin &gt;&gt; x;
+    long long sum = 0;                     // sum of the window a[l..r]
+    int best = 0, l = 0;
+    for (int r = 0; r &lt; n; r++) {
+        sum += a[r];                       // a[r] comes into the window
+        while (sum &gt; t) {                  // too much: make the window smaller
+            sum -= a[l];
+            l++;
+        }
+        best = max(best, r - l + 1);       // the window is fine now
+    }
+    cout &lt;&lt; best &lt;&lt; "\n";
+}
+</code></pre>
+    <p><b>Second form: two ends.</b> In a <span class="term" data-t="sorted">sorted</span> array, find two elements with sum <code>x</code>. Start at both ends and walk inward.</p>
+<pre data-part="main"><code class="cpp">
+int i = 0, j = n - 1;                      // a is sorted, small -&gt; big
+while (i &lt; j) {
+    if (a[i] + a[j] == x) break;           // found the pair
+    if (a[i] + a[j] &lt; x) i++;              // sum too small: take a bigger left
+    else j--;                              // sum too big: take a smaller right
+}
+// i &lt; j here means: a[i] + a[j] == x.  i == j means: no such pair.
+</code></pre>
+    <p><b>Third form: two lists.</b> To <span class="term" data-t="merge">merge</span> two sorted lists, keep one <span class="term" data-t="pointer">pointer</span> in each list. Take the smaller of the two front elements and move that pointer.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: O(n). The inner <code>while</code> looks slow, but <code>l</code> moves at most n times in total. (Plus O(n log n) if you sort first.)</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Using it when a bigger window is not always "worse". With negative numbers the sum can go down again. The window idea then gives wrong answers.</li>
+    <li>Moving <code>l</code> back to 0 for every <code>r</code>. Then it is a double loop again, O(n<sup>2</sup>).</li>
+    <li>The two-ends form on an array that is not sorted.</li>
+    <li>You sort, but the task needs the old positions. Sort pairs (value, index), see <a href="#sorting">Sorting</a>.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="1690D">Black and White Stripe</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="1669F">Eating Candies</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="1133C">Balanced Team</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1692E">Binary Deque</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1538C">Number of Pairs</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="279B">Books</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="602B">Approximating a Constant Range</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="701C">They Are Everywhere</a><span class="r">1500</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://codeforces.com/edu/course/2">Codeforces EDU</a> — free course, open "Two Pointers Method". Video, text and many problems.</li>
+    <li><a href="https://cses.fi/problemset/task/1640">CSES: Sum of Two Values</a> — the two-ends form. Remember to keep the old positions.</li>
+    <li><a href="https://usaco.guide/silver/two-pointers">USACO Guide: Two Pointers</a> — short text with solved examples.</li>
+  </ul>
+</section>

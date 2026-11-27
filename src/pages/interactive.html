@@ -1,0 +1,96 @@
+<p class="idea">Your program talks with the judge. You print a question, the judge answers, and you use the answer to choose the next question.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The statement says "This is an <span class="term" data-t="interactive">interactive</span> problem".</li>
+    <li>Something is hidden: a number, an array, a position. You do not get it in the input.</li>
+    <li>You may ask questions in a fixed format, like <code>? x</code>, and print the answer like <code>! x</code>.</li>
+    <li>There is a limit: "at most 7 questions", "at most 20 <span class="term" data-t="query">queries</span>".</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the guessing game with a real person</h3>
+    <p>Remember the guessing game from <a href="#binary-search">Binary search</a>. Now your friend really sits in front of you. You say a number. You <b>wait</b>. Your friend answers. Only then you say the next number.</p>
+    <p>One danger: you write your question on paper but keep the paper in your pocket. Your friend waits for you, you wait for your friend, for ever. In C++ the "pocket" is the output buffer. To <span class="term" data-t="flush">flush</span> = to give the paper to your friend now.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — one dialogue</h3>
+    <p>The judge hides a number from 1 to 100 (here: 37). You print <code>? q</code>. The judge answers <code>1</code> if the hidden number is ≥ q, and <code>0</code> if it is smaller. You have 7 questions.</p>
+    <table>
+      <tr><th>#</th><th>you print</th><th>judge answers</th><th>what you know now</th></tr>
+      <tr><td>1</td><td><code>? 51</code></td><td>0</td><td>1 … 50</td></tr>
+      <tr><td>2</td><td><code>? 26</code></td><td>1</td><td>26 … 50</td></tr>
+      <tr><td>3</td><td><code>? 38</code></td><td>0</td><td>26 … 37</td></tr>
+      <tr><td>4</td><td><code>? 32</code></td><td>1</td><td>32 … 37</td></tr>
+      <tr><td>5</td><td><code>? 35</code></td><td>1</td><td>35 … 37</td></tr>
+      <tr><td>6</td><td><code>? 36</code></td><td>1</td><td>36 … 37</td></tr>
+      <tr><td>7</td><td><code>? 37</code></td><td>1</td><td>37 … 37</td></tr>
+      <tr><td>end</td><td class="hi"><code>! 37</code></td><td>–</td><td>finished; the last line is not a question</td></tr>
+    </table>
+    <p class="note">Each question cuts the range in half. 100 → 50 → 25 → 13 → 7 → 4 → 2 → 1: 7 questions are enough. In general you need about log<sub>2</sub>(range) questions. Count this <b>before</b> you code and compare with the limit.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — binary search that asks the judge</h3>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int lo = 1;                             // hidden &gt;= 1 is true for sure
+    int hi = 101;                           // hidden &gt;= 101 is false for sure
+    while (hi - lo &gt; 1) {
+        int mid = lo + (hi - lo) / 2;
+        cout &lt;&lt; "? " &lt;&lt; mid &lt;&lt; endl;        // endl = new line + flush
+        int reply;
+        cin &gt;&gt; reply;                       // wait for the judge
+        if (reply == -1) return 0;          // we broke a rule: stop at once
+        if (reply == 1) lo = mid;           // hidden &gt;= mid
+        else            hi = mid;           // hidden &lt; mid
+    }
+    cout &lt;&lt; "! " &lt;&lt; lo &lt;&lt; endl;             // the final answer, also with flush
+    return 0;
+}
+</code></pre>
+    <p>Test it yourself: run the program, think of a number, and type the replies by hand. You are the judge.</p>
+    <p class="tip-box"><b>Four rules.</b> 1) Flush after every line you print: use <code>endl</code>. This is the one place where <code>endl</code> is better than <code>"\n"</code>. 2) Read the reply before you print the next question. 3) Count your questions. One too many = Wrong answer. 4) If the judge replies <code>-1</code> (or what the statement says), exit at once.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: time is almost never the problem. The real limit is the number of questions.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>No flush. The verdict is "Idleness limit exceeded": the judge waited for a question that never came.</li>
+    <li>Wrong format: <code>?51</code> without the space, or a missing <code>!</code> before the answer. Copy the format from the statement.</li>
+    <li>Many test cases: after <code>! x</code> some problems send one more reply to read. Check the statement.</li>
+    <li>Thinking the samples are a normal input file. They show a dialogue. Your program must work for any hidden value.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="1807E">Interview</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="679A">Bear and Prime 100</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="1167B">Lost Numbers</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="1999G1">Ruler (easy version)</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="1520F1">Guess the K-th Zero (Easy version)</a><span class="r">1600</span></li>
+    <li><a class="cf" data-p="1486C1">Guessing the Greatest (easy version)</a><span class="r">1600</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://codeforces.com/blog/entry/45307">Codeforces: guide for interactive problems</a> — the official short guide, with flush commands for every language.</li>
+    <li><a href="#binary-search">Binary search</a> — most interactive problems at this level are a binary search.</li>
+  </ul>
+</section>

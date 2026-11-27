@@ -1,0 +1,141 @@
+<p class="idea">A tree is a connected graph with no cycle. One DFS from the root answers most tree questions.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>"n vertices and <b>n − 1 edges</b>", and the graph is <span class="term" data-t="connected">connected</span>.</li>
+    <li>"There is <b>exactly one path</b> between every two vertices."</li>
+    <li>"The <span class="term" data-t="parent">parent</span> of vertex i is p<sub>i</sub>", or a boss and workers, or folders inside folders.</li>
+    <li>Words like <span class="term" data-t="root">root</span>, <span class="term" data-t="leaf">leaf</span>, <span class="term" data-t="subtree">subtree</span>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — a company</h3>
+    <p>A company has one director. This is the <b>root</b>. Every other person has exactly one boss: the <b>parent</b>. The people directly under you are your <span class="term" data-t="child">children</span>. A person with no workers is a <b>leaf</b>.</p>
+    <p>Your <span class="term" data-t="depth">depth</span> is the number of bosses above you. Your <b>subtree</b> is you and everybody under you. A <span class="term" data-t="tree">tree</span> has no <span class="term" data-t="cycle">cycle</span>: nobody is the boss of their own boss.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — depth and subtree size</h3>
+    <svg viewBox="0 0 520 290" width="520" role="img" aria-label="Rooted tree with 7 vertices. Root 1 has children 2 and 3. Vertex 2 has children 4 and 5. Vertex 3 has child 6. Vertex 6 has child 7. Each vertex shows its depth d and its subtree size s.">
+      <g stroke="var(--line)" stroke-width="2">
+        <line x1="250" y1="34" x2="140" y2="104"/><line x1="250" y1="34" x2="360" y2="104"/>
+        <line x1="140" y1="104" x2="80" y2="174"/><line x1="140" y1="104" x2="200" y2="174"/>
+        <line x1="360" y1="104" x2="360" y2="174"/><line x1="360" y1="174" x2="360" y2="244"/>
+      </g>
+      <g fill="var(--surface)" stroke="currentColor" stroke-width="1.5">
+        <circle cx="250" cy="34" r="16" stroke="var(--accent)" stroke-width="3"/>
+        <circle cx="140" cy="104" r="16"/><circle cx="360" cy="104" r="16"/>
+        <circle cx="80" cy="174" r="16"/><circle cx="200" cy="174" r="16"/><circle cx="360" cy="174" r="16"/>
+        <circle cx="360" cy="244" r="16"/>
+      </g>
+      <g fill="currentColor" font-size="14" font-weight="bold" text-anchor="middle">
+        <text x="250" y="39">1</text><text x="140" y="109">2</text><text x="360" y="109">3</text>
+        <text x="80" y="179">4</text><text x="200" y="179">5</text><text x="360" y="179">6</text><text x="360" y="249">7</text>
+      </g>
+      <g fill="var(--muted)" font-size="12">
+        <text x="274" y="38">root · d=0 s=7</text>
+        <text x="118" y="108" text-anchor="end">d=1 s=3</text><text x="384" y="108">d=1 s=3</text>
+        <text x="80" y="210" text-anchor="middle">leaf · d=2 s=1</text><text x="200" y="210" text-anchor="middle">leaf · d=2 s=1</text>
+        <text x="384" y="178">d=2 s=2</text><text x="384" y="248">leaf · d=3 s=1</text>
+      </g>
+    </svg>
+    <p><b>d</b> = depth, <b>s</b> = size of the subtree. Two directions of information:</p>
+    <table>
+      <tr><th>Value</th><th>Direction</th><th>Rule</th><th>Example</th></tr>
+      <tr><td>depth</td><td>goes <b>down</b>: parent → child</td><td>depth[child] = depth[parent] + 1</td><td>depth[7] = depth[6] + 1 = 3</td></tr>
+      <tr><td>size</td><td>comes <b>up</b>: children → parent</td><td>size[v] = 1 + sizes of all children</td><td>size[2] = 1 + 1 + 1 = 3</td></tr>
+    </table>
+    <p class="note">Set "down" values <b>before</b> the call to the child. Collect "up" values <b>after</b> the call returns.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — one DFS</h3>
+    <p>The input is n, then n − 1 edges. The root is vertex 1. A tree has no cycle, so you need no visited array: just do not walk back to the parent.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+vector&lt;vector&lt;int&gt;&gt; g;
+vector&lt;int&gt; depth, sz;
+
+void dfs(int v, int parent) {
+    sz[v] = 1;                           // v itself
+    for (int to : g[v]) {
+        if (to == parent) continue;      // do not go back up
+        depth[to] = depth[v] + 1;        // going down: before the call
+        dfs(to, v);
+        sz[v] += sz[to];                 // coming up: after the call
+    }
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    g.assign(n + 1, vector&lt;int&gt;());
+    depth.assign(n + 1, 0);
+    sz.assign(n + 1, 0);
+    for (int i = 0; i &lt; n - 1; i++) {    // a tree has n - 1 edges
+        int a, b;
+        cin &gt;&gt; a &gt;&gt; b;
+        g[a].push_back(b);
+        g[b].push_back(a);
+    }
+    dfs(1, 0);                           // the root has no parent: use 0
+    for (int v = 1; v &lt;= n; v++)
+        cout &lt;&lt; v &lt;&lt; ": depth " &lt;&lt; depth[v] &lt;&lt; ", size " &lt;&lt; sz[v] &lt;&lt; "\n";
+}
+</code></pre>
+    <p>The other input form gives the parent of each vertex 2..n. Then you add edges from parent to child only, and the <code>if (to == parent)</code> line is not needed:</p>
+<pre data-part="main"><code class="cpp">
+for (int v = 2; v &lt;= n; v++) {
+    int p;
+    cin &gt;&gt; p;                 // p is the parent of v
+    g[p].push_back(v);        // g[p] = children of p
+}
+</code></pre>
+    <p class="note">A vertex v is a leaf when it has no children: <code>sz[v] == 1</code>.</p>
+  </div>
+</section>
+
+<p class="tip-box"><b>Diameter</b> = the longest path in the tree. Run <a href="#graphs-bfs-dfs">BFS</a> from any vertex and take the farthest vertex <code>a</code>. Run BFS again from <code>a</code> and take the farthest vertex <code>b</code>. The <span class="term" data-t="diameter">diameter</span> is the path from a to b, and its length is <code>dist[b]</code>.</p>
+
+<p class="complexity">Speed: O(n). The DFS enters every vertex once.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You read n edges. A tree has <b>n − 1</b> edges.</li>
+    <li>You forget <code>if (to == parent) continue;</code> → the DFS jumps between two vertices forever.</li>
+    <li>You think the root is always 1, or that the edge "a b" means a is the parent. Read the statement.</li>
+    <li>You use <code>sz[v]</code> before the calls to the children are finished. "Up" values are ready only after the loop.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="115A">Party</a><span class="r">900</span></li>
+    <li><a href="https://cses.fi/problemset/task/1674">CSES: Subordinates</a><span class="r">CSES</span> — subtree sizes from a parent array. The code above, almost unchanged.</li>
+    <li><a class="cf" data-p="913B">Christmas Spruce</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1843D">Apple Tree</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1676G">White-Black Balanced Subtrees</a><span class="r">1300</span></li>
+    <li><a href="https://cses.fi/problemset/task/1131">CSES: Tree Diameter</a><span class="r">CSES</span> — the two-BFS trick.</li>
+    <li><a class="cf" data-p="1143C">Queen</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="580C">Kefa and Park</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="1336A">Linova and Kingdom</a><span class="r">1600</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/silver/intro-tree">USACO Guide: Introduction to Tree Algorithms</a> — subtree sizes, depth and diameter with pictures.</li>
+    <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — the "Tree Algorithms" section. The first four problems fit this page.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 14 "Tree algorithms".</li>
+  </ul>
+</section>

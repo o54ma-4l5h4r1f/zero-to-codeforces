@@ -1,0 +1,137 @@
+<p class="idea">Cut the search area in half again and again. You find the answer in about 30 steps, even inside a billion numbers.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The array is <span class="term" data-t="sorted">sorted</span> and you must find a value or a position.</li>
+    <li>The statement asks for the <b>minimum</b> or <b>maximum</b> value that still works.</li>
+    <li>If a value <code>x</code> works, then every bigger value also works (or every smaller one). This is called <span class="term" data-t="monotonic">monotonic</span>.</li>
+    <li>The answer can be up to 10<sup>9</sup> or 10<sup>18</sup>, so you cannot try every value.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the guessing game</h3>
+    <p>I think of a number from 1 to 100. After each guess I say "too small" or "too big".</p>
+    <p>A bad player says 1, 2, 3, 4… A good player says <b>50</b>. "Too big." Now only 1–49 is left. Then <b>25</b>. Each guess throws away half of the numbers. 100 → 50 → 25 → 12 → 6 → 3 → 1. Only 7 guesses.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — find the first number ≥ 7</h3>
+    <p>Ask one yes/no question for every position: "is <code>a[i] ≥ 7</code>?" In a sorted array the answers look like <b>no no no yes yes yes</b>. We look for the <b>first yes</b>.</p>
+    <table>
+      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+      <tr><th>a[i]</th><td>1</td><td>3</td><td>4</td><td>7</td><td>8</td><td>9</td><td>12</td></tr>
+      <tr><th>a[i] ≥ 7 ?</th><td>no</td><td>no</td><td>no</td><td class="hi">yes</td><td>yes</td><td>yes</td><td>yes</td></tr>
+    </table>
+    <table>
+      <tr><th>step</th><th>lo (a "no")</th><th>hi (a "yes")</th><th>mid</th><th>a[mid] ≥ 7 ?</th><th>what we do</th></tr>
+      <tr><td>1</td><td>-1</td><td>7</td><td>3</td><td>yes</td><td>hi = 3</td></tr>
+      <tr><td>2</td><td>-1</td><td>3</td><td>1</td><td>no</td><td>lo = 1</td></tr>
+      <tr><td>3</td><td>1</td><td>3</td><td>2</td><td>no</td><td>lo = 2</td></tr>
+      <tr><td>end</td><td>2</td><td class="hi">3</td><td colspan="3">lo and hi are neighbours → answer is hi = 3</td></tr>
+    </table>
+    <p class="note"><code>lo</code> always stands on a "no". <code>hi</code> always stands on a "yes". They walk toward each other until they touch.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — one template for everything</h3>
+    <p>Write a function <code>ok(x)</code> that answers the yes/no question. The loop never changes.</p>
+<pre data-part="global"><code class="cpp">
+bool ok(long long x);          // you write this: no no no YES YES YES
+
+long long firstYes(long long lo, long long hi) {
+    // lo = a value where ok is false (or one step before the range)
+    // hi = a value where ok is true  (or one step after the range)
+    while (hi - lo &gt; 1) {
+        long long mid = lo + (hi - lo) / 2;   // the middle, safe from overflow
+        if (ok(mid)) hi = mid;                // mid is a yes -&gt; answer is mid or left of it
+        else         lo = mid;                // mid is a no  -&gt; answer is right of it
+    }
+    return hi;                                // the first yes
+}
+</code></pre>
+    <p>For a sorted <code>vector</code>, C++ already has it:</p>
+<pre data-part="main"><code class="cpp">
+int i = lower_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i] &gt;= x
+int j = upper_bound(a.begin(), a.end(), x) - a.begin();  // first index with a[i] &gt;  x
+// j - i = how many times x is in the array
+</code></pre>
+  </div>
+</section>
+
+<section>
+  <h2>Binary search on the answer</h2>
+  <p>This is the trick that solves many 1200–1600 problems. You do not search in an array. You search in the <b>answers</b>.</p>
+  <div class="way">
+    <h3><b>Example</b> — n machines, machine i makes one item every t[i] seconds. What is the smallest time to make k items?</h3>
+    <p>Hard question: "what is the best time?" Easy question: "is time <code>T</code> enough?" Just count: in time T machine i makes <code>T / t[i]</code> items.</p>
+    <p>If T is enough, then T+1 is also enough → <b>no no no yes yes yes</b> → find the first yes.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int n; long long k;
+vector&lt;long long&gt; t;
+
+bool ok(long long T) {                 // can we make k items in T seconds?
+    long long made = 0;
+    for (int i = 0; i &lt; n; i++) {
+        made += T / t[i];
+        if (made &gt;= k) return true;    // stop early, so "made" never overflows
+    }
+    return false;
+}
+
+int main() {
+    cin &gt;&gt; n &gt;&gt; k;
+    t.resize(n);
+    for (auto &amp;x : t) cin &gt;&gt; x;
+    long long lo = 0;                                     // 0 seconds: not enough
+    long long hi = *min_element(t.begin(), t.end()) * k;  // fastest machine alone: enough
+    while (hi - lo &gt; 1) {
+        long long mid = lo + (hi - lo) / 2;
+        if (ok(mid)) hi = mid; else lo = mid;
+    }
+    cout &lt;&lt; hi &lt;&lt; "\n";
+}
+</code></pre>
+  </div>
+  <p class="tip-box">Looking for the <b>last yes</b> (pattern yes yes yes no no no)? Keep <code>lo</code> on a yes and <code>hi</code> on a no, swap the two lines inside the <code>if</code>, and return <code>lo</code>.</p>
+</section>
+
+<p class="complexity">Speed: O(log n) steps. For answers up to 10^18 that is about 60 steps. Total = 60 × (cost of ok).</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>The array is not sorted. Binary search on an unsorted array gives a wrong answer.</li>
+    <li><code>ok</code> is not monotonic. Check it: can a "yes" come before a "no"? Then this tool does not fit.</li>
+    <li><code>(lo + hi) / 2</code> can <span class="term" data-t="overflow">overflow</span>. Write <code>lo + (hi - lo) / 2</code> and use <code>long long</code>.</li>
+    <li>Wrong start: <code>lo</code> must really be a "no" and <code>hi</code> must really be a "yes". If you are not sure, make <code>hi</code> bigger.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="706B">Interesting drink</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="474B">Worms</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1352C">K-th Not Divisible by n</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1201C">Maximum Median</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="1324D">Pair of Topics</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="702C">Cellular Network</a><span class="r">1500</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://codeforces.com/edu/course/2">Codeforces EDU</a> — free course, open "Binary Search". Video, text and many problems.</li>
+    <li><a href="https://usaco.guide/silver/binary-search">USACO Guide: Binary Search</a> — clear text with pictures.</li>
+    <li><a href="https://cses.fi/problemset/task/1620">CSES: Factory Machines</a> — the machines example above. Submit your code there.</li>
+  </ul>
+</section>

@@ -1,0 +1,142 @@
+<p class="idea">Some tasks must come before others. Topological sort puts all tasks in one line so that every rule is respected.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>Rules like "a must be done before b": courses with a <span class="term" data-t="prerequisite">prerequisite</span>, tasks that depend on other tasks.</li>
+    <li>You must print a correct order, or say that no order exists.</li>
+    <li>The graph is <span class="term" data-t="directed">directed</span> (edges are arrows) and you must check if it has a <span class="term" data-t="cycle">cycle</span>.</li>
+    <li>You want a DP on a directed graph: longest path, number of paths. First you need a good order.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — getting dressed</h3>
+    <p>Socks before shoes. Trousers before shoes and before the belt. Shirt before the belt and before the jacket. Belt before the jacket.</p>
+    <p>What can you put on <b>first</b>? Only a thing with no rule in front of it: socks, trousers or shirt. Put one on. Now cross out its rules. Maybe a new thing is free now. Repeat until you are dressed.</p>
+    <p>If the rules say "a before b" and also "b before a", nothing is ever free. Then no order exists.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — count the arrows that come in</h3>
+    <p>Draw each rule "a before b" as an arrow a → b.</p>
+    <svg viewBox="0 0 500 250" width="500" role="img" aria-label="Directed graph with 6 vertices: 1 to 3, 2 to 3, 2 to 5, 4 to 5, 5 to 6, 4 to 6">
+      <defs>
+        <marker id="ts-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+        </marker>
+      </defs>
+      <g fill="none" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ts-arrow)">
+        <line x1="90" y1="43" x2="246" y2="66"/>
+        <line x1="89" y1="115" x2="247" y2="76"/>
+        <line x1="89" y1="125" x2="247" y2="164"/>
+        <line x1="90" y1="202" x2="246" y2="174"/>
+        <line x1="290" y1="170" x2="426" y2="170"/>
+        <path d="M89,210 Q280,262 429,181"/>
+      </g>
+      <g fill="var(--surface)" stroke="var(--accent)" stroke-width="2">
+        <circle cx="70" cy="40" r="18"/><circle cx="70" cy="120" r="18"/><circle cx="70" cy="205" r="18"/>
+        <circle cx="270" cy="70" r="18"/><circle cx="270" cy="170" r="18"/><circle cx="450" cy="170" r="18"/>
+      </g>
+      <g fill="currentColor" font-size="15" font-weight="bold" text-anchor="middle">
+        <text x="70" y="45">1</text><text x="70" y="125">2</text><text x="70" y="210">4</text>
+        <text x="270" y="75">3</text><text x="270" y="175">5</text><text x="450" y="175">6</text>
+      </g>
+      <g fill="var(--muted)" font-size="13" text-anchor="middle">
+        <text x="70" y="76">socks</text><text x="70" y="156">trousers</text><text x="70" y="241">shirt</text>
+        <text x="270" y="42">shoes</text><text x="270" y="142">belt</text><text x="450" y="142">jacket</text>
+      </g>
+    </svg>
+    <p>The <span class="term" data-t="in-degree">in-degree</span> of a vertex = how many arrows point to it = how many things must come before it. A vertex with in-degree 0 is free. Free vertices wait in a <span class="term" data-t="queue">queue</span>.</p>
+    <table>
+      <tr><th>step</th><th>take</th><th>arrows removed</th><th>in-degree of 1 2 3 4 5 6</th><th>queue after</th></tr>
+      <tr><td>start</td><td>–</td><td>–</td><td>0 0 2 0 2 2</td><td>1, 2, 4</td></tr>
+      <tr><td>1</td><td class="hi">1</td><td>1→3</td><td>– 0 1 0 2 2</td><td>2, 4</td></tr>
+      <tr><td>2</td><td class="hi">2</td><td>2→3, 2→5</td><td>– – 0 0 1 2</td><td>4, 3</td></tr>
+      <tr><td>3</td><td class="hi">4</td><td>4→5, 4→6</td><td>– – 0 – 0 1</td><td>3, 5</td></tr>
+      <tr><td>4</td><td class="hi">3</td><td>none</td><td>– – – – 0 1</td><td>5</td></tr>
+      <tr><td>5</td><td class="hi">5</td><td>5→6</td><td>– – – – – 0</td><td>6</td></tr>
+      <tr><td>6</td><td class="hi">6</td><td>none</td><td>– – – – – –</td><td>empty</td></tr>
+    </table>
+    <p class="note">The <span class="term" data-t="topological-order">topological order</span> is 1 2 4 3 5 6: socks, trousers, shirt, shoes, belt, jacket. Every arrow goes from left to right. Other correct orders exist too, for example 4 2 5 6 1 3.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — Kahn's algorithm</h3>
+    <p>Input: n tasks, m rules. Each rule is "a b" = a must come before b.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+    vector&lt;vector&lt;int&gt;&gt; adj(n + 1);         // adj[a] = all b with an arrow a -&gt; b
+    vector&lt;int&gt; indeg(n + 1, 0);            // indeg[b] = arrows that point to b
+    for (int i = 0; i &lt; m; i++) {
+        int a, b;
+        cin &gt;&gt; a &gt;&gt; b;
+        adj[a].push_back(b);
+        indeg[b]++;
+    }
+    queue&lt;int&gt; q;
+    for (int v = 1; v &lt;= n; v++)
+        if (indeg[v] == 0) q.push(v);       // free at the start
+    vector&lt;int&gt; order;
+    while (!q.empty()) {
+        int v = q.front(); q.pop();
+        order.push_back(v);                 // do task v now
+        for (int to : adj[v]) {             // remove the arrows that leave v
+            indeg[to]--;
+            if (indeg[to] == 0) q.push(to); // "to" is free now
+        }
+    }
+    if ((int)order.size() &lt; n) {            // some tasks never became free
+        cout &lt;&lt; "IMPOSSIBLE\n";             // -&gt; there is a cycle
+    } else {
+        for (int v : order) cout &lt;&lt; v &lt;&lt; " ";
+        cout &lt;&lt; "\n";
+    }
+}
+</code></pre>
+    <p class="tip-box">DP on the order: go through <code>order</code> from left to right. When you reach v, all vertices before v are finished. So <code>best[to] = max(best[to], best[v] + 1)</code> gives the longest path. Need the smallest order in the dictionary? Use a <code>priority_queue</code> with <code>greater&lt;int&gt;</code> in place of the queue.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: O(n + m). Every vertex enters the queue once, every arrow is removed once.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>The arrow in the wrong direction. "b needs a" means a → b. Read the statement twice.</li>
+    <li>No cycle check. Always compare <code>order.size()</code> with n before you print.</li>
+    <li>Using it on a graph without directions. Topological sort is only for directed graphs.</li>
+    <li>Thinking the order is unique. Often many orders are correct. If your output differs from the sample, it can still be right.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a href="https://cses.fi/problemset/task/1679">CSES: Course Schedule</a><span class="r">CSES</span> — start here. It is exactly the program above.</li>
+    <li><a class="cf" data-p="1851E">Nastya and Potions</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="510C">Fox And Names</a><span class="r">1600</span></li>
+    <li><a class="cf" data-p="1593E">Gardener and Tree</a><span class="r">1600</span></li>
+    <li><a class="cf" data-p="919D">Substring</a><span class="r">1700</span></li>
+    <li><a class="cf" data-p="1572A">Book</a><span class="r">1800</span></li>
+    <li><a href="https://cses.fi/problemset/">CSES: Longest Flight Route</a><span class="r">CSES</span> — find it in the "Graph Algorithms" list. DP on the order.</li>
+  </ol>
+  <p class="note">Gardener and Tree has no arrows. But it uses the same idea: a queue of vertices whose degree became small.</p>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/">USACO Guide</a> — Gold section, "Topological Sort". Shows the DFS way too.</li>
+    <li><a href="https://cp-algorithms.com/">cp-algorithms</a> — open Graphs → "Topological Sorting". Short text and code.</li>
+    <li><a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> — read it first if <code>adj</code> and the queue are new for you.</li>
+  </ul>
+</section>

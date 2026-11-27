@@ -1,0 +1,132 @@
+<p class="idea">An <code>int</code> holds only about 2·10<sup>9</sup>. If a value, a sum or a product can be bigger, use <code>long long</code>.</p>
+
+<section class="spot">
+  <h2>Ask this on every problem</h2>
+  <ul>
+    <li>What is the <b>biggest number</b> my program can make? Not only the input: also every sum and every <span class="term" data-t="product">product</span>.</li>
+    <li>Bigger than 2·10<sup>9</sup>? Then that variable must be <code>long long</code>.</li>
+    <li>If it does not fit, you get <span class="term" data-t="overflow">overflow</span>: no error, no warning, only a wrong number.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The types and their limits</h2>
+  <p>Each <span class="term" data-t="data-type">type</span> has a biggest value. Remember the "about" column.</p>
+  <table>
+    <tr><th>Type</th><th>Biggest value</th><th>About</th><th>Use it for</th></tr>
+    <tr><td><code>int</code></td><td>2 147 483 647 (2<sup>31</sup> − 1)</td><td class="hi">2·10<sup>9</sup></td><td>n, indexes, small values</td></tr>
+    <tr><td><code>long long</code></td><td>9 223 372 036 854 775 807 (2<sup>63</sup> − 1)</td><td class="hi">9·10<sup>18</sup></td><td>sums, products, big answers</td></tr>
+    <tr><td><code>double</code></td><td>very big, but not exact</td><td>15–16 correct digits</td><td>only answers with a decimal point</td></tr>
+  </table>
+  <p class="note">Negative numbers have the same limits with a minus sign.</p>
+</section>
+
+<section>
+  <h2>The classic traps</h2>
+  <table>
+    <tr><th>You compute</th><th>Limits</th><th>Biggest result</th><th>Fits in int?</th></tr>
+    <tr><td>a × b</td><td>a, b ≤ 10<sup>5</sup></td><td>10<sup>10</sup></td><td class="hi">no</td></tr>
+    <tr><td>a × b</td><td>a, b ≤ 10<sup>9</sup></td><td>10<sup>18</sup></td><td class="hi">no</td></tr>
+    <tr><td>sum of n numbers</td><td>n ≤ 2·10<sup>5</sup>, each ≤ 10<sup>9</sup></td><td>2·10<sup>14</sup></td><td class="hi">no</td></tr>
+    <tr><td>n × (n + 1) / 2</td><td>n ≤ 10<sup>5</sup></td><td>about 5·10<sup>9</sup></td><td class="hi">no</td></tr>
+    <tr><td>a + b</td><td>a, b ≤ 10<sup>9</sup></td><td>2·10<sup>9</sup></td><td>yes, but only just</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the car counter</h3>
+    <p>An old car shows its kilometres with 6 digits. After 999 999 it shows 000 000 again. The car did not break. The counter just has no more room.</p>
+    <p>An <code>int</code> is the same. After 2 147 483 647 it jumps to a wrong number, often a negative one.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — where the product is made</h3>
+    <p>C++ computes the right side first, <b>then</b> stores it. The type of the right side comes from the numbers in it, not from the variable on the left.</p>
+    <table>
+      <tr><th>Line</th><th>Right side is computed as</th><th>Result for a = b = 100000</th></tr>
+      <tr><td><code>long long c = a * b;</code></td><td>int × int → int</td><td class="hi">1410065408 (wrong)</td></tr>
+      <tr><td><code>long long c = 1LL * a * b;</code></td><td>long long × int → long long</td><td>10000000000 (right)</td></tr>
+    </table>
+    <p class="note"><code>1LL</code> is the number 1 as a <code>long long</code>. Put it <b>first</b>, so everything after it is computed in <code>long long</code>.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — see it yourself</h3>
+    <p>Run this with the input <code>100000 100000</code>.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int a, b;
+    cin &gt;&gt; a &gt;&gt; b;
+
+    long long wrong = a * b;          // int * int: overflows BEFORE it is stored
+    long long right = 1LL * a * b;    // long long * int: no overflow
+
+    cout &lt;&lt; "wrong: " &lt;&lt; wrong &lt;&lt; "\n";   // some garbage, often 1410065408
+    cout &lt;&lt; "right: " &lt;&lt; right &lt;&lt; "\n";   // 10000000000
+}
+</code></pre>
+    <p>The same fix for a sum: make the <b>sum</b> variable <code>long long</code>.</p>
+<pre data-part="main"><code class="cpp">
+long long sum = 0;                        // not int!
+for (int i = 0; i &lt; n; i++) sum += a[i];  // a[i] can stay int
+
+long long total = 1LL * n * (n + 1) / 2;  // 1 + 2 + ... + n
+</code></pre>
+  </div>
+</section>
+
+<p class="tip-box">Not sure? Make it <code>long long</code>. It is almost never too slow. A wrong answer from overflow costs you much more.</p>
+
+<section>
+  <h2>double is not exact</h2>
+  <p>A <span class="term" data-t="floating-point">floating-point number</span> keeps only 15–16 digits. A <code>long long</code> can have 19. So functions that work with <code>double</code> can give a slightly wrong result for big integers.</p>
+  <table>
+    <tr><th>Do not write</th><th>Why</th><th>Write</th></tr>
+    <tr><td><code>pow(a, b)</code></td><td>returns a double, may be off by 1</td><td>a loop that multiplies</td></tr>
+    <tr><td><code>ceil(a / b)</code> with integers</td><td><code>a / b</code> is already rounded down</td><td><code>(a + b - 1) / b</code></td></tr>
+    <tr><td><code>sqrt(x)</code> for big x</td><td>may be off by 1</td><td>check <code>r * r</code> and fix r by ±1</td></tr>
+    <tr><td><code>a / b == c</code> with doubles</td><td>not <span class="term" data-t="exact">exact</span></td><td><code>a == b * c</code> with integers</td></tr>
+  </table>
+  <p>To <span class="term" data-t="round-up">round up</span> a division of positive integers, stay in integers:</p>
+<pre data-part="main"><code class="cpp">
+long long n, m, a;                     // problem 1A: n, m, a up to 10^9
+cin &gt;&gt; n &gt;&gt; m &gt;&gt; a;
+long long rows = (n + a - 1) / a;      // n / a rounded up
+long long cols = (m + a - 1) / a;      // m / a rounded up
+cout &lt;&lt; rows * cols &lt;&lt; "\n";           // up to 10^18: needs long long
+</code></pre>
+</section>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li><code>long long c = a * b;</code> with <code>int a, b</code>. The left side does not help. Write <code>1LL * a * b</code>.</li>
+    <li>You read a number up to 10<sup>12</sup> into an <code>int</code>. Check the limits of the <b>input</b> too.</li>
+    <li><code>for (int i = 1; i * i &lt;= n; i++)</code> with big <code>n</code>: <code>i * i</code> overflows. Make <code>i</code> a <code>long long</code>.</li>
+    <li><code>long long</code> also has a limit. 10<sup>18</sup> × 10 does not fit. Three numbers up to 10<sup>9</sup> cannot be multiplied directly.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="617A">Elephant</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="546A">Soldier and Bananas</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="486A">Calculating Function</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1A">Theatre Square</a><span class="r">1000</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/general/data-types">USACO Guide: Data Types</a> — the same limits, with more words on double.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 1 "Working with numbers".</li>
+  </ul>
+</section>

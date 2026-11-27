@@ -1,0 +1,146 @@
+<p class="idea">Do not change code and hope. Look at the verdict, follow a checklist in order, and test your code against a slow, simple solution.</p>
+
+<section class="spot">
+  <h2>First: read the verdict</h2>
+  <p>The <span class="term" data-t="verdict">verdict</span> tells you where to look. Each one has its own <span class="term" data-t="checklist">checklist</span> below.</p>
+  <table>
+    <tr><th>Verdict</th><th>Short</th><th>It means</th></tr>
+    <tr><td>Wrong answer</td><td>WA</td><td>The program ran, but printed something wrong.</td></tr>
+    <tr><td>Time limit exceeded</td><td>TLE</td><td>The program is too slow, or it never stops.</td></tr>
+    <tr><td>Runtime error</td><td>RE</td><td>The program crashed.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Wrong answer: check in this order</h2>
+  <ol>
+    <li><b>Read the statement again</b>, slowly. Also read the output format. Most bugs are here.</li>
+    <li><b>Test <span class="term" data-t="edge-case">edge cases</span> by hand:</b> n = 1, all numbers equal, already sorted, the maximum values, an answer of 0.</li>
+    <li><b>Overflow:</b> can a sum or a product pass 2·10<sup>9</sup>? Use <code>long long</code>. See <a href="#overflow">int or long long?</a></li>
+    <li><b>Array bounds:</b> is every index from 0 to n − 1? Look at <code>a[i + 1]</code> and <code>a[i - 1]</code>.</li>
+    <li><b><span class="term" data-t="uninitialised">Uninitialised</span> variables:</b> <code>int sum;</code> holds garbage. Write <code>int sum = 0;</code></li>
+    <li><b>Many test cases:</b> do you reset every array and counter before each test case?</li>
+    <li><b>Spelling:</b> <code>YES</code> or <code>Yes</code>? A space or a new line between the numbers?</li>
+  </ol>
+  <p class="tip-box">Explain your code line by line to a friend, or to an empty chair. When you must say what each line does, you often see the bug.</p>
+</section>
+
+<section>
+  <h2>Time limit exceeded</h2>
+  <ul>
+    <li><b>Count the steps</b> from the limits. More than about 10<sup>8</sup>? You need a faster idea, not a faster keyboard. See <a href="#complexity">Limits → speed</a>.</li>
+    <li><b><code>endl</code></b> is slow when you print many lines. Print <code>"\n"</code>.</li>
+    <li><b>A vector passed by value</b> is copied on every call. Write <code>const vector&lt;int&gt; &amp;a</code>.</li>
+    <li><b>A loop that never ends:</b> does the loop variable really change? Is it <code>i++</code> in the inner loop, or <code>j++</code>?</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Runtime error</h2>
+  <ul>
+    <li><b>Index <span class="term" data-t="out-of-range">out of range</span>:</b> an array that is too small, <code>a[n]</code>, or <code>a[-1]</code>.</li>
+    <li><b>Division by zero:</b> <code>x / 0</code> and <code>x % 0</code> both crash.</li>
+    <li><b>Empty container:</b> <code>v.back()</code>, <code>s.top()</code> or <code>q.front()</code> when nothing is inside.</li>
+    <li><b>Recursion that is too deep</b>, or that never stops because the stop condition is missing.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Print what your program thinks</h2>
+  <p>Print the variables inside the loop and compare them with your hand <span class="term" data-t="trace">trace</span>. Use <code>cerr</code>, not <code>cout</code>. The judge ignores <code>cerr</code>, so a forgotten line does not give Wrong answer.</p>
+<pre data-part="main"><code class="cpp">
+for (int i = 0; i &lt; n; i++) {
+    sum += a[i];
+    cerr &lt;&lt; "i=" &lt;&lt; i &lt;&lt; " a[i]=" &lt;&lt; a[i] &lt;&lt; " sum=" &lt;&lt; sum &lt;&lt; "\n";   // debug line
+}
+</code></pre>
+  <p class="note">Still delete these lines before you submit. Printing a lot to <code>cerr</code> takes time.</p>
+</section>
+
+<section>
+  <h2>The strongest trick: stress testing</h2>
+  <p>All samples pass, but the judge says Wrong answer on test 7. You cannot see test 7. So you make your own tests. This is <span class="term" data-t="stress-test">stress testing</span>.</p>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — two students</h3>
+    <p>One student is fast but makes mistakes. The other is very slow but always right. Give both the same small questions. When their answers differ, you found a question where the fast student is wrong.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — the three parts</h3>
+    <table>
+      <tr><th>Part</th><th>What it is</th></tr>
+      <tr><td><code>fast(...)</code></td><td>Your real solution. Maybe it has a bug.</td></tr>
+      <tr><td><code>slow(...)</code></td><td>A <span class="term" data-t="brute-force">brute force</span>: simple loops that are clearly correct. Speed does not matter.</td></tr>
+      <tr><td>generator</td><td>Makes small <span class="term" data-t="random">random</span> inputs: n ≤ 6, values from −5 to 5.</td></tr>
+    </table>
+    <p class="note">Small inputs are the point. A wrong case with 4 numbers is easy to check by hand. A wrong case with 1000 numbers is useless.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — everything in one file</h3>
+    <p>Toy task: find the maximum sum of a <span class="term" data-t="subarray">subarray</span> (at least one element).</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+long long fast(const vector&lt;int&gt; &amp;a) {     // the solution you want to submit: O(n)
+    long long best = a[0], cur = 0;
+    for (int x : a) {
+        cur = max(cur + x, (long long)x);  // continue the old subarray, or start at x
+        best = max(best, cur);
+    }
+    return best;
+}
+
+long long slow(const vector&lt;int&gt; &amp;a) {     // try every subarray: O(n^2), clearly correct
+    int n = a.size();
+    long long best = a[0];
+    for (int i = 0; i &lt; n; i++) {
+        long long sum = 0;
+        for (int j = i; j &lt; n; j++) {
+            sum += a[j];                   // sum of a[i..j]
+            best = max(best, sum);
+        }
+    }
+    return best;
+}
+
+int main() {
+    mt19937 rng(12345);                    // random generator; same tests on every run
+    for (int test = 1; test &lt;= 1000; test++) {
+        int n = rng() % 6 + 1;             // n from 1 to 6
+        vector&lt;int&gt; a(n);
+        for (int &amp;x : a) x = (int)(rng() % 11) - 5;   // values from -5 to 5
+        long long f = fast(a), s = slow(a);
+        if (f != s) {                      // the first input where they differ
+            cout &lt;&lt; "DIFFERENT on test " &lt;&lt; test &lt;&lt; "\n" &lt;&lt; n &lt;&lt; "\n";
+            for (int x : a) cout &lt;&lt; x &lt;&lt; " ";
+            cout &lt;&lt; "\nfast = " &lt;&lt; f &lt;&lt; ", slow = " &lt;&lt; s &lt;&lt; "\n";
+            return 0;
+        }
+    }
+    cout &lt;&lt; "all 1000 tests are equal\n";
+}
+</code></pre>
+    <p>Try it: change <code>best = a[0]</code> in <code>fast</code> to <code>best = 0</code>. The program now prints a small array with only negative numbers. That is the bug: the answer cannot be an empty subarray.</p>
+  </div>
+</section>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You submit again and again with small random changes. Each wrong submit costs points in a contest.</li>
+    <li>You test only the samples. The samples are easy on purpose.</li>
+    <li>In a stress test you copy the same wrong idea into <code>slow</code>. Write <code>slow</code> in a different, simpler way.</li>
+    <li>Your random tests are big. Keep n small and the values small, so equal numbers and negative numbers appear often.</li>
+  </ul>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/general/debugging-cpp">USACO Guide: Debugging C++</a> — more ways to print and to find a crash.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book. Chapter 5 shows more brute-force code you can use as <code>slow</code>.</li>
+  </ul>
+</section>

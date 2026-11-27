@@ -1,0 +1,171 @@
+<p class="idea">A graph is points joined by lines. DFS and BFS are two ways to walk over it and visit every point once.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The statement has cities and roads, friends, or computers and cables: things and <b>links between pairs</b>.</li>
+    <li>"Can you reach B from A?" or "How many groups are there?" → DFS or BFS.</li>
+    <li>"The <b>minimum number of moves</b>" and every move costs the same → BFS.</li>
+    <li>A <span class="term" data-t="grid">grid</span> (maze) with walls where you move up, down, left, right. A grid is also a graph.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — a maze and a rumour</h3>
+    <p>A <span class="term" data-t="graph">graph</span> has <span class="term" data-t="vertex">vertices</span> (the points) and <span class="term" data-t="edge">edges</span> (the lines). Two vertices joined by an edge are <span class="term" data-t="neighbour">neighbours</span>.</p>
+    <p><b>DFS</b> is one person in a maze. You walk forward as far as you can. You mark every room you enter. At a dead end you go back one room and try another door.</p>
+    <p><b>BFS</b> is a rumour. Today you know it. Tomorrow all your friends know it. The next day their friends know it. It moves <b>level by level</b>, so it reaches each person by the shortest way.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — BFS from vertex 1</h3>
+    <svg viewBox="0 0 480 180" width="480" role="img" aria-label="Graph with 6 vertices and edges 1-2, 1-3, 2-4, 3-5, 4-5, 5-6. Distances from vertex 1 are 0, 1, 1, 2, 2, 3.">
+      <g stroke="var(--line)" stroke-width="2">
+        <line x1="60" y1="90" x2="180" y2="40"/><line x1="60" y1="90" x2="180" y2="140"/>
+        <line x1="180" y1="40" x2="300" y2="40"/><line x1="180" y1="140" x2="300" y2="140"/>
+        <line x1="300" y1="40" x2="300" y2="140"/><line x1="300" y1="140" x2="420" y2="140"/>
+      </g>
+      <g fill="var(--surface)" stroke="currentColor" stroke-width="1.5">
+        <circle cx="60" cy="90" r="16" stroke="var(--accent)" stroke-width="3"/>
+        <circle cx="180" cy="40" r="16"/><circle cx="180" cy="140" r="16"/>
+        <circle cx="300" cy="40" r="16"/><circle cx="300" cy="140" r="16"/><circle cx="420" cy="140" r="16"/>
+      </g>
+      <g fill="currentColor" font-size="14" font-weight="bold" text-anchor="middle">
+        <text x="60" y="95">1</text><text x="180" y="45">2</text><text x="180" y="145">3</text>
+        <text x="300" y="45">4</text><text x="300" y="145">5</text><text x="420" y="145">6</text>
+      </g>
+      <g fill="var(--muted)" font-size="12" text-anchor="middle">
+        <text x="60" y="126">dist 0</text><text x="180" y="16">dist 1</text><text x="180" y="174">dist 1</text>
+        <text x="300" y="16">dist 2</text><text x="300" y="174">dist 2</text><text x="420" y="174">dist 3</text>
+      </g>
+    </svg>
+    <p>BFS keeps a <span class="term" data-t="queue">queue</span>. Take the front vertex. Every neighbour with no distance yet gets <code>dist + 1</code> and goes to the back of the queue.</p>
+    <table>
+      <tr><th>take</th><th>new neighbours</th><th>queue after</th><th>dist[1..6]</th></tr>
+      <tr><td>start</td><td>—</td><td>1</td><td>0 · · · · ·</td></tr>
+      <tr><td>1</td><td>2, 3</td><td>2 3</td><td>0 1 1 · · ·</td></tr>
+      <tr><td>2</td><td>4</td><td>3 4</td><td>0 1 1 2 · ·</td></tr>
+      <tr><td>3</td><td>5</td><td>4 5</td><td>0 1 1 2 2 ·</td></tr>
+      <tr><td>4</td><td>none (2 and 5 are seen)</td><td>5</td><td>0 1 1 2 2 ·</td></tr>
+      <tr><td>5</td><td>6</td><td>6</td><td>0 1 1 2 2 3</td></tr>
+      <tr><td>6</td><td>none</td><td>empty → stop</td><td class="hi">0 1 1 2 2 3</td></tr>
+    </table>
+    <p class="note"><code>dist[v]</code> = the smallest number of edges from the start to v. DFS from 1 visits in a different order: 1 → 2 → 4 → 5 → 3, back to 5, then 6.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — read, DFS, BFS</h3>
+    <p>Store the graph as an <span class="term" data-t="adjacency-list">adjacency list</span>: <code>g[v]</code> is the list of neighbours of v. The program prints the number of <span class="term" data-t="connected-component">connected components</span> (groups), then the distances from vertex 1.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int n, m;
+vector&lt;vector&lt;int&gt;&gt; g;       // g[v] = neighbours of v
+vector&lt;bool&gt; visited;
+
+void dfs(int v) {
+    visited[v] = true;                    // mark first, then go deeper
+    for (int to : g[v])
+        if (!visited[to]) dfs(to);
+}
+
+vector&lt;int&gt; bfs(int start) {
+    vector&lt;int&gt; dist(n + 1, -1);          // -1 = not reached yet
+    queue&lt;int&gt; q;
+    dist[start] = 0;
+    q.push(start);
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        for (int to : g[v]) {
+            if (dist[to] != -1) continue; // already seen
+            dist[to] = dist[v] + 1;
+            q.push(to);
+        }
+    }
+    return dist;
+}
+
+int main() {
+    cin &gt;&gt; n &gt;&gt; m;                        // n vertices (1..n), m edges
+    g.assign(n + 1, vector&lt;int&gt;());
+    visited.assign(n + 1, false);
+    for (int i = 0; i &lt; m; i++) {
+        int a, b;
+        cin &gt;&gt; a &gt;&gt; b;
+        g[a].push_back(b);
+        g[b].push_back(a);                // the edge works in both directions
+    }
+    int components = 0;
+    for (int v = 1; v &lt;= n; v++)
+        if (!visited[v]) {                // a vertex nobody reached: a new group
+            components++;
+            dfs(v);
+        }
+    cout &lt;&lt; components &lt;&lt; "\n";
+    vector&lt;int&gt; dist = bfs(1);
+    for (int v = 1; v &lt;= n; v++) cout &lt;&lt; dist[v] &lt;&lt; " ";
+    cout &lt;&lt; "\n";
+}
+</code></pre>
+    <p class="note">This is an <span class="term" data-t="undirected">undirected</span> graph. If the statement says <span class="term" data-t="directed">directed</span> (one-way roads), write only <code>g[a].push_back(b)</code>.</p>
+  </div>
+</section>
+
+<section>
+  <h2>A grid is also a graph</h2>
+  <p>Each free cell is a vertex. Its neighbours are the 4 cells next to it. Do not build <code>g</code>. Use two small arrays for the 4 directions. Inside the BFS loop, for the cell <code>(x, y)</code> you took from the queue:</p>
+<pre data-part="main"><code class="cpp">
+int dx[4] = {1, -1, 0, 0}, dy[4] = {0, 0, 1, -1};
+for (int d = 0; d &lt; 4; d++) {
+    int nx = x + dx[d], ny = y + dy[d];
+    if (nx &lt; 0 || nx &gt;= n || ny &lt; 0 || ny &gt;= m) continue;      // outside the grid
+    if (grid[nx][ny] == '#' || dist[nx][ny] != -1) continue;  // wall, or seen
+    dist[nx][ny] = dist[x][y] + 1;
+    q.push({nx, ny});                                         // queue&lt;pair&lt;int,int&gt;&gt;
+}
+</code></pre>
+</section>
+
+<p class="complexity">Speed: O(n + m) for both DFS and BFS. Each vertex and each edge is used once. A grid: O(rows × columns).</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>No <span class="term" data-t="visited">visited</span> mark. In a graph with a <span class="term" data-t="cycle">cycle</span> you then walk in a circle forever.</li>
+    <li>You add the edge in one direction only, or the size is <code>g(n)</code> while vertices are 1..n. Use <code>n + 1</code>.</li>
+    <li>Many <span class="term" data-t="test-case">test cases</span>: you forget to clear <code>g</code> and <code>visited</code> before each one.</li>
+    <li>Very deep recursion: a DFS on a chain of 10<sup>6</sup> vertices can crash on some judges. If you see a strange runtime error, use BFS.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="500A">New Year Transportation</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="1020B">Badge</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="1829E">The Lakes</a><span class="r">1100</span></li>
+    <li><a href="https://cses.fi/problemset/task/1192">CSES: Counting Rooms</a><span class="r">CSES</span> — count the components of a grid.</li>
+    <li><a class="cf" data-p="217A">Ice Skating</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="893C">Rumor</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="520B">Two Buttons</a><span class="r">1400</span></li>
+    <li><a href="https://cses.fi/problemset/task/1193">CSES: Labyrinth</a><span class="r">CSES</span> — BFS on a grid, and you must print the path.</li>
+    <li><a class="cf" data-p="977E">Cyclic Components</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="580C">Kefa and Park</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="377A">Maze</a><span class="r">1600</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/silver/graph-traversal">USACO Guide: Graph Traversal</a> — DFS and BFS with pictures and solved problems.</li>
+    <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — the "Graph Algorithms" section. The first five problems are pure DFS and BFS.</li>
+    <li><a href="https://cp-algorithms.com/graph/breadth-first-search.html">cp-algorithms: BFS</a> — short reference, also shows how to print the path.</li>
+    <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — graph lessons by Mostafa Saad.</li>
+  </ul>
+</section>

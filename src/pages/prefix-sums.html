@@ -1,0 +1,139 @@
+<p class="idea">Add the numbers once and save every running sum. After that, the sum of any part of the array is one subtraction.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>Many <span class="term" data-t="query">queries</span>: "what is the sum from position l to position r?"</li>
+    <li>"How many good positions are there between l and r?" Put 1 on good positions, 0 on others. Now it is a sum.</li>
+    <li>The array does not change between the queries.</li>
+    <li>n and the number of queries are both up to 200 000. A loop for every query is too slow.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the bank balance</h3>
+    <p>Every day you get or spend some money. The bank writes your balance after each day. This is a <span class="term" data-t="running-sum">running sum</span>.</p>
+    <p>How much did you get from Monday to Friday? You do not add five days again. You take the balance after Friday minus the balance before Monday.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — pre[i] = sum of the first i elements</h3>
+    <p>The array <code>a</code> has indexes 0 … n−1. The array <code>pre</code> has one more box. <code>pre[0] = 0</code> because the sum of zero elements is 0.</p>
+    <table>
+      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+      <tr><th>a[i]</th><td>3</td><td class="hi">1</td><td class="hi">4</td><td class="hi">1</td><td>5</td><td>–</td></tr>
+      <tr><th>pre[i]</th><td>0</td><td class="hi">3</td><td>4</td><td>8</td><td class="hi">9</td><td>14</td></tr>
+    </table>
+    <p>Each box is the box before it plus one element: <code>pre[i + 1] = pre[i] + a[i]</code>.</p>
+    <p><b>One query:</b> the sum of <code>a[1..3]</code> = 1 + 4 + 1 = 6.</p>
+    <table>
+      <tr><th>what</th><th>value</th><th>meaning</th></tr>
+      <tr><td>pre[r + 1] = pre[4]</td><td>9</td><td>sum of a[0..3]</td></tr>
+      <tr><td>pre[l] = pre[1]</td><td>3</td><td>sum of a[0..0], the part we do not want</td></tr>
+      <tr><td>pre[4] − pre[1]</td><td class="hi">6</td><td>sum of a[1..3]</td></tr>
+    </table>
+    <p class="note">The rule: sum of <code>a[l..r]</code> = <code>pre[r + 1] − pre[l]</code>. Take everything up to r, then remove everything before l.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — build once, answer each query in one step</h3>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, q;
+    cin &gt;&gt; n &gt;&gt; q;
+    vector&lt;long long&gt; a(n), pre(n + 1, 0);       // sums get big -&gt; long long
+    for (int i = 0; i &lt; n; i++) {
+        cin &gt;&gt; a[i];
+        pre[i + 1] = pre[i] + a[i];              // sum of the first i + 1 elements
+    }
+    while (q--) {
+        int l, r;
+        cin &gt;&gt; l &gt;&gt; r;                           // the input counts from 1
+        l--; r--;                                // now they are indexes from 0
+        cout &lt;&lt; pre[r + 1] - pre[l] &lt;&lt; "\n";     // sum of a[l..r]
+    }
+}
+</code></pre>
+    <p class="tip-box">It also works for counting. "How many <code>i</code> in [l, r] have <code>s[i] == s[i + 1]</code>?" Make <code>a[i] = 1</code> when this is true, else 0. Then ask for a sum.</p>
+    <p class="note"><b>A grid (2D).</b> <code>pre[i][j]</code> = sum of the first i rows and first j columns: <code>pre[i][j] = a[i−1][j−1] + pre[i−1][j] + pre[i][j−1] − pre[i−1][j−1]</code>. Sum of rows r1..r2 and columns c1..c2 = <code>pre[r2+1][c2+1] − pre[r1][c2+1] − pre[r2+1][c1] + pre[r1][c1]</code>.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Difference array</h2>
+  <p>This is the same idea, but backwards. Now the task says: "add <code>v</code> to every element from l to r", many times. At the end you print the array.</p>
+  <div class="way">
+    <h3><b>Example</b> — 5 zeros, add 2 to [1, 3], then add 3 to [2, 4]</h3>
+    <p>Do not touch every element of the <span class="term" data-t="range">range</span>. Write only two marks in a <span class="term" data-t="difference-array">difference array</span> <code>d</code>: "the change starts here" (<code>d[l] += v</code>) and "the change stops here" (<code>d[r + 1] −= v</code>).</p>
+    <table>
+      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+      <tr><th>d after "add 2 to [1, 3]"</th><td>0</td><td class="hi">+2</td><td>0</td><td>0</td><td class="hi">−2</td><td>0</td></tr>
+      <tr><th>d after "add 3 to [2, 4]"</th><td>0</td><td>+2</td><td class="hi">+3</td><td>0</td><td>−2</td><td class="hi">−3</td></tr>
+      <tr><th>running sum of d = the array</th><td>0</td><td>2</td><td>5</td><td>5</td><td>3</td><td>–</td></tr>
+    </table>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, q;
+    cin &gt;&gt; n &gt;&gt; q;                               // the array starts with n zeros
+    vector&lt;long long&gt; d(n + 1, 0);               // one extra box for d[r + 1]
+    while (q--) {
+        int l, r;
+        long long v;
+        cin &gt;&gt; l &gt;&gt; r &gt;&gt; v;                      // indexes from 0, add v to a[l..r]
+        d[l] += v;                               // the change starts at l
+        d[r + 1] -= v;                           // the change stops after r
+    }
+    long long cur = 0;
+    for (int i = 0; i &lt; n; i++) {
+        cur += d[i];                             // running sum of d
+        cout &lt;&lt; cur &lt;&lt; " ";                      // this is a[i]
+    }
+    cout &lt;&lt; "\n";
+}
+</code></pre>
+  </div>
+</section>
+
+<p class="complexity">Speed: O(n) to build, then O(1) for each query. Difference array: O(1) for each change, O(n) once at the end.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Off by one. Choose one rule and never mix: here <code>pre</code> has n + 1 boxes and the answer is <code>pre[r + 1] − pre[l]</code>.</li>
+    <li>The sums in an <code>int</code>. 200 000 numbers of 10<sup>9</sup> give 2·10<sup>14</sup>. Use <code>long long</code>.</li>
+    <li>The input counts positions from 1 and your array counts from 0. Subtract 1 from l and r first.</li>
+    <li>The array changes between queries. Then prefix sums are not enough. (You need a stronger tool, see <a href="#what-next">After 1600</a>.)</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="1807D">Odd Queries</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="313B">Ilya and Queries</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="363B">Fence</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="368B">Sereja and Suffixes</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="433B">Kuriyama Mirai's Stones</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="295A">Greg and Array</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="816B">Karen and Coffee</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="276C">Little Girl and Maximum Sum</a><span class="r">1500</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://cses.fi/problemset/task/1646">CSES: Static Range Sum Queries</a> — exactly the first program on this page. Submit it there.</li>
+    <li><a href="https://usaco.guide/silver/prefix-sums">USACO Guide: Prefix Sums</a> — clear text, with the 2D picture.</li>
+    <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — search the channel for "prefix sum" (lessons by Mostafa Saad).</li>
+  </ul>
+</section>

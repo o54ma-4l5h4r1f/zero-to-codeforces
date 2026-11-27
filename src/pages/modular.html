@@ -1,0 +1,123 @@
+<p class="idea">When the answer is too big for any type, keep only its remainder. Take the remainder after every step, and the numbers stay small.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> 10<sup>9</sup> + 7" (or 998244353).</li>
+    <li>You count the number of ways, and it grows very fast.</li>
+    <li>You need a<sup>b</sup> with a big b, like b = 10<sup>18</sup> → fast <span class="term" data-t="power">power</span>.</li>
+    <li>"The last digit of …" is the same thing: modulo 10.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the clock</h3>
+    <p>It is 10 o'clock. What time is it after 5 hours? Not 15. The clock says 3, because (10 + 5) % 12 = 3. A clock keeps only the <span class="term" data-t="remainder">remainder</span>.</p>
+    <p>You can add hours one by one, or all together. The clock shows the same time. So you may take the remainder at any moment, and the final remainder does not change.</p>
+    <p class="note">Why does the judge ask for it? The real answer can have thousands of digits. The remainder by 10<sup>9</sup> + 7 fits in an <code>int</code>, and it still shows that your method is right.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — the rules, then 3<sup>13</sup> in 4 steps</h3>
+    <table>
+      <tr><th>you want</th><th>write</th><th>why</th></tr>
+      <tr><td>a + b</td><td><code>(a + b) % m</code></td><td>safe when a and b are already below m</td></tr>
+      <tr><td>a · b</td><td><code>a * b % m</code> with <code>long long</code></td><td>the product is up to 10<sup>18</sup>, too big for <code>int</code></td></tr>
+      <tr><td>a − b</td><td><code>((a - b) % m + m) % m</code></td><td>in C++ the result of <code>%</code> can be negative</td></tr>
+      <tr><td>a / b</td><td class="hi">not allowed</td><td>normal division gives a wrong answer</td></tr>
+    </table>
+    <p><b>Fast power.</b> 3<sup>13</sup> needs 12 multiplications if you go one by one. But 13 = 8 + 4 + 1 (13 is 1101 in <span class="term" data-t="binary">binary</span>), so 3<sup>13</sup> = 3<sup>8</sup> · 3<sup>4</sup> · 3<sup>1</sup>. And you get 3<sup>2</sup>, 3<sup>4</sup>, 3<sup>8</sup> by squaring again and again.</p>
+    <table>
+      <tr><th>step</th><th>b</th><th>b is odd?</th><th>result</th><th>a (then a = a · a)</th></tr>
+      <tr><td>start</td><td>13</td><td></td><td>1</td><td>3 = 3<sup>1</sup></td></tr>
+      <tr><td>1</td><td>13</td><td>yes → result · a</td><td>1 · 3 = 3</td><td>9 = 3<sup>2</sup></td></tr>
+      <tr><td>2</td><td>6</td><td>no</td><td>3</td><td>81 = 3<sup>4</sup></td></tr>
+      <tr><td>3</td><td>3</td><td>yes → result · a</td><td>3 · 81 = 243</td><td>6561 = 3<sup>8</sup></td></tr>
+      <tr><td>4</td><td>1</td><td>yes → result · a</td><td class="hi">243 · 6561 = 1594323</td><td>–</td></tr>
+    </table>
+    <p class="note">After each step <code>b = b / 2</code>. When b is 0 we stop. For b = 10<sup>18</sup> that is only about 60 steps. In real code every multiplication is followed by <code>% m</code>.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — power(a, b, m)</h3>
+<pre data-part="global"><code class="cpp">
+long long power(long long a, long long b, long long m) {   // a^b % m
+    long long result = 1 % m;              // 1 % m, so it is also right for m = 1
+    a %= m;                                // make a small first
+    while (b &gt; 0) {
+        if (b % 2 == 1)                    // this power of a is needed
+            result = result * a % m;
+        a = a * a % m;                     // a, a^2, a^4, a^8, ...
+        b /= 2;
+    }
+    return result;
+}
+</code></pre>
+    <p>A complete program: for each test print a<sup>b</sup> modulo 10<sup>9</sup> + 7.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+const long long MOD = 1000000007;          // 10^9 + 7, a prime
+
+long long power(long long a, long long b, long long m) {
+    long long result = 1 % m;
+    a %= m;
+    while (b &gt; 0) {
+        if (b % 2 == 1) result = result * a % m;
+        a = a * a % m;
+        b /= 2;
+    }
+    return result;
+}
+
+int main() {
+    int t;
+    cin &gt;&gt; t;
+    while (t--) {
+        long long a, b;
+        cin &gt;&gt; a &gt;&gt; b;
+        cout &lt;&lt; power(a, b, MOD) &lt;&lt; "\n";
+    }
+}
+</code></pre>
+    <p class="tip-box">Division: you cannot write <code>(a / b) % m</code>. You multiply by the <span class="term" data-t="modular-inverse">modular inverse</span> of b. For a prime m it is <code>power(b, m - 2, m)</code>. See <a href="#combinatorics">Counting with nCr</a>.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: +, −, × with mod are O(1). Fast power is O(log b): about 60 steps for b = 10^18.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Taking the mod only at the end. The number <span class="term" data-t="overflow">overflows</span> long before. Take it after <b>every</b> + and ×.</li>
+    <li>Multiplying two <code>int</code> values: <code>a * b % m</code> overflows before the <code>%</code>. Use <code>long long</code>, or write <code>1LL * a * b % m</code>.</li>
+    <li>A negative result after subtraction. Write <code>((a - b) % m + m) % m</code>.</li>
+    <li>Comparing numbers after the mod. A bigger real number can have a smaller remainder. Never take min or max of remainders.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="1328A">Divisibility Problem</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="913A">Modular Exponentiation</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="742A">Arpa’s hard exam and Mehrdad’s naive cheat</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="1594B">Special Numbers</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="1514B">AND 0, Sum Big</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1178C">Tiles</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="1513B">AND Sequences</a><span class="r">1400</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://cses.fi/problemset/task/1095">CSES: Exponentiation</a> — exactly the program on this page. Submit it there.</li>
+    <li><a href="https://cp-algorithms.com/algebra/binary-exp.html">cp-algorithms: Binary Exponentiation</a> — fast power in more detail.</li>
+    <li><a href="https://usaco.guide/gold/modular">USACO Guide: Modular Arithmetic</a> — the rules again, and the modular inverse.</li>
+  </ul>
+</section>

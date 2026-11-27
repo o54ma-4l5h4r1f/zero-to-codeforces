@@ -1,0 +1,120 @@
+<p class="idea">A few small formulas replace a long loop. Learn them once and many 800 problems become one line.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The numbers go up to 10<sup>9</sup> or 10<sup>18</sup>. A loop is too slow, so there must be a formula.</li>
+    <li>The statement talks about <span class="term" data-t="even">even</span> and <span class="term" data-t="odd">odd</span>, or <span class="term" data-t="divisible">divisible</span> numbers, or digits.</li>
+    <li>"How many boxes / buses / steps do you need at least?" This is division that rounds up.</li>
+    <li>"Find the sum 1 + 2 + … + n" or "how many numbers from l to r are…".</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the buses</h3>
+    <p>10 people go on a trip. One bus takes 4 people. In C++, <code>10 / 4</code> is <b>2</b>: integer division throws away the rest (<span class="term" data-t="round-down">rounds down</span>). But 2 buses leave 2 people on the street.</p>
+    <p>You need to <span class="term" data-t="round-up">round up</span>: 3 buses. The trick is <code>(10 + 4 - 1) / 4</code> = 13 / 4 = <b>3</b>. In general: <code>(a + b - 1) / b</code>.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — take a number apart</h3>
+    <p><code>x % 10</code> is the last <span class="term" data-t="digit">digit</span>. <code>x / 10</code> removes the last digit. Repeat until nothing is left. Example: the sum of the digits of 4072.</p>
+    <table>
+      <tr><th>step</th><th>x</th><th>x % 10 (last digit)</th><th>sum</th><th>x / 10 (new x)</th></tr>
+      <tr><td>1</td><td>4072</td><td class="hi">2</td><td>2</td><td>407</td></tr>
+      <tr><td>2</td><td>407</td><td class="hi">7</td><td>9</td><td>40</td></tr>
+      <tr><td>3</td><td>40</td><td class="hi">0</td><td>9</td><td>4</td></tr>
+      <tr><td>4</td><td>4</td><td class="hi">4</td><td>13</td><td>0</td></tr>
+      <tr><td>end</td><td>0</td><td colspan="3">x is 0 → stop. The sum is 13. The number has 4 digits.</td></tr>
+    </table>
+    <p>The formulas to remember:</p>
+    <table>
+      <tr><th>I want…</th><th>formula</th><th>example</th></tr>
+      <tr><td>is x even?</td><td><code>x % 2 == 0</code></td><td>8 % 2 = 0 → even</td></tr>
+      <tr><td>is a divisible by b?</td><td><code>a % b == 0</code></td><td>12 % 4 = 0 → yes</td></tr>
+      <tr><td>a / b rounded down</td><td><code>a / b</code></td><td>10 / 4 = 2</td></tr>
+      <tr><td>a / b rounded up</td><td><code>(a + b - 1) / b</code></td><td>(10 + 3) / 4 = 3</td></tr>
+      <tr><td>1 + 2 + … + n</td><td>n · (n + 1) / 2</td><td>1 + … + 100 = 5050</td></tr>
+      <tr><td>1 + 3 + 5 + … (the first n odd numbers)</td><td>n · n</td><td>1 + 3 + 5 + 7 = 16</td></tr>
+      <tr><td>a sum where each step adds the same value</td><td>(first + last) · count / 2</td><td>3 + 5 + 7 + 9 = 12 · 4 / 2 = 24</td></tr>
+      <tr><td>how many <span class="term" data-t="multiple">multiples</span> of k from 1 to n</td><td><code>n / k</code></td><td>multiples of 3 up to 10: 3</td></tr>
+      <tr><td>how many multiples of k from l to r</td><td><code>r / k - (l - 1) / k</code></td><td>multiples of 3 in 5..10: 3 − 1 = 2</td></tr>
+      <tr><td>distance between x and y</td><td><code>abs(x - y)</code></td><td>abs(3 − 8) = 5</td></tr>
+      <tr><td>fewest steps to walk d, a step is at most s</td><td><code>(d + s - 1) / s</code></td><td>d = 23, s = 4 → 6 steps</td></tr>
+    </table>
+    <p class="note">The third sum is called an <span class="term" data-t="arithmetic-progression">arithmetic progression</span>. <code>abs</code> is the <span class="term" data-t="absolute-value">absolute value</span>: the number without its minus sign.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — small helpers</h3>
+<pre data-part="global"><code class="cpp">
+long long ceilDiv(long long a, long long b) {      // a / b rounded up (a &gt;= 0, b &gt; 0)
+    return (a + b - 1) / b;
+}
+
+long long sumTo(long long n) {                     // 1 + 2 + ... + n
+    return n * (n + 1) / 2;
+}
+
+long long multiples(long long l, long long r, long long k) {   // in [l..r], l &gt;= 1
+    return r / k - (l - 1) / k;
+}
+</code></pre>
+    <p>The digits loop from the picture, as a full program:</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    long long x;
+    cin &gt;&gt; x;                  // x &gt;= 1
+    int sum = 0, digits = 0;
+    while (x &gt; 0) {
+        sum += x % 10;         // take the last digit
+        digits++;
+        x /= 10;               // remove the last digit
+    }
+    cout &lt;&lt; sum &lt;&lt; " " &lt;&lt; digits &lt;&lt; "\n";    // 4072 -&gt; 13 4
+}
+</code></pre>
+  </div>
+</section>
+
+<p class="complexity">Speed: a formula is O(1). The digits loop is O(number of digits): at most 19 turns for a long long.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li><code>n * (n + 1) / 2</code> with <code>int n</code> can <span class="term" data-t="overflow">overflow</span>. Use <code>long long</code> for n near 10<sup>5</sup> and above.</li>
+    <li><code>%</code> with a negative number gives a negative <span class="term" data-t="remainder">remainder</span>: <code>-7 % 2</code> is <code>-1</code>. Test odd with <code>x % 2 != 0</code>, not <code>== 1</code>.</li>
+    <li>You use <code>double</code> and <code>ceil(a / b)</code>. With big numbers it loses digits. Stay with integers and <code>(a + b - 1) / b</code>.</li>
+    <li>The digits loop does nothing for x = 0. If 0 is a possible input, handle it alone.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="50A">Domino piling</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="617A">Elephant</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="546A">Soldier and Bananas</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="977A">Wrong Subtraction</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1328A">Divisibility Problem</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1335A">Candies and Two Sisters</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="486A">Calculating Function</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="318A">Even Odds</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="1A">Theatre Square</a><span class="r">1000</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book. Chapter 1 has the sum formulas and more.</li>
+    <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — the "Math" sheet has many easy formula problems.</li>
+    <li><a href="https://cses.fi/problemset/task/1618">CSES: Trailing Zeros</a> — one small idea with division. Try it after the ladder.</li>
+  </ul>
+</section>

@@ -1,0 +1,179 @@
+[
+  {
+    "id": 0,
+    "name": "Start here",
+    "rating": "before you solve",
+    "goal": "Learn how the site works, how to read a problem, and how to not lose easy points.",
+    "ready": "you got your first Accepted and you can say which speed (O) your code needs from the limits.",
+    "topics": [
+      {
+        "slug": "how-codeforces-works",
+        "title": "How Codeforces works"
+      },
+      {
+        "slug": "read-a-problem",
+        "title": "How to read a problem"
+      },
+      {
+        "slug": "cpp-template",
+        "title": "Your C++ template"
+      },
+      {
+        "slug": "complexity",
+        "title": "Limits → speed"
+      },
+      {
+        "slug": "overflow",
+        "title": "int or long long?"
+      },
+      {
+        "slug": "how-to-practice",
+        "title": "How to practice"
+      },
+      {
+        "slug": "debugging",
+        "title": "How to find your bug"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "name": "Foundations",
+    "rating": "800 – 1000",
+    "goal": "Turn a statement into code. Most problems here need no special algorithm, only careful work.",
+    "ready": "you solve most 800 problems in under 15 minutes without help.",
+    "topics": [
+      {
+        "slug": "simulation",
+        "title": "Do what the statement says"
+      },
+      {
+        "slug": "arrays-strings",
+        "title": "Arrays and strings"
+      },
+      {
+        "slug": "stl-basics",
+        "title": "STL basics"
+      },
+      {
+        "slug": "basic-math",
+        "title": "Basic math"
+      },
+      {
+        "slug": "brute-force",
+        "title": "Brute force"
+      },
+      {
+        "slug": "greedy",
+        "title": "Greedy"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Core tools",
+    "rating": "1000 – 1300",
+    "goal": "The ten tools that solve most Div. 2 A and B problems, and many C problems.",
+    "ready": "you solve 1200 problems alone more often than not.",
+    "topics": [
+      {
+        "slug": "stl-containers",
+        "title": "map, set, stack, queue"
+      },
+      {
+        "slug": "sorting",
+        "title": "Sorting"
+      },
+      {
+        "slug": "counting",
+        "title": "Counting"
+      },
+      {
+        "slug": "prefix-sums",
+        "title": "Prefix sums"
+      },
+      {
+        "slug": "two-pointers",
+        "title": "Two pointers"
+      },
+      {
+        "slug": "binary-search",
+        "title": "Binary search"
+      },
+      {
+        "slug": "number-theory",
+        "title": "GCD, primes, divisors"
+      },
+      {
+        "slug": "modular",
+        "title": "Mod and fast power"
+      },
+      {
+        "slug": "bits",
+        "title": "Bits"
+      },
+      {
+        "slug": "constructive",
+        "title": "Build an answer"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Algorithms",
+    "rating": "1300 – 1600",
+    "goal": "Real algorithms: recursion, dynamic programming and graphs.",
+    "ready": "you can write BFS, DSU and a simple DP from memory, and you solve Div. 2 C sometimes.",
+    "topics": [
+      {
+        "slug": "recursion",
+        "title": "Recursion and backtracking"
+      },
+      {
+        "slug": "dp",
+        "title": "Dynamic programming"
+      },
+      {
+        "slug": "graphs-bfs-dfs",
+        "title": "Graphs: BFS and DFS"
+      },
+      {
+        "slug": "dijkstra",
+        "title": "Shortest path (Dijkstra)"
+      },
+      {
+        "slug": "trees",
+        "title": "Trees"
+      },
+      {
+        "slug": "dsu",
+        "title": "DSU (union-find)"
+      },
+      {
+        "slug": "toposort",
+        "title": "Topological sort"
+      },
+      {
+        "slug": "combinatorics",
+        "title": "Counting with nCr"
+      },
+      {
+        "slug": "interactive",
+        "title": "Interactive problems"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "What next",
+    "rating": "1600+",
+    "goal": "A short map of what to learn after this guide.",
+    "ready": "there is no end. Keep solving problems a little above your rating.",
+    "topics": [
+      {
+        "slug": "what-next",
+        "title": "After 1600"
+      }
+    ]
+  }
+]

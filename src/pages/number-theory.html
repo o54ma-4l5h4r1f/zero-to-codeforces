@@ -1,0 +1,147 @@
+<p class="idea">Four small tools for whole numbers: GCD, a prime test, the list of divisors, and the sieve. All are short and you can learn them by heart.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The words <span class="term" data-t="divisible">divisible</span>, <span class="term" data-t="divisor">divisor</span>, <span class="term" data-t="multiple">multiple</span>, <span class="term" data-t="prime">prime</span>, "common divisor" are in the statement.</li>
+    <li>"The biggest number that divides all of them" → <span class="term" data-t="gcd">GCD</span>. "The smallest number divisible by all of them" → <span class="term" data-t="lcm">LCM</span>.</li>
+    <li>One number up to 10<sup>12</sup> or 10<sup>9</sup> → a loop up to its <span class="term" data-t="square-root">square root</span>.</li>
+    <li>Many numbers up to 10<sup>6</sup> or 10<sup>7</sup>, and you ask "is it prime?" for each → the <span class="term" data-t="sieve">sieve</span>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — cutting a rectangle into squares (GCD)</h3>
+    <p>You have a paper of 30 × 18. You want to cut it into equal squares, as big as possible, with no paper left.</p>
+    <p>Cut one 18 × 18 square. A 18 × 12 piece is left. Cut one 12 × 12 square. A 12 × 6 piece is left. It is exactly two 6 × 6 squares. So the answer is 6 = gcd(30, 18).</p>
+    <table>
+      <tr><th>a</th><th>b</th><th>a % b</th><th>next step</th></tr>
+      <tr><td>30</td><td>18</td><td>12</td><td>gcd(18, 12)</td></tr>
+      <tr><td>18</td><td>12</td><td>6</td><td>gcd(12, 6)</td></tr>
+      <tr><td>12</td><td>6</td><td>0</td><td>gcd(6, 0)</td></tr>
+      <tr><td class="hi">6</td><td>0</td><td colspan="2">b is 0 → the answer is a = 6</td></tr>
+    </table>
+    <p class="note">This is Euclid's <span class="term" data-t="algorithm">algorithm</span>: replace (a, b) by (b, a % b) until b is 0. It needs very few steps, even for 10<sup>18</sup>.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — the sieve: cross out multiples, 2 to 30</h3>
+    <p>Write all numbers. Take the first number that is not crossed out: it is prime. Cross out its multiples. Repeat.</p>
+    <table>
+      <tr><td></td><td class="hi">2</td><td class="hi">3</td><td><s>4</s></td><td class="hi">5</td><td><s>6</s></td><td class="hi">7</td><td><s>8</s></td><td><s>9</s></td><td><s>10</s></td></tr>
+      <tr><td class="hi">11</td><td><s>12</s></td><td class="hi">13</td><td><s>14</s></td><td><s>15</s></td><td><s>16</s></td><td class="hi">17</td><td><s>18</s></td><td class="hi">19</td><td><s>20</s></td></tr>
+      <tr><td><s>21</s></td><td><s>22</s></td><td class="hi">23</td><td><s>24</s></td><td><s>25</s></td><td><s>26</s></td><td><s>27</s></td><td><s>28</s></td><td class="hi">29</td><td><s>30</s></td></tr>
+    </table>
+    <table>
+      <tr><th>prime p</th><th>start at p · p</th><th>new numbers crossed out</th></tr>
+      <tr><td>2</td><td>4</td><td>4, 6, 8, 10, … , 30 (all even numbers)</td></tr>
+      <tr><td>3</td><td>9</td><td>9, 15, 21, 27</td></tr>
+      <tr><td>5</td><td>25</td><td>25</td></tr>
+      <tr><td>7</td><td>49</td><td>49 &gt; 30 → stop. All numbers still open are prime.</td></tr>
+    </table>
+    <p class="note">Why start at p · p? The smaller multiples (2p, 3p, …) are already crossed out by smaller primes.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — the four tools</h3>
+    <p><b>GCD and LCM.</b> C++ has <code>gcd(a, b)</code> (C++17) and the older <code>__gcd(a, b)</code>. For LCM divide first, then multiply, so the number stays small.</p>
+<pre data-part="main"><code class="cpp">
+long long a = 30, b = 18;
+long long g = gcd(a, b);               // 6
+long long l = a / g * b;               // lcm = 90. Divide first, then multiply
+</code></pre>
+    <p><b>Prime test and divisors.</b> Divisors come in pairs: if <code>i</code> divides n, then <code>n / i</code> also divides n. One of the two is ≤ sqrt(n). So the loop stops at <code>i * i &lt;= n</code>.</p>
+<pre data-part="global"><code class="cpp">
+bool isPrime(long long n) {
+    if (n &lt; 2) return false;               // 0 and 1 are not prime
+    for (long long i = 2; i * i &lt;= n; i++)
+        if (n % i == 0) return false;      // found a divisor
+    return true;
+}
+
+vector&lt;long long&gt; divisors(long long n) {
+    vector&lt;long long&gt; small, big;
+    for (long long i = 1; i * i &lt;= n; i++) {
+        if (n % i == 0) {
+            small.push_back(i);                    // the small one of the pair
+            if (i != n / i) big.push_back(n / i);  // the big one (not twice for 6 * 6)
+        }
+    }
+    small.insert(small.end(), big.rbegin(), big.rend());   // all, small -&gt; big
+    return small;
+}
+
+// prime factorisation: 60 -&gt; 2 2 3 5
+vector&lt;long long&gt; factorise(long long n) {
+    vector&lt;long long&gt; primes;
+    for (long long i = 2; i * i &lt;= n; i++) {
+        while (n % i == 0) {               // take i out as many times as we can
+            primes.push_back(i);
+            n /= i;
+        }
+    }
+    if (n &gt; 1) primes.push_back(n);        // what is left is one big prime
+    return primes;
+}
+</code></pre>
+    <p><b>Sieve.</b> Use it when you need "is x prime?" for many x. This program prints all primes up to n.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;                                       // n up to about 10^7
+    vector&lt;bool&gt; isPrime(n + 1, true);
+    isPrime[0] = false;
+    if (n &gt;= 1) isPrime[1] = false;
+    for (long long p = 2; p * p &lt;= n; p++) {
+        if (!isPrime[p]) continue;                  // p is crossed out, skip it
+        for (long long x = p * p; x &lt;= n; x += p)
+            isPrime[x] = false;                     // cross out the multiples of p
+    }
+    for (int x = 2; x &lt;= n; x++)
+        if (isPrime[x]) cout &lt;&lt; x &lt;&lt; " ";
+    cout &lt;&lt; "\n";
+}
+</code></pre>
+  </div>
+</section>
+
+<p class="complexity">Speed: gcd O(log n). Prime test, divisors and factorisation O(sqrt n): fine for one n up to 10^12. Sieve: about O(n log log n), fine for n = 10^7.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li><code>i * i</code> with <code>int i</code> can <span class="term" data-t="overflow">overflow</span> when n is near 2·10<sup>9</sup> or bigger. Make <code>i</code> a <code>long long</code>.</li>
+    <li>Saying that 1 is prime. It is not. The smallest prime is 2.</li>
+    <li>LCM as <code>a * b / g</code>. The product can overflow. Write <code>a / g * b</code>.</li>
+    <li>A loop to sqrt(n) for each of 10<sup>5</sup> big numbers. That is too slow. Build one sieve first.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="26A">Almost Prime</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="1475A">Odd Divisor</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="1742D">Coprime</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="230B">T-primes</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="1294C">Product of Three Numbers</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="1203C">Common Divisors</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="271B">Prime Matrix</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="762A">k-th divisor</a><span class="r">1400</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/gold/divisibility">USACO Guide: Divisibility</a> — GCD, LCM, divisors and factorisation with examples.</li>
+    <li><a href="https://cp-algorithms.com/algebra/sieve-of-eratosthenes.html">cp-algorithms: Sieve of Eratosthenes</a> — the sieve in more detail.</li>
+    <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — search the channel for "number theory" (lessons by Mostafa Saad).</li>
+  </ul>
+</section>

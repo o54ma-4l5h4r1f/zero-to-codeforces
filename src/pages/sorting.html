@@ -1,0 +1,114 @@
+<p class="idea">Put the values in order first. In a sorted array, close values stand next to each other, and many problems become easy.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The order of the input does not matter: you choose a group, or pairs, or "any k elements".</li>
+    <li>The statement asks for the smallest difference, or for equal elements.</li>
+    <li>A <span class="term" data-t="greedy">greedy</span> idea: "take the smallest first" or "take the biggest first".</li>
+    <li>You want to use binary search or two pointers. Both need a <span class="term" data-t="sorted">sorted</span> array.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — students in a line</h3>
+    <p>Find the two students with the closest heights. If they stand in a random order, you must compare every student with every other student. That is slow.</p>
+    <p>Now ask them to stand in a line by height. The two closest students are now <span class="term" data-t="adjacent">adjacent</span>. You only look at neighbours.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — smallest difference between two elements</h3>
+    <table>
+      <tr><th>before</th><td>8</td><td>1</td><td>9</td><td>4</td><td>13</td></tr>
+      <tr><th>after sort</th><td>1</td><td>4</td><td class="hi">8</td><td class="hi">9</td><td>13</td></tr>
+    </table>
+    <table>
+      <tr><th>neighbours</th><td>1, 4</td><td>4, 8</td><td>8, 9</td><td>9, 13</td></tr>
+      <tr><th>difference</th><td>3</td><td>4</td><td class="hi">1</td><td>4</td></tr>
+    </table>
+    <p class="note">Before sorting: 10 pairs to check. After sorting: only 4 neighbours. For n = 200 000 that is 2·10<sup>10</sup> pairs against 200 000 neighbours.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — sort, then one easy loop</h3>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;                               // n &gt;= 2
+    vector&lt;int&gt; a(n);
+    for (auto &amp;x : a) cin &gt;&gt; x;
+    sort(a.begin(), a.end());               // small -&gt; big
+    int best = a[1] - a[0];
+    for (int i = 1; i &lt; n; i++)             // look only at neighbours
+        best = min(best, a[i] - a[i - 1]);
+    cout &lt;&lt; best &lt;&lt; "\n";
+}
+</code></pre>
+    <p>Other orders. A <code>pair</code> is sorted by <code>first</code>, then by <code>second</code>. Use it to remember the old position.</p>
+<pre data-part="main"><code class="cpp">
+sort(a.begin(), a.end(), greater&lt;int&gt;());      // big -&gt; small
+vector&lt;pair&lt;int, int&gt;&gt; p(n);
+for (int i = 0; i &lt; n; i++) p[i] = {a[i], i};  // (value, old index)
+sort(p.begin(), p.end());                      // by value; same value: by index
+// p[0].second = where the smallest value was in a
+</code></pre>
+    <p>Your own order: write a <span class="term" data-t="comparator">comparator</span>. It returns <code>true</code> when <code>x</code> must come <b>before</b> <code>y</code>.</p>
+<pre data-part="global"><code class="cpp">
+struct Student { string name; int score; };
+
+bool before(const Student &amp;x, const Student &amp;y) {
+    if (x.score != y.score) return x.score &gt; y.score;  // bigger score first
+    return x.name &lt; y.name;                            // same score: by name
+}
+// in main:  sort(v.begin(), v.end(), before);
+</code></pre>
+    <p>The same thing as a short lambda, written inside <code>sort</code>:</p>
+<pre data-part="main"><code class="cpp">
+// sort numbers by their last digit; same last digit: smaller number first
+sort(a.begin(), a.end(), [](int x, int y) {
+    if (x % 10 != y % 10) return x % 10 &lt; y % 10;
+    return x &lt; y;
+});
+</code></pre>
+    <p class="tip-box">After sorting, equal values are neighbours. So "are there two equal elements?" is just: is <code>a[i] == a[i - 1]</code> for some <code>i</code>?</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: sort is O(n log n). For n = 200 000 that is about 4 million steps: very fast.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>A comparator with <code>&lt;=</code> or <code>&gt;=</code>. It must be strict: <code>&lt;</code> or <code>&gt;</code>. For two equal elements it must return <code>false</code>. If not, the program can crash.</li>
+    <li>Sorting loses the old positions. If the answer needs them, sort pairs <code>(value, index)</code>.</li>
+    <li>Sorting when the order matters. If the problem talks about a <span class="term" data-t="subarray">subarray</span> or "the next element", you usually cannot sort.</li>
+    <li>An array that starts from index 1: write <code>sort(a + 1, a + n + 1)</code>, not <code>sort(a, a + n)</code>.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="1360B">Honest Coach</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="405A">Gravity Flip</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="337A">Puzzles</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="545D">Queue</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="451B">Sort the Array</a><span class="r">1300</span></li>
+    <li><a href="https://cses.fi/problemset/">CSES: Movie Festival</a><span class="r">CSES</span> — find it in the "Sorting and Searching" list. Sort by end time.</li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/silver/sorting-custom">USACO Guide: Custom Comparators</a> — more examples of your own sort order.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 3 "Sorting".</li>
+    <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — the section "Sorting and Searching" has many classic tasks.</li>
+  </ul>
+</section>

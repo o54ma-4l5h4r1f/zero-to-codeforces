@@ -1,0 +1,108 @@
+<p class="idea">Count how many times each value appears. Then answer from the counts, not from the long array.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>"How many times…", "the most common…", "appears exactly once", "all letters are used".</li>
+    <li>Only the <span class="term" data-t="frequency">frequency</span> of each value matters, not its position.</li>
+    <li>"Count the <span class="term" data-t="pair">pairs</span> (i, j) with i &lt; j and …" and n is up to 200 000. You cannot try all pairs.</li>
+    <li>The values are small (letters, numbers up to 10<sup>6</sup>) → array. The values are big (up to 10<sup>9</sup>) → <code>map</code>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — counting votes</h3>
+    <p>People vote for a class leader. You do not keep the papers in a long line. You make one row for each name on the board. For each paper you add one mark to its row.</p>
+    <p>At the end you read the board. Who has the most marks? Who has zero? The board answers fast.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — count the letters of "banana"</h3>
+    <p>One box for each letter. Letter <code>c</code> goes to box <code>c - 'a'</code>: 'a' → 0, 'b' → 1, … 'n' → 13.</p>
+    <table>
+      <tr><th>read</th><th>cnt['a']</th><th>cnt['b']</th><th>cnt['n']</th></tr>
+      <tr><td>start</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><td>b</td><td>0</td><td class="hi">1</td><td>0</td></tr>
+      <tr><td>a</td><td class="hi">1</td><td>1</td><td>0</td></tr>
+      <tr><td>n</td><td>1</td><td>1</td><td class="hi">1</td></tr>
+      <tr><td>a</td><td class="hi">2</td><td>1</td><td>1</td></tr>
+      <tr><td>n</td><td>2</td><td>1</td><td class="hi">2</td></tr>
+      <tr><td>a</td><td class="hi">3</td><td>1</td><td>2</td></tr>
+    </table>
+    <p class="note">Now it is easy: 3 distinct letters, the most common is 'a', and 'b' appears exactly once.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — small values: array, big values: map</h3>
+<pre data-part="main"><code class="cpp">
+string s;
+cin &gt;&gt; s;
+int cnt[26] = {0};                     // one box for each letter a..z
+for (char c : s) cnt[c - 'a']++;
+int kinds = 0;
+for (int i = 0; i &lt; 26; i++)
+    if (cnt[i] &gt; 0) kinds++;           // number of distinct letters
+</code></pre>
+    <p><b>Counting pairs.</b> Task: how many pairs i &lt; j have <code>a[i] == a[j]</code>? Walk from left to right. For each element ask: "how many <b>earlier</b> elements are equal to me?" The map knows.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    map&lt;int, int&gt; cnt;                 // cnt[x] = how many x we saw before
+    long long pairs = 0;               // can be about n*n/2 -&gt; long long
+    for (int j = 0; j &lt; n; j++) {
+        int x;
+        cin &gt;&gt; x;
+        pairs += cnt[x];               // every earlier x makes a pair with this one
+        cnt[x]++;                      // now this one is "earlier" too
+    }
+    cout &lt;&lt; pairs &lt;&lt; "\n";
+}
+</code></pre>
+    <p>Another way to the same answer: <code>k</code> equal items make <code>k · (k − 1) / 2</code> pairs. Add this for every value.</p>
+<pre data-part="main"><code class="cpp">
+long long pairs = 0;
+for (auto [value, k] : cnt)
+    pairs += 1LL * k * (k - 1) / 2;    // 1LL makes the product long long
+</code></pre>
+    <p class="tip-box">Trick: move everything with <code>i</code> to one side. "Count pairs with <code>a[j] − a[i] = j − i</code>" is the same as <code>a[j] − j = a[i] − i</code>. So make <code>b[i] = a[i] − i</code> and count pairs of equal values in <code>b</code>.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: O(n) with an array, O(n log n) with a map. Both are fine for n = 200 000.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>The number of pairs in an <code>int</code>. With n = 200 000 it can be 2·10<sup>10</sup>. Use <code>long long</code>.</li>
+    <li>An array <code>cnt[x]</code> when x can be 10<sup>9</sup>. That is too much memory. Use a <code>map</code>.</li>
+    <li>Many <span class="term" data-t="test-case">test cases</span>: you forget to clear the counts, or you clear a huge array in every test (too slow). Clear only the part you used.</li>
+    <li>Writing <code>cnt[c]</code> for a letter when the array has 26 boxes. Write <code>cnt[c - 'a']</code>.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="236A">Boy or Girl</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="520A">Pangram</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1454B">Unique Bid Auction</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1335C">Two Teams Composing</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="1520D">Same Differences</a><span class="r">1200</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="#stl-containers">map, set, stack, queue</a> — the page about <code>map</code>, if it is new for you.</li>
+    <li><a href="https://usaco.guide/bronze/intro-sets">USACO Guide: Sets and Maps</a> — counting with maps, with examples.</li>
+    <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — many easy counting problems on arrays and strings.</li>
+  </ul>
+</section>

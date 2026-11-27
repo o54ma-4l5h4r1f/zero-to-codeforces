@@ -1,0 +1,64 @@
+<p class="idea">Most wrong answers come from reading too fast. Use the same reading steps for every problem.</p>
+
+<section>
+  <h2>The routine</h2>
+  <ol>
+    <li><b>Read the limits first.</b> Look at the <span class="term" data-t="constraints">constraints</span>, the <span class="term" data-t="time-limit">time limit</span> and the memory limit. They tell you how fast your code must be.</li>
+    <li><b>Read the story.</b> Then say the task in <b>one sentence</b>, in your own words.</li>
+    <li><b>Read the Input and Output parts.</b> What do you read? What exactly do you print?</li>
+    <li><b>Run the <span class="term" data-t="sample">samples</span> by hand.</b> Use paper. Get the same answers as the statement.</li>
+    <li><b>Read the Note.</b> It is at the end. It often explains the samples.</li>
+    <li><b>Look for trap words.</b> See the table below.</li>
+  </ol>
+  <p class="tip-box">Do not write code before step 4 works. If your hand answer is different, you did not understand the task yet.</p>
+</section>
+
+<section>
+  <h2>Example: problem 4A</h2>
+  <div class="way">
+    <h3><b>The task in short</b></h3>
+    <p>Two friends have one watermelon. It weighs <code>w</code> kilos (1 ≤ w ≤ 100). They cut it into two parts. Each part must weigh an <span class="term" data-t="even">even</span> number of kilos. The parts can be different. Print YES if this is possible, else NO.</p>
+    <table>
+      <tr><th>Step</th><th>What you find</th></tr>
+      <tr><td>Limits</td><td>w ≤ 100. Very small. Any solution is fast enough.</td></tr>
+      <tr><td>One sentence</td><td>"Can I write w as even + even?"</td></tr>
+      <tr><td>Sample by hand</td><td>w = 8 → 2 + 6 → YES.</td></tr>
+      <tr><td>Trap</td><td>Each part must be more than 0. So w = 2 is only 1 + 1 → NO.</td></tr>
+      <tr><td>Output</td><td>The word YES or NO.</td></tr>
+    </table>
+    <p>Now the answer is easy: YES when w is even <b>and</b> w &gt; 2.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Trap words</h2>
+  <table>
+    <tr><th>Word</th><th>Meaning</th></tr>
+    <tr><td><span class="term" data-t="distinct">distinct</span></td><td>All different. No two are equal.</td></tr>
+    <tr><td>at least k / at most k</td><td>≥ k / ≤ k. Not &gt; and not &lt;.</td></tr>
+    <tr><td><span class="term" data-t="subarray">subarray</span>, <span class="term" data-t="substring">substring</span></td><td>A part with <b>no gaps</b>: [3, 4, 5] inside [2, 3, 4, 5, 6].</td></tr>
+    <tr><td><span class="term" data-t="subsequence">subsequence</span></td><td>Same order, but <b>gaps are allowed</b>: [2, 4, 6] inside [2, 3, 4, 5, 6].</td></tr>
+    <tr><td><span class="term" data-t="permutation">permutation</span></td><td>The numbers 1…n, each one time: [3, 1, 2].</td></tr>
+    <tr><td>"print any valid answer"</td><td>Many answers are correct. Yours can differ from the sample.</td></tr>
+    <tr><td>1-indexed</td><td>The statement counts from 1. Your C++ array counts from 0.</td></tr>
+    <tr><td>non-negative / positive</td><td>≥ 0 / &gt; 0. Zero is not positive.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Many test cases</h2>
+  <p>Many problems begin with a number <code>t</code>. It is the number of <span class="term" data-t="test-case">test cases</span> in one input. You solve the task <code>t</code> times and print <code>t</code> answers.</p>
+  <p>Then you often see this line: <b>"the sum of n over all test cases does not exceed 2·10<sup>5</sup>"</b>.</p>
+  <p>It means: add the <code>n</code> of every test case. The total is at most 2·10<sup>5</sup>. So all the tests together are like <b>one</b> test with n = 2·10<sup>5</sup>. You do not multiply by <code>t</code>.</p>
+  <p class="note">If this line is missing, the worst case is t × n. Count your steps with that number.</p>
+</section>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You skip the limits. Then you write a solution that is too slow.</li>
+    <li>You print "Yes" when the statement asks for "YES". Copy the word from the statement.</li>
+    <li>You forget to read <code>t</code>, or you forget to clear your variables between test cases.</li>
+    <li>You see a different answer in the sample and think you are wrong. Check for "print any".</li>
+  </ul>
+</section>

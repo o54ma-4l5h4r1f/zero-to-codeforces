@@ -1,0 +1,134 @@
+<p class="idea">Count the ways without listing them. Multiply for "and", add for "or", and use nCr to choose r things from n.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>"How many ways…", "count the number of…", and the answer is huge.</li>
+    <li>"Print the answer <span class="term" data-t="modulo">modulo</span> 10<sup>9</sup>+7" (or 998244353).</li>
+    <li>You choose some items from many, and the order of the chosen items does not matter.</li>
+    <li>You count pairs: n items give <code>n·(n−1)/2</code> pairs.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — clothes and pizza</h3>
+    <p><b>Rule of product ("and" → multiply).</b> You have 3 shirts and 2 trousers. You wear one shirt <b>and</b> one pair of trousers: 3 × 2 = 6 ways.</p>
+    <p><b>Rule of sum ("or" → add).</b> You go to school by one of 3 buses <b>or</b> one of 2 trains: 3 + 2 = 5 ways.</p>
+    <p><b><span class="term" data-t="factorial">Factorial</span>.</b> 3 friends stand in a line: 3 choices for the first place, then 2, then 1. So 3 × 2 × 1 = 6 ways. This is <code>3!</code>. In general <code>n! = 1 × 2 × … × n</code>, and <code>0! = 1</code>.</p>
+    <p><b>nCr.</b> A pizza shop has 4 toppings: Cheese, Olives, Mushrooms, Tomato. You choose 2. Order does not matter (CO is the same pizza as OC). List them: CO, CM, CT, OM, OT, MT → <b>6 ways</b>.</p>
+    <p>This number is called C(n, r) or nCr, a <span class="term" data-t="combination">combination</span>: <code>C(n, r) = n! / (r! · (n−r)!)</code>. Check: C(4, 2) = 24 / (2 · 2) = 6.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — Pascal's triangle</h3>
+    <p>Row n, column r holds C(n, r). Each number is the sum of two numbers in the row above: the one above it and the one above-left.</p>
+    <table>
+      <tr><th>n \ r</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+      <tr><th>0</th><td>1</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>1</th><td>1</td><td>1</td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>2</th><td>1</td><td>2</td><td>1</td><td></td><td></td><td></td></tr>
+      <tr><th>3</th><td>1</td><td class="hi">3</td><td class="hi">3</td><td>1</td><td></td><td></td></tr>
+      <tr><th>4</th><td>1</td><td>4</td><td class="hi">6</td><td>4</td><td>1</td><td></td></tr>
+      <tr><th>5</th><td>1</td><td>5</td><td>10</td><td>10</td><td>5</td><td>1</td></tr>
+    </table>
+    <p><code>C(n, r) = C(n−1, r−1) + C(n−1, r)</code>. Here C(4, 2) = 3 + 3 = 6.</p>
+    <p class="note">Why? Look at the last item. Take it: choose r−1 more from the other n−1. Or leave it: choose all r from the other n−1. "Or" → add.</p>
+    <p>For n up to about 2000, fill this table. No division is needed:</p>
+<pre data-part="main"><code class="cpp">
+// before main:  const int MOD = 1e9 + 7;  long long C[2001][2001];   (all zeros)
+for (int n = 0; n &lt;= 2000; n++) {
+    C[n][0] = 1;                                         // choose nothing: 1 way
+    for (int r = 1; r &lt;= n; r++)
+        C[n][r] = (C[n - 1][r - 1] + C[n - 1][r]) % MOD;
+}
+</code></pre>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — nCr mod p for big n</h3>
+    <p>For n up to 10<sup>5</sup> or 10<sup>6</sup> the table is too big. Use the formula with factorials. But you cannot divide under mod. You multiply by the <span class="term" data-t="modular-inverse">modular inverse</span>.</p>
+    <p>When p is <span class="term" data-t="prime">prime</span>, the inverse of a is <code>a<sup>p−2</sup> mod p</code> (Fermat). Compute it with fast power from <a href="#modular">Mod and fast power</a>.</p>
+    <p>So <span class="term" data-t="precompute">precompute</span> <code>fact[i] = i!</code> and <code>invfact[i]</code> = inverse of i!. Then <code>C(n, r) = fact[n] · invfact[r] · invfact[n−r]</code>.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+const int MOD = 1e9 + 7;                    // a prime
+const int MAXN = 200000;                    // the biggest n you need
+long long fact[MAXN + 1], invfact[MAXN + 1];
+
+long long power(long long a, long long b) { // a^b mod MOD, fast
+    long long res = 1;
+    a %= MOD;
+    while (b &gt; 0) {
+        if (b % 2 == 1) res = res * a % MOD;
+        a = a * a % MOD;
+        b /= 2;
+    }
+    return res;
+}
+
+long long C(int n, int r) {                 // ways to choose r from n
+    if (r &lt; 0 || r &gt; n) return 0;           // impossible choice: 0 ways
+    return fact[n] * invfact[r] % MOD * invfact[n - r] % MOD;
+}
+
+int main() {
+    fact[0] = 1;
+    for (int i = 1; i &lt;= MAXN; i++) fact[i] = fact[i - 1] * i % MOD;
+    invfact[MAXN] = power(fact[MAXN], MOD - 2);          // one inverse by Fermat
+    for (int i = MAXN; i &gt;= 1; i--)                      // 1/(i-1)! = 1/i! * i
+        invfact[i - 1] = invfact[i] * i % MOD;
+
+    int q;
+    cin &gt;&gt; q;
+    while (q--) {
+        int n, r;
+        cin &gt;&gt; n &gt;&gt; r;
+        cout &lt;&lt; C(n, r) &lt;&lt; "\n";            // "5 2" -&gt; 10,  "10 3" -&gt; 120
+    }
+}
+</code></pre>
+    <p class="tip-box">Three numbers to remember. Pairs from n items: <code>n·(n−1)/2</code> (this is C(n, 2)). <span class="term" data-t="subset">Subsets</span> of n items: <code>2<sup>n</sup></code> (each item is in or out). Orders of n items: <code>n!</code>.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: O(MAXN) once to precompute, then O(1) for each C(n, r). Pascal's table: O(n²).</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Dividing under mod: <code>fact[n] / fact[r] % MOD</code> is wrong. Multiply by the inverse.</li>
+    <li>Forgetting <code>% MOD</code> after <b>each</b> multiplication. Three numbers multiplied together <span class="term" data-t="overflow">overflow</span> <code>long long</code>.</li>
+    <li>No check for <code>r &lt; 0</code> or <code>r &gt; n</code>. Then you read outside the array.</li>
+    <li>Arrays too small, or <code>n·(n−1)/2</code> in <code>int</code>. For n = 200 000 the number of pairs is 2·10<sup>10</sup>: use <code>long long</code>.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="630C">Lucky Numbers</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="1272C">Yet Another Broken Keyboard</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="459B">Pashmak and Flowers</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="1475C">Ball in Berland</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="1391C">Cyclic Permutations</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="1475E">Advertising Agency</a><span class="r">1600</span></li>
+    <li><a class="cf" data-p="1288C">Two Arrays</a><span class="r">1600</span></li>
+    <li><a class="cf" data-p="300C">Beautiful Numbers</a><span class="r">1800</span></li>
+    <li><a href="https://cses.fi/problemset/task/1079">CSES: Binomial Coefficients</a><span class="r">CSES</span> — the program above with <code>MAXN = 1000000</code>.</li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/">USACO Guide</a> — Gold section, "Combinatorics". nCr, inverses and solved examples.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 22 "Combinatorics".</li>
+    <li><a href="https://cp-algorithms.com/">cp-algorithms</a> — open Combinatorics → "Binomial Coefficients".</li>
+    <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — lessons by Mostafa Saad, look for the counting videos.</li>
+  </ul>
+</section>

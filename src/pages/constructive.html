@@ -1,0 +1,113 @@
+<p class="idea">You do not search for the best answer. You must build one answer that follows the rules. Find a simple pattern and print it.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>"If there are several answers, print <b>any</b> of them."</li>
+    <li>"Find an array / a <span class="term" data-t="permutation">permutation</span> / a string such that …"</li>
+    <li>"… or print −1 (or NO) if it is impossible."</li>
+    <li>The limits are big, but the task has no real data to work on, often only one number n.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — tiling a floor</h3>
+    <p>A worker covers a big floor with tiles. He does not think about each tile alone. He finds a small <span class="term" data-t="pattern">pattern</span> that works, and he repeats it over the whole floor.</p>
+    <p>A <span class="term" data-t="constructive">constructive</span> problem is the same. The judge accepts any <span class="term" data-t="valid">valid</span> answer, so choose the one that is the easiest to describe.</p>
+    <p><b>How to find the pattern:</b></p>
+    <ol>
+      <li>Solve the tiny cases by hand: n = 1, 2, 3, 4, 5, 6. Write the answers in a table.</li>
+      <li>Try simple shapes first: sorted, reversed, shifted by one, <span class="term" data-t="alternating">alternating</span> (small, big, small, big), all equal.</li>
+      <li>Find when it is impossible. Look at <span class="term" data-t="parity">parity</span> and sums: something that never changes (an <span class="term" data-t="invariant">invariant</span>).</li>
+      <li>Test your pattern with a small checker before you submit (see the code below).</li>
+    </ol>
+    <p class="note">Example for step 3: "split the numbers 1..n into two groups with equal sums". The total is n · (n + 1) / 2. If the total is odd, no split exists. Print NO at once.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — a permutation where no number stays at home</h3>
+    <p>Task: for a given n ≥ 2 print a permutation <code>p</code> of 1..n with <code>p[i] ≠ i</code> for every position i (positions from 1).</p>
+    <table>
+      <tr><th>n</th><th>an answer found by hand</th><th>what we see</th></tr>
+      <tr><td>2</td><td>2 1</td><td>the only one</td></tr>
+      <tr><td>3</td><td>2 3 1</td><td>everybody moves one step</td></tr>
+      <tr><td>4</td><td>2 3 4 1</td><td>the same idea works</td></tr>
+      <tr><td>5</td><td>2 3 4 5 1</td><td>again</td></tr>
+      <tr><td>6</td><td>2 3 4 5 6 1</td><td class="hi">pattern: 2, 3, …, n, 1</td></tr>
+    </table>
+    <p>Now check the pattern for every n, not only for the table. Position i (for i &lt; n) holds i + 1, which is not i. Position n holds 1, which is not n because n ≥ 2. Every number is used once. So it is always valid.</p>
+    <p class="note">This pattern is a <span class="term" data-t="shift">shift</span> by one. It is one of the most useful shapes in constructive problems.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — print the pattern</h3>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int t;
+    cin &gt;&gt; t;
+    while (t--) {
+        int n;
+        cin &gt;&gt; n;                                  // n &gt;= 2
+        for (int i = 2; i &lt;= n; i++) cout &lt;&lt; i &lt;&lt; " ";   // positions 1..n-1 get 2..n
+        cout &lt;&lt; 1 &lt;&lt; "\n";                         // position n gets 1
+    }
+}
+</code></pre>
+    <p><b>A checker.</b> Write a small function that tests the rules of the statement. Run it on your own computer for every n from 1 to 50. If it says "false" for some n, you found a bug before the judge did. More about this in <a href="#debugging">How to find your bug</a>.</p>
+<pre data-part="global"><code class="cpp">
+bool isValid(vector&lt;int&gt; p) {              // p[0] is position 1, p[1] is position 2, ...
+    int n = p.size();
+    vector&lt;bool&gt; seen(n + 1, false);
+    for (int i = 0; i &lt; n; i++) {
+        if (p[i] &lt; 1 || p[i] &gt; n) return false;    // not a number from 1..n
+        if (seen[p[i]]) return false;              // used twice: not a permutation
+        seen[p[i]] = true;
+        if (p[i] == i + 1) return false;           // this number stays at home
+    }
+    return true;
+}
+</code></pre>
+  </div>
+</section>
+
+<p class="complexity">Speed: usually O(n), you only print the answer. The hard part is the idea, not the running time.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Forgetting the small cases. A pattern that works for n ≥ 4 can fail for n = 1, 2 or 3. Check each <span class="term" data-t="edge-case">edge case</span> by hand.</li>
+    <li>Forgetting the impossible case, or printing −1 when an answer exists.</li>
+    <li>Thinking your output must be equal to the sample output. It does not. Any valid answer is accepted.</li>
+    <li>Looking for a clever method for too long. First write tiny cases on paper. The pattern often shows itself.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="1454A">Special Permutation</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1343B">Balanced Array</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1391A">Suborrays</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1367B">Even Array</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1348A">Phoenix and Balance</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1691B">Shoe Shuffling</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="1352B">Same Parity Summands</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="1335D">Anti-Sudoku</a><span class="r">1300</span></li>
+    <li><a class="cf" data-p="1348B">Phoenix and Beauty</a><span class="r">1400</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://codeforces.com/problemset">Codeforces problem set</a> — choose the tag "constructive algorithms" and rating 800–1200. Many small problems are the best teacher here.</li>
+    <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — easy problems where you look for a pattern.</li>
+    <li><a href="#debugging">How to find your bug</a> — how to compare your answer with a brute force.</li>
+  </ul>
+</section>

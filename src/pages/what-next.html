@@ -1,0 +1,49 @@
+<p class="idea">You finished the guide. Here is a short map of the next topics. Learn one only when a problem asks for it.</p>
+
+<section>
+  <h2>The map</h2>
+  <p>Three good places to learn. The table says where to look for each topic.</p>
+  <ul>
+    <li><b>CPA</b> = <a href="https://cp-algorithms.com/">cp-algorithms.com</a> — short text and code for almost every algorithm.</li>
+    <li><b>USACO</b> = <a href="https://usaco.guide/">USACO Guide</a> — lessons in order (Silver, Gold, Platinum) with chosen problems.</li>
+    <li><b>EDU</b> = <a href="https://codeforces.com/edu/course/2">Codeforces EDU</a> — free video lessons with practice problems.</li>
+  </ul>
+  <table>
+    <tr><th>Topic</th><th>What it solves</th><th>Where to learn</th></tr>
+    <tr><td><b>Segment tree</b></td><td>Sum / min / max of a <span class="term" data-t="range">range</span> when the array also changes. O(log n) for each operation.</td><td>EDU "Segment Tree" · CPA: Data Structures</td></tr>
+    <tr><td><b>Fenwick tree (BIT)</b></td><td>Prefix sums with updates. Less power than a segment tree, but only 10 lines of code.</td><td>CPA: Data Structures · USACO Gold</td></tr>
+    <tr><td><b>Sparse table</b></td><td>Min / max / gcd of a range in O(1) when the array never changes.</td><td>CPA: Data Structures</td></tr>
+    <tr><td><b>Bitmask DP</b></td><td>DP where the state is a set of items, for n ≤ 20. See <a href="#bits">Bits</a> and <a href="#dp">Dynamic programming</a>.</td><td>USACO Gold · AtCoder DP contest (task O)</td></tr>
+    <tr><td><b>DP on trees</b></td><td>The best answer for each <span class="term" data-t="subtree">subtree</span>, built from the children. See <a href="#trees">Trees</a>.</td><td>USACO Gold · AtCoder DP contest (task P)</td></tr>
+    <tr><td><b>LCA / binary lifting</b></td><td>The lowest common ancestor of two vertices in a tree. Gives the distance between any two vertices in O(log n).</td><td>CPA: Graphs · USACO Platinum</td></tr>
+    <tr><td><b>Minimum spanning tree (Kruskal)</b></td><td>The cheapest set of edges that connects all vertices. Sort the edges, then use <a href="#dsu">DSU</a>.</td><td>EDU "Disjoint Sets Union" · USACO Gold</td></tr>
+    <tr><td><b>Bellman-Ford / Floyd-Warshall</b></td><td>Shortest paths with negative edges / between all pairs when n ≤ 500. See <a href="#dijkstra">Dijkstra</a> first.</td><td>CPA: Graphs · USACO Gold</td></tr>
+    <tr><td><b>String hashing</b></td><td>Compare two substrings in O(1): turn each one into a number.</td><td>CPA: String Processing · USACO Gold</td></tr>
+    <tr><td><b>KMP / Z-function</b></td><td>Find a pattern inside a long text in O(n). Find borders and periods of a string.</td><td>CPA: String Processing</td></tr>
+    <tr><td><b>Sqrt tricks</b></td><td>Cut the array into blocks of size √n. Each query costs about √n steps. Easy to code.</td><td>CPA: Data Structures ("Sqrt Decomposition")</td></tr>
+    <tr><td><b>Game theory basics</b></td><td>Two players play perfectly: who wins? Winning and losing positions, the game of Nim.</td><td>CPA: Game Theory · CSES book, chapter 25</td></tr>
+  </table>
+  <p class="note">Do not learn this list from top to bottom. Segment tree and bitmask DP are the two you will meet first.</p>
+</section>
+
+<section>
+  <h2>How to keep growing</h2>
+  <ul>
+    <li>From now on, contests and <span class="term" data-t="upsolving">upsolving</span> matter more than new topics. Most 1600–1900 problems need a good idea, not a new algorithm.</li>
+    <li>After every contest, solve the first problem you could not solve. This one habit gives the most rating.</li>
+    <li>Practice problems 100–300 above your rating. Think for 30–60 minutes before you open the <span class="term" data-t="editorial">editorial</span>.</li>
+    <li>When a topic comes back again and again in editorials, that is the time to learn it. Then solve 5–10 problems on it.</li>
+    <li>Fast and correct on easy problems is half of your rating. Keep doing virtual contests.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Problem sets</h2>
+  <ul>
+    <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — 300+ classic problems sorted by topic. The best place to train a new technique.</li>
+    <li><a href="https://atcoder.jp/contests/dp">AtCoder DP contest</a> — 26 DP problems, A to Z, from easy to hard.</li>
+    <li><a href="https://codeforces.com/edu/course/2">Codeforces EDU</a> — each lesson has its own problems with a checker.</li>
+    <li><a href="https://usaco.guide/">USACO Guide</a> — a full path with a problem list for every topic.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book. Read the chapter when you meet the topic.</li>
+  </ul>
+</section>

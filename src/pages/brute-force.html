@@ -1,0 +1,117 @@
+<p class="idea">When the limits are small, do not look for a clever idea. Try every possibility and check each one.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The limits are small: n ≤ 100, n ≤ 1000, or the answer is at most a few thousand.</li>
+    <li>You can list every <span class="term" data-t="possibility">possibility</span>: every element, every <span class="term" data-t="pair">pair</span>, every value of the answer.</li>
+    <li>Checking one possibility is easy: one <code>if</code> or one short loop.</li>
+    <li>The number of possibilities × the cost of one check is below about 10<sup>8</sup>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the key ring</h3>
+    <p>You have 10 keys and one door. You do not know which key is right. You do not study the keys. You try key 1, key 2, key 3… until the door opens.</p>
+    <p>With 10 keys this is the fastest way. With a million keys it is not. So always count the keys first. This way of solving is called <span class="term" data-t="brute-force">brute force</span>.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — all pairs for n = 4</h3>
+    <p>Task: how many pairs of positions <code>i &lt; j</code> have <code>a[i] + a[j] = 7</code>? Here <code>a = [2, 5, 3, 4]</code>.</p>
+    <table>
+      <tr><th>i</th><th>j</th><th>a[i] + a[j]</th><th>= 7 ?</th><th>count</th></tr>
+      <tr><td>0</td><td>1</td><td>2 + 5 = 7</td><td class="hi">yes</td><td>1</td></tr>
+      <tr><td>0</td><td>2</td><td>2 + 3 = 5</td><td>no</td><td>1</td></tr>
+      <tr><td>0</td><td>3</td><td>2 + 4 = 6</td><td>no</td><td>1</td></tr>
+      <tr><td>1</td><td>2</td><td>5 + 3 = 8</td><td>no</td><td>1</td></tr>
+      <tr><td>1</td><td>3</td><td>5 + 4 = 9</td><td>no</td><td>1</td></tr>
+      <tr><td>2</td><td>3</td><td>3 + 4 = 7</td><td class="hi">yes</td><td>2</td></tr>
+    </table>
+    <p class="note">4 elements give 6 pairs. In general n elements give n × (n − 1) / 2 pairs. <code>j</code> starts at <code>i + 1</code>, so each pair is seen once and no element is paired with itself.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — the three shapes</h3>
+    <p><b>Shape 1: one loop.</b> Look at every element and count or keep the best. You know this from the earlier pages.</p>
+    <p><b>Shape 2: two loops over all pairs.</b> This is the table above.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, target;
+    cin &gt;&gt; n &gt;&gt; target;
+    vector&lt;int&gt; a(n);
+    for (int &amp;x : a) cin &gt;&gt; x;
+
+    int count = 0;
+    for (int i = 0; i &lt; n; i++)
+        for (int j = i + 1; j &lt; n; j++)        // j &gt; i: each pair once
+            if (a[i] + a[j] == target) count++;
+    cout &lt;&lt; count &lt;&lt; "\n";
+}
+</code></pre>
+    <p><b>Shape 3: try every answer.</b> Loop over each <span class="term" data-t="candidate">candidate</span> answer from small to big. Stop at the first one that works.</p>
+    <p>Example (problem 732A): one shovel costs <code>k</code>. You have many 10-coins and one coin of value <code>r</code>. Find the smallest number of shovels you can pay for with no change. The total must end in 0 or in <code>r</code>.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int k, r;
+    cin &gt;&gt; k &gt;&gt; r;
+    for (int cnt = 1; cnt &lt;= 10; cnt++) {      // 10 shovels always work: 10 * k ends in 0
+        int last = cnt * k % 10;               // last digit of the total price
+        if (last == 0 || last == r) {
+            cout &lt;&lt; cnt &lt;&lt; "\n";               // the first cnt that works is the smallest
+            break;
+        }
+    }
+}
+</code></pre>
+    <p class="note">Input <code>117 3</code> → output <code>9</code>, because 9 × 117 = 1053 ends in 3.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: (number of possibilities) × (cost of one check). One loop is O(n), all pairs are O(n^2). Keep it below about 10^8.</p>
+
+<p class="tip-box">Brute force has a second job. When you write a faster solution, a slow brute force tells you if it is correct. See "stress testing" in <a href="#debugging">How to find your bug</a>.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You do not count the steps first. Two loops with n = 2·10<sup>5</sup> are 2·10<sup>10</sup> steps: Time limit exceeded.</li>
+    <li>The inner loop starts at <code>j = 0</code>. Then you count each pair twice, and also pair an element with itself.</li>
+    <li>The loop over answers stops too early. Be sure of the biggest answer that can happen, or make the limit bigger.</li>
+    <li>You look for a formula for 30 minutes when n ≤ 100. Small limits are a gift: use them.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="791A">Bear and Big Brother</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="677A">Vanya and Fence</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="732A">Buy a Shovel</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1030A">In Search of an Easy Problem</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="200B">Drinks</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1154A">Restoring Three Numbers</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1343A">Candies</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="122A">Lucky Division</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="479A">Expression</a><span class="r">1000</span></li>
+    <li><a class="cf" data-p="69A">Young Physicist</a><span class="r">1000</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/bronze/intro-complete">USACO Guide: Complete Search</a> — the same idea with more solved examples.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 5 "Complete search". Read it again after the recursion page.</li>
+    <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — many very easy problems on loops. Good practice for "try everything".</li>
+  </ul>
+</section>

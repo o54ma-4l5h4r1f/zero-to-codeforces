@@ -1,0 +1,149 @@
+<p class="idea">Solve the small problems first and write down their answers. Build each bigger answer from the answers you already have.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The statement asks to <b>count the ways</b> (often "modulo 10<sup>9</sup>+7"), or for the <b>minimum / maximum</b> over many choices.</li>
+    <li>You make choices one after another, and each choice changes what you can do next.</li>
+    <li><a href="#greedy">Greedy</a> fails on a small example, and <a href="#recursion">trying everything</a> is too slow (n is 1000 or 10<sup>5</sup>).</li>
+    <li>The answer for n is easy if you already know the answers for smaller n.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — climbing stairs</h3>
+    <p>You climb stairs. Each move is 1 step or 2 steps up. In how many ways can you reach step n?</p>
+    <p>Think about your <b>last move</b>. You come to step n from step n−1 or from step n−2. So <code>ways(n) = ways(n−1) + ways(n−2)</code>.</p>
+    <p>Now walk up and write the answer on every step with chalk. For a new step you only read the two numbers below it. You never count again. This is <span class="term" data-t="dynamic-programming">dynamic programming</span> (DP).</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — fill the table from left to right</h3>
+    <p>Stairs: <code>dp[i]</code> = number of ways to reach step i. Each cell = the sum of the two cells before it.</p>
+    <table>
+      <tr><th>i</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+      <tr><th>dp[i]</th><td>1</td><td>1</td><td>2</td><td>3</td><td>5</td><td>8</td><td class="hi">13</td></tr>
+    </table>
+    <p class="note">dp[6] = dp[5] + dp[4] = 8 + 5 = 13. dp[0] = 1: there is one way to stay on the floor (do nothing).</p>
+    <p>Min coins: coins are 1, 3 and 4. <code>dp[x]</code> = the smallest number of coins with sum x. Try each coin as the <b>last coin</b>: <code>dp[x] = 1 + min(dp[x−1], dp[x−3], dp[x−4])</code>.</p>
+    <table>
+      <tr><th>x</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+      <tr><th>dp[x]</th><td>0</td><td>1</td><td>2</td><td>1</td><td>1</td><td>2</td><td class="hi">2</td></tr>
+    </table>
+    <p class="note">dp[6] = 1 + min(dp[5], dp[3], dp[2]) = 1 + min(2, 1, 2) = 2, that is 3 + 3. Greedy takes 4 first and gets 4 + 1 + 1 = 3 coins. DP checks every last coin, so it is never wrong.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — stairs</h3>
+    <p>The answer grows very fast, so problems ask for it <span class="term" data-t="modulo">modulo</span> 10<sup>9</sup>+7.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+const int MOD = 1000000007;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;long long&gt; dp(n + 2);
+    dp[0] = 1;                                   // base cases
+    dp[1] = 1;
+    for (int i = 2; i &lt;= n; i++)
+        dp[i] = (dp[i - 1] + dp[i - 2]) % MOD;   // last move: 1 step or 2 steps
+    cout &lt;&lt; dp[n] &lt;&lt; "\n";                       // the answer is on step n
+}
+</code></pre>
+  </div>
+</section>
+
+<section>
+  <h2>The recipe: 4 questions</h2>
+  <p>Answer these on paper <b>before</b> you write code. Every DP problem is these four answers.</p>
+  <table>
+    <tr><th>Question</th><th>Stairs</th><th>Min coins</th></tr>
+    <tr><td>1. What does <code>dp[i]</code> mean, in words? (the <span class="term" data-t="state">state</span>)</td><td>ways to reach step i</td><td>fewest coins with sum x</td></tr>
+    <tr><td>2. The formula from smaller answers? (the <span class="term" data-t="transition">transition</span>)</td><td>dp[i] = dp[i−1] + dp[i−2]</td><td>dp[x] = 1 + min(dp[x−c])</td></tr>
+    <tr><td>3. The <span class="term" data-t="base-case">base cases</span>?</td><td>dp[0] = dp[1] = 1</td><td>dp[0] = 0, others = ∞</td></tr>
+    <tr><td>4. The order of filling? Where is the answer?</td><td>i from 2 up; answer dp[n]</td><td>x from 1 up; answer dp[sum]</td></tr>
+  </table>
+  <p class="tip-box">Stuck on question 2? Ask: "What was the <b>last</b> choice?" Last move, last coin, last item. Each possible last choice gives one smaller <span class="term" data-t="subproblem">subproblem</span>.</p>
+
+  <div class="way">
+    <h3><b>Second example</b> — 0/1 knapsack</h3>
+    <p>n items, item i has weight <code>w</code> and value <code>v</code>. The bag holds weight W. Each item is used at most once. Find the best total value. This is the <span class="term" data-t="knapsack">knapsack</span> problem.</p>
+    <p><code>dp[c]</code> = the best value with total weight ≤ c, using the items seen so far. For a new item: skip it (dp[c] stays) or take it (<code>dp[c − w] + v</code>).</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, W;
+    cin &gt;&gt; n &gt;&gt; W;
+    vector&lt;long long&gt; dp(W + 1, 0);          // no items yet: value 0
+    for (int i = 0; i &lt; n; i++) {
+        int w;
+        long long v;
+        cin &gt;&gt; w &gt;&gt; v;
+        for (int c = W; c &gt;= w; c--)          // backwards: use each item once
+            dp[c] = max(dp[c], dp[c - w] + v);
+    }
+    cout &lt;&lt; dp[W] &lt;&lt; "\n";
+}
+</code></pre>
+    <p class="note">Why backwards? Going down, <code>dp[c − w]</code> is still the old value, without this item. Going up, you can take the same item two times.</p>
+  </div>
+
+  <h3>Classic patterns</h3>
+  <table>
+    <tr><th>Pattern</th><th>dp means</th><th>Formula</th></tr>
+    <tr><td>Count ways (stairs)</td><td>dp[i] = ways to reach i</td><td>dp[i] = dp[i−1] + dp[i−2]</td></tr>
+    <tr><td>Min coins</td><td>dp[x] = fewest coins for sum x</td><td>dp[x] = 1 + min(dp[x−c]) over coins c</td></tr>
+    <tr><td>Take or skip (no two <span class="term" data-t="adjacent">adjacent</span>)</td><td>dp[i] = best sum in the first i items</td><td>dp[i] = max(dp[i−1], dp[i−2] + a[i])</td></tr>
+    <tr><td>Paths in a grid (right / down)</td><td>dp[i][j] = ways to reach cell (i, j)</td><td>dp[i][j] = dp[i−1][j] + dp[i][j−1]</td></tr>
+    <tr><td>Knapsack</td><td>dp[c] = best value with weight ≤ c</td><td>dp[c] = max(dp[c], dp[c−w] + v), c backwards</td></tr>
+    <tr><td>LIS, O(n²) (longest increasing <span class="term" data-t="subsequence">subsequence</span>)</td><td>dp[i] = longest one that ends at i</td><td>dp[i] = 1 + max(dp[j]) for j &lt; i, a[j] &lt; a[i]</td></tr>
+    <tr><td>LCS (longest common subsequence)</td><td>dp[i][j] = answer for first i of s, first j of t</td><td>same letters: dp[i−1][j−1] + 1; else max(dp[i−1][j], dp[i][j−1])</td></tr>
+  </table>
+  <p><b>Two styles.</b> Bottom-up: fill the table with loops, small to big, like the code above. Top-down: write the recursion and store each answer the first time you compute it (<span class="term" data-t="memoisation">memoisation</span>). Both give the same answer; use the one that is easier for you.</p>
+</section>
+
+<p class="complexity">Speed: (number of states) × (work for one state). Stairs O(n). Min coins O(sum × coins). Knapsack O(n × W). LIS O(n²).</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You start coding before you can say in words what <code>dp[i]</code> means. Write that sentence first.</li>
+    <li>Wrong or missing base case, or reading outside the array: <code>dp[i − 2]</code> when i = 1.</li>
+    <li>Wrong order: you use a cell that is not filled yet. In 0/1 knapsack the weight loop must go backwards.</li>
+    <li>Forgetting <code>% MOD</code> or using <code>int</code> for big sums. For "minimum", start with a big value, not 0.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="580A">Kefa and First Steps</a><span class="r">900</span></li>
+    <li><a href="https://atcoder.jp/contests/dp/tasks/dp_a">AtCoder DP A: Frog 1</a><span class="r">AtCoder</span> — the stairs idea with a cost. Then do B (Frog 2) and C (Vacation).</li>
+    <li><a class="cf" data-p="1472C">Long Jumps</a><span class="r">1100</span></li>
+    <li><a class="cf" data-p="327A">Flipping Game</a><span class="r">1200</span></li>
+    <li><a class="cf" data-p="189A">Cut Ribbon</a><span class="r">1300</span></li>
+    <li><a href="https://atcoder.jp/contests/dp/tasks/dp_d">AtCoder DP D: Knapsack 1</a><span class="r">AtCoder</span> — the knapsack code above.</li>
+    <li><a class="cf" data-p="698A">Vacations</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="1195C">Basketball Exercise</a><span class="r">1400</span></li>
+    <li><a class="cf" data-p="455A">Boredom</a><span class="r">1500</span></li>
+    <li><a class="cf" data-p="431C">k-Tree</a><span class="r">1600</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://atcoder.jp/contests/dp/tasks">AtCoder Educational DP Contest</a> — 26 classic problems, A to Z. Solve A–F first. The best DP training.</li>
+    <li><a href="https://cses.fi/problemset/">CSES Problem Set</a> — the "Dynamic Programming" section. Start with Dice Combinations and Minimizing Coins.</li>
+    <li><a href="https://usaco.guide/gold/intro-dp">USACO Guide: Introduction to DP</a> — clear text with solved examples.</li>
+    <li><a href="https://www.youtube.com/@ArabicCompetitiveProgramming">Arabic videos</a> — a full DP playlist by Mostafa Saad.</li>
+  </ul>
+</section>

@@ -1,0 +1,120 @@
+<p class="idea">No trick, no formula. Read the rules, then make your program follow them step by step.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>The <span class="term" data-t="statement">statement</span> describes a process: "first…, then…, after each step…".</li>
+    <li>The limits are small (n ≤ 100 or n ≤ 1000), so doing every step is fast enough.</li>
+    <li>You understand <b>what</b> to do after one reading. The only work is to write it carefully.</li>
+    <li>Codeforces puts the tag <b>implementation</b> on these problems. Another name is <span class="term" data-t="simulation">simulation</span>.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — cooking from a recipe</h3>
+    <p>A recipe says: "Put 2 eggs. Add sugar. Mix. Repeat 3 times." You do not invent anything. You do each line in the same order.</p>
+    <p>The statement is your recipe. Each number in it becomes a <span class="term" data-t="variable">variable</span>. Each "repeat" becomes a <span class="term" data-t="loop">loop</span>. Each "if" stays an <code>if</code>.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — the tram</h3>
+    <p>A tram is empty at the start. At each stop <code>a</code> people exit, then <code>b</code> people enter. How many seats does the tram need? You need the biggest number of people inside at any moment.</p>
+    <p>Write the variables in a table and change them by hand. This is called a <span class="term" data-t="trace">trace</span>.</p>
+    <table>
+      <tr><th>stop</th><th>a (exit)</th><th>b (enter)</th><th>inside</th><th>best</th></tr>
+      <tr><td>start</td><td>–</td><td>–</td><td>0</td><td>0</td></tr>
+      <tr><td>1</td><td>0</td><td>3</td><td>0 − 0 + 3 = 3</td><td>3</td></tr>
+      <tr><td>2</td><td>2</td><td>5</td><td>3 − 2 + 5 = 6</td><td class="hi">6</td></tr>
+      <tr><td>3</td><td>4</td><td>2</td><td>6 − 4 + 2 = 4</td><td>6</td></tr>
+      <tr><td>4</td><td>4</td><td>0</td><td>4 − 4 + 0 = 0</td><td>6</td></tr>
+    </table>
+    <p class="note">The answer is 6. If you can fill this table by hand, you can write the code: one row = one turn of the loop.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — the table becomes a loop</h3>
+    <p>Use the same names as the statement (<code>n</code>, <code>a</code>, <code>b</code>). Then you can compare your code with the text line by line.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;                    // number of stops
+    cin &gt;&gt; n;
+    int inside = 0;           // people in the tram now
+    int best = 0;             // the biggest "inside" we saw
+    for (int i = 0; i &lt; n; i++) {
+        int a, b;             // a people exit, b people enter
+        cin &gt;&gt; a &gt;&gt; b;
+        inside -= a;          // first they exit
+        inside += b;          // then they enter
+        best = max(best, inside);
+    }
+    cout &lt;&lt; best &lt;&lt; "\n";
+}
+</code></pre>
+    <p>Many problems have <code>t</code> <span class="term" data-t="test-case">test cases</span> in one input. Put the solution of one case in a function. Then every case starts with fresh variables.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+void solve() {                // solves ONE test case
+    int n;
+    cin &gt;&gt; n;
+    long long sum = 0;        // made new for every test case
+    for (int i = 0; i &lt; n; i++) {
+        int x;
+        cin &gt;&gt; x;
+        sum += x;
+    }
+    cout &lt;&lt; sum &lt;&lt; "\n";      // one answer per line
+}
+
+int main() {
+    int t;
+    cin &gt;&gt; t;
+    while (t--) solve();
+}
+</code></pre>
+  </div>
+</section>
+
+<p class="complexity">Speed: you do every step once, so O(number of steps). Check that this number is below about 10^8.</p>
+
+<p class="tip-box">Before you submit: run <b>every</b> sample from the statement. Compare your output with the expected output letter by letter.</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>Wrong output format. <code>YES</code> is not <code>Yes</code> when the statement asks for exact letters. Do not print extra text like "Answer:".</li>
+    <li>Wrong order of steps. In the tram, people exit <b>before</b> others enter. Follow the order in the statement.</li>
+    <li>A variable keeps its old value in the next test case. Create it inside <code>solve()</code>.</li>
+    <li>You forget the smallest input, the <span class="term" data-t="edge-case">edge case</span>. Try n = 1 or n = 2 by hand.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="4A">Watermelon</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="231A">Team</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="282A">Bit++</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="158A">Next Round</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="116A">Tram</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="263A">Beautiful Matrix</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="266B">Queue at the School</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1352A">Sum of Round Numbers</a><span class="r">800</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/bronze/simulation">USACO Guide: Simulation</a> — short text and more problems of this kind.</li>
+    <li><a href="https://codeforces.com/group/MWSDmqGsZm/contests">Assiut newcomers sheets</a> — hundreds of very easy problems, sorted by topic.</li>
+    <li><a href="https://cses.fi/problemset/task/1068">CSES: Weird Algorithm</a> — a classic first simulation. Be careful with <code>long long</code>.</li>
+  </ul>
+</section>

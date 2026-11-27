@@ -1,0 +1,109 @@
+<p class="idea">C++ gives you ready tools: sort, max, sum, pairs. Learn their names and never write them by hand again.</p>
+
+<section class="spot">
+  <h2>Spot it</h2>
+  <ul>
+    <li>You need the numbers in order, or the k biggest, or the k smallest.</li>
+    <li>You need the biggest, the smallest or the sum of an array.</li>
+    <li>Two values belong together, like a score and the person who has it.</li>
+    <li>You are about to write 10 lines for something very common. Stop. There is a tool for it.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — the toolbox</h3>
+    <p>A carpenter does not make a new hammer for every nail. He opens the toolbox and takes one.</p>
+    <p>The STL is the toolbox of C++. The tools are fast, correct and tested by millions of people. Your own sort will be slower and can have bugs.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — "I want… → write…"</h3>
+    <p>Here <code>a</code> is a <code>vector&lt;int&gt;</code>.</p>
+    <table>
+      <tr><th>I want…</th><th>write…</th></tr>
+      <tr><td>sort, small → big (<span class="term" data-t="ascending">ascending</span>)</td><td><code>sort(a.begin(), a.end());</code></td></tr>
+      <tr><td>sort, big → small (<span class="term" data-t="descending">descending</span>)</td><td><code>sort(a.rbegin(), a.rend());</code><br>or <code>sort(a.begin(), a.end(), greater&lt;int&gt;());</code></td></tr>
+      <tr><td>turn the array around</td><td><code>reverse(a.begin(), a.end());</code></td></tr>
+      <tr><td>smaller / bigger of two values</td><td><code>min(x, y)</code> / <code>max(x, y)</code></td></tr>
+      <tr><td>exchange two values</td><td><code>swap(x, y);</code></td></tr>
+      <tr><td>smallest / biggest in the array</td><td><code>*min_element(a.begin(), a.end())</code><br><code>*max_element(a.begin(), a.end())</code></td></tr>
+      <tr><td>sum of the array</td><td><code>accumulate(a.begin(), a.end(), 0LL)</code></td></tr>
+      <tr><td>how many times is <code>x</code> in the array?</td><td><code>count(a.begin(), a.end(), x)</code></td></tr>
+      <tr><td>add a value at the end</td><td><code>a.push_back(x);</code></td></tr>
+      <tr><td>look at the last value / remove it</td><td><code>a.back()</code> / <code>a.pop_back();</code></td></tr>
+      <tr><td>two values in one box</td><td><code>pair&lt;int,int&gt; p = {3, 7};</code><br><code>p.first</code> is 3, <code>p.second</code> is 7</td></tr>
+      <tr><td>an array of pairs</td><td><code>vector&lt;pair&lt;int,int&gt;&gt; v;</code>   <code>v.push_back({x, y});</code></td></tr>
+    </table>
+    <p class="note">The <code>*</code> is needed: <code>max_element</code> gives the <b>place</b> of the biggest value, and <code>*</code> opens it. <code>0LL</code> makes the sum a <code>long long</code>; with plain <code>0</code> a big sum can <span class="term" data-t="overflow">overflow</span>.</p>
+    <p>A <span class="term" data-t="pair">pair</span> is sorted by <code>.first</code>. If two firsts are equal, the smaller <code>.second</code> comes first.</p>
+    <table>
+      <tr><th>before sort</th><td>{5, 1}</td><td>{2, 2}</td><td>{5, 0}</td><td>{1, 3}</td></tr>
+      <tr><th>after sort</th><td>{1, 3}</td><td>{2, 2}</td><td class="hi">{5, 0}</td><td class="hi">{5, 1}</td></tr>
+    </table>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — the tools in one program</h3>
+    <p>Read n scores. Print the smallest, the biggest and the sum. Then print the people from the best score to the worst.</p>
+<pre><code class="cpp">
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; a(n);
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; a[i];
+
+    int smallest = *min_element(a.begin(), a.end());
+    int biggest  = *max_element(a.begin(), a.end());
+    long long sum = accumulate(a.begin(), a.end(), 0LL);
+    cout &lt;&lt; smallest &lt;&lt; " " &lt;&lt; biggest &lt;&lt; " " &lt;&lt; sum &lt;&lt; "\n";
+
+    vector&lt;pair&lt;int,int&gt;&gt; people;            // {score, number of the person}
+    for (int i = 0; i &lt; n; i++) people.push_back({a[i], i + 1});
+    sort(people.rbegin(), people.rend());    // biggest score first
+    for (int i = 0; i &lt; n; i++) cout &lt;&lt; people[i].second &lt;&lt; " ";
+    cout &lt;&lt; "\n";
+}
+</code></pre>
+    <p class="note">Input <code>4</code> / <code>30 10 50 20</code> prints <code>10 50 110</code> and then <code>3 1 4 2</code>. Sorting moves the scores, but each pair still remembers its person.</p>
+  </div>
+</section>
+
+<p class="complexity">Speed: sort is O(n log n), fine for n = 10^6. The other tools in the table are O(n) or O(1).</p>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li><code>a.size()</code> is <span class="term" data-t="unsigned">unsigned</span>: it cannot be negative. For an empty array <code>a.size() - 1</code> is a huge number, not −1. Write <code>(int)a.size() - 1</code>.</li>
+    <li><code>accumulate(…, 0)</code> adds in <code>int</code>. Write <code>0LL</code>.</li>
+    <li>You forget the <code>*</code> before <code>max_element</code>. The code does not compile, with a long error.</li>
+    <li><code>a.back()</code>, <code>a.pop_back()</code> or <code>*max_element</code> on an empty array. The program crashes. Check <code>!a.empty()</code> first.</li>
+  </ul>
+</section>
+
+<section class="practice">
+  <h2>Practice ladder</h2>
+  <ol>
+    <li><a class="cf" data-p="228A">Is your horseshoe on the other hoof?</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1360B">Honest Coach</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="1353B">Two Arrays And Swaps</a><span class="r">800</span></li>
+    <li><a class="cf" data-p="405A">Gravity Flip</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="160A">Twins</a><span class="r">900</span></li>
+    <li><a class="cf" data-p="337A">Puzzles</a><span class="r">900</span></li>
+  </ol>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://en.cppreference.com/w/cpp/algorithm">cppreference: algorithms</a> — every tool like <code>sort</code> and <code>count</code>, with small examples.</li>
+    <li><a href="https://en.cppreference.com/w/cpp/container">cppreference: containers</a> — <code>vector</code>, and later <code>map</code>, <code>set</code>, <code>queue</code>.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book. Chapter 3 is about sorting in C++.</li>
+    <li><a href="https://cses.fi/problemset/task/1621">CSES: Distinct Numbers</a> — sort, then compare neighbours.</li>
+  </ul>
+</section>

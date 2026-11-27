@@ -1,0 +1,98 @@
+<p class="idea">The judge does about 10<sup>8</sup> simple steps in one second. Read the limits, count your steps, and you know if your idea is fast enough.</p>
+
+<section class="spot">
+  <h2>Use it on every problem</h2>
+  <ul>
+    <li>Before you write code: look at the biggest <code>n</code> in the <span class="term" data-t="constraints">constraints</span>.</li>
+    <li>Count the steps of your idea for that <code>n</code>.</li>
+    <li>About 10<sup>8</sup> or less → fine. 10<sup>9</sup> or more → too slow. Find a better idea.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The key table</h2>
+  <p>O(…) is a short way to write "how many steps". It is called <span class="term" data-t="complexity">complexity</span>. This table tells you which one the problem wants.</p>
+  <table>
+    <tr><th>Biggest n</th><th>Speed that fits</th><th>Usual idea</th></tr>
+    <tr><td>n ≤ 10 – 11</td><td>O(n!)</td><td>Try every order.</td></tr>
+    <tr><td>n ≤ 20</td><td>O(2<sup>n</sup>)</td><td>Try every "take it or not".</td></tr>
+    <tr><td>n ≤ 500</td><td>O(n<sup>3</sup>)</td><td>Three loops.</td></tr>
+    <tr><td>n ≤ 5000</td><td>O(n<sup>2</sup>)</td><td>Two loops: all pairs.</td></tr>
+    <tr><td class="hi">n ≤ 2·10<sup>5</sup> (or 10<sup>6</sup>)</td><td class="hi">O(n log n) or O(n)</td><td class="hi">Sort, one loop, binary search, map.</td></tr>
+    <tr><td>n ≤ 10<sup>9</sup> – 10<sup>12</sup></td><td>O(√n)</td><td>Loop while i·i ≤ n.</td></tr>
+    <tr><td>n ≤ 10<sup>9</sup> – 10<sup>18</sup></td><td>O(log n) or O(1)</td><td>A formula, or halving.</td></tr>
+  </table>
+  <p class="tip-box">The row n ≤ 2·10<sup>5</sup> is the most common one. It means: <b>two loops over n are too slow.</b></p>
+</section>
+
+<section>
+  <h2>Three ways to understand it</h2>
+
+  <div class="way">
+    <h3><b>1 · Story</b> — walk or fly</h3>
+    <p>You must travel 1000 km and you have one day. You can walk, drive or fly. You do not start walking and hope. You look at the distance first, then you choose.</p>
+    <p>The limits are the distance. The time limit is your one day. O(n<sup>2</sup>) is walking. O(n log n) is driving. O(log n) is flying.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>2 · Picture</b> — how many steps</h3>
+    <table>
+      <tr><th>n</th><th>log n</th><th>n</th><th>n log n</th><th>n<sup>2</sup></th></tr>
+      <tr><td>10</td><td>about 3</td><td>10</td><td>about 33</td><td>100</td></tr>
+      <tr><td>1000</td><td>about 10</td><td>1000</td><td>about 10 000</td><td>10<sup>6</sup></td></tr>
+      <tr><td>10<sup>5</sup></td><td>about 17</td><td>10<sup>5</sup></td><td>about 1.7·10<sup>6</sup></td><td class="hi">10<sup>10</sup> — about 100 seconds</td></tr>
+    </table>
+    <p class="note">For small n everything is fast. For n = 10<sup>5</sup> the n<sup>2</sup> idea gets Time limit exceeded.</p>
+  </div>
+
+  <div class="way">
+    <h3><b>3 · Code</b> — count the loops</h3>
+    <p><b>O(n)</b> — one loop:</p>
+<pre data-part="main"><code class="cpp">
+long long sum = 0;
+for (int i = 0; i &lt; n; i++) sum += a[i];          // n steps
+</code></pre>
+    <p><b>O(n<sup>2</sup>)</b> — a <span class="term" data-t="nested-loop">nested loop</span>:</p>
+<pre data-part="main"><code class="cpp">
+int pairs = 0;
+for (int i = 0; i &lt; n; i++)
+    for (int j = i + 1; j &lt; n; j++)               // about n * n / 2 steps
+        if (a[i] == a[j]) pairs++;
+</code></pre>
+    <p><b>O(log n)</b> — the number is cut in half each time:</p>
+<pre data-part="main"><code class="cpp">
+int steps = 0;
+while (n &gt; 1) {                                   // 10^9 -&gt; 1 in about 30 steps
+    n /= 2;
+    steps++;
+}
+</code></pre>
+    <p class="note"><code>sort</code> is O(n log n). One <code>map</code> or <code>set</code> operation is O(log n).</p>
+  </div>
+</section>
+
+<p class="complexity">Rule: put the biggest n into your O(…). Result ≤ about 10<sup>8</sup> → OK for 1 second.</p>
+
+<section>
+  <h2>With t test cases</h2>
+  <p>If the statement says "the sum of n over all test cases ≤ 2·10<sup>5</sup>", use that <b>sum</b> as your n. An O(n) solution for each test is fine.</p>
+  <p>If it does not say this, multiply: steps = t × (steps for one test).</p>
+</section>
+
+<section class="mistakes">
+  <h2>Common mistakes</h2>
+  <ul>
+    <li>You write two loops for n = 2·10<sup>5</sup>. That is 4·10<sup>10</sup> steps.</li>
+    <li>A hidden loop: <code>a.erase(a.begin())</code>, <code>count(...)</code> or <code>s.substr(...)</code> inside a loop is O(n) each time.</li>
+    <li>You clear a big array of size 10<sup>6</sup> in <b>every</b> test case. With t = 10<sup>4</sup> this is 10<sup>10</sup> steps.</li>
+    <li>You make a fast, hard solution when n ≤ 100. Small limits mean: the simple way is enough.</li>
+  </ul>
+</section>
+
+<section class="more">
+  <h2>Learn more</h2>
+  <ul>
+    <li><a href="https://usaco.guide/bronze/time-comp">USACO Guide: Time Complexity</a> — the same idea with more examples.</li>
+    <li><a href="https://cses.fi/book/book.pdf">Competitive Programmer's Handbook</a> — free book, chapter 2 "Time complexity".</li>
+  </ul>
+</section>
