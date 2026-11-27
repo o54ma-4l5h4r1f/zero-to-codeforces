@@ -52,11 +52,11 @@ int main() {
 </code></pre>
     <p>Other orders. A <code>pair</code> is sorted by <code>first</code>, then by <code>second</code>. Use it to remember the old position.</p>
 <pre data-part="main"><code class="cpp">
-sort(a.begin(), a.end(), greater&lt;int&gt;());      // big -&gt; small
 vector&lt;pair&lt;int, int&gt;&gt; p(n);
 for (int i = 0; i &lt; n; i++) p[i] = {a[i], i};  // (value, old index)
 sort(p.begin(), p.end());                      // by value; same value: by index
 // p[0].second = where the smallest value was in a
+sort(a.begin(), a.end(), greater&lt;int&gt;());      // a itself: big -&gt; small
 </code></pre>
     <p>Your own order: write a <span class="term" data-t="comparator">comparator</span>. It returns <code>true</code> when <code>x</code> must come <b>before</b> <code>y</code>.</p>
 <pre data-part="global"><code class="cpp">
@@ -100,7 +100,7 @@ sort(a.begin(), a.end(), [](int x, int y) {
     <li><a class="cf" data-p="337A">Puzzles</a><span class="r">900</span></li>
     <li><a class="cf" data-p="545D">Queue</a><span class="r">1300</span></li>
     <li><a class="cf" data-p="451B">Sort the Array</a><span class="r">1300</span></li>
-    <li><a href="https://cses.fi/problemset/">CSES: Movie Festival</a><span class="r">CSES</span> — find it in the "Sorting and Searching" list. Sort by end time.</li>
+    <li><a href="https://cses.fi/problemset/task/1629">CSES: Movie Festival</a><span class="r">CSES</span> — sort by end time.</li>
   </ol>
 </section>
 

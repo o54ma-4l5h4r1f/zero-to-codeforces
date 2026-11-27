@@ -74,14 +74,14 @@ cout &lt;&lt; "\n";
     <li>You use <code>endl</code>. It is slow when you print many lines. Use <code>"\n"</code>.</li>
     <li>You mix <code>scanf</code>/<code>printf</code> with <code>cin</code>/<code>cout</code> after <code>sync_with_stdio(false)</code>. The order of the input and output can break. Use only <code>cin</code> and <code>cout</code>.</li>
     <li>You make a global array and forget to clear it for the next test case. Keep variables inside <code>solve()</code>.</li>
-    <li>You write <code>for (auto x : a) cin &gt;&gt; x;</code> without <code>&amp;</code>. The array stays empty.</li>
+    <li>You write <code>for (auto x : a) cin &gt;&gt; x;</code> without <code>&amp;</code>. The numbers go into a copy. The array stays full of zeros.</li>
   </ul>
 </section>
 
 <section class="more">
   <h2>Learn more</h2>
   <ul>
-    <li><a href="https://usaco.guide/">USACO Guide</a> — open "General" for input, output and setup help.</li>
+    <li><a href="https://usaco.guide/general/input-output">USACO Guide: Input &amp; Output</a> — reading and printing in C++, step by step.</li>
     <li><a href="https://en.cppreference.com/w/cpp/container">cppreference: containers</a> — the full list of what <code>vector</code> and friends can do.</li>
   </ul>
 </section>

@@ -10,7 +10,7 @@
   "subarray": { "en": "subarray", "ar": "مصفوفة جزئية متّصلة", "note": "a part of the array with no gaps" },
   "subsequence": { "en": "subsequence", "ar": "متتالية جزئية (غير متّصلة بالضرورة)", "note": "some elements in the same order, gaps allowed" },
   "substring": { "en": "substring", "ar": "سلسلة جزئية متّصلة", "note": "a part of a string with no gaps" },
-  "permutation": { "en": "permutation", "ar": "تبديل (ترتيب للأرقام من 1 إلى n)", "note": "the numbers 1..n, each exactly once, in some order" },
+  "permutation": { "en": "permutation", "ar": "تبديلة (ترتيب للأعداد من 1 إلى n)", "note": "the numbers 1..n, each exactly once, in some order" },
   "greedy": { "en": "greedy", "ar": "خوارزمية طمّاعة", "note": "always take the best choice right now" },
   "brute-force": { "en": "brute force", "ar": "تجربة كل الاحتمالات", "note": "try every possibility" },
   "simulation": { "en": "simulation", "ar": "محاكاة", "note": "do exactly the steps the statement describes" },
@@ -24,7 +24,7 @@
   "recursion": { "en": "recursion", "ar": "الاستدعاء الذاتي (العودية)", "note": "a function that calls itself on a smaller problem" },
   "graph": { "en": "graph", "ar": "مخطّط (رسم بياني من نقاط وخطوط)", "note": "points connected by lines" },
   "vertex": { "en": "vertex / node", "ar": "رأس (عقدة)", "note": "one point of a graph" },
-  "edge": { "en": "edge", "ar": "حافّة (وصلة بين عقدتين)", "note": "one line between two vertices" },
+  "edge": { "en": "edge", "ar": "ضلع (وصلة بين رأسين)", "note": "one line between two vertices" },
   "tree": { "en": "tree", "ar": "شجرة", "note": "a connected graph with n vertices and n−1 edges, no cycles" },
   "cycle": { "en": "cycle", "ar": "دورة (حلقة)", "note": "a path that comes back to its start" },
   "editorial": { "en": "editorial", "ar": "شرح الحل الرسمي", "note": "the official explanation of the solution" },
@@ -37,6 +37,6 @@
   "frequency": { "en": "frequency", "ar": "عدد مرّات التكرار", "note": "how many times a value appears" },
   "prefix": { "en": "prefix", "ar": "بادئة (الجزء الأوّل)", "note": "the first k elements" },
   "suffix": { "en": "suffix", "ar": "لاحقة (الجزء الأخير)", "note": "the last k elements" },
-  "query": { "en": "query", "ar": "استعلام (سؤال)", "note": "one question you must answer, often there are many" },
+  "query": { "en": "query", "ar": "استعلام (سؤال)", "note": "one question: the problem asks you, or (interactive) you ask the judge" },
   "test-case": { "en": "test case", "ar": "حالة اختبار", "note": "one input the judge runs your code on" }
 }

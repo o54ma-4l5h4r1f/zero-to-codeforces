@@ -17,7 +17,7 @@
     <h3><b>1 · Story</b> — getting dressed</h3>
     <p>Socks before shoes. Trousers before shoes and before the belt. Shirt before the belt and before the jacket. Belt before the jacket.</p>
     <p>What can you put on <b>first</b>? Only a thing with no rule in front of it: socks, trousers or shirt. Put one on. Now cross out its rules. Maybe a new thing is free now. Repeat until you are dressed.</p>
-    <p>If the rules say "a before b" and also "b before a", nothing is ever free. Then no order exists.</p>
+    <p>If the rules say "a before b" and also "b before a", then a and b are never free. Then no order exists.</p>
   </div>
 
   <div class="way">
@@ -102,7 +102,7 @@ int main() {
     }
 }
 </code></pre>
-    <p class="tip-box">DP on the order: go through <code>order</code> from left to right. When you reach v, all vertices before v are finished. So <code>best[to] = max(best[to], best[v] + 1)</code> gives the longest path. Need the smallest order in the dictionary? Use a <code>priority_queue</code> with <code>greater&lt;int&gt;</code> in place of the queue.</p>
+    <p class="tip-box">DP on the order: go through <code>order</code> from left to right. When you reach v, all vertices before v are finished. So <code>best[to] = max(best[to], best[v] + 1)</code> gives the longest path. Need the smallest order in the dictionary? Use a <code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt;</code> in place of the queue, and <code>q.top()</code> in place of <code>q.front()</code>.</p>
   </div>
 </section>
 
@@ -127,7 +127,7 @@ int main() {
     <li><a class="cf" data-p="1593E">Gardener and Tree</a><span class="r">1600</span></li>
     <li><a class="cf" data-p="919D">Substring</a><span class="r">1700</span></li>
     <li><a class="cf" data-p="1572A">Book</a><span class="r">1800</span></li>
-    <li><a href="https://cses.fi/problemset/">CSES: Longest Flight Route</a><span class="r">CSES</span> — find it in the "Graph Algorithms" list. DP on the order.</li>
+    <li><a href="https://cses.fi/problemset/task/1680">CSES: Longest Flight Route</a><span class="r">CSES</span> — DP on the order.</li>
   </ol>
   <p class="note">Gardener and Tree has no arrows. But it uses the same idea: a queue of vertices whose degree became small.</p>
 </section>
@@ -135,8 +135,8 @@ int main() {
 <section class="more">
   <h2>Learn more</h2>
   <ul>
-    <li><a href="https://usaco.guide/">USACO Guide</a> — Gold section, "Topological Sort". Shows the DFS way too.</li>
-    <li><a href="https://cp-algorithms.com/">cp-algorithms</a> — open Graphs → "Topological Sorting". Short text and code.</li>
+    <li><a href="https://usaco.guide/gold/toposort">USACO Guide: Topological Sort</a> — Shows the DFS way too.</li>
+    <li><a href="https://cp-algorithms.com/graph/topological-sort.html">cp-algorithms: Topological Sorting</a> — Short text and code.</li>
     <li><a href="#graphs-bfs-dfs">Graphs: BFS and DFS</a> — read it first if <code>adj</code> and the queue are new for you.</li>
   </ul>
 </section>

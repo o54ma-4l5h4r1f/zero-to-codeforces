@@ -88,7 +88,7 @@ int main() {
 <section class="mistakes">
   <h2>Common mistakes</h2>
   <ul>
-    <li><code>n * (n + 1) / 2</code> with <code>int n</code> can <span class="term" data-t="overflow">overflow</span>. Use <code>long long</code> for n near 10<sup>5</sup> and above.</li>
+    <li><code>n * (n + 1) / 2</code> with <code>int n</code> can <span class="term" data-t="overflow">overflow</span>: it overflows when n is above about 46 000. Use <code>long long</code> when n can pass 10<sup>4</sup>.</li>
     <li><code>%</code> with a negative number gives a negative <span class="term" data-t="remainder">remainder</span>: <code>-7 % 2</code> is <code>-1</code>. Test odd with <code>x % 2 != 0</code>, not <code>== 1</code>.</li>
     <li>You use <code>double</code> and <code>ceil(a / b)</code>. With big numbers it loses digits. Stay with integers and <code>(a + b - 1) / b</code>.</li>
     <li>The digits loop does nothing for x = 0. If 0 is a possible input, handle it alone.</li>

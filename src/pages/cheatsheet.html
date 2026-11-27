@@ -121,7 +121,7 @@ void sieve() {
   <div class="cc" data-to="modular" data-tip="Fast power: a^b mod m in O(log b) steps by squaring.">
 <pre data-part="global"><code class="cpp">
 long long power(long long a, long long b, long long m) {
-    long long r = 1; a %= m;
+    long long r = 1 % m; a %= m;
     while (b &gt; 0) {
         if (b &amp; 1) r = r * a % m;
         a = a * a % m;
@@ -171,7 +171,7 @@ long long C(int n, int r) {
 <pre data-part="main"><code class="cpp">
 for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++)
     for (int i = 0; i &lt; n; i++)
-        if (mask &gt;&gt; i &amp; 1) { /* item i is in */ }
+        if ((mask &gt;&gt; i) &amp; 1) { /* item i is in */ }
 </code></pre>
   </div>
 </div>

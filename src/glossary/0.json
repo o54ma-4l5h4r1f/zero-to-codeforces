@@ -16,7 +16,7 @@
   "nested-loop": { "en": "nested loop", "ar": "حلقة متداخلة (حلقة داخل حلقة)", "note": "a loop inside another loop" },
   "product": { "en": "product", "ar": "حاصل الضرب", "note": "the result of multiplying: the product of 3 and 4 is 12" },
   "round-up": { "en": "round up (ceil)", "ar": "تقريب إلى الأعلى", "note": "go to the next whole number: 7 / 2 rounded up is 4" },
-  "floating-point": { "en": "floating-point number", "ar": "عدد بفاصلة عشرية", "note": "a number like 3.14 in a double; it is not always exact" },
+  "floating-point": { "en": "floating-point number", "ar": "عدد عشري (بفاصلة عائمة)", "note": "a number like 3.14 in a double; it is not always exact" },
   "exact": { "en": "exact", "ar": "دقيق تمامًا", "note": "fully correct, with no small error" },
   "upsolving": { "en": "upsolving", "ar": "حلّ المسائل التي لم تحلّها بعد انتهاء المسابقة", "note": "after a contest, solve the problems you could not solve" },
   "virtual": { "en": "virtual participation", "ar": "مشاركة افتراضية (مسابقة قديمة بتوقيت حقيقي)", "note": "do an old contest with a real timer, as if it is live" },
